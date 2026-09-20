@@ -1,0 +1,5 @@
+QTXMA n=155 obs=0.057729 null_mean=0.038454 z=10.97 P(IC>=obs)=0 P(IC<=obs)=1
+SZAEJ n=51 obs=0.052549 null_mean=0.038452 z=2.62 P(IC>=obs)=0.0155 P(IC<=obs)=0.98786
+BYQMZ n=166 obs=0.039503 null_mean=0.038467 z=0.63 P(IC>=obs)=0.25145 P(IC<=obs)=0.76128
+FKQLZ n=107 obs=0.032622 null_mean=0.038464 z=-2.29 P(IC>=obs)=0.99921 P(IC<=obs)=0.00131
+XFEDT n=97 obs=0.032861 null_mean=0.038467 z=-1.99 P(IC>=obs)=0.9948 P(IC<=obs)=0.00782

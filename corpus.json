@@ -1,0 +1,70 @@
+{
+  "project": "Ultimate Enigma Challenge / September 1941 Batch C",
+  "notes": [
+    "Five Enigma-like messages identified by CryptoCellar total 577 ciphertext characters.",
+    "The wider Batch C contains mixed traffic and should not be assumed to use one cipher family.",
+    "BYQMZ contains one uncertain source character represented here as '?'."
+  ],
+  "messages": [
+    {
+      "date": "1941-09-29",
+      "number": 6,
+      "designator": "QTXMA",
+      "time": "22:50",
+      "operator": "Otor. ?",
+      "to": "2pn",
+      "frequency_khz": 323,
+      "indicator": ["LDP", "WRX"],
+      "ciphertext_length": 155,
+      "ciphertext": "JVMOYCZAYMRVLCBSOQXYBATSXJBQLAEJKYTYXJOEMYBLOEMYOKSRMTAVLBCXJAMOESRXYTVAOEYAVYXKCJVCMEISHTBAYVXXAJWCZQCYPXMEHABLKYJYASOEIJYXOQXYTLBASYEESTAQXJVNWCBJZBYQYTM"
+    },
+    {
+      "date": "1941-09-29",
+      "number": 7,
+      "designator": "SZAEJ",
+      "time": "23:24",
+      "operator": "Otor. ?",
+      "to": "o37",
+      "frequency_khz": 716,
+      "indicator": ["GAR", "PLD"],
+      "ciphertext_length": 51,
+      "ciphertext": "TOMBYXCZEOJKSAMGEYPWXZWJMEVBZYZAEJVHSEMNWEYTMEOMTCG"
+    },
+    {
+      "date": "1941-09-30",
+      "number": 8,
+      "designator": "BYQMZ",
+      "time": "00:25",
+      "operator": "Otor. ?",
+      "to": "ugn",
+      "frequency_khz": 568,
+      "indicator": ["MGS", "TPL"],
+      "ciphertext_length": 167,
+      "ciphertext": "NYZKYDOEMGPSDUHMLHJATWMYCHIF?YMAESTAVLCGCNLGMZIQUSQNRAIKYJDETUEXOJQPGXQSCEXENOSFASJVTGBHXTVGQTWKEWPPRIVYJEHEWNGPFUEAZTUWZUQBLNBYETZVSUAJSEASZXYFTUMOSHURQESSTQMPAOPBFTY"
+    },
+    {
+      "date": "1941-09-30",
+      "number": 11,
+      "designator": "FKQLZ",
+      "time": "03:55",
+      "operator": "Fuhrmann",
+      "to": "g19",
+      "frequency_khz": 323,
+      "indicator": ["RTA", "SDP"],
+      "ciphertext_length": 107,
+      "ciphertext": "DNXLIAGVIQBUWMHYCAMDFBAEQVGXMRCEPGARIHRKRTDLNYVCSWUFHIXLXPUCESNOLNAHZDKPNVBFSOKBPCTGDKOFMTWGSYOUTQRMPWWZORK"
+    },
+    {
+      "date": "1941-09-30",
+      "number": 12,
+      "designator": "XFEDT",
+      "time": "04:16",
+      "operator": "Fuhrmann",
+      "to": "6q8",
+      "frequency_khz": 716,
+      "indicator": ["LMO", "DSV"],
+      "ciphertext_length": 97,
+      "ciphertext": "ZYOQHTSAFRLQCHZURCWOILRXGMCBFZKAPYDUMHVCATDPSEAKYSZEGFKGINXWRNQVOIDFANGLRXNUHGTVFCNEXBPWYMZFBXOAU"
+    }
+  ]
+}
