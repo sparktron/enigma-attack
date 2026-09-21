@@ -9,15 +9,15 @@
 - Friedman's treatment of periodic polyalphabetic systems explains causal repetitions when identical plaintext material is enciphered under the same cipher-alphabet positions, and contrasts these with random coincidences. — [Military Cryptanalysis, Part II](https://www.nsa.gov/portals/75/documents/news-features/declassified-documents/friedman-documents/publications/FOLDER_508/41784299082338.pdf), 1938/1941 editions; accessed 2026-09-21
 - The NSA's survey of German cipher machines documents Enigma, T-52 cipher teleprinters, and SZ-40/SZ-42 teleprinter attachments as German World War II systems. — [German Cipher Machines of World War II](https://www.nsa.gov/portals/75/documents/about/cryptologic-heritage/historical-figures-publications/publications/wwii/german_cipher.pdf), 2014; accessed 2026-09-21
 - The NSA NARA release catalog includes captured records titled “German Division Hand Key” and “German 3 Letter Code Tables,” both dated 1940. — [NSA World War II NARA Releases](https://www.nsa.gov/History/Cryptologic-History/NARA-Releases/), living catalog; accessed 2026-09-21
-- The default 4,000-trial Phase 5 run routes QTXMA to the frequency-preserving/manual branch: IC 0.057729 with uniform-null upper-tail `p = 1/4001`. Its scan-corrected lag, candidate-period, and repeated-trigram tests also cross `alpha = 0.01`. The other four messages remain compatible with the uniform-random control under the configured tests. — [generated Phase 5 artifact](../artifacts/phase5-model-triage.json), 2026-09-21
+- The corrected 4,000-trial Phase 5 run routes QTXMA to the frequency-preserving/manual branch: IC 0.057729 with uniform-null upper-tail `p = 1/4001`. Against frequency-preserving permutations, its scan-corrected lag (`p = 0.0875`), candidate-period (`p = 0.1647`), and repeated-trigram (`p = 0.0820`) tests are not significant at `alpha = 0.01`. The other four messages remain compatible with the uniform-random control under the configured tests. — [generated Phase 5 artifact](../artifacts/phase5-model-triage.json), 2026-09-21
 
 ## Inference
 
 - A high monographic index of coincidence should route a message toward frequency-preserving systems, especially transposition, but cannot distinguish transposition from monoalphabetic substitution.
 - A random-like monographic distribution does not favor Enigma over a cipher teleprinter or a strong superencipherment. Traffic format, procedure, cribs, or key recovery must do that work.
-- Period scans and lag scans must be calibrated against the maximum statistic from each random trial; treating every tested period or lag as an independent uncorrected result would manufacture false positives.
+- Period scans and lag scans must be calibrated against the maximum statistic from each frequency-preserving permutation trial; treating every tested period or lag as an independent uncorrected result, or comparing high-IC ciphertext to uniform A-Z trials, manufactures false positives.
 - The five messages should be assessed separately before pooling. Phase 4 already showed that optimizing a shared model can overfit the visible messages and fail on held-out traffic.
-- QTXMA is now the evidence-backed first target for a frequency-preserving family experiment. Its several positive tests are correlated structural observations, not four independent votes for a cipher name.
+- QTXMA is the evidence-backed first target for a frequency-preserving family experiment. The corrected conditional tests provide no separate evidence for periodic, lag, or repeated-block structure.
 
 ## Speculation
 

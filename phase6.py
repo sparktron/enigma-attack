@@ -477,7 +477,11 @@ def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
 
 def _phase5_evidence(path: pathlib.Path, designator: str) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    if payload.get("schema") != "enigma-attack.phase5-model-triage/v1":
+    supported_schemas = {
+        "enigma-attack.phase5-model-triage/v1",
+        "enigma-attack.phase5-model-triage/v2",
+    }
+    if payload.get("schema") not in supported_schemas:
         raise ValueError("unsupported Phase 5 artifact schema")
     try:
         message = next(
