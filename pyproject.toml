@@ -14,6 +14,7 @@ dependencies = []
 enigma-phase1 = "phase1:main"
 enigma-phase3 = "phase3:main"
 enigma-phase4 = "phase4:main"
+enigma-phase5 = "phase5:main"
 
 [tool.setuptools]
-py-modules = ["enigma", "phase1", "phase2", "phase3", "phase4", "recon", "ic_null"]
+py-modules = ["enigma", "phase1", "phase2", "phase3", "phase4", "phase5", "recon", "ic_null"]

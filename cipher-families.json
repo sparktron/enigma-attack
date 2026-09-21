@@ -1,0 +1,125 @@
+{
+  "schema": "enigma-attack.phase5-cipher-families/v1",
+  "research_date": "2026-09-21",
+  "question": "Which non-Enigma cipher families deserve explicit structural screening for the September 1941 Batch C messages?",
+  "sources": [
+    {
+      "id": "cryptocellar-unbroken-2026-09-19",
+      "title": "Overview of still unbroken 1941 Messages",
+      "url": "https://www.cryptocellar.org/bgac/1941-msg-list-unbroken.html",
+      "source_date": "2026-09-19",
+      "accessed": "2026-09-21"
+    },
+    {
+      "id": "friedman-lectures-double-transposition",
+      "title": "The Friedman Lectures",
+      "url": "https://www.nsa.gov/portals/75/documents/news-features/declassified-documents/friedman-documents/lectures-speeches/FOLDER_166/41759739079888.pdf",
+      "source_date": "declassified historical lecture",
+      "accessed": "2026-09-21"
+    },
+    {
+      "id": "friedman-military-cryptanalysis-part-ii",
+      "title": "Military Cryptanalysis, Part II: Simpler Varieties of Polyalphabetic Substitution Systems",
+      "url": "https://www.nsa.gov/portals/75/documents/news-features/declassified-documents/friedman-documents/publications/FOLDER_508/41784299082338.pdf",
+      "source_date": "1938/1941 editions",
+      "accessed": "2026-09-21"
+    },
+    {
+      "id": "nsa-german-cipher-machines",
+      "title": "German Cipher Machines of World War II",
+      "url": "https://www.nsa.gov/portals/75/documents/about/cryptologic-heritage/historical-figures-publications/publications/wwii/german_cipher.pdf",
+      "source_date": "2014",
+      "accessed": "2026-09-21"
+    },
+    {
+      "id": "nsa-wwii-nara-releases",
+      "title": "World War II NARA Releases",
+      "url": "https://www.nsa.gov/History/Cryptologic-History/NARA-Releases/",
+      "source_date": "living catalog",
+      "accessed": "2026-09-21"
+    }
+  ],
+  "families": [
+    {
+      "id": "double-transposition",
+      "label": "Double transposition or another frequency-preserving hand cipher",
+      "screening_signature": "frequency_preserving",
+      "historical_prior": "plausible German Army hand-cipher branch",
+      "facts": [
+        "The Friedman lectures identify double transposition as another German Army cipher and discuss its World War II cryptanalysis."
+      ],
+      "source_ids": [
+        "friedman-lectures-double-transposition",
+        "nsa-wwii-nara-releases"
+      ],
+      "limits": [
+        "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+        "A high index of coincidence is routing evidence, not a key recovery."
+      ]
+    },
+    {
+      "id": "periodic-polyalphabetic",
+      "label": "Repeating-key polyalphabetic hand cipher",
+      "screening_signature": "periodic",
+      "historical_prior": "analytic control; no attribution to this traffic",
+      "facts": [
+        "Friedman's treatment shows that periodic polyalphabetic systems can create same-alphabet coincidences and causal repetitions at the key period."
+      ],
+      "source_ids": [
+        "friedman-military-cryptanalysis-part-ii"
+      ],
+      "limits": [
+        "The test only screens periods 2 through the configured maximum.",
+        "A short message can hide or mimic periodic structure."
+      ]
+    },
+    {
+      "id": "code-or-superencipherment",
+      "label": "Code groups or a hand system with superencipherment",
+      "screening_signature": "repeated_blocks",
+      "historical_prior": "plausible but underspecified German field-system branch",
+      "facts": [
+        "The NSA NARA catalog includes captured 1940 German division hand-key and three-letter-code material."
+      ],
+      "source_ids": [
+        "nsa-wwii-nara-releases"
+      ],
+      "limits": [
+        "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+        "Repeated groups can also be chance events or retransmission artifacts."
+      ]
+    },
+    {
+      "id": "cipher-teleprinter",
+      "label": "SZ-40/SZ-42 or T-52-class cipher teleprinter",
+      "screening_signature": "randomizing",
+      "historical_prior": "documented German machine family, but traffic-format fit is unresolved",
+      "facts": [
+        "The NSA survey documents German use of T-52 and SZ-40/SZ-42 enciphered teleprinter equipment during World War II."
+      ],
+      "source_ids": [
+        "nsa-german-cipher-machines"
+      ],
+      "limits": [
+        "Random-like letter statistics cannot distinguish a teleprinter combiner from a rotor machine.",
+        "The captured message forms and two trigrams require archival verification before this branch receives a strong prior."
+      ]
+    },
+    {
+      "id": "rotor-machine-control",
+      "label": "Rotor-machine control branch",
+      "screening_signature": "randomizing",
+      "historical_prior": "documented primary branch already tested in Phases 1, 3, and 4",
+      "facts": [
+        "The NSA survey describes Enigma as a major German World War II cipher-machine family."
+      ],
+      "source_ids": [
+        "nsa-german-cipher-machines"
+      ],
+      "limits": [
+        "Ciphertext-only random-like statistics do not validate Enigma.",
+        "Earlier bounded searches do not exclude the full standard or nonstandard Enigma keyspaces."
+      ]
+    }
+  ]
+}

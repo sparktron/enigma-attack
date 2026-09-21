@@ -1,0 +1,738 @@
+{
+  "cohorts": {
+    "all_messages": {
+      "entropy_bits": 4.628103522355431,
+      "index_of_coincidence": 0.04082729468599034,
+      "known_letters": 576,
+      "message_count": 5,
+      "scope_note": "Only pooled monographic statistics are valid across independently keyed messages.",
+      "uniform_chi_square": 60.368055555555564
+    },
+    "currently_listed_unbroken": {
+      "entropy_bits": 4.665085295646044,
+      "index_of_coincidence": 0.037647403501062035,
+      "known_letters": 370,
+      "message_count": 3,
+      "scope_note": "Only pooled monographic statistics are valid across independently keyed messages.",
+      "uniform_chi_square": 17.18918918918919
+    }
+  },
+  "decision": {
+    "accepted_break": false,
+    "negative_claim": "None; short ciphertexts and a generic null do not exclude any family.",
+    "next_experiment": "Run a family-specific, held-out-validated experiment for QTXMA on route frequency_preserving_manual.",
+    "status": "phase5_structural_triage_complete",
+    "unresolved": [
+      "Original five-letter grouping and typography may contain model-selection evidence absent from normalized ciphertext.",
+      "QTXMA and SZAEJ are absent from the current three-message unbroken list, but their disposition is not documented in the corpus sources.",
+      "Random-like ciphertext cannot distinguish Enigma, cipher teleprinter, and strong superencipherment without traffic metadata or cribs."
+    ]
+  },
+  "generated_at": "2026-09-21T16:38:31.760605+00:00",
+  "inputs": {
+    "catalog": "/home/mythos/repos/enigma-attack/cipher-families.json",
+    "catalog_sha256": "5284cbd3c7649b01e750d885682ad7ab41e4a15cad92b29b329d3c8012b83dde",
+    "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "runner_sha256": "4a89d1433567e582897b7045d63578496bc8f32a42f7b40714cf36955b098970"
+  },
+  "messages": [
+    {
+      "analysis": {
+        "alpha": 0.01,
+        "length_known": 155,
+        "length_total": 155,
+        "signals": {
+          "frequency_preserving": true,
+          "lag_structure": true,
+          "periodic_structure": true,
+          "repeated_blocks": true,
+          "uniform_random_compatible": false
+        },
+        "statistics": {
+          "best_lag": {
+            "eligible_pairs": 149,
+            "lag": 6,
+            "matches": 17,
+            "rate": 0.11409395973154363,
+            "z_score": 4.800699054241577
+          },
+          "best_period": {
+            "lift_over_global_ic": 0.01951201190355807,
+            "period": 15,
+            "pooled_within_column_ic": 0.07724137931034483
+          },
+          "entropy_bits": 4.154084574038007,
+          "index_of_coincidence": 0.05772936740678676,
+          "trigram_repeat_pairs": 5,
+          "uniform_chi_square": 102.14838709677417
+        },
+        "uniform_null": {
+          "alphabet_size": 26,
+          "expected_ic": 0.038461538461538464,
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "chi_square_upper": 0.00024993751562109475,
+            "ic_upper": 0.00024993751562109475,
+            "max_lag_upper": 0.0014996250937265683,
+            "max_periodic_ic_upper": 0.000999750062484379,
+            "trigram_repeats_upper": 0.0032491877030742314
+          },
+          "seed": 17622956423489865437,
+          "simulations": 4000
+        },
+        "unknown_positions": []
+      },
+      "current_status": "omitted_from_2026-09-16_unbroken_list_status_unresolved",
+      "date": "1941-09-29",
+      "designator": "QTXMA",
+      "family_assessments": [
+        {
+          "family_id": "code-or-superencipherment",
+          "historical_prior": "plausible but underspecified German field-system branch",
+          "label": "Code groups or a hand system with superencipherment",
+          "limits": [
+            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+            "Repeated groups can also be chance events or retransmission artifacts."
+          ],
+          "screening_signature": "repeated_blocks",
+          "source_ids": [
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "supported_for_follow_up"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "supported_for_follow_up"
+        },
+        {
+          "family_id": "periodic-polyalphabetic",
+          "historical_prior": "analytic control; no attribution to this traffic",
+          "label": "Repeating-key polyalphabetic hand cipher",
+          "limits": [
+            "The test only screens periods 2 through the configured maximum.",
+            "A short message can hide or mimic periodic structure."
+          ],
+          "screening_signature": "periodic",
+          "source_ids": [
+            "friedman-military-cryptanalysis-part-ii"
+          ],
+          "status": "supported_for_follow_up"
+        },
+        {
+          "family_id": "cipher-teleprinter",
+          "historical_prior": "documented German machine family, but traffic-format fit is unresolved",
+          "label": "SZ-40/SZ-42 or T-52-class cipher teleprinter",
+          "limits": [
+            "Random-like letter statistics cannot distinguish a teleprinter combiner from a rotor machine.",
+            "The captured message forms and two trigrams require archival verification before this branch receives a strong prior."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "structural_tension"
+        },
+        {
+          "family_id": "rotor-machine-control",
+          "historical_prior": "documented primary branch already tested in Phases 1, 3, and 4",
+          "label": "Rotor-machine control branch",
+          "limits": [
+            "Ciphertext-only random-like statistics do not validate Enigma.",
+            "Earlier bounded searches do not exclude the full standard or nonstandard Enigma keyspaces."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "structural_tension"
+        }
+      ],
+      "route": "frequency_preserving_manual"
+    },
+    {
+      "analysis": {
+        "alpha": 0.01,
+        "length_known": 51,
+        "length_total": 51,
+        "signals": {
+          "frequency_preserving": false,
+          "lag_structure": false,
+          "periodic_structure": false,
+          "repeated_blocks": false,
+          "uniform_random_compatible": true
+        },
+        "statistics": {
+          "best_lag": {
+            "eligible_pairs": 27,
+            "lag": 24,
+            "matches": 4,
+            "rate": 0.14814814814814814,
+            "z_score": 2.963731381840079
+          },
+          "best_period": {
+            "lift_over_global_ic": 0.054593837535014,
+            "period": 12,
+            "pooled_within_column_ic": 0.10714285714285714
+          },
+          "entropy_bits": 4.021821234767888,
+          "index_of_coincidence": 0.05254901960784314,
+          "trigram_repeat_pairs": 0,
+          "uniform_chi_square": 43.31372549019607
+        },
+        "uniform_null": {
+          "alphabet_size": 26,
+          "expected_ic": 0.038461538461538464,
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "chi_square_upper": 0.015746063484128967,
+            "ic_upper": 0.01699575106223444,
+            "max_lag_upper": 0.23919020244938766,
+            "max_periodic_ic_upper": 0.09897525618595351,
+            "trigram_repeats_upper": 1.0
+          },
+          "seed": 11106091846617913681,
+          "simulations": 4000
+        },
+        "unknown_positions": []
+      },
+      "current_status": "omitted_from_2026-09-16_unbroken_list_status_unresolved",
+      "date": "1941-09-29",
+      "designator": "SZAEJ",
+      "family_assessments": [
+        {
+          "family_id": "cipher-teleprinter",
+          "historical_prior": "documented German machine family, but traffic-format fit is unresolved",
+          "label": "SZ-40/SZ-42 or T-52-class cipher teleprinter",
+          "limits": [
+            "Random-like letter statistics cannot distinguish a teleprinter combiner from a rotor machine.",
+            "The captured message forms and two trigrams require archival verification before this branch receives a strong prior."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "rotor-machine-control",
+          "historical_prior": "documented primary branch already tested in Phases 1, 3, and 4",
+          "label": "Rotor-machine control branch",
+          "limits": [
+            "Ciphertext-only random-like statistics do not validate Enigma.",
+            "Earlier bounded searches do not exclude the full standard or nonstandard Enigma keyspaces."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "code-or-superencipherment",
+          "historical_prior": "plausible but underspecified German field-system branch",
+          "label": "Code groups or a hand system with superencipherment",
+          "limits": [
+            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+            "Repeated groups can also be chance events or retransmission artifacts."
+          ],
+          "screening_signature": "repeated_blocks",
+          "source_ids": [
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "inconclusive"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "not_supported"
+        },
+        {
+          "family_id": "periodic-polyalphabetic",
+          "historical_prior": "analytic control; no attribution to this traffic",
+          "label": "Repeating-key polyalphabetic hand cipher",
+          "limits": [
+            "The test only screens periods 2 through the configured maximum.",
+            "A short message can hide or mimic periodic structure."
+          ],
+          "screening_signature": "periodic",
+          "source_ids": [
+            "friedman-military-cryptanalysis-part-ii"
+          ],
+          "status": "not_supported"
+        }
+      ],
+      "route": "randomizing_machine_or_combiner"
+    },
+    {
+      "analysis": {
+        "alpha": 0.01,
+        "length_known": 166,
+        "length_total": 167,
+        "signals": {
+          "frequency_preserving": false,
+          "lag_structure": false,
+          "periodic_structure": false,
+          "repeated_blocks": false,
+          "uniform_random_compatible": true
+        },
+        "statistics": {
+          "best_lag": {
+            "eligible_pairs": 143,
+            "lag": 22,
+            "matches": 11,
+            "rate": 0.07692307692307693,
+            "z_score": 2.3916521486202793
+          },
+          "best_period": {
+            "lift_over_global_ic": 0.018114969480996973,
+            "period": 16,
+            "pooled_within_column_ic": 0.05761843790012804
+          },
+          "entropy_bits": 4.579416494915403,
+          "index_of_coincidence": 0.03950346841913107,
+          "trigram_repeat_pairs": 0,
+          "uniform_chi_square": 29.46987951807228
+        },
+        "uniform_null": {
+          "alphabet_size": 26,
+          "expected_ic": 0.038461538461538464,
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "chi_square_upper": 0.25418645338665335,
+            "ic_upper": 0.2551862034491377,
+            "max_lag_upper": 0.3761559610097476,
+            "max_periodic_ic_upper": 0.053486628342914275,
+            "trigram_repeats_upper": 1.0
+          },
+          "seed": 2761937274500884496,
+          "simulations": 4000
+        },
+        "unknown_positions": [
+          28
+        ]
+      },
+      "current_status": "unbroken_as_of_2026-09-16",
+      "date": "1941-09-30",
+      "designator": "BYQMZ",
+      "family_assessments": [
+        {
+          "family_id": "cipher-teleprinter",
+          "historical_prior": "documented German machine family, but traffic-format fit is unresolved",
+          "label": "SZ-40/SZ-42 or T-52-class cipher teleprinter",
+          "limits": [
+            "Random-like letter statistics cannot distinguish a teleprinter combiner from a rotor machine.",
+            "The captured message forms and two trigrams require archival verification before this branch receives a strong prior."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "rotor-machine-control",
+          "historical_prior": "documented primary branch already tested in Phases 1, 3, and 4",
+          "label": "Rotor-machine control branch",
+          "limits": [
+            "Ciphertext-only random-like statistics do not validate Enigma.",
+            "Earlier bounded searches do not exclude the full standard or nonstandard Enigma keyspaces."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "code-or-superencipherment",
+          "historical_prior": "plausible but underspecified German field-system branch",
+          "label": "Code groups or a hand system with superencipherment",
+          "limits": [
+            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+            "Repeated groups can also be chance events or retransmission artifacts."
+          ],
+          "screening_signature": "repeated_blocks",
+          "source_ids": [
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "inconclusive"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "not_supported"
+        },
+        {
+          "family_id": "periodic-polyalphabetic",
+          "historical_prior": "analytic control; no attribution to this traffic",
+          "label": "Repeating-key polyalphabetic hand cipher",
+          "limits": [
+            "The test only screens periods 2 through the configured maximum.",
+            "A short message can hide or mimic periodic structure."
+          ],
+          "screening_signature": "periodic",
+          "source_ids": [
+            "friedman-military-cryptanalysis-part-ii"
+          ],
+          "status": "not_supported"
+        }
+      ],
+      "route": "randomizing_machine_or_combiner"
+    },
+    {
+      "analysis": {
+        "alpha": 0.01,
+        "length_known": 107,
+        "length_total": 107,
+        "signals": {
+          "frequency_preserving": false,
+          "lag_structure": false,
+          "periodic_structure": false,
+          "repeated_blocks": false,
+          "uniform_random_compatible": true
+        },
+        "statistics": {
+          "best_lag": {
+            "eligible_pairs": 92,
+            "lag": 15,
+            "matches": 7,
+            "rate": 0.07608695652173914,
+            "z_score": 1.8766297265136727
+          },
+          "best_period": {
+            "lift_over_global_ic": 0.012970592664969055,
+            "period": 15,
+            "pooled_within_column_ic": 0.04559270516717325
+          },
+          "entropy_bits": 4.611832946633056,
+          "index_of_coincidence": 0.0326221125022042,
+          "trigram_repeat_pairs": 0,
+          "uniform_chi_square": 8.90654205607477
+        },
+        "uniform_null": {
+          "alphabet_size": 26,
+          "expected_ic": 0.038461538461538464,
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "chi_square_upper": 0.9985003749062734,
+            "ic_upper": 0.9985003749062734,
+            "max_lag_upper": 0.730817295676081,
+            "max_periodic_ic_upper": 0.9510122469382655,
+            "trigram_repeats_upper": 1.0
+          },
+          "seed": 1675682734470958725,
+          "simulations": 4000
+        },
+        "unknown_positions": []
+      },
+      "current_status": "unbroken_as_of_2026-09-16",
+      "date": "1941-09-30",
+      "designator": "FKQLZ",
+      "family_assessments": [
+        {
+          "family_id": "cipher-teleprinter",
+          "historical_prior": "documented German machine family, but traffic-format fit is unresolved",
+          "label": "SZ-40/SZ-42 or T-52-class cipher teleprinter",
+          "limits": [
+            "Random-like letter statistics cannot distinguish a teleprinter combiner from a rotor machine.",
+            "The captured message forms and two trigrams require archival verification before this branch receives a strong prior."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "rotor-machine-control",
+          "historical_prior": "documented primary branch already tested in Phases 1, 3, and 4",
+          "label": "Rotor-machine control branch",
+          "limits": [
+            "Ciphertext-only random-like statistics do not validate Enigma.",
+            "Earlier bounded searches do not exclude the full standard or nonstandard Enigma keyspaces."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "code-or-superencipherment",
+          "historical_prior": "plausible but underspecified German field-system branch",
+          "label": "Code groups or a hand system with superencipherment",
+          "limits": [
+            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+            "Repeated groups can also be chance events or retransmission artifacts."
+          ],
+          "screening_signature": "repeated_blocks",
+          "source_ids": [
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "inconclusive"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "not_supported"
+        },
+        {
+          "family_id": "periodic-polyalphabetic",
+          "historical_prior": "analytic control; no attribution to this traffic",
+          "label": "Repeating-key polyalphabetic hand cipher",
+          "limits": [
+            "The test only screens periods 2 through the configured maximum.",
+            "A short message can hide or mimic periodic structure."
+          ],
+          "screening_signature": "periodic",
+          "source_ids": [
+            "friedman-military-cryptanalysis-part-ii"
+          ],
+          "status": "not_supported"
+        }
+      ],
+      "route": "randomizing_machine_or_combiner"
+    },
+    {
+      "analysis": {
+        "alpha": 0.01,
+        "length_known": 97,
+        "length_total": 97,
+        "signals": {
+          "frequency_preserving": false,
+          "lag_structure": false,
+          "periodic_structure": false,
+          "repeated_blocks": false,
+          "uniform_random_compatible": true
+        },
+        "statistics": {
+          "best_lag": {
+            "eligible_pairs": 73,
+            "lag": 24,
+            "matches": 5,
+            "rate": 0.0684931506849315,
+            "z_score": 1.3342690780358881
+          },
+          "best_period": {
+            "lift_over_global_ic": 0.015560227889310906,
+            "period": 9,
+            "pooled_within_column_ic": 0.04842105263157895
+          },
+          "entropy_bits": 4.594851704213934,
+          "index_of_coincidence": 0.03286082474226804,
+          "trigram_repeat_pairs": 1,
+          "uniform_chi_square": 11.020618556701027
+        },
+        "uniform_null": {
+          "alphabet_size": 26,
+          "expected_ic": 0.038461538461538464,
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "chi_square_upper": 0.9960009997500625,
+            "ic_upper": 0.9960009997500625,
+            "max_lag_upper": 0.968507873031742,
+            "max_periodic_ic_upper": 0.8910272431892027,
+            "trigram_repeats_upper": 0.21694576355911022
+          },
+          "seed": 16175398540612428475,
+          "simulations": 4000
+        },
+        "unknown_positions": []
+      },
+      "current_status": "unbroken_as_of_2026-09-16",
+      "date": "1941-09-30",
+      "designator": "XFEDT",
+      "family_assessments": [
+        {
+          "family_id": "cipher-teleprinter",
+          "historical_prior": "documented German machine family, but traffic-format fit is unresolved",
+          "label": "SZ-40/SZ-42 or T-52-class cipher teleprinter",
+          "limits": [
+            "Random-like letter statistics cannot distinguish a teleprinter combiner from a rotor machine.",
+            "The captured message forms and two trigrams require archival verification before this branch receives a strong prior."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "rotor-machine-control",
+          "historical_prior": "documented primary branch already tested in Phases 1, 3, and 4",
+          "label": "Rotor-machine control branch",
+          "limits": [
+            "Ciphertext-only random-like statistics do not validate Enigma.",
+            "Earlier bounded searches do not exclude the full standard or nonstandard Enigma keyspaces."
+          ],
+          "screening_signature": "randomizing",
+          "source_ids": [
+            "nsa-german-cipher-machines"
+          ],
+          "status": "ciphertext_only_compatible"
+        },
+        {
+          "family_id": "code-or-superencipherment",
+          "historical_prior": "plausible but underspecified German field-system branch",
+          "label": "Code groups or a hand system with superencipherment",
+          "limits": [
+            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+            "Repeated groups can also be chance events or retransmission artifacts."
+          ],
+          "screening_signature": "repeated_blocks",
+          "source_ids": [
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "inconclusive"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "not_supported"
+        },
+        {
+          "family_id": "periodic-polyalphabetic",
+          "historical_prior": "analytic control; no attribution to this traffic",
+          "label": "Repeating-key polyalphabetic hand cipher",
+          "limits": [
+            "The test only screens periods 2 through the configured maximum.",
+            "A short message can hide or mimic periodic structure."
+          ],
+          "screening_signature": "periodic",
+          "source_ids": [
+            "friedman-military-cryptanalysis-part-ii"
+          ],
+          "status": "not_supported"
+        }
+      ],
+      "route": "randomizing_machine_or_combiner"
+    }
+  ],
+  "method": {
+    "alpha": 0.01,
+    "base_seed": 20260921,
+    "max_lag": 30,
+    "max_period": 20,
+    "null": "independent uniform A-Z symbols with source unknown positions preserved",
+    "simulations_per_message": 4000,
+    "tests": [
+      "index of coincidence",
+      "chi-square distance from uniform monograms",
+      "repeated trigram pair count",
+      "maximum lag coincidence z-score",
+      "maximum pooled within-column IC over candidate periods"
+    ],
+    "warning": "Statuses are diagnostic routing labels, not posterior probabilities or exclusions of a cipher family."
+  },
+  "model_selection": {
+    "heterogeneous_routes": true,
+    "priority_order": [
+      "QTXMA",
+      "BYQMZ",
+      "FKQLZ",
+      "SZAEJ",
+      "XFEDT"
+    ],
+    "route_counts": {
+      "frequency_preserving_manual": 1,
+      "randomizing_machine_or_combiner": 4
+    }
+  },
+  "research_boundary": {
+    "fact": "The catalog records documented cipher families and cryptanalytic properties from its cited sources.",
+    "inference": "Per-message structural signals can route follow-up experiments but cannot identify a named cipher system.",
+    "question": "Which non-Enigma cipher families deserve explicit structural screening for the September 1941 Batch C messages?",
+    "research_date": "2026-09-21",
+    "sources": [
+      {
+        "accessed": "2026-09-21",
+        "id": "cryptocellar-unbroken-2026-09-19",
+        "source_date": "2026-09-19",
+        "title": "Overview of still unbroken 1941 Messages",
+        "url": "https://www.cryptocellar.org/bgac/1941-msg-list-unbroken.html"
+      },
+      {
+        "accessed": "2026-09-21",
+        "id": "friedman-lectures-double-transposition",
+        "source_date": "declassified historical lecture",
+        "title": "The Friedman Lectures",
+        "url": "https://www.nsa.gov/portals/75/documents/news-features/declassified-documents/friedman-documents/lectures-speeches/FOLDER_166/41759739079888.pdf"
+      },
+      {
+        "accessed": "2026-09-21",
+        "id": "friedman-military-cryptanalysis-part-ii",
+        "source_date": "1938/1941 editions",
+        "title": "Military Cryptanalysis, Part II: Simpler Varieties of Polyalphabetic Substitution Systems",
+        "url": "https://www.nsa.gov/portals/75/documents/news-features/declassified-documents/friedman-documents/publications/FOLDER_508/41784299082338.pdf"
+      },
+      {
+        "accessed": "2026-09-21",
+        "id": "nsa-german-cipher-machines",
+        "source_date": "2014",
+        "title": "German Cipher Machines of World War II",
+        "url": "https://www.nsa.gov/portals/75/documents/about/cryptologic-heritage/historical-figures-publications/publications/wwii/german_cipher.pdf"
+      },
+      {
+        "accessed": "2026-09-21",
+        "id": "nsa-wwii-nara-releases",
+        "source_date": "living catalog",
+        "title": "World War II NARA Releases",
+        "url": "https://www.nsa.gov/History/Cryptologic-History/NARA-Releases/"
+      }
+    ],
+    "speculation": "Any mapping from one Batch C message to a non-Enigma family remains speculative until a key, plaintext, or archival procedure is found."
+  },
+  "schema": "enigma-attack.phase5-model-triage/v1"
+}

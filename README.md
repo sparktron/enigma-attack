@@ -166,6 +166,34 @@ interpretation, and next decision.
 
 If statistics or structural tests are incompatible with Enigma, run explicit model selection against likely contemporary manual/machine systems. Do not force an Enigma solution merely because the forms contain two trigrams.
 
+### Phase 5 execution status
+
+The first alternative-family triage is now runnable:
+
+~~~bash
+python3 phase5.py --output artifacts/phase5-model-triage.json
+~~~
+
+It analyzes each message separately, preserves the uncertain BYQMZ character at
+its source position, and calibrates monographic, repetition, lag, and candidate-
+period statistics against deterministic uniform-random simulations. The output
+routes messages toward frequency-preserving hand ciphers, periodic
+polyalphabetic systems, code/superencipherment, or the still-indistinguishable
+rotor/teleprinter branch. These are follow-up labels, not posterior probabilities
+or cipher identifications.
+
+In the checked-in 4,000-trial run, QTXMA is the only message routed away from
+the randomizing control: its IC is 0.057729 (uniform-null upper-tail
+`p = 1/4001`), and its maximum-lag, maximum-period, and repeated-trigram tests
+also survive their configured scan correction at `alpha = 0.01`. SZAEJ, BYQMZ,
+FKQLZ, and XFEDT remain uniform-random-compatible on these tests. This makes a
+preregistered frequency-preserving experiment on QTXMA the next step; it does
+not distinguish double transposition from substitution or prove that QTXMA is
+non-Enigma.
+
+See `docs/phase5-research.md` for the fact/inference/speculation boundary and
+`cipher-families.json` for the source-linked candidate catalog.
+
 ## Acceptance criteria
 
 A credible break should satisfy most of these simultaneously:
@@ -187,17 +215,21 @@ A credible break should satisfy most of these simultaneously:
 - `phase2.py` — traffic graph, archive priorities, and provenance-aware crib ranker
 - `phase3.py` — documented-variant comparison and certificate generator
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation
+- `phase5.py` — deterministic ciphertext-only alternative-family triage
 - `cribs.json` — source-backed crib catalog with evidence levels
 - `variants.json` — source-linked rotor, reflector, entry-wheel, and stepping catalog
+- `cipher-families.json` — source-linked Phase 5 candidate-family catalog
 - `docs/phase2-research.md` — dated Phase 2 evidence and recommendation trail
 - `docs/phase3-research.md` — dated Phase 3 facts, inferences, gaps, and recommendation
 - `docs/phase4-experiment-history.md` — preregistration and negative-result ledger
+- `docs/phase5-research.md` — dated evidence boundary and Phase 5 recommendation
 - `experiments/phase4-joint-machine-smoke-v1/config.json` — exact Phase 4 experiment configuration
 - `tests/` — simulator, procedure, corpus, scorer, and certificate tests
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
 - `artifacts/phase3-variant-smoke.json` — bounded documented-variant comparison
 - `artifacts/phase4-joint-machine-smoke.json` — raw multi-seed traces, states, and held-out result
+- `artifacts/phase5-model-triage.json` — per-message structural tests and family routes
 
 ## Primary references
 
