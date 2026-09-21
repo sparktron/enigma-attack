@@ -19,7 +19,7 @@
   },
   "decision": {
     "accepted_break": false,
-    "negative_claim": "None; short ciphertexts and a generic null do not exclude any family.",
+    "negative_claim": "None; short ciphertexts and diagnostic null tests do not exclude any family.",
     "next_experiment": "Run a family-specific, held-out-validated experiment for QTXMA on route frequency_preserving_manual.",
     "status": "phase5_structural_triage_complete",
     "unresolved": [
@@ -28,25 +28,42 @@
       "Random-like ciphertext cannot distinguish Enigma, cipher teleprinter, and strong superencipherment without traffic metadata or cribs."
     ]
   },
-  "generated_at": "2026-09-21T16:38:31.760605+00:00",
+  "generated_at": "2026-09-21T17:11:29.211085+00:00",
   "inputs": {
     "catalog": "/home/mythos/repos/enigma-attack/cipher-families.json",
     "catalog_sha256": "5284cbd3c7649b01e750d885682ad7ab41e4a15cad92b29b329d3c8012b83dde",
     "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
     "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
-    "runner_sha256": "4a89d1433567e582897b7045d63578496bc8f32a42f7b40714cf36955b098970"
+    "runner_sha256": "ec4bd218843bdb64628b365f7ebfc695a38cbd12b7e55daaad002a2007f31840"
   },
   "messages": [
     {
       "analysis": {
         "alpha": 0.01,
+        "conditional_permutation_null": {
+          "condition": "exact observed known-letter multiset",
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "max_lag_upper": 0.08747813046738316,
+            "max_periodic_ic_upper": 0.16470882279430143,
+            "trigram_repeats_upper": 0.08197950512371907
+          },
+          "seed": 3616370916301765461,
+          "simulations": 4000,
+          "tests": [
+            "trigram_repeat_pairs",
+            "maximum_lag_coincidence_z_score",
+            "maximum_pooled_within_column_ic"
+          ],
+          "unknown_positions_preserved": true
+        },
         "length_known": 155,
         "length_total": 155,
         "signals": {
           "frequency_preserving": true,
-          "lag_structure": true,
-          "periodic_structure": true,
-          "repeated_blocks": true,
+          "lag_structure": false,
+          "periodic_structure": false,
+          "repeated_blocks": false,
           "uniform_random_compatible": false
         },
         "statistics": {
@@ -70,16 +87,16 @@
         "uniform_null": {
           "alphabet_size": 26,
           "expected_ic": 0.038461538461538464,
-          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
           "p_values": {
             "chi_square_upper": 0.00024993751562109475,
-            "ic_upper": 0.00024993751562109475,
-            "max_lag_upper": 0.0014996250937265683,
-            "max_periodic_ic_upper": 0.000999750062484379,
-            "trigram_repeats_upper": 0.0032491877030742314
+            "ic_upper": 0.00024993751562109475
           },
-          "seed": 17622956423489865437,
-          "simulations": 4000
+          "seed": 17708371201860365306,
+          "simulations": 4000,
+          "tests": [
+            "index_of_coincidence",
+            "uniform_chi_square"
+          ]
         },
         "unknown_positions": []
       },
@@ -87,20 +104,6 @@
       "date": "1941-09-29",
       "designator": "QTXMA",
       "family_assessments": [
-        {
-          "family_id": "code-or-superencipherment",
-          "historical_prior": "plausible but underspecified German field-system branch",
-          "label": "Code groups or a hand system with superencipherment",
-          "limits": [
-            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
-            "Repeated groups can also be chance events or retransmission artifacts."
-          ],
-          "screening_signature": "repeated_blocks",
-          "source_ids": [
-            "nsa-wwii-nara-releases"
-          ],
-          "status": "supported_for_follow_up"
-        },
         {
           "family_id": "double-transposition",
           "historical_prior": "plausible German Army hand-cipher branch",
@@ -117,18 +120,18 @@
           "status": "supported_for_follow_up"
         },
         {
-          "family_id": "periodic-polyalphabetic",
-          "historical_prior": "analytic control; no attribution to this traffic",
-          "label": "Repeating-key polyalphabetic hand cipher",
+          "family_id": "code-or-superencipherment",
+          "historical_prior": "plausible but underspecified German field-system branch",
+          "label": "Code groups or a hand system with superencipherment",
           "limits": [
-            "The test only screens periods 2 through the configured maximum.",
-            "A short message can hide or mimic periodic structure."
+            "Normalized A-Z ciphertext discards original grouping and typography that may identify a code system.",
+            "Repeated groups can also be chance events or retransmission artifacts."
           ],
-          "screening_signature": "periodic",
+          "screening_signature": "repeated_blocks",
           "source_ids": [
-            "friedman-military-cryptanalysis-part-ii"
+            "nsa-wwii-nara-releases"
           ],
-          "status": "supported_for_follow_up"
+          "status": "inconclusive"
         },
         {
           "family_id": "cipher-teleprinter",
@@ -157,6 +160,20 @@
             "nsa-german-cipher-machines"
           ],
           "status": "structural_tension"
+        },
+        {
+          "family_id": "periodic-polyalphabetic",
+          "historical_prior": "analytic control; no attribution to this traffic",
+          "label": "Repeating-key polyalphabetic hand cipher",
+          "limits": [
+            "The test only screens periods 2 through the configured maximum.",
+            "A short message can hide or mimic periodic structure."
+          ],
+          "screening_signature": "periodic",
+          "source_ids": [
+            "friedman-military-cryptanalysis-part-ii"
+          ],
+          "status": "not_supported"
         }
       ],
       "route": "frequency_preserving_manual"
@@ -164,6 +181,23 @@
     {
       "analysis": {
         "alpha": 0.01,
+        "conditional_permutation_null": {
+          "condition": "exact observed known-letter multiset",
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "max_lag_upper": 0.5953511622094476,
+            "max_periodic_ic_upper": 0.3459135216195951,
+            "trigram_repeats_upper": 1.0
+          },
+          "seed": 17716857173854036550,
+          "simulations": 4000,
+          "tests": [
+            "trigram_repeat_pairs",
+            "maximum_lag_coincidence_z_score",
+            "maximum_pooled_within_column_ic"
+          ],
+          "unknown_positions_preserved": true
+        },
         "length_known": 51,
         "length_total": 51,
         "signals": {
@@ -194,16 +228,16 @@
         "uniform_null": {
           "alphabet_size": 26,
           "expected_ic": 0.038461538461538464,
-          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
           "p_values": {
-            "chi_square_upper": 0.015746063484128967,
-            "ic_upper": 0.01699575106223444,
-            "max_lag_upper": 0.23919020244938766,
-            "max_periodic_ic_upper": 0.09897525618595351,
-            "trigram_repeats_upper": 1.0
+            "chi_square_upper": 0.014496375906023495,
+            "ic_upper": 0.014996250937265684
           },
-          "seed": 11106091846617913681,
-          "simulations": 4000
+          "seed": 8962335633368099013,
+          "simulations": 4000,
+          "tests": [
+            "index_of_coincidence",
+            "uniform_chi_square"
+          ]
         },
         "unknown_positions": []
       },
@@ -288,6 +322,23 @@
     {
       "analysis": {
         "alpha": 0.01,
+        "conditional_permutation_null": {
+          "condition": "exact observed known-letter multiset",
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "max_lag_upper": 0.42014496375906024,
+            "max_periodic_ic_upper": 0.07398150462384404,
+            "trigram_repeats_upper": 1.0
+          },
+          "seed": 5784660879523057246,
+          "simulations": 4000,
+          "tests": [
+            "trigram_repeat_pairs",
+            "maximum_lag_coincidence_z_score",
+            "maximum_pooled_within_column_ic"
+          ],
+          "unknown_positions_preserved": true
+        },
         "length_known": 166,
         "length_total": 167,
         "signals": {
@@ -318,16 +369,16 @@
         "uniform_null": {
           "alphabet_size": 26,
           "expected_ic": 0.038461538461538464,
-          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
           "p_values": {
-            "chi_square_upper": 0.25418645338665335,
-            "ic_upper": 0.2551862034491377,
-            "max_lag_upper": 0.3761559610097476,
-            "max_periodic_ic_upper": 0.053486628342914275,
-            "trigram_repeats_upper": 1.0
+            "chi_square_upper": 0.2471882029492627,
+            "ic_upper": 0.24818795301174706
           },
-          "seed": 2761937274500884496,
-          "simulations": 4000
+          "seed": 1651541141942981302,
+          "simulations": 4000,
+          "tests": [
+            "index_of_coincidence",
+            "uniform_chi_square"
+          ]
         },
         "unknown_positions": [
           28
@@ -414,6 +465,23 @@
     {
       "analysis": {
         "alpha": 0.01,
+        "conditional_permutation_null": {
+          "condition": "exact observed known-letter multiset",
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "max_lag_upper": 0.45188702824293925,
+            "max_periodic_ic_upper": 0.704573856535866,
+            "trigram_repeats_upper": 1.0
+          },
+          "seed": 8545988022034844850,
+          "simulations": 4000,
+          "tests": [
+            "trigram_repeat_pairs",
+            "maximum_lag_coincidence_z_score",
+            "maximum_pooled_within_column_ic"
+          ],
+          "unknown_positions_preserved": true
+        },
         "length_known": 107,
         "length_total": 107,
         "signals": {
@@ -444,16 +512,16 @@
         "uniform_null": {
           "alphabet_size": 26,
           "expected_ic": 0.038461538461538464,
-          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
           "p_values": {
-            "chi_square_upper": 0.9985003749062734,
-            "ic_upper": 0.9985003749062734,
-            "max_lag_upper": 0.730817295676081,
-            "max_periodic_ic_upper": 0.9510122469382655,
-            "trigram_repeats_upper": 1.0
+            "chi_square_upper": 0.9987503124218945,
+            "ic_upper": 0.9987503124218945
           },
-          "seed": 1675682734470958725,
-          "simulations": 4000
+          "seed": 11959117439636632913,
+          "simulations": 4000,
+          "tests": [
+            "index_of_coincidence",
+            "uniform_chi_square"
+          ]
         },
         "unknown_positions": []
       },
@@ -538,6 +606,23 @@
     {
       "analysis": {
         "alpha": 0.01,
+        "conditional_permutation_null": {
+          "condition": "exact observed known-letter multiset",
+          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
+          "p_values": {
+            "max_lag_upper": 0.8670332416895776,
+            "max_periodic_ic_upper": 0.6335916020994752,
+            "trigram_repeats_upper": 0.14746313421644588
+          },
+          "seed": 11974141864796283114,
+          "simulations": 4000,
+          "tests": [
+            "trigram_repeat_pairs",
+            "maximum_lag_coincidence_z_score",
+            "maximum_pooled_within_column_ic"
+          ],
+          "unknown_positions_preserved": true
+        },
         "length_known": 97,
         "length_total": 97,
         "signals": {
@@ -568,16 +653,16 @@
         "uniform_null": {
           "alphabet_size": 26,
           "expected_ic": 0.038461538461538464,
-          "multiple_scan_note": "Lag and period p-values compare the observed maximum with each trial maximum, accounting for the configured scan range.",
           "p_values": {
             "chi_square_upper": 0.9960009997500625,
-            "ic_upper": 0.9960009997500625,
-            "max_lag_upper": 0.968507873031742,
-            "max_periodic_ic_upper": 0.8910272431892027,
-            "trigram_repeats_upper": 0.21694576355911022
+            "ic_upper": 0.9960009997500625
           },
-          "seed": 16175398540612428475,
-          "simulations": 4000
+          "seed": 4333658263571480868,
+          "simulations": 4000,
+          "tests": [
+            "index_of_coincidence",
+            "uniform_chi_square"
+          ]
         },
         "unknown_positions": []
       },
@@ -665,7 +750,10 @@
     "base_seed": 20260921,
     "max_lag": 30,
     "max_period": 20,
-    "null": "independent uniform A-Z symbols with source unknown positions preserved",
+    "nulls": {
+      "monographic": "independent uniform A-Z symbols with source unknown positions preserved",
+      "structural": "frequency-preserving permutations of each observed ciphertext with source unknown positions preserved"
+    },
     "simulations_per_message": 4000,
     "tests": [
       "index of coincidence",
@@ -734,5 +822,5 @@
     ],
     "speculation": "Any mapping from one Batch C message to a non-Enigma family remains speculative until a key, plaintext, or archival procedure is found."
   },
-  "schema": "enigma-attack.phase5-model-triage/v1"
+  "schema": "enigma-attack.phase5-model-triage/v2"
 }

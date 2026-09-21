@@ -168,6 +168,16 @@ def _uniform_trial(template: str, rng: random.Random) -> str:
     )
 
 
+def _permutation_trial(template: str, rng: random.Random) -> str:
+    """Shuffle known letters while leaving unknown source positions fixed."""
+    known = [character for character in template if character != "?"]
+    rng.shuffle(known)
+    iterator = iter(known)
+    return "".join(
+        "?" if character == "?" else next(iterator) for character in template
+    )
+
+
 def _upper_tail(observed: float, null_values: Sequence[float]) -> float:
     exceedances = sum(value >= observed for value in null_values)
     return (exceedances + 1) / (len(null_values) + 1)
@@ -189,18 +199,19 @@ def analyze_ciphertext(
         raise ValueError("alpha must be between zero and one")
     text = _validated_text(text)
     observed = _feature_vector(text, max_period=max_period, max_lag=max_lag)
-    rng = random.Random(_trial_seed(seed, label))
-    null_vectors = [
+    uniform_seed = _trial_seed(seed, f"{label}:uniform")
+    permutation_seed = _trial_seed(seed, f"{label}:permutation")
+    uniform_rng = random.Random(uniform_seed)
+    permutation_rng = random.Random(permutation_seed)
+    uniform_trials = [_uniform_trial(text, uniform_rng) for _ in range(simulations)]
+    permutation_vectors = [
         _feature_vector(
-            _uniform_trial(text, rng),
+            _permutation_trial(text, permutation_rng),
             max_period=max_period,
             max_lag=max_lag,
         )
         for _ in range(simulations)
     ]
-
-    def values(key: str) -> list[float]:
-        return [float(vector[key]) for vector in null_vectors]
 
     observed_lag_z = (
         float(observed["best_lag"]["z_score"]) if observed["best_lag"] else 0.0
@@ -210,17 +221,23 @@ def analyze_ciphertext(
         if observed["best_period"]
         else 0.0
     )
-    p_values = {
+    uniform_p_values = {
         "ic_upper": _upper_tail(
             float(observed["index_of_coincidence"]),
-            values("index_of_coincidence"),
+            [index_of_coincidence(trial) for trial in uniform_trials],
         ),
         "chi_square_upper": _upper_tail(
-            float(observed["uniform_chi_square"]), values("uniform_chi_square")
+            float(observed["uniform_chi_square"]),
+            [uniform_chi_square(trial) for trial in uniform_trials],
         ),
+    }
+    conditional_p_values = {
         "trigram_repeats_upper": _upper_tail(
             float(observed["trigram_repeat_pairs"]),
-            values("trigram_repeat_pairs"),
+            [
+                float(vector["trigram_repeat_pairs"])
+                for vector in permutation_vectors
+            ],
         ),
         "max_lag_upper": _upper_tail(
             observed_lag_z,
@@ -228,7 +245,7 @@ def analyze_ciphertext(
                 float(vector["best_lag"]["z_score"])
                 if vector["best_lag"]
                 else 0.0
-                for vector in null_vectors
+                for vector in permutation_vectors
             ],
         ),
         "max_periodic_ic_upper": _upper_tail(
@@ -237,7 +254,7 @@ def analyze_ciphertext(
                 float(vector["best_period"]["pooled_within_column_ic"])
                 if vector["best_period"]
                 else 0.0
-                for vector in null_vectors
+                for vector in permutation_vectors
             ],
         ),
     }
@@ -248,16 +265,17 @@ def analyze_ciphertext(
     signals = {
         "frequency_preserving": (
             observed["index_of_coincidence"] > RANDOM_IC
-            and p_values["ic_upper"] <= alpha
+            and uniform_p_values["ic_upper"] <= alpha
         ),
         "periodic_structure": (
-            p_values["max_periodic_ic_upper"] <= alpha and periodic_lift >= 0.006
+            conditional_p_values["max_periodic_ic_upper"] <= alpha
+            and periodic_lift >= 0.006
         ),
         "repeated_blocks": (
             observed["trigram_repeat_pairs"] > 0
-            and p_values["trigram_repeats_upper"] <= alpha
+            and conditional_p_values["trigram_repeats_upper"] <= alpha
         ),
-        "lag_structure": p_values["max_lag_upper"] <= alpha,
+        "lag_structure": conditional_p_values["max_lag_upper"] <= alpha,
     }
     signals["uniform_random_compatible"] = not any(signals.values())
     return {
@@ -271,12 +289,25 @@ def analyze_ciphertext(
             "alphabet_size": len(ALPHABET),
             "expected_ic": RANDOM_IC,
             "simulations": simulations,
-            "seed": _trial_seed(seed, label),
+            "seed": uniform_seed,
+            "tests": ["index_of_coincidence", "uniform_chi_square"],
+            "p_values": uniform_p_values,
+        },
+        "conditional_permutation_null": {
+            "condition": "exact observed known-letter multiset",
+            "unknown_positions_preserved": True,
+            "simulations": simulations,
+            "seed": permutation_seed,
             "multiple_scan_note": (
                 "Lag and period p-values compare the observed maximum with each "
                 "trial maximum, accounting for the configured scan range."
             ),
-            "p_values": p_values,
+            "tests": [
+                "trigram_repeat_pairs",
+                "maximum_lag_coincidence_z_score",
+                "maximum_pooled_within_column_ic",
+            ],
+            "p_values": conditional_p_values,
         },
         "alpha": alpha,
         "signals": signals,
@@ -414,7 +445,7 @@ def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
         ),
     )
     return {
-        "schema": "enigma-attack.phase5-model-triage/v1",
+        "schema": "enigma-attack.phase5-model-triage/v2",
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "inputs": {
             "corpus": str(args.corpus),
@@ -441,7 +472,15 @@ def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
             ),
         },
         "method": {
-            "null": "independent uniform A-Z symbols with source unknown positions preserved",
+            "nulls": {
+                "monographic": (
+                    "independent uniform A-Z symbols with source unknown positions preserved"
+                ),
+                "structural": (
+                    "frequency-preserving permutations of each observed ciphertext "
+                    "with source unknown positions preserved"
+                ),
+            },
             "simulations_per_message": args.simulations,
             "base_seed": args.seed,
             "alpha": args.alpha,
@@ -476,7 +515,7 @@ def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
                 f"Run a family-specific, held-out-validated experiment for {priority[0]['designator']} "
                 f"on route {priority[0]['route']}."
             ),
-            "negative_claim": "None; short ciphertexts and a generic null do not exclude any family.",
+            "negative_claim": "None; short ciphertexts and diagnostic null tests do not exclude any family.",
             "unresolved": [
                 "Original five-letter grouping and typography may contain model-selection evidence absent from normalized ciphertext.",
                 "QTXMA and SZAEJ are absent from the current three-message unbroken list, but their disposition is not documented in the corpus sources.",
