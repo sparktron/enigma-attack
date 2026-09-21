@@ -175,8 +175,10 @@ python3 phase5.py --output artifacts/phase5-model-triage.json
 ~~~
 
 It analyzes each message separately, preserves the uncertain BYQMZ character at
-its source position, and calibrates monographic, repetition, lag, and candidate-
-period statistics against deterministic uniform-random simulations. The output
+its source position, calibrates monographic statistics against deterministic
+uniform-random simulations, and calibrates repetition, lag, and candidate-period
+statistics against frequency-preserving permutations of the observed message.
+The output
 routes messages toward frequency-preserving hand ciphers, periodic
 polyalphabetic systems, code/superencipherment, or the still-indistinguishable
 rotor/teleprinter branch. These are follow-up labels, not posterior probabilities
@@ -184,12 +186,14 @@ or cipher identifications.
 
 In the checked-in 4,000-trial run, QTXMA is the only message routed away from
 the randomizing control: its IC is 0.057729 (uniform-null upper-tail
-`p = 1/4001`), and its maximum-lag, maximum-period, and repeated-trigram tests
-also survive their configured scan correction at `alpha = 0.01`. SZAEJ, BYQMZ,
-FKQLZ, and XFEDT remain uniform-random-compatible on these tests. This makes a
-preregistered frequency-preserving experiment on QTXMA the next step; it does
-not distinguish double transposition from substitution or prove that QTXMA is
-non-Enigma.
+`p = 1/4001`). Under the conditional permutation null, its maximum-lag
+(`p = 0.0875`), maximum-period (`p = 0.1647`), and repeated-trigram
+(`p = 0.0820`) tests are not significant at `alpha = 0.01`. SZAEJ, BYQMZ,
+FKQLZ, and XFEDT remain uniform-random-compatible on the configured tests.
+QTXMA therefore remains the frequency-preserving follow-up target, but there is
+no separate evidence here for periodic, lag, or repeated-block structure. The
+result does not distinguish double transposition from substitution or prove
+that QTXMA is non-Enigma.
 
 See `docs/phase5-research.md` for the fact/inference/speculation boundary and
 `cipher-families.json` for the source-linked candidate catalog.

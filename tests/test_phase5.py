@@ -47,6 +47,28 @@ class Phase5StatisticTests(unittest.TestCase):
         )
         self.assertTrue(result["signals"]["frequency_preserving"])
 
+    def test_high_ic_shuffle_does_not_create_structural_signals(self) -> None:
+        rng = random.Random(29)
+        text = list("A" * 240 + "B" * 160 + "C" * 100 + "D" * 60 + "E" * 40)
+        rng.shuffle(text)
+        result = analyze_ciphertext(
+            "".join(text),
+            simulations=499,
+            seed=31,
+            label="conditional-null-regression",
+            max_period=12,
+            max_lag=12,
+            alpha=0.02,
+        )
+        self.assertTrue(result["signals"]["frequency_preserving"])
+        self.assertFalse(result["signals"]["periodic_structure"])
+        self.assertFalse(result["signals"]["lag_structure"])
+        self.assertFalse(result["signals"]["repeated_blocks"])
+        self.assertEqual(
+            result["conditional_permutation_null"]["condition"],
+            "exact observed known-letter multiset",
+        )
+
     def test_periodic_polyalphabetic_signal_is_detected(self) -> None:
         rng = random.Random(17)
         plaintext = rng.choices(ALPHABET, weights=GERMAN_WEIGHTS, k=1600)
@@ -89,7 +111,7 @@ class Phase5ArtifactTests(unittest.TestCase):
             )
             artifact = build_artifact(args)
             output.write_text(json.dumps(artifact), encoding="utf-8")
-        self.assertEqual(artifact["schema"], "enigma-attack.phase5-model-triage/v1")
+        self.assertEqual(artifact["schema"], "enigma-attack.phase5-model-triage/v2")
         self.assertEqual(len(artifact["messages"]), 5)
         self.assertFalse(artifact["decision"]["accepted_break"])
         self.assertEqual(
