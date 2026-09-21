@@ -22,6 +22,10 @@ Exact configuration:
 
 Target: QTXMA, selected before the run because Phase 5 routed it to the
 frequency-preserving/manual branch. The other four messages were not searched.
+After the Phase 5 structural-null correction, the route remained unchanged:
+QTXMA retains the frequency-preserving signal, while the lag, candidate-period,
+and repeated-block signals are false. The experiment was rerun unchanged so its
+recorded Phase 5 hash and signals match the corrected evidence.
 
 Training boundary: the first 116 characters (75%) of each candidate plaintext.
 The final 39 characters were never passed to the optimizer's scorer. Because a
@@ -49,12 +53,13 @@ Controls:
 Raw result:
 [artifacts/phase6-qtxma-double-transposition-smoke.json](../artifacts/phase6-qtxma-double-transposition-smoke.json).
 
-Code: commit `7ef9451a1db197291b22f42930643cf7bf898917`, with the Phase 6
-files uncommitted at execution time. Runner SHA-256:
-`1d32017e4da83052736f530e980eeae90fc7593d2814914287e0cb68f440bac4`.
+Code: clean commit `0fa08da90533439968a9b3e204a6c6eda435aca5`. Runner SHA-256:
+`82732006720c5600def5fa15575b434f2de9aaa18f5349685374f4a4d9d5e315`.
+The corrected Phase 5 artifact SHA-256 is
+`e308558cac92cae5060046479a1d4406489e09f111104c382dfc40914e56c701`.
 
 Environment: Python 3.10.12, Linux 6.8.0-138-generic x86_64, 20 logical
-CPUs reported, one serial worker. Runtime: 52.049538 seconds.
+CPUs reported, one serial worker. Rerun runtime: 51.870312 seconds.
 
 Observed:
 
