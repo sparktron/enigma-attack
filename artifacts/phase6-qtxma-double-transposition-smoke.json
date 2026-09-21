@@ -1,0 +1,467 @@
+{
+  "accepted_break": false,
+  "code": {
+    "commit": "7ef9451a1db197291b22f42930643cf7bf898917",
+    "dirty": true,
+    "runner_sha256": "1d32017e4da83052736f530e980eeae90fc7593d2814914287e0cb68f440bac4",
+    "status": [
+      "M pyproject.toml",
+      "?? experiments/phase6-qtxma-double-transposition-smoke-v1/",
+      "?? phase6.py",
+      "?? tests/test_phase6.py"
+    ]
+  },
+  "configuration": {
+    "exact_arguments": [
+      "--config",
+      "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+      "--output",
+      "artifacts/phase6-qtxma-double-transposition-smoke.json"
+    ],
+    "path": "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+    "payload": {
+      "acceptance": {
+        "minimum_margin_over_substitution_control": 0.005,
+        "minimum_median_held_out_delta": 0.01,
+        "minimum_passing_seeds": 2,
+        "minimum_positive_held_out_delta": 0.01,
+        "minimum_positive_plaintext_accuracy": 0.95,
+        "minimum_seed_held_out_delta": 0.005
+      },
+      "corpus": "corpus.json",
+      "experiment_id": "phase6-qtxma-double-transposition-smoke-v1",
+      "hypothesis": "QTXMA is compatible with a bounded double-columnar-transposition model that generalizes from a training prefix to an unscored held-out suffix.",
+      "notes": [
+        "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
+        "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
+        "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+        "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
+        "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction."
+      ],
+      "output": "artifacts/phase6-qtxma-double-transposition-smoke.json",
+      "phase5_artifact": "artifacts/phase5-model-triage.json",
+      "positive_control": {
+        "first_order": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+        "second_order": [
+          4,
+          1,
+          3,
+          0,
+          2
+        ]
+      },
+      "refuted_by": "The positive control must be recovered first. If it is, the target still fails unless at least two seeds improve the held-out suffix and the median target gain exceeds the monoalphabetic-substitution control by the preregistered margin.",
+      "schema": "enigma-attack.phase6-config/v1",
+      "search": {
+        "algorithm": "bounded_exhaustive_or_annealing",
+        "control_width_pairs": [
+          [
+            4,
+            5
+          ]
+        ],
+        "iterations": 1500,
+        "max_exhaustive_states": 20000,
+        "restarts": 8,
+        "seeds": [
+          20260921,
+          20260922,
+          20260923
+        ],
+        "target_width_pairs": [
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            7,
+            5
+          ],
+          [
+            7,
+            7
+          ]
+        ],
+        "temperature_end": 0.002,
+        "temperature_start": 0.2
+      },
+      "split": {
+        "training_fraction": 0.75
+      },
+      "substitution_control": {
+        "cipher_alphabet": "QWERTZUIOASDFGHJKPYXCVBNML",
+        "plaintext_source": "positive_control"
+      },
+      "target_designator": "QTXMA"
+    },
+    "sha256": "09b2d9b03ca54c058d87849eadb6cd31273809a33888c5aba7041343eb44f126"
+  },
+  "controls": {
+    "monoalphabetic_substitution": {
+      "baseline": {
+        "held_out": {
+          "known_letters": 37,
+          "per_letter": 0.0,
+          "raw": 0.0
+        },
+        "training": {
+          "known_letters": 111,
+          "per_letter": 0.009459459,
+          "raw": 1.05
+        }
+      },
+      "candidate": {
+        "held_out": {
+          "known_letters": 37,
+          "per_letter": 0.0,
+          "raw": 0.0
+        },
+        "plaintext": "DIREYPBRTPQZTXZYUUHRDXHIXCTPOXGVOQTHTCPOTBYRQTPTGNRHGGYPZGNTFTXTTERORTHGIUNUHRRSTYNYPSTCYGYGTPVCPVTHDXRRSXGIXRXHOOTGRTPFRDOHCCQPTTTPXZPUTPZFTOTPGFGV",
+        "training": {
+          "known_letters": 111,
+          "per_letter": 0.043693694,
+          "raw": 4.85
+        }
+      },
+      "ciphertext_length": 148,
+      "delta": {
+        "held_out_score_per_letter": 0.0,
+        "training_score_per_letter": 0.034234235
+      },
+      "evaluations": 2880,
+      "held_out_characters": 37,
+      "key": {
+        "first_order": [
+          3,
+          2,
+          0,
+          1
+        ],
+        "second_order": [
+          4,
+          2,
+          1,
+          0,
+          3
+        ]
+      },
+      "method": "exhaustive",
+      "training_characters": 111
+    },
+    "positive_double_transposition": {
+      "baseline": {
+        "held_out": {
+          "known_letters": 37,
+          "per_letter": 0.02027027,
+          "raw": 0.75
+        },
+        "training": {
+          "known_letters": 111,
+          "per_letter": 0.045945946,
+          "raw": 5.1
+        }
+      },
+      "candidate": {
+        "held_out": {
+          "known_letters": 37,
+          "per_letter": 0.218918919,
+          "raw": 8.1
+        },
+        "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+        "training": {
+          "known_letters": 111,
+          "per_letter": 0.281531532,
+          "raw": 31.25
+        }
+      },
+      "ciphertext_length": 148,
+      "delta": {
+        "held_out_score_per_letter": 0.198648649,
+        "training_score_per_letter": 0.235585586
+      },
+      "evaluations": 2880,
+      "held_out_characters": 37,
+      "key": {
+        "first_order": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "second_order": [
+          4,
+          1,
+          3,
+          0,
+          2
+        ]
+      },
+      "known_key": {
+        "first_order": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "second_order": [
+          4,
+          1,
+          3,
+          0,
+          2
+        ]
+      },
+      "method": "exhaustive",
+      "plaintext_accuracy": 1.0,
+      "training_characters": 111
+    },
+    "positive_passed": true
+  },
+  "environment": {
+    "cpu_count": 20,
+    "determinism_note": "Each seed uses local random.Random instances; exhaustive branches and all seed runs execute serially.",
+    "parallel_workers": 1,
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+  },
+  "experiment_id": "phase6-qtxma-double-transposition-smoke-v1",
+  "hypothesis": "QTXMA is compatible with a bounded double-columnar-transposition model that generalizes from a training prefix to an unscored held-out suffix.",
+  "hypothesis_supported": false,
+  "inputs": {
+    "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "phase5_evidence": {
+      "path": "/home/mythos/repos/enigma-attack/artifacts/phase5-model-triage.json",
+      "route": "frequency_preserving_manual",
+      "sha256": "82af0e1edd27f7fe74d71dc8ed04595811eca30352dfd3fd3b9f328315c3dcff",
+      "signals": {
+        "frequency_preserving": true,
+        "lag_structure": true,
+        "periodic_structure": true,
+        "repeated_blocks": true,
+        "uniform_random_compatible": false
+      }
+    }
+  },
+  "interpretation": "The true-transposition control passed, but the bounded QTXMA search did not satisfy the held-out and substitution-control criteria. This does not exclude widths or procedures outside the preregistered smoke search.",
+  "limitations": [
+    "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
+    "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
+    "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+    "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
+    "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction."
+  ],
+  "method": {
+    "cipher": "double columnar transposition with ragged final rows",
+    "score": "Order-sensitive length-two-or-longer n-grams from the Phase 1 bootstrap model; monogram terms excluded.",
+    "selection_boundary": "Candidate keys are selected from the training prefix only; held-out suffix scores are computed after key selection."
+  },
+  "next_decision": "Do not enlarge the search solely from training-score improvements; first recover original grouping or add a stronger independently validated scorer.",
+  "observed": {
+    "held_out_deltas_by_seed": [
+      -0.026923077,
+      -0.026923077,
+      -0.017948718
+    ],
+    "median_held_out_delta": -0.026923077,
+    "median_margin_over_substitution_control": -0.026923077,
+    "passing_seed_count": 0,
+    "seed_count": 3,
+    "substitution_control_held_out_delta": 0.0
+  },
+  "refuted_by": "The positive control must be recovered first. If it is, the target still fails unless at least two seeds improve the held-out suffix and the median target gain exceeds the monoalphabetic-substitution control by the preregistered margin.",
+  "schema": "enigma-attack.phase6-experiment/v1",
+  "status": "not_supported_under_preregistered_smoke",
+  "target": {
+    "designator": "QTXMA",
+    "seed_results": [
+      {
+        "baseline": {
+          "held_out": {
+            "known_letters": 39,
+            "per_letter": 0.026923077,
+            "raw": 1.05
+          },
+          "training": {
+            "known_letters": 116,
+            "per_letter": 0.006034483,
+            "raw": 0.7
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 39,
+            "per_letter": 0.0,
+            "raw": 0.0
+          },
+          "plaintext": "MXXSYALQJOBAMLLZZHTTTEXSROJCEPLJYVXYVQOJIQOOSTSWKYJXYJVCYOELYRBBBATVAYHYRXYKBIXAVONOBCXEBJCEQOSTCCBAAEYYBTEYKVVCAYYBAVXATMYCYJSMEMKWQAMJMQYYSXEXAZJLMJEAXSM",
+          "training": {
+            "known_letters": 116,
+            "per_letter": 0.043103448,
+            "raw": 5.0
+          }
+        },
+        "ciphertext_length": 155,
+        "delta": {
+          "held_out_score_per_letter": -0.026923077,
+          "training_score_per_letter": 0.037068965
+        },
+        "evaluations": 50424,
+        "held_out_characters": 39,
+        "key": {
+          "first_order": [
+            3,
+            4,
+            2,
+            5,
+            6,
+            1,
+            0
+          ],
+          "second_order": [
+            4,
+            6,
+            5,
+            3,
+            2,
+            1,
+            0
+          ]
+        },
+        "method": "simulated_annealing",
+        "seed": 20260921,
+        "training_characters": 116
+      },
+      {
+        "baseline": {
+          "held_out": {
+            "known_letters": 39,
+            "per_letter": 0.026923077,
+            "raw": 1.05
+          },
+          "training": {
+            "known_letters": 116,
+            "per_letter": 0.006034483,
+            "raw": 0.7
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 39,
+            "per_letter": 0.0,
+            "raw": 0.0
+          },
+          "plaintext": "JXBTMLLZZRATETXSHOJECVLJYVYXPQOJIOKOSTSVYQJEYJWYCOXLVRBBBAXYAIYYRTYKHBCAVONBOXXEBJECQOSTYBCAYEYCTBEAKAVACYYYVVSXTMBCYAJMEMKWAQMJMQYSJXEXAXLYMAEAZMSMJYOLSXQ",
+          "training": {
+            "known_letters": 116,
+            "per_letter": 0.042672414,
+            "raw": 4.95
+          }
+        },
+        "ciphertext_length": 155,
+        "delta": {
+          "held_out_score_per_letter": -0.026923077,
+          "training_score_per_letter": 0.036637931
+        },
+        "evaluations": 50424,
+        "held_out_characters": 39,
+        "key": {
+          "first_order": [
+            2,
+            3,
+            1,
+            4,
+            6,
+            0,
+            5
+          ],
+          "second_order": [
+            3,
+            5,
+            4,
+            1,
+            2,
+            0,
+            6
+          ]
+        },
+        "method": "simulated_annealing",
+        "seed": 20260922,
+        "training_characters": 116
+      },
+      {
+        "baseline": {
+          "held_out": {
+            "known_letters": 39,
+            "per_letter": 0.026923077,
+            "raw": 1.05
+          },
+          "training": {
+            "known_letters": 116,
+            "per_letter": 0.006034483,
+            "raw": 0.7
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 39,
+            "per_letter": 0.008974359,
+            "raw": 0.35
+          },
+          "plaintext": "XOSYJLQJXBTMLLZZRATTEXSHOJCEVLJYVXYPQOJIKOOSTSVQYJEYJWCYOXLVRBBBAXYAYIYRTYKBHCAVONOBXXEBJCEQOSTYCBAYEYCBTEAKAVCAYYYVVXSTMBCYJAMEMKWQAMJMQYJSXEXAXYLMAEAZSMM",
+          "training": {
+            "known_letters": 116,
+            "per_letter": 0.043103448,
+            "raw": 5.0
+          }
+        },
+        "ciphertext_length": 155,
+        "delta": {
+          "held_out_score_per_letter": -0.017948718,
+          "training_score_per_letter": 0.037068965
+        },
+        "evaluations": 50424,
+        "held_out_characters": 39,
+        "key": {
+          "first_order": [
+            2,
+            3,
+            1,
+            4,
+            5,
+            0,
+            6
+          ],
+          "second_order": [
+            4,
+            6,
+            5,
+            2,
+            3,
+            1,
+            0
+          ]
+        },
+        "method": "simulated_annealing",
+        "seed": 20260923,
+        "training_characters": 116
+      }
+    ]
+  },
+  "timing": {
+    "finished_at": "2026-09-21T16:56:46.697882+00:00",
+    "runtime_seconds": 52.049538,
+    "started_at": "2026-09-21T16:55:54.652564+00:00"
+  }
+}

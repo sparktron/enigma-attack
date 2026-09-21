@@ -194,6 +194,36 @@ non-Enigma.
 See `docs/phase5-research.md` for the fact/inference/speculation boundary and
 `cipher-families.json` for the source-linked candidate catalog.
 
+## Phase 6 — Frequency-preserving family experiment
+
+Follow the Phase 5 routing decision with a family-specific experiment that can
+falsify training-only improvements. The first branch tests bounded double
+columnar transposition on QTXMA, because it was the sole message with a strong
+frequency-preserving signal. Candidate keys must be selected without consulting
+the held-out plaintext suffix, and a true-transposition positive control plus a
+monoalphabetic-substitution control must bracket the result.
+
+### Phase 6 execution status
+
+The first preregistered smoke experiment is runnable:
+
+~~~bash
+python3 phase6.py \
+  --config experiments/phase6-qtxma-double-transposition-smoke-v1/config.json \
+  --output artifacts/phase6-qtxma-double-transposition-smoke.json
+~~~
+
+The positive control recovered its exact 4x5 double-transposition plaintext and
+keys, while the substitution control gained nothing on its held-out suffix.
+QTXMA did not pass: all three fixed seeds improved the visible training prefix
+by about 0.037 score per letter but worsened the untouched suffix. The median
+held-out change was -0.026923, zero seeds passed, and the selected keys did not
+converge. This is evidence against the tested widths and scorer, not an
+exclusion of double transposition generally and not a cipher identification.
+
+See `docs/phase6-experiment-history.md` for the preregistration boundary,
+controls, observations, interpretation, and next decision.
+
 ## Acceptance criteria
 
 A credible break should satisfy most of these simultaneously:
@@ -216,6 +246,7 @@ A credible break should satisfy most of these simultaneously:
 - `phase3.py` — documented-variant comparison and certificate generator
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation
 - `phase5.py` — deterministic ciphertext-only alternative-family triage
+- `phase6.py` — held-out-validated double-columnar-transposition smoke runner
 - `cribs.json` — source-backed crib catalog with evidence levels
 - `variants.json` — source-linked rotor, reflector, entry-wheel, and stepping catalog
 - `cipher-families.json` — source-linked Phase 5 candidate-family catalog
@@ -223,13 +254,16 @@ A credible break should satisfy most of these simultaneously:
 - `docs/phase3-research.md` — dated Phase 3 facts, inferences, gaps, and recommendation
 - `docs/phase4-experiment-history.md` — preregistration and negative-result ledger
 - `docs/phase5-research.md` — dated evidence boundary and Phase 5 recommendation
+- `docs/phase6-experiment-history.md` — Phase 6 preregistration and negative-result ledger
 - `experiments/phase4-joint-machine-smoke-v1/config.json` — exact Phase 4 experiment configuration
+- `experiments/phase6-qtxma-double-transposition-smoke-v1/config.json` — exact Phase 6 experiment configuration
 - `tests/` — simulator, procedure, corpus, scorer, and certificate tests
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
 - `artifacts/phase3-variant-smoke.json` — bounded documented-variant comparison
 - `artifacts/phase4-joint-machine-smoke.json` — raw multi-seed traces, states, and held-out result
 - `artifacts/phase5-model-triage.json` — per-message structural tests and family routes
+- `artifacts/phase6-qtxma-double-transposition-smoke.json` — raw Phase 6 controls, seeds, scores, keys, and candidates
 
 ## Primary references
 
