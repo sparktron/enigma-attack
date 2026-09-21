@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enigma-attack"
+version = "0.1.0"
+description = "Reproducible standard-Enigma baseline for the Ultimate Enigma Challenge"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+enigma-phase1 = "phase1:main"
+enigma-phase3 = "phase3:main"
+enigma-phase4 = "phase4:main"
+
+[tool.setuptools]
+py-modules = ["enigma", "phase1", "phase2", "phase3", "phase4", "recon", "ic_null"]

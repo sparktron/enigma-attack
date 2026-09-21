@@ -1,0 +1,590 @@
+{
+  "schema": "enigma-attack.phase1-search-certificate/v1",
+  "started_at": "2026-09-20T02:10:32.538121+00:00",
+  "completed_at": "2026-09-20T02:10:32.621519+00:00",
+  "duration_seconds": 0.08341431399458088,
+  "implementation": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "files_sha256": {
+      "corpus": "c50beefa44aa5cff8ed1771ee1389dd175bdc546dffad624d30a92f65a12c1b2",
+      "enigma.py": "ae571c6ee1e93cb779a6a9da6f4b9f41c50cc63e02b5bb3e8333a823a2ed3254",
+      "phase1.py": "a2a18207f62c0ada5598fa2106eb7046ab3981afd28ebe6cf04faf9179264825"
+    }
+  },
+  "simulator_validation": [
+    {
+      "name": "canonical_I_II_III_AAAAA",
+      "source": "widely published Enigma-I simulator check",
+      "expected": "BDZGO",
+      "actual": "BDZGO",
+      "passed": true
+    },
+    {
+      "name": "py_enigma_army_procedure_example",
+      "source": "https://py-enigma.readthedocs.io/en/latest/guide.html",
+      "expected_message_key": "BLA",
+      "actual_message_key": "BLA",
+      "expected_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+      "actual_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+      "passed": true
+    }
+  ],
+  "procedure": "clear Grundstellung trigram; decrypt encrypted message-key trigram; reset to recovered message key; decrypt body",
+  "search_space": {
+    "reflector": "UKW-B",
+    "rotor_orders_left_to_right": [
+      [
+        "I",
+        "II",
+        "III"
+      ],
+      [
+        "I",
+        "II",
+        "IV"
+      ],
+      [
+        "I",
+        "II",
+        "V"
+      ],
+      [
+        "I",
+        "III",
+        "II"
+      ],
+      [
+        "I",
+        "III",
+        "IV"
+      ],
+      [
+        "I",
+        "III",
+        "V"
+      ],
+      [
+        "I",
+        "IV",
+        "II"
+      ],
+      [
+        "I",
+        "IV",
+        "III"
+      ],
+      [
+        "I",
+        "IV",
+        "V"
+      ],
+      [
+        "I",
+        "V",
+        "II"
+      ],
+      [
+        "I",
+        "V",
+        "III"
+      ],
+      [
+        "I",
+        "V",
+        "IV"
+      ],
+      [
+        "II",
+        "I",
+        "III"
+      ],
+      [
+        "II",
+        "I",
+        "IV"
+      ],
+      [
+        "II",
+        "I",
+        "V"
+      ],
+      [
+        "II",
+        "III",
+        "I"
+      ],
+      [
+        "II",
+        "III",
+        "IV"
+      ],
+      [
+        "II",
+        "III",
+        "V"
+      ],
+      [
+        "II",
+        "IV",
+        "I"
+      ],
+      [
+        "II",
+        "IV",
+        "III"
+      ],
+      [
+        "II",
+        "IV",
+        "V"
+      ],
+      [
+        "II",
+        "V",
+        "I"
+      ],
+      [
+        "II",
+        "V",
+        "III"
+      ],
+      [
+        "II",
+        "V",
+        "IV"
+      ],
+      [
+        "III",
+        "I",
+        "II"
+      ],
+      [
+        "III",
+        "I",
+        "IV"
+      ],
+      [
+        "III",
+        "I",
+        "V"
+      ],
+      [
+        "III",
+        "II",
+        "I"
+      ],
+      [
+        "III",
+        "II",
+        "IV"
+      ],
+      [
+        "III",
+        "II",
+        "V"
+      ],
+      [
+        "III",
+        "IV",
+        "I"
+      ],
+      [
+        "III",
+        "IV",
+        "II"
+      ],
+      [
+        "III",
+        "IV",
+        "V"
+      ],
+      [
+        "III",
+        "V",
+        "I"
+      ],
+      [
+        "III",
+        "V",
+        "II"
+      ],
+      [
+        "III",
+        "V",
+        "IV"
+      ],
+      [
+        "IV",
+        "I",
+        "II"
+      ],
+      [
+        "IV",
+        "I",
+        "III"
+      ],
+      [
+        "IV",
+        "I",
+        "V"
+      ],
+      [
+        "IV",
+        "II",
+        "I"
+      ],
+      [
+        "IV",
+        "II",
+        "III"
+      ],
+      [
+        "IV",
+        "II",
+        "V"
+      ],
+      [
+        "IV",
+        "III",
+        "I"
+      ],
+      [
+        "IV",
+        "III",
+        "II"
+      ],
+      [
+        "IV",
+        "III",
+        "V"
+      ],
+      [
+        "IV",
+        "V",
+        "I"
+      ],
+      [
+        "IV",
+        "V",
+        "II"
+      ],
+      [
+        "IV",
+        "V",
+        "III"
+      ],
+      [
+        "V",
+        "I",
+        "II"
+      ],
+      [
+        "V",
+        "I",
+        "III"
+      ],
+      [
+        "V",
+        "I",
+        "IV"
+      ],
+      [
+        "V",
+        "II",
+        "I"
+      ],
+      [
+        "V",
+        "II",
+        "III"
+      ],
+      [
+        "V",
+        "II",
+        "IV"
+      ],
+      [
+        "V",
+        "III",
+        "I"
+      ],
+      [
+        "V",
+        "III",
+        "II"
+      ],
+      [
+        "V",
+        "III",
+        "IV"
+      ],
+      [
+        "V",
+        "IV",
+        "I"
+      ],
+      [
+        "V",
+        "IV",
+        "II"
+      ],
+      [
+        "V",
+        "IV",
+        "III"
+      ]
+    ],
+    "ring_settings": [
+      "AAA"
+    ],
+    "plugboards": [
+      ""
+    ],
+    "dates": [
+      "1941-09-29",
+      "1941-09-30"
+    ],
+    "messages": [
+      "QTXMA",
+      "SZAEJ",
+      "BYQMZ",
+      "FKQLZ",
+      "XFEDT"
+    ],
+    "uncertain_source_characters": "masked during search and resolved only when rendering finalists",
+    "bounded_source_error_budget_per_message": 0,
+    "source_error_penalty": 5.0,
+    "source_error_scope": "finalist rerank after the clean search; not applied when budget is zero"
+  },
+  "counts": {
+    "evaluated_daily_keys": 120,
+    "evaluated_message_decryptions": 300
+  },
+  "scorer": {
+    "name": "bootstrap raw German Army heuristic v1",
+    "normalization": "none; scores raw A-Z operator text with X/Q conventions",
+    "warning": "bootstrap scorer only; replace with a trained, versioned Army-traffic language model before treating rankings as cryptanalytic evidence"
+  },
+  "result": {
+    "status": "restricted_reference_search_complete",
+    "full_phase_1_negative_result": false,
+    "interpretation": "This run is reproducible evidence for exactly the recorded keyspace. It is not a full Phase 1 negative result unless rings and stecker coverage are both complete.",
+    "top_candidates_by_date": {
+      "1941-09-29": [
+        {
+          "date": "1941-09-29",
+          "rotors_left_to_right": [
+            "III",
+            "II",
+            "V"
+          ],
+          "rings": "AAA",
+          "plugboard": "",
+          "clean_score_per_letter": -3.58790321652317,
+          "adjusted_score_per_letter": -3.58790321652317,
+          "messages": [
+            {
+              "designator": "QTXMA",
+              "recovered_message_key": "FOK",
+              "plaintext": "MBCVHGMJHLTAQHWCJGJBFCBJTMMNBWUEZKNDITTZSZRNUZTXFPIXHIEZCZKUVNLUQHLLFBFKAUTHMUAPGURABWATTDLESLPMBGUNUEMFWEKHQVVONKEGFZGFBZPDMXDFMSEHANKHRLSVGLXWLVRSWJXATOU",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "SZAEJ",
+              "recovered_message_key": "NQQ",
+              "plaintext": "GENRNTKHVREFYZNJDPCVIUDKIPHJTOWMCWFKCQIURXXCBJHWSNF",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            }
+          ]
+        },
+        {
+          "date": "1941-09-29",
+          "rotors_left_to_right": [
+            "III",
+            "IV",
+            "I"
+          ],
+          "rings": "AAA",
+          "plugboard": "",
+          "clean_score_per_letter": -3.614180588661462,
+          "adjusted_score_per_letter": -3.614180588661462,
+          "messages": [
+            {
+              "designator": "QTXMA",
+              "recovered_message_key": "CFF",
+              "plaintext": "DZYZNHEDKAKPYGEDSIBTETDERLRLRFILMKPSBWBFYCZIQPLXKUPEQLCCBNDTPWLVJMSGTEHUMPEXQNOISNJIBSYICEIPACERVXGRGRIXSHQAPPSIVEYDSTUINBMFLIHRCFLJDWHCXAKKSDFWAZQXPJXIJKU",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "SZAEJ",
+              "recovered_message_key": "MIA",
+              "plaintext": "ELXOIYFWJNKNTVKEFELRJJMWIWMUSMMHQKNDNYKEPIKAZSIDRER",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            }
+          ]
+        },
+        {
+          "date": "1941-09-29",
+          "rotors_left_to_right": [
+            "V",
+            "III",
+            "II"
+          ],
+          "rings": "AAA",
+          "plugboard": "",
+          "clean_score_per_letter": -3.6474301808177803,
+          "adjusted_score_per_letter": -3.6474301808177803,
+          "messages": [
+            {
+              "designator": "QTXMA",
+              "recovered_message_key": "APF",
+              "plaintext": "OJDTEORCXUVFFSQVTUUGMGIGAQYGCUPUBHFZHDDABRTRNCXQWEIGIMJNULMCHYRZUQBKTFOHIJEQNBMEAIPRZTPUZDPNXNIZZOOJOLQNTEARRSXPEGFPTQZXBSVLRWQRUGEYMBNSCSODZBEMEOXQAPWTEVH",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "SZAEJ",
+              "recovered_message_key": "VVS",
+              "plaintext": "SLWPVYZBIUNFMYAHRGIJZFTLFDSEXHXULQWJPAPSFXNLDPIIXUH",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            }
+          ]
+        }
+      ],
+      "1941-09-30": [
+        {
+          "date": "1941-09-30",
+          "rotors_left_to_right": [
+            "III",
+            "II",
+            "V"
+          ],
+          "rings": "AAA",
+          "plugboard": "",
+          "clean_score_per_letter": -3.629335040509065,
+          "adjusted_score_per_letter": -3.6243074018063615,
+          "messages": [
+            {
+              "designator": "BYQMZ",
+              "recovered_message_key": "KRO",
+              "plaintext": "GFMSAGPJYKINAZKISAABGUNJYRRKETWRGULOLIJSLGPUFTPMHXBFXEGLTGEAGWNULBCVINBOORDFVAUUYKXCGCOUYOSWFNTFLBWOBWBZMPZGJEQMZDCGGRZOGAVARDKIYQBGTWFBDGWEDOXRGZWLGUTBJRTKWERUSVNZIQN",
+              "uncertainty_choices": [
+                {
+                  "position_1_based": 29,
+                  "chosen_plaintext": "E"
+                }
+              ],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "FKQLZ",
+              "recovered_message_key": "NMQ",
+              "plaintext": "FYZMJJNKNUCTCNSLXGLLIJRXENTJKWHBSRNGEJUGTKASPCANXRDTOGUIJDDJONWZVLEWOLBWLUMVUSDACWGOLNIONCCHBULRHAINFCGKCUA",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "XFEDT",
+              "recovered_message_key": "QMX",
+              "plaintext": "QUARMFCHIDHYAFJSZUKPYFTUKONPCALVFRLHLVNFWVVDPOCTNFUXDXZATZHOFOKEYUQSEHMCCFBKEFCOBNMPIXQISFIEOWNGK",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "rotors_left_to_right": [
+            "IV",
+            "II",
+            "III"
+          ],
+          "rings": "AAA",
+          "plugboard": "",
+          "clean_score_per_letter": -3.6460214715369514,
+          "adjusted_score_per_letter": -3.6401402305942803,
+          "messages": [
+            {
+              "designator": "BYQMZ",
+              "recovered_message_key": "ZLE",
+              "plaintext": "USKNKMAKEDEWMKOEVUYNDJUFFYEZESDURDKKMRQIUCFDWNLJYJHJDYTGEGGVZGREIKSGEZDNITSDEKLWQJAWMNYXGLPUNWSRCMGKHUULLPGRPMTLLPYPTNNEVZHWTBSQGOKBVAQHXLBKGWFJOPZDBUJEAHJAKNSUJGNDJEW",
+              "uncertainty_choices": [
+                {
+                  "position_1_based": 29,
+                  "chosen_plaintext": "E"
+                }
+              ],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "FKQLZ",
+              "recovered_message_key": "UEM",
+              "plaintext": "MMMMWODWBAZIZLUIABSEUGSHSICVLPTRYSVEQAYFWQZCOFWXTATMBDUAKJODUMHTUIQFLSHBIYZUMQPYKKCRPTWUKQRUWHABRLPPCIEANDD",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "XFEDT",
+              "recovered_message_key": "SOA",
+              "plaintext": "PAQCINWOWTZSRILIXJMTUOBSPVAFKMDIOUZHIFLRCGGDTBDCSUCTLACUCPZUHMJAKCUKMXSUAHZTJRGPSRSRUNXDTYCOCIMIL",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "rotors_left_to_right": [
+            "II",
+            "IV",
+            "I"
+          ],
+          "rings": "AAA",
+          "plugboard": "",
+          "clean_score_per_letter": -3.665894496678102,
+          "adjusted_score_per_letter": -3.6607683149668557,
+          "messages": [
+            {
+              "designator": "BYQMZ",
+              "recovered_message_key": "FEZ",
+              "plaintext": "CWQENFTZPCTBSCJXVMRNOTNHONDXEFEKIORKHMNZHHTNNUOAQVUQUOHUHGLHGYWUYSVYUIEVIQUSBHPORDARNMJGSWNYEIKEBSAWFUZPSOCPOMBRNVRXEWVDJQFXFVQKKCOFCRRCHGQDDNLZYQPJINCCGFVFKPGERCOUWHH",
+              "uncertainty_choices": [
+                {
+                  "position_1_based": 29,
+                  "chosen_plaintext": "E"
+                }
+              ],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "FKQLZ",
+              "recovered_message_key": "ZIY",
+              "plaintext": "GGBOKTOKYYLYZREWIQEKLWRMGIADFGUVKXCXKNOQZLRPLLMLWGSDQRTOVJFKFGIYEBJLRHMVUAAXXWGGHKMDKCLOWIVXJUIDZPXDDCDSWAU",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            },
+            {
+              "designator": "XFEDT",
+              "recovered_message_key": "UJX",
+              "plaintext": "FQZUUZCEMUODVPRIZETHJKQFKAAAARPNHRXHJSRJTEEEEVCXAVYAUHRDXEUHEUASVFSASQACEIIRKBJNKRZWTPLRXIUPTULPP",
+              "uncertainty_choices": [],
+              "source_error_equivalents": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "known_gaps": [
+    "No Bombe constraints or general stecker hill-climbing yet.",
+    "Bootstrap scorer is not trained on a versioned German Army corpus.",
+    "Bounded source-error reranking examines finalists, not every daily key.",
+    "No independent second simulator is bundled; published vectors are used instead."
+  ]
+}

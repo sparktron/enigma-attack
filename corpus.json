@@ -1,5 +1,25 @@
 {
   "project": "Ultimate Enigma Challenge / September 1941 Batch C",
+  "metadata_sources": [
+    {
+      "id": "ultimate-enigma-2026-07-27",
+      "url": "https://www.cryptocellar.org/bgac/ultimate-enigma.html",
+      "source_date": "2026-07-27",
+      "accessed": "2026-09-19"
+    },
+    {
+      "id": "g-army-messages-2026-08-01",
+      "url": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+      "source_date": "2026-08-01",
+      "accessed": "2026-09-19"
+    },
+    {
+      "id": "unbroken-list-2026-09-16",
+      "url": "https://www.cryptocellar.org/bgac/1941-msg-list-unbroken.html",
+      "source_date": "2026-09-16",
+      "accessed": "2026-09-19"
+    }
+  ],
   "notes": [
     "Five Enigma-like messages identified by CryptoCellar total 577 ciphertext characters.",
     "The wider Batch C contains mixed traffic and should not be assumed to use one cipher family.",
@@ -11,9 +31,15 @@
       "number": 6,
       "designator": "QTXMA",
       "time": "22:50",
+      "header_time": "22:40",
       "operator": "Otor. ?",
+      "from": null,
       "to": "2pn",
+      "direction": "outgoing",
       "frequency_khz": 323,
+      "remarks": "qwd Kr.; 2 x rufen",
+      "current_status": "omitted_from_2026-09-16_unbroken_list_status_unresolved",
+      "metadata_source_ids": ["ultimate-enigma-2026-07-27"],
       "indicator": ["LDP", "WRX"],
       "ciphertext_length": 155,
       "ciphertext": "JVMOYCZAYMRVLCBSOQXYBATSXJBQLAEJKYTYXJOEMYBLOEMYOKSRMTAVLBCXJAMOESRXYTVAOEYAVYXKCJVCMEISHTBAYVXXAJWCZQCYPXMEHABLKYJYASOEIJYXOQXYTLBASYEESTAQXJVNWCBJZBYQYTM"
@@ -23,9 +49,15 @@
       "number": 7,
       "designator": "SZAEJ",
       "time": "23:24",
+      "header_time": "23:14",
       "operator": "Otor. ?",
+      "from": null,
       "to": "o37",
+      "direction": "outgoing",
       "frequency_khz": 716,
+      "remarks": "qsa anfragen; remaining text unclear",
+      "current_status": "omitted_from_2026-09-16_unbroken_list_status_unresolved",
+      "metadata_source_ids": ["ultimate-enigma-2026-07-27"],
       "indicator": ["GAR", "PLD"],
       "ciphertext_length": 51,
       "ciphertext": "TOMBYXCZEOJKSAMGEYPWXZWJMEVBZYZAEJVHSEMNWEYTMEOMTCG"
@@ -35,9 +67,19 @@
       "number": 8,
       "designator": "BYQMZ",
       "time": "00:25",
+      "header_time": "00:14",
       "operator": "Otor. ?",
+      "from": null,
       "to": "ugn",
+      "direction": "outgoing",
       "frequency_khz": 568,
+      "remarks": "Spruch 2352 qsl - qjb - durchgeben",
+      "current_status": "unbroken_as_of_2026-09-16",
+      "metadata_source_ids": [
+        "ultimate-enigma-2026-07-27",
+        "g-army-messages-2026-08-01",
+        "unbroken-list-2026-09-16"
+      ],
       "indicator": ["MGS", "TPL"],
       "ciphertext_length": 167,
       "ciphertext": "NYZKYDOEMGPSDUHMLHJATWMYCHIF?YMAESTAVLCGCNLGMZIQUSQNRAIKYJDETUEXOJQPGXQSCEXENOSFASJVTGBHXTVGQTWKEWPPRIVYJEHEWNGPFUEAZTUWZUQBLNBYETZVSUAJSEASZXYFTUMOSHURQESSTQMPAOPBFTY"
@@ -47,9 +89,19 @@
       "number": 11,
       "designator": "FKQLZ",
       "time": "03:55",
+      "header_time": "03:40",
       "operator": "Fuhrmann",
+      "from": "ugn",
       "to": "g19",
+      "direction": "outgoing",
       "frequency_khz": 323,
+      "remarks": "2 x rufen",
+      "current_status": "unbroken_as_of_2026-09-16",
+      "metadata_source_ids": [
+        "ultimate-enigma-2026-07-27",
+        "g-army-messages-2026-08-01",
+        "unbroken-list-2026-09-16"
+      ],
       "indicator": ["RTA", "SDP"],
       "ciphertext_length": 107,
       "ciphertext": "DNXLIAGVIQBUWMHYCAMDFBAEQVGXMRCEPGARIHRKRTDLNYVCSWUFHIXLXPUCESNOLNAHZDKPNVBFSOKBPCTGDKOFMTWGSYOUTQRMPWWZORK"
@@ -59,9 +111,19 @@
       "number": 12,
       "designator": "XFEDT",
       "time": "04:16",
+      "header_time": "04:05",
       "operator": "Fuhrmann",
+      "from": null,
       "to": "6q8",
+      "direction": "outgoing",
       "frequency_khz": 716,
+      "remarks": "qsa anfragen; Spruchkopf wiederholen",
+      "current_status": "unbroken_as_of_2026-09-16",
+      "metadata_source_ids": [
+        "ultimate-enigma-2026-07-27",
+        "g-army-messages-2026-08-01",
+        "unbroken-list-2026-09-16"
+      ],
       "indicator": ["LMO", "DSV"],
       "ciphertext_length": 97,
       "ciphertext": "ZYOQHTSAFRLQCHZURCWOILRXGMCBFZKAPYDUMHVCATDPSEAKYSZEGFKGINXWRNQVOIDFANGLRXNUHGTVFCNEXBPWYMZFBXOAU"

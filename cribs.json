@@ -1,0 +1,194 @@
+{
+  "schema": "enigma-attack.crib-catalog/v1",
+  "researched_at": "2026-09-19",
+  "sources": [
+    {
+      "id": "ultimate-enigma-2026-07-27",
+      "url": "https://www.cryptocellar.org/bgac/ultimate-enigma.html",
+      "source_date": "2026-07-27",
+      "accessed": "2026-09-19",
+      "kind": "primary_message_transcription",
+      "summary": "Five-message challenge, message-form metadata, and explicit uncertainty about the machine and network."
+    },
+    {
+      "id": "unbroken-list-2026-09-16",
+      "url": "https://www.cryptocellar.org/bgac/1941-msg-list-unbroken.html",
+      "source_date": "2026-09-16",
+      "accessed": "2026-09-19",
+      "kind": "maintainer_status_list",
+      "summary": "Current list names BYQMZ, FKQLZ, and XFEDT as the remaining Batch C messages."
+    },
+    {
+      "id": "g-army-messages-2026-08-01",
+      "url": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+      "source_date": "2026-08-01",
+      "accessed": "2026-09-19",
+      "kind": "primary_transcription_and_research_notes",
+      "summary": "Message transcriptions, corrected metadata, and the 2026 archival retransmission break with raw plaintext."
+    },
+    {
+      "id": "authentic-army-test-message-1930",
+      "url": "https://www.cryptocellar.org/enigma/e-message-1930.html",
+      "source_date": "1930",
+      "accessed": "2026-09-19",
+      "kind": "authentic_plaintext_and_ciphertext",
+      "summary": "Authentic Army test message demonstrating raw military wording and Q/CH and X conventions."
+    },
+    {
+      "id": "authentic-army-message-1938",
+      "url": "https://www.cryptocellar.org/enigma/tbombe.html",
+      "source_date": "1938-09-21",
+      "accessed": "2026-09-19",
+      "kind": "authentic_plaintext_and_ciphertext",
+      "summary": "Authentic multi-part Army decrypt with commands, formulae, abbreviations, and raw operator conventions."
+    }
+  ],
+  "cribs": [
+    {
+      "id": "army1930_feindliche_kolonne",
+      "text": "FEINDLIQEINFANTERIEKOLONNE",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-test-message-1930",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested tactical observation formula in authentic Army plaintext."
+    },
+    {
+      "id": "army1930_beobachtet",
+      "text": "BEOBAQTETX",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-test-message-1930",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested observation wording and raw Q/CH spelling."
+    },
+    {
+      "id": "army1930_suedausgang",
+      "text": "ANFANGSUEDAUSGANG",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-test-message-1930",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested location formula in authentic Army plaintext."
+    },
+    {
+      "id": "army1930_ende_ostwaerts",
+      "text": "ENDEDREIKMOSTWAERTS",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-test-message-1930",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested extent, spelled number, and direction formula."
+    },
+    {
+      "id": "army1938_auf_befehl",
+      "text": "AUFBEFEHLDES",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-message-1938",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested command opening in an authentic Army decrypt."
+    },
+    {
+      "id": "army1938_fuehrung_truppe",
+      "text": "FUEHRUNGUNDTRUPPE",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-message-1938",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested military formula in an authentic Army decrypt."
+    },
+    {
+      "id": "army1938_aenderung_anweisung",
+      "text": "AENDERUNGDERANWEISUNGX",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-message-1938",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested order/amendment wording with raw X separator."
+    },
+    {
+      "id": "army1938_bleibt_vorbehalten",
+      "text": "BLEIBTVORBEHALTENX",
+      "evidence_level": "fact",
+      "source_id": "authentic-army-message-1938",
+      "source_context": "authentic_army_other_period",
+      "enabled_by_default": true,
+      "rationale": "Attested closing formula with raw X separator."
+    },
+    {
+      "id": "archive1941_number_group",
+      "text": "EINSNEUNEINSFUENFX",
+      "evidence_level": "fact",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_archive_and_year",
+      "enabled_by_default": true,
+      "rationale": "Attested spelled-number group from the 2026 archival retransmission break."
+    },
+    {
+      "id": "archive1941_kolonnen",
+      "text": "KOLONNENUEBERX",
+      "evidence_level": "fact",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_archive_and_year",
+      "enabled_by_default": true,
+      "rationale": "Attested logistics wording from a related 1941 archive collection."
+    },
+    {
+      "id": "archive1941_place_name",
+      "text": "STARAJARUSSAX",
+      "evidence_level": "fact",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_archive_and_year",
+      "enabled_by_default": true,
+      "rationale": "Attested repeated place name from the archival retransmission plaintext."
+    },
+    {
+      "id": "archive1941_in_marsch",
+      "text": "INMARSQGESETZTX",
+      "evidence_level": "fact",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_archive_and_year",
+      "enabled_by_default": true,
+      "rationale": "Attested movement phrase and Q/CH convention from related 1941 traffic."
+    },
+    {
+      "id": "archive1941_signature",
+      "text": "HARTJENSTEINX",
+      "evidence_level": "fact",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_archive_and_year",
+      "enabled_by_default": true,
+      "rationale": "Attested sign-off name from related 1941 traffic; retained but not assumed to belong to Batch C."
+    },
+    {
+      "id": "batchc_repeat_header",
+      "text": "SPRUQKOPFWIEDERHOLEN",
+      "evidence_level": "inference",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_message_metadata_only",
+      "enabled_by_default": false,
+      "target_designators": ["XFEDT"],
+      "rationale": "Derived from a clear operator remark, not evidence that the phrase occurs inside ciphertext."
+    },
+    {
+      "id": "batchc_pass_on",
+      "text": "DURQGEBEN",
+      "evidence_level": "inference",
+      "source_id": "g-army-messages-2026-08-01",
+      "source_context": "same_message_metadata_only",
+      "enabled_by_default": false,
+      "target_designators": ["BYQMZ"],
+      "rationale": "Derived from a clear operator remark and disabled for default ranking."
+    },
+    {
+      "id": "generic_meldung",
+      "text": "MELDUNGX",
+      "evidence_level": "speculation",
+      "source_id": null,
+      "source_context": "generic_military_vocabulary",
+      "enabled_by_default": false,
+      "rationale": "Plausible generic vocabulary without message-specific or archival support."
+    }
+  ]
+}

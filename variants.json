@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "accessed": "2026-09-20",
+  "sources": {
+    "enigma_variations": {
+      "title": "Enigma Variations: An Extended Family of Machines",
+      "authors": ["David Hamer", "Geoff Sullivan", "Frode Weierud"],
+      "url": "https://www.cryptocellar.org/pubs/enigvar.pdf",
+      "supports": [
+        "Railway Enigma, Swiss K, and Enigma T wirings",
+        "commercial-derived machine characteristics",
+        "Swiss Army 1941 stepping modification",
+        "Abwehr moving-reflector and cyclometric-stepping distinction",
+        "Enigma T operational-use caveat"
+      ]
+    },
+    "hamer_wirings": {
+      "title": "Enigma Rotor Wiring",
+      "author": "David Hamer",
+      "url": "https://enigmamuseum.com/rotwirg.htm",
+      "supports": [
+        "service rotors I-VIII and turnover letters",
+        "wide reflectors A, B, and C"
+      ]
+    },
+    "py_enigma_reference": {
+      "title": "Py-Enigma Reference",
+      "url": "https://py-enigma.readthedocs.io/en/latest/reference.html",
+      "supports": [
+        "independent standard-service rotor and reflector catalog",
+        "VI-VIII association with Kriegsmarine M3/M4"
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "id": "wehrmacht_ukw_a",
+      "label": "Steckered service Enigma, UKW A",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III", "IV", "V"],
+      "rotor_wirings": {
+        "I": ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"],
+        "II": ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"],
+        "III": ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"],
+        "IV": ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"],
+        "V": ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]
+      },
+      "reflector": "EJMZALYXVBWFCRQUONTSPIKHGD",
+      "entry_wiring": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "reflector_settable": false,
+      "stepping": "pawl",
+      "plugboard_practice": "steckered",
+      "procedure_compatibility": "army_clear_indicator",
+      "historical_prior": "low",
+      "historical_note": "Documented service reflector, but UKW A was superseded before the main wartime UKW B period.",
+      "source_ids": ["hamer_wirings"]
+    },
+    {
+      "id": "wehrmacht_ukw_b",
+      "label": "Steckered service Enigma, UKW B",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III", "IV", "V"],
+      "rotor_wirings": {
+        "I": ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"],
+        "II": ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"],
+        "III": ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"],
+        "IV": ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"],
+        "V": ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]
+      },
+      "reflector": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+      "entry_wiring": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "reflector_settable": false,
+      "stepping": "pawl",
+      "plugboard_practice": "steckered",
+      "procedure_compatibility": "army_clear_indicator",
+      "historical_prior": "high",
+      "historical_note": "Phase 1 baseline and the best procedural match for the corpus framing.",
+      "source_ids": ["hamer_wirings", "py_enigma_reference"]
+    },
+    {
+      "id": "wehrmacht_ukw_c",
+      "label": "Steckered service Enigma, UKW C",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III", "IV", "V"],
+      "rotor_wirings": {
+        "I": ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"],
+        "II": ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"],
+        "III": ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"],
+        "IV": ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"],
+        "V": ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"]
+      },
+      "reflector": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+      "entry_wiring": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "reflector_settable": false,
+      "stepping": "pawl",
+      "plugboard_practice": "steckered",
+      "procedure_compatibility": "army_clear_indicator",
+      "historical_prior": "medium",
+      "historical_note": "Documented service reflector; network and date still govern actual plausibility.",
+      "source_ids": ["hamer_wirings", "py_enigma_reference"]
+    },
+    {
+      "id": "kriegsmarine_m3_ukw_b",
+      "label": "Kriegsmarine M3, UKW B",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"],
+      "rotor_wirings": {
+        "I": ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"],
+        "II": ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"],
+        "III": ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"],
+        "IV": ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"],
+        "V": ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"],
+        "VI": ["JPGVOUMFYQBENHZRDKASXLICTW", "ZM"],
+        "VII": ["NZJHGRCXMYSWBOUFAIVLPEKQDT", "ZM"],
+        "VIII": ["FKQHTLXOCBJSPDZRAMEWNIUYGV", "ZM"]
+      },
+      "reflector": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+      "entry_wiring": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "reflector_settable": false,
+      "stepping": "pawl",
+      "plugboard_practice": "steckered",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "historical_prior": "low",
+      "historical_note": "Mechanically representable, but naval operating procedures are not modeled by the Army clear-indicator runner.",
+      "source_ids": ["hamer_wirings", "py_enigma_reference"]
+    },
+    {
+      "id": "kriegsmarine_m3_ukw_c",
+      "label": "Kriegsmarine M3, UKW C",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"],
+      "rotor_wirings": {
+        "I": ["EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"],
+        "II": ["AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"],
+        "III": ["BDFHJLCPRTXVZNYEIWGAKMUSQO", "V"],
+        "IV": ["ESOVPZJAYQUIRHXLNFTGKDCMWB", "J"],
+        "V": ["VZBRGITYUPSDNHLXAWMJQOFECK", "Z"],
+        "VI": ["JPGVOUMFYQBENHZRDKASXLICTW", "ZM"],
+        "VII": ["NZJHGRCXMYSWBOUFAIVLPEKQDT", "ZM"],
+        "VIII": ["FKQHTLXOCBJSPDZRAMEWNIUYGV", "ZM"]
+      },
+      "reflector": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+      "entry_wiring": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "reflector_settable": false,
+      "stepping": "pawl",
+      "plugboard_practice": "steckered",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "historical_prior": "low",
+      "historical_note": "Mechanically representable, but naval operating procedures are not modeled by the Army clear-indicator runner.",
+      "source_ids": ["hamer_wirings", "py_enigma_reference"]
+    },
+    {
+      "id": "railway_enigma",
+      "label": "Railway Enigma",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III"],
+      "rotor_wirings": {
+        "I": ["JGDQOXUSCAMIFRVTPNEWKBLZYH", "N"],
+        "II": ["NTZPSFBOKMWRCJDIVLAEYUXHGQ", "E"],
+        "III": ["JVIUBHTCDYAKEQZPOSGXNRMWFL", "Y"]
+      },
+      "reflector": "QYHOGNECVPUZTFDJAXWMKISRBL",
+      "entry_wiring": "QWERTZUIOASDFGHJKPYXCVBNML",
+      "reflector_settable": true,
+      "stepping": "pawl",
+      "plugboard_practice": "none",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "historical_prior": "low",
+      "historical_note": "Used by the German Reichsbahn in eastern Europe, Russia, and the Balkans; the corpus procedure is not evidence of Railway traffic.",
+      "source_ids": ["enigma_variations"]
+    },
+    {
+      "id": "swiss_k_unmodified",
+      "label": "Swiss K, unmodified stepping",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III"],
+      "rotor_wirings": {
+        "I": ["PEZUOHXSCVFMTBGLRINQJWAYDK", "Y"],
+        "II": ["ZOUESYDKFWPCIQXHMVBLGNJRAT", "E"],
+        "III": ["EHRVXGAOBQUSIMZFLYNWKTPDJC", "N"]
+      },
+      "reflector": "IMETCGFRAYSQBZXWLHKDVUPOJN",
+      "entry_wiring": "QWERTZUIOASDFGHJKPYXCVBNML",
+      "reflector_settable": true,
+      "stepping": "pawl",
+      "plugboard_practice": "none",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "historical_prior": "very_low",
+      "historical_note": "Documented Swiss wiring, but the corpus is framed as German Army-style traffic.",
+      "source_ids": ["enigma_variations"]
+    },
+    {
+      "id": "swiss_k_army_1941",
+      "label": "Swiss K, 1941 Army stepping",
+      "enabled_by_default": true,
+      "rotor_pool": ["I", "II", "III"],
+      "rotor_wirings": {
+        "I": ["PEZUOHXSCVFMTBGLRINQJWAYDK", "Y"],
+        "II": ["ZOUESYDKFWPCIQXHMVBLGNJRAT", "E"],
+        "III": ["EHRVXGAOBQUSIMZFLYNWKTPDJC", "N"]
+      },
+      "reflector": "IMETCGFRAYSQBZXWLHKDVUPOJN",
+      "entry_wiring": "QWERTZUIOASDFGHJKPYXCVBNML",
+      "reflector_settable": true,
+      "stepping": "swiss_k_1941",
+      "plugboard_practice": "none",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "historical_prior": "very_low",
+      "historical_note": "Models the documented Swiss Army modification: right wheel fixed, middle wheel fast, slow wheel and UKW stepping.",
+      "source_ids": ["enigma_variations"]
+    },
+    {
+      "id": "tirpitz_t",
+      "label": "Enigma T (Tirpitz)",
+      "enabled_by_default": false,
+      "rotor_pool": ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"],
+      "rotor_wirings": {
+        "I": ["KPTYUELOCVGRFQDANJMBSWHZXI", "WZEKQ"],
+        "II": ["UPHZLWEQMTDJXCAKSOIGVBYFNR", "WZFLR"],
+        "III": ["QUDLYRFEKONVZAXWHMGPJBSICT", "WZEKQ"],
+        "IV": ["CIWTBKXNRESPFLYDAGVHQUOJZM", "WZFLR"],
+        "V": ["UAXGISNJBVERDYLFZWTPCKOHMQ", "YCFKR"],
+        "VI": ["XFUZGALVHCNYSEWQTDMRBKPIOJ", "XEIMQ"],
+        "VII": ["BJVFTXPLNAYOZIKWGDQERUCHSM", "YCFKR"],
+        "VIII": ["YMTPNZHWKODAJXELUQVGCBISFR", "XEIMQ"]
+      },
+      "reflector": "GEKPBTAUMOCNILJDXZYFHWVQSR",
+      "entry_wiring": "KZROUQHYAIGBLWVSTDXFPNMCJE",
+      "reflector_settable": true,
+      "stepping": "pawl",
+      "plugboard_practice": "none",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "historical_prior": "excluded",
+      "historical_note": "Built for the Japanese Navy; the source reports that it appears never to have been used operationally.",
+      "source_ids": ["enigma_variations"]
+    }
+  ],
+  "unsupported": [
+    {
+      "id": "abwehr_11_15_17",
+      "reason": "These machines used a moving reflector and cyclometric/geared stepping; substituting pawl stepping would test the wrong machine.",
+      "source_ids": ["enigma_variations"]
+    },
+    {
+      "id": "abwehr_ggg_4j",
+      "reason": "The documented machine used different commercial-family wirings that are not established in this catalog.",
+      "source_ids": ["enigma_variations"]
+    },
+    {
+      "id": "kriegsmarine_m4",
+      "reason": "The four-wheel model and its thin reflectors fall outside the Phase 3 three-wheel scope.",
+      "source_ids": ["py_enigma_reference"]
+    }
+  ]
+}
