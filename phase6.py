@@ -505,6 +505,7 @@ def run_experiment(
     config: Mapping[str, Any],
     config_path: pathlib.Path,
     arguments: Sequence[str],
+    scorer: TextScorer | None = None,
 ) -> dict[str, Any]:
     corpus_path = _resolve_path(config["corpus"])
     phase5_path = _resolve_path(config["phase5_artifact"])
@@ -516,7 +517,7 @@ def run_experiment(
     except StopIteration as error:
         raise ValueError(f"corpus does not contain {target_name}") from error
     phase5 = _phase5_evidence(phase5_path, target_name)
-    scorer = AdjacencyScorer()
+    scorer = scorer or AdjacencyScorer()
     search = config["search"]
     options = _search_options(config)
     training_fraction = config["split"]["training_fraction"]

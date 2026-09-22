@@ -228,6 +228,28 @@ exclusion of double transposition generally and not a cipher identification.
 See `docs/phase6-experiment-history.md` for the preregistration boundary,
 controls, observations, interpretation, and next decision.
 
+## Phase 7 — Source grouping and independently checked scorer
+
+The original QTXMA form was reviewed and its eight rows of four five-letter
+groups were recorded. After removing the `QTXMA` designator, the body matches
+the existing 155-letter solver input exactly. CryptoCellar's published 1941
+Army bigram and trigram counts were imported as a versioned scorer input and
+checked against five separately published solved plaintexts and deterministic
+frequency-preserving shuffles.
+
+~~~bash
+python3 phase7.py \
+  --config experiments/phase7-qtxma-source-and-scorer-v1/config.json \
+  --output artifacts/phase7-qtxma-source-and-scorer.json
+~~~
+
+The scorer passed all five plaintext/shuffle checks but failed to recover the
+known double-transposition control (6.1% plaintext accuracy versus the
+preregistered 95% threshold). The runner therefore stopped before a QTXMA
+search. This is a scorer/optimizer validation failure, not evidence for or
+against QTXMA's cipher family. See `docs/phase7-experiment-history.md` and the
+raw artifact for exact inputs, hashes, observations, and next decision.
+
 ## Acceptance criteria
 
 A credible break should satisfy most of these simultaneously:
@@ -251,6 +273,7 @@ A credible break should satisfy most of these simultaneously:
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation
 - `phase5.py` — deterministic ciphertext-only alternative-family triage
 - `phase6.py` — held-out-validated double-columnar-transposition smoke runner
+- `phase7.py` — original-form audit and published n-gram validation gate
 - `cribs.json` — source-backed crib catalog with evidence levels
 - `variants.json` — source-linked rotor, reflector, entry-wheel, and stepping catalog
 - `cipher-families.json` — source-linked Phase 5 candidate-family catalog
