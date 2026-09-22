@@ -1,15 +1,10 @@
 {
   "accepted_break": false,
   "code": {
-    "commit": "7ef9451a1db197291b22f42930643cf7bf898917",
-    "dirty": true,
-    "runner_sha256": "1d32017e4da83052736f530e980eeae90fc7593d2814914287e0cb68f440bac4",
-    "status": [
-      "M pyproject.toml",
-      "?? experiments/phase6-qtxma-double-transposition-smoke-v1/",
-      "?? phase6.py",
-      "?? tests/test_phase6.py"
-    ]
+    "commit": "0fa08da90533439968a9b3e204a6c6eda435aca5",
+    "dirty": false,
+    "runner_sha256": "82732006720c5600def5fa15575b434f2de9aaa18f5349685374f4a4d9d5e315",
+    "status": []
   },
   "configuration": {
     "exact_arguments": [
@@ -244,12 +239,12 @@
     "phase5_evidence": {
       "path": "/home/mythos/repos/enigma-attack/artifacts/phase5-model-triage.json",
       "route": "frequency_preserving_manual",
-      "sha256": "82af0e1edd27f7fe74d71dc8ed04595811eca30352dfd3fd3b9f328315c3dcff",
+      "sha256": "e308558cac92cae5060046479a1d4406489e09f111104c382dfc40914e56c701",
       "signals": {
         "frequency_preserving": true,
-        "lag_structure": true,
-        "periodic_structure": true,
-        "repeated_blocks": true,
+        "lag_structure": false,
+        "periodic_structure": false,
+        "repeated_blocks": false,
         "uniform_random_compatible": false
       }
     }
@@ -460,8 +455,8 @@
     ]
   },
   "timing": {
-    "finished_at": "2026-09-21T16:56:46.697882+00:00",
-    "runtime_seconds": 52.049538,
-    "started_at": "2026-09-21T16:55:54.652564+00:00"
+    "finished_at": "2026-09-21T22:42:41.106358+00:00",
+    "runtime_seconds": 51.870312,
+    "started_at": "2026-09-21T22:41:49.239660+00:00"
   }
 }
