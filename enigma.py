@@ -178,7 +178,7 @@ class EnigmaMachine:
             middle_notch = self.M.at_notch()
             if left_notch:
                 self.reflector_pos = (self.reflector_pos + 1) % 26
-            if middle_notch:
+            if middle_notch or left_notch:
                 self.L.step()
             self.M.step()
             return

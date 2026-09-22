@@ -1,0 +1,112 @@
+{
+  "schema": "enigma-attack.phase6-config/v1",
+  "experiment_id": "phase6-qtxma-double-transposition-smoke-v2",
+  "hypothesis": "The full-text transposition search recovers the exact known control and exceeds the matched complete-search shuffle null on QTXMA.",
+  "refuted_by": "The known control is not recovered exactly, or the target maximum fails complete-search calibration.",
+  "corpus": "corpus.json",
+  "phase5_artifact": "artifacts/phase5-model-triage.json",
+  "output": "artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
+  "target_designator": "QTXMA",
+  "split": {
+    "training_fraction": 1.0
+  },
+  "search": {
+    "algorithm": "bounded_exhaustive_or_annealing",
+    "target_width_pairs": [
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        7,
+        5
+      ],
+      [
+        7,
+        7
+      ]
+    ],
+    "control_width_pairs": [
+      [
+        4,
+        5
+      ]
+    ],
+    "max_exhaustive_states": 20000,
+    "restarts": 8,
+    "iterations": 1500,
+    "temperature_start": 0.2,
+    "temperature_end": 0.002,
+    "seeds": [
+      20260921,
+      20260922,
+      20260923
+    ],
+    "null_replicates": 19
+  },
+  "positive_control": {
+    "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+    "first_order": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "second_order": [
+      4,
+      1,
+      3,
+      0,
+      2
+    ]
+  },
+  "substitution_control": {
+    "plaintext_source": "positive_control",
+    "cipher_alphabet": "QWERTZUIOASDFGHJKPYXCVBNML"
+  },
+  "acceptance": {
+    "maximum_empirical_p_value": 0.05
+  },
+  "notes": [
+    "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
+    "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
+    "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+    "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
+    "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction.",
+    "The candidate suffix is descriptive only; no independent held-out claim is made from it."
+  ],
+  "additional_positive_controls": [
+    {
+      "id": "independent-solved-army-text-1941-09-24-94",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+      "first_order": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "second_order": [
+        6,
+        1,
+        4,
+        0,
+        5,
+        2,
+        3
+      ],
+      "width_pairs": [
+        [
+          5,
+          7
+        ]
+      ]
+    }
+  ],
+  "legacy_prefix_fraction": 0.75
+}

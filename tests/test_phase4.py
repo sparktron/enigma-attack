@@ -1,4 +1,5 @@
 import copy
+import dataclasses
 import json
 import pathlib
 import random
@@ -11,6 +12,8 @@ from phase1 import ArmyGermanScorer, load_corpus
 from phase4 import (
     DEFAULT_CONFIG,
     _split_messages,
+    _training_only_baseline,
+    _mutate_plugboard,
     initial_state,
     load_config,
     mutate_daily_key,
@@ -66,6 +69,15 @@ class Phase4MutationTests(unittest.TestCase):
                     optimizer["max_plugboard_pairs"],
                 )
 
+    def test_zero_plugboard_capacity_is_safe(self) -> None:
+        self.assertEqual(_mutate_plugboard((), random.Random(0), 0), ())
+        with self.assertRaises(ValueError):
+            _mutate_plugboard(("AB",), random.Random(0), 0)
+        updated, _ = mutate_daily_key(
+            self.baseline, random.Random(0), {"plugboard_edit": 1.0}, 0
+        )
+        self.assertTrue(all(not key.plugboard_pairs for key in updated.daily_keys.values()))
+
 
 class Phase4ExperimentTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -97,6 +109,16 @@ class Phase4ExperimentTests(unittest.TestCase):
         first.pop("runtime_seconds")
         second.pop("runtime_seconds")
         self.assertEqual(first, second)
+
+    def test_baseline_selection_excludes_held_out_messages(self) -> None:
+        baseline, selection = _training_only_baseline(self.config, self.train, self.scorer)
+        changed_holdout = [dataclasses.replace(message, ciphertext="A" * len(message.ciphertext))
+                           for message in self.held_out]
+        unchanged_train, _ = _split_messages(self.train + changed_holdout, self.config)
+        second, _ = _training_only_baseline(self.config, unchanged_train, self.scorer)
+        self.assertEqual(state_signature(baseline), state_signature(second))
+        selected = {name for date in selection["dates"] for name in date["train_designators"]}
+        self.assertTrue(selected.isdisjoint({message.designator for message in self.held_out}))
 
     def test_held_out_messages_are_not_scored_during_optimization(self) -> None:
         calls: list[tuple[str, ...]] = []

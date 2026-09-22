@@ -17,9 +17,10 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 import phase6
+from resources import resolve_output, resource_root
 
-ROOT = pathlib.Path(__file__).resolve().parent
-DEFAULT_CONFIG = ROOT / "experiments/phase7-qtxma-source-and-scorer-v1/config.json"
+ROOT = resource_root()
+DEFAULT_CONFIG = ROOT / "experiments/phase7-qtxma-source-and-scorer-v2/config.json"
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
@@ -161,49 +162,29 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
     baseline_path = resolve_path(config["phase6_artifact"])
     phase6_config = copy.deepcopy(phase6.load_config(phase6_config_path))
     phase6_config["experiment_id"] = config["experiment_id"]
+    phase6_config["corpus"] = str(corpus_path)
     phase6_config["search"]["target_width_pairs"] = config["search"]["target_width_pairs"]
     phase6_config["search"]["seeds"] = config["search"]["seeds"]
-    positive = phase6_config["positive_control"]
-    positive_ciphertext = phase6.double_columnar_transpose(
-        positive["plaintext"], positive["first_order"], positive["second_order"]
-    )
-    positive_candidate = phase6.search_double_transposition(
-        positive_ciphertext,
-        phase6_config["search"]["control_width_pairs"],
-        scorer=scorer,
-        seed=phase6_config["search"]["seeds"][0],
-        **phase6._search_options(phase6_config),
-    )
-    positive_result = phase6.evaluate_search(
-        positive_ciphertext,
-        positive_candidate,
-        phase6_config["split"]["training_fraction"],
-        scorer,
-    )
-    positive_accuracy = sum(
-        observed == expected
-        for observed, expected in zip(positive_candidate.plaintext, positive["plaintext"])
-    ) / len(positive["plaintext"])
-    acceptance = phase6_config["acceptance"]
-    positive_passed = (
-        positive_accuracy >= acceptance["minimum_positive_plaintext_accuracy"]
-        and positive_result["delta"]["held_out_score_per_letter"]
-        >= acceptance["minimum_positive_held_out_delta"]
-    )
-    positive_result["plaintext_accuracy"] = round(positive_accuracy, 9)
-    positive_result["passed"] = positive_passed
-    positive_result["known_key"] = {
-        "first_order": positive["first_order"],
-        "second_order": positive["second_order"],
-    }
+    phase6.validate_config(phase6_config)
+    baseline_payload = json.loads(baseline_path.read_text(encoding="utf-8"))
+    if baseline_payload.get("inputs", {}).get("corpus_sha256") != sha256(corpus_path):
+        raise ValueError("Phase 6 baseline corpus hash does not match audited corpus")
     search_result = None
-    if form["passed"] and validation["passed"] and positive_passed:
-        search_result = phase6.run_experiment(phase6_config, phase6_config_path, arguments, scorer=scorer)
-        search_result["method"]["score"] = "Smoothed published 1941 Army plaintext bigram and trigram log likelihood; no monogram terms."
+    positive_result = None
+    if form["passed"] and validation["passed"]:
+        run = phase6.run_experiment(
+            phase6_config, phase6_config_path, arguments, scorer=scorer
+        )
+        positive_result = run["controls"]["positive_double_transposition"]
+        if run["status"] != "invalid_positive_control_failure":
+            search_result = run
+            search_result["method"]["score"] = (
+                "Smoothed published 1941 Army bigram and trigram log likelihood; no monograms."
+            )
     status = (
         "source_audit_failed" if not form["passed"] else
         "scorer_validation_failed" if not validation["passed"] else
-        "invalid_positive_control_failure" if not positive_passed else
+        "invalid_positive_control_failure" if search_result is None else
         search_result["status"]
     )
     counts = {
@@ -226,7 +207,7 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
         "scorer_validation": validation,
         "positive_control_preflight": positive_result,
         "search": search_result,
-        "baseline": {"experiment_id": "phase6-qtxma-double-transposition-smoke-v1", "artifact": str(baseline_path), "median_held_out_delta": json.loads(baseline_path.read_text(encoding="utf-8"))["observed"]["median_held_out_delta"]},
+        "baseline": {"experiment_id": "phase6-qtxma-double-transposition-smoke-v1", "artifact": str(baseline_path), "median_held_out_delta": baseline_payload["observed"]["median_held_out_delta"]},
         "limitations": config["limitations"],
         "interpretation": (
             "Inference: the new scorer passed external plaintext discrimination and the bounded search met its controls and held-out rule; a readable independently reproduced plaintext is still required."
@@ -251,7 +232,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     config = json.loads(args.config.read_text(encoding="utf-8"))
     if config.get("schema") != "enigma-attack.phase7-config/v1":
         raise ValueError("unsupported Phase 7 configuration schema")
-    output = args.output or resolve_path(config["output"])
+    output = args.output or resolve_output(config["output"])
     result = run_experiment(config, args.config, arguments)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
