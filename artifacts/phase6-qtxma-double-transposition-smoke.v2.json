@@ -1,49 +1,14 @@
 {
   "accepted_break": false,
   "code": {
-    "commit": "d74dc622b3a4e6193653aca669ffd6ed8beaae05",
-    "dirty": true,
+    "commit": "e3b38877aa9f555758cad651b7ba6cf853460c15",
+    "dirty": false,
     "runner_sha256": "09264361813b7bee8f5c4ec06206f94faf58d6d90197bed64d413ca695b31a2f",
-    "status": [
-      "A  .github/workflows/tests.yml",
-      "UU README.md",
-      " M artifact_claims.json",
-      "A  artifacts/phase3-variant-smoke-v2.json",
-      "A  artifacts/phase4-joint-machine-smoke.v2.json",
-      "A  artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
-      "D  artifacts/phase7-qtxma-source-and-scorer-v2.json",
-      "A  artifacts/phase7-qtxma-source-and-scorer.v2.json",
-      "A  docs/ATTACK_PLAN.md",
-      "UU docs/STATUS.md",
-      "A  docs/code-review-2026-09-22.md",
-      "M  enigma.py",
-      "A  experiments/phase4-joint-machine-smoke-v2/config.json",
-      "A  experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
-      "AA experiments/phase7-qtxma-source-and-scorer-v2/config.json",
-      "M  phase1.py",
-      "M  phase2.py",
-      "M  phase3.py",
-      "M  phase4.py",
-      "M  phase5.py",
-      "UU phase6.py",
-      "UU phase7.py",
-      "M  pyproject.toml",
-      "M  recon.py",
-      "A  resources.py",
-      "M  tests/test_phase3.py",
-      "M  tests/test_phase4.py",
-      "M  tests/test_phase6.py",
-      "UU tests/test_phase7.py",
-      "A  tests/test_recon.py",
-      "A  tests/test_wheel_install.py"
-    ]
+    "status": []
   },
   "configuration": {
-    "exact_arguments": [
-      "--config",
-      "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json"
-    ],
-    "path": "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
+    "exact_arguments": [],
+    "path": "/home/mythos/repos/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
     "payload": {
       "acceptance": {
         "maximum_empirical_p_value": 0.05
@@ -658,8 +623,8 @@
     "skipped_reason": "positive_control_failed"
   },
   "timing": {
-    "finished_at": "2026-09-23T21:21:49.253569+00:00",
-    "runtime_seconds": 6.162354,
-    "started_at": "2026-09-23T21:21:43.095766+00:00"
+    "finished_at": "2026-09-23T21:31:23.323021+00:00",
+    "runtime_seconds": 6.169018,
+    "started_at": "2026-09-23T21:31:17.157679+00:00"
   }
 }
