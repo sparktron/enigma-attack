@@ -46,7 +46,9 @@ No ciphertext break has been accepted. See
   `artifacts/phase7-qtxma-source-and-scorer-v2.json`.
 - `artifacts/phase7-qtxma-source-and-scorer.json` is retained as the v1 record;
   its positive-control verdict is superseded.
-- CI on a clean checkout has not been checked for the Phase 7 v2 changes.
+- The Phase 7 v2 artifact was produced from a clean checkout at commit
+  `3b384f1`, and the run reproduced bit-for-bit across three executions. Full
+  CI on a fresh clone has still not been exercised.
 
 ## Next
 

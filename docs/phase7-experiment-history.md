@@ -103,9 +103,19 @@ rotation, the published 1941 Army n-gram scorer will recover both known
 transpositions and then give QTXMA a held-out gain beyond a substitution
 control over six preregistered width pairs.
 
-Code: commit `36399219ad02fc29091bffbe5b1eeef1a9ecdf4c` with a dirty tree; the
-raw result records the exact `phase6.py` and `phase7.py` hashes. Python
-3.10.12, serial execution, 15.2 s.
+Code: commit `3b384f1b7febb5df00147753c10989091a4b8b2f` on branch
+`claude/phase7-rotation-aware-controls`, clean tree. This is the first Phase 7
+result produced from a non-dirty checkout; v1 and every earlier phase artifact
+records `dirty: true`. Python 3.10.12, serial execution, about 15 s.
+
+Determinism: the experiment was run three times — twice from a dirty tree and
+once from the clean checkout above. Every scientific field was identical across
+all three: both control agreements and keys, all three seed keys and
+plaintexts, every training and held-out delta, the substitution control, the
+scorer validation margins, and the source audit hashes. Only timestamps,
+runtime, the recorded output path, and the code-provenance block differed. The
+artifact's `parallel_workers: 1` serial-execution claim is now tested rather
+than asserted.
 
 Raw result: [Phase 7 v2 artifact](../artifacts/phase7-qtxma-source-and-scorer-v2.json).
 

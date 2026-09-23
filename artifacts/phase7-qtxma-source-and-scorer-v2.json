@@ -1,0 +1,1358 @@
+{
+  "accepted_break": false,
+  "baseline": {
+    "artifact": "/home/mythos/repos/enigma-attack/artifacts/phase6-qtxma-double-transposition-smoke.json",
+    "experiment_id": "phase6-qtxma-double-transposition-smoke-v1",
+    "median_held_out_delta": -0.026923077
+  },
+  "code": {
+    "branch": "claude/phase7-rotation-aware-controls",
+    "commit": "3b384f1b7febb5df00147753c10989091a4b8b2f",
+    "dirty": false,
+    "phase7_runner_sha256": "9c94a41577d9f757647c6735ab44597b8326f01940d512b03c9956fc1829b889",
+    "runner_sha256": "0c5f00488bd9bb974c3c664f60458a961773f710ec87dc2da88cdf35bac2d733",
+    "status": []
+  },
+  "configuration": {
+    "exact_arguments": [
+      "--config",
+      "experiments/phase7-qtxma-source-and-scorer-v2/config.json",
+      "--output",
+      "artifacts/phase7-qtxma-source-and-scorer-v2.json"
+    ],
+    "path": "experiments/phase7-qtxma-source-and-scorer-v2/config.json",
+    "payload": {
+      "additional_positive_controls": [
+        {
+          "first_order": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "id": "ragged-both-stages",
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+          "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+          "second_order": [
+            2,
+            4,
+            0,
+            3,
+            1
+          ],
+          "width_pairs": [
+            [
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "corpus": "corpus.json",
+      "experiment_id": "phase7-qtxma-source-and-scorer-v2",
+      "hypothesis": "With a rotation-aware recovery metric and a second positive control whose length is not a multiple of either stage width, the published 1941 Army n-gram scorer will recover both known double transpositions and then give QTXMA a held-out gain beyond a substitution control over six preregistered width pairs.",
+      "limitations": [
+        "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
+        "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
+        "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
+        "Rotation-aware accuracy accepts a recovery that is correct up to a cyclic shift; the exact-offset agreement is recorded separately so the two cases stay distinguishable.",
+        "Both positive controls are constructed plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
+      ],
+      "output": "artifacts/phase7-qtxma-source-and-scorer-v2.json",
+      "phase6_artifact": "artifacts/phase6-qtxma-double-transposition-smoke.json",
+      "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+      "refuted_by": "Failure of source consistency, authentic-plaintext discrimination, either positive control under the rotation-aware accuracy rule, or the Phase 6 held-out and substitution-control acceptance rules.",
+      "revision_rationale": "The v1 run reported 6.1% recovery accuracy on its positive control and gated off the target search. The recovered plaintext was in fact the control plaintext rotated by four characters (97.3% agreement at that offset), a degeneracy available because the 148-letter control is an exact multiple of its 4-wide first stage. v2 measures accuracy over cyclic rotations and adds a control of length 133, which is a multiple of neither 4 nor 5, so that a rotated recovery cannot be mistaken for scorer success.",
+      "schema": "enigma-attack.phase7-config/v1",
+      "scorer": {
+        "additive_smoothing": 0.1,
+        "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+        "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+        "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+        "bigram_weight": 0.5,
+        "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+        "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+        "trigram_weight": 0.5
+      },
+      "search": {
+        "seeds": [
+          20260921,
+          20260922,
+          20260923
+        ],
+        "target_width_pairs": [
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            7,
+            5
+          ],
+          [
+            7,
+            7
+          ]
+        ]
+      },
+      "source_form": {
+        "facsimile_sha256": "9ec87f2b3f2000cfb5979ed47229cbb3a979bca1cae53b575f4877e7345e342c",
+        "facsimile_url": "https://cryptocellar.org/bgac/spruch/29091941-006-out.pdf",
+        "reported_groups": 32,
+        "reported_total_letters": 160,
+        "rows": [
+          [
+            "QTXMA",
+            "JVMOY",
+            "CZAYM",
+            "RVLCB"
+          ],
+          [
+            "SOQXY",
+            "BATSX",
+            "JBQLA",
+            "EJKYT"
+          ],
+          [
+            "YXJOE",
+            "MYBLO",
+            "EMYOK",
+            "SRMTA"
+          ],
+          [
+            "VLBCX",
+            "JAMOE",
+            "SRXYT",
+            "VAOEY"
+          ],
+          [
+            "AVYXK",
+            "CJVCM",
+            "EISHT",
+            "BAYVX"
+          ],
+          [
+            "XAJWC",
+            "ZQCYP",
+            "XMEHA",
+            "BLKYJ"
+          ],
+          [
+            "YASOE",
+            "IJYXO",
+            "QXYTL",
+            "BASYE"
+          ],
+          [
+            "ESTAQ",
+            "XJVNW",
+            "CBJZB",
+            "YQYTM"
+          ]
+        ],
+        "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html"
+      },
+      "supersedes": "phase7-qtxma-source-and-scorer-v1",
+      "validation": {
+        "minimum_messages_above_all_shuffles": 4,
+        "plaintexts": [
+          {
+            "id": "1941-09-02-15",
+            "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+          },
+          {
+            "id": "1941-08-22-30",
+            "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+          },
+          {
+            "id": "1941-09-06-36",
+            "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+          },
+          {
+            "id": "1941-09-14-46",
+            "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+          },
+          {
+            "id": "1941-09-24-94",
+            "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+          }
+        ],
+        "shuffle_seeds": [
+          17,
+          29,
+          43,
+          71,
+          101,
+          137,
+          173,
+          211,
+          257,
+          307,
+          359,
+          401,
+          463,
+          509,
+          563,
+          617
+        ],
+        "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
+      }
+    },
+    "sha256": "f7df6a3f3af2d1d858cea61f66fd4cf1c66554b2fce384574e9ef96abd7850ad"
+  },
+  "environment": {
+    "cpu_count": 20,
+    "determinism_note": "Each control shuffle uses its own fixed random.Random seed; the transposition search runs serially.",
+    "parallel_workers": 1,
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+  },
+  "experiment_id": "phase7-qtxma-source-and-scorer-v2",
+  "hypothesis": "With a rotation-aware recovery metric and a second positive control whose length is not a multiple of either stage width, the published 1941 Army n-gram scorer will recover both known double transpositions and then give QTXMA a held-out gain beyond a substitution control over six preregistered width pairs.",
+  "hypothesis_supported": false,
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "frequency_tables": {
+      "bigram_counts": {
+        "path": "data/phase7/BigramFrequency1941.txt",
+        "sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+      },
+      "trigram_counts": {
+        "path": "data/phase7/TrigramFrequency1941.txt",
+        "sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+      }
+    },
+    "phase6_baseline_sha256": "3c2dd923b50abd47cb874fc23a817c2a66f87cc6586e3bcef3d663d77632982e",
+    "phase6_config_sha256": "09b2d9b03ca54c058d87849eadb6cd31273809a33888c5aba7041343eb44f126"
+  },
+  "interpretation": "Inference: the preregistered validation or held-out criterion failed; the tested model does not establish a QTXMA transposition break.",
+  "limitations": [
+    "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
+    "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
+    "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
+    "Rotation-aware accuracy accepts a recovery that is correct up to a cyclic shift; the exact-offset agreement is recorded separately so the two cases stay distinguishable.",
+    "Both positive controls are constructed plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
+  ],
+  "next_decision": "Do not expand transposition widths from training gains; seek archival procedure evidence or a separately sourced, held-out Army plaintext model.",
+  "positive_control_preflight": {
+    "accuracy_rule": "Best positional agreement over all cyclic rotations of the known plaintext; the exact-offset agreement is recorded per control.",
+    "controls": [
+      {
+        "baseline": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": -8.706412865,
+            "raw": -322.137276004
+          },
+          "training": {
+            "known_letters": 111,
+            "per_letter": -8.437213332,
+            "raw": -936.530679804
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": -6.251289663,
+            "raw": -231.297717514
+          },
+          "plaintext": "OMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDI",
+          "training": {
+            "known_letters": 111,
+            "per_letter": -6.765737215,
+            "raw": -750.996830832
+          }
+        },
+        "ciphertext_length": 148,
+        "delta": {
+          "held_out_score_per_letter": 2.455123202,
+          "training_score_per_letter": 1.671476117
+        },
+        "evaluations": 2880,
+        "held_out_characters": 37,
+        "id": "primary",
+        "key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            3,
+            0,
+            2,
+            4,
+            1
+          ]
+        },
+        "known_key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        },
+        "method": "exhaustive",
+        "passed": true,
+        "plaintext_accuracy": 0.972972973,
+        "plaintext_agreement": {
+          "best_over_rotations": 0.972972973,
+          "exact": 0.060810811,
+          "rotation_offset": 4
+        },
+        "rationale": "",
+        "rotation_degeneracy_possible": [
+          4
+        ],
+        "searched_width_pairs": [
+          [
+            4,
+            5
+          ]
+        ],
+        "training_characters": 111
+      },
+      {
+        "baseline": {
+          "held_out": {
+            "known_letters": 34,
+            "per_letter": -7.596923729,
+            "raw": -258.295406774
+          },
+          "training": {
+            "known_letters": 99,
+            "per_letter": -8.225011396,
+            "raw": -814.276128199
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 34,
+            "per_letter": -6.121989175,
+            "raw": -208.147631938
+          },
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+          "training": {
+            "known_letters": 99,
+            "per_letter": -6.503195251,
+            "raw": -643.816329835
+          }
+        },
+        "ciphertext_length": 133,
+        "delta": {
+          "held_out_score_per_letter": 1.474934554,
+          "training_score_per_letter": 1.721816145
+        },
+        "evaluations": 2880,
+        "held_out_characters": 34,
+        "id": "ragged-both-stages",
+        "key": {
+          "first_order": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "second_order": [
+            2,
+            4,
+            0,
+            3,
+            1
+          ]
+        },
+        "known_key": {
+          "first_order": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "second_order": [
+            2,
+            4,
+            0,
+            3,
+            1
+          ]
+        },
+        "method": "exhaustive",
+        "passed": true,
+        "plaintext_accuracy": 1.0,
+        "plaintext_agreement": {
+          "best_over_rotations": 1.0,
+          "exact": 1.0,
+          "rotation_offset": 0
+        },
+        "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+        "rotation_degeneracy_possible": [],
+        "searched_width_pairs": [
+          [
+            4,
+            5
+          ]
+        ],
+        "training_characters": 99
+      }
+    ],
+    "passed": true
+  },
+  "refuted_by": "Failure of source consistency, authentic-plaintext discrimination, either positive control under the rotation-aware accuracy rule, or the Phase 6 held-out and substitution-control acceptance rules.",
+  "schema": "enigma-attack.phase7-experiment/v1",
+  "scorer_validation": {
+    "messages": [
+      {
+        "authentic_score_per_letter": -6.041605649,
+        "id": "1941-09-02-15",
+        "length": 36,
+        "margin_over_best_shuffle": 0.955322868,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -7.53381238,
+          -7.138965234,
+          -7.957878911,
+          -7.729892505,
+          -6.996928517,
+          -7.713943316,
+          -7.838237335,
+          -8.142174904,
+          -7.598699043,
+          -7.431054332,
+          -7.972140343,
+          -7.611678603,
+          -8.151700296,
+          -7.657444266,
+          -7.550083665,
+          -7.780321492
+        ]
+      },
+      {
+        "authentic_score_per_letter": -6.283889072,
+        "id": "1941-08-22-30",
+        "length": 46,
+        "margin_over_best_shuffle": 1.135246277,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -7.968581626,
+          -7.419135349,
+          -7.806293305,
+          -7.808875711,
+          -7.686267614,
+          -8.265622519,
+          -7.993060744,
+          -8.067796545,
+          -7.465451599,
+          -7.728003386,
+          -8.17733991,
+          -7.698991665,
+          -8.274964894,
+          -7.989477064,
+          -7.971299542,
+          -7.955495162
+        ]
+      },
+      {
+        "authentic_score_per_letter": -6.708148394,
+        "id": "1941-09-06-36",
+        "length": 48,
+        "margin_over_best_shuffle": 1.167889493,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -8.816263798,
+          -8.102734021,
+          -8.515933937,
+          -7.876037887,
+          -8.002299791,
+          -8.186431878,
+          -8.403116894,
+          -7.931246188,
+          -8.166665948,
+          -8.546867284,
+          -8.450565149,
+          -8.347104407,
+          -8.315764661,
+          -8.017910537,
+          -8.273352821,
+          -8.362505014
+        ]
+      },
+      {
+        "authentic_score_per_letter": -7.177161225,
+        "id": "1941-09-14-46",
+        "length": 69,
+        "margin_over_best_shuffle": 1.10530391,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -8.675908687,
+          -8.675470911,
+          -8.497716346,
+          -8.779147011,
+          -8.282465135,
+          -8.635697295,
+          -8.641996226,
+          -8.61997743,
+          -8.371093781,
+          -8.807484713,
+          -8.619025631,
+          -8.993581533,
+          -8.559283085,
+          -8.921036452,
+          -8.782698615,
+          -8.715187932
+        ]
+      },
+      {
+        "authentic_score_per_letter": -6.701798158,
+        "id": "1941-09-24-94",
+        "length": 76,
+        "margin_over_best_shuffle": 1.380315704,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -8.69004742,
+          -8.826037456,
+          -8.370787634,
+          -8.354428861,
+          -8.496953699,
+          -8.415178937,
+          -8.681825002,
+          -8.417311977,
+          -8.602547877,
+          -8.179790622,
+          -8.54097936,
+          -8.560020672,
+          -8.082113862,
+          -8.30474769,
+          -8.745480038,
+          -8.575674967
+        ]
+      }
+    ],
+    "passed": true,
+    "passing_messages": 5,
+    "required_messages": 4,
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
+  },
+  "search": {
+    "accepted_break": false,
+    "code": {
+      "commit": "3b384f1b7febb5df00147753c10989091a4b8b2f",
+      "dirty": false,
+      "runner_sha256": "0c5f00488bd9bb974c3c664f60458a961773f710ec87dc2da88cdf35bac2d733",
+      "status": []
+    },
+    "configuration": {
+      "exact_arguments": [
+        "--config",
+        "experiments/phase7-qtxma-source-and-scorer-v2/config.json",
+        "--output",
+        "artifacts/phase7-qtxma-source-and-scorer-v2.json"
+      ],
+      "path": "/home/mythos/repos/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+      "payload": {
+        "acceptance": {
+          "minimum_margin_over_substitution_control": 0.005,
+          "minimum_median_held_out_delta": 0.01,
+          "minimum_passing_seeds": 2,
+          "minimum_positive_held_out_delta": 0.01,
+          "minimum_positive_plaintext_accuracy": 0.95,
+          "minimum_seed_held_out_delta": 0.005
+        },
+        "additional_positive_controls": [
+          {
+            "first_order": [
+              1,
+              3,
+              0,
+              2
+            ],
+            "id": "ragged-both-stages",
+            "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+            "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+            "second_order": [
+              2,
+              4,
+              0,
+              3,
+              1
+            ],
+            "width_pairs": [
+              [
+                4,
+                5
+              ]
+            ]
+          }
+        ],
+        "corpus": "corpus.json",
+        "experiment_id": "phase7-qtxma-source-and-scorer-v2",
+        "hypothesis": "QTXMA is compatible with a bounded double-columnar-transposition model that generalizes from a training prefix to an unscored held-out suffix.",
+        "notes": [
+          "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
+          "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
+          "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+          "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
+          "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction."
+        ],
+        "output": "artifacts/phase6-qtxma-double-transposition-smoke.json",
+        "phase5_artifact": "artifacts/phase5-model-triage.json",
+        "positive_control": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        },
+        "positive_controls": [
+          {
+            "first_order": [
+              2,
+              0,
+              3,
+              1
+            ],
+            "id": "primary",
+            "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+            "rationale": "",
+            "second_order": [
+              4,
+              1,
+              3,
+              0,
+              2
+            ],
+            "width_pairs": [
+              [
+                4,
+                5
+              ]
+            ]
+          },
+          {
+            "first_order": [
+              1,
+              3,
+              0,
+              2
+            ],
+            "id": "ragged-both-stages",
+            "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+            "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+            "second_order": [
+              2,
+              4,
+              0,
+              3,
+              1
+            ],
+            "width_pairs": [
+              [
+                4,
+                5
+              ]
+            ]
+          }
+        ],
+        "refuted_by": "The positive control must be recovered first. If it is, the target still fails unless at least two seeds improve the held-out suffix and the median target gain exceeds the monoalphabetic-substitution control by the preregistered margin.",
+        "schema": "enigma-attack.phase6-config/v1",
+        "search": {
+          "algorithm": "bounded_exhaustive_or_annealing",
+          "control_width_pairs": [
+            [
+              4,
+              5
+            ]
+          ],
+          "iterations": 1500,
+          "max_exhaustive_states": 20000,
+          "restarts": 8,
+          "seeds": [
+            20260921,
+            20260922,
+            20260923
+          ],
+          "target_width_pairs": [
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              5,
+              7
+            ],
+            [
+              7,
+              5
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "temperature_end": 0.002,
+          "temperature_start": 0.2
+        },
+        "split": {
+          "training_fraction": 0.75
+        },
+        "substitution_control": {
+          "cipher_alphabet": "QWERTZUIOASDFGHJKPYXCVBNML",
+          "plaintext_source": "positive_control"
+        },
+        "target_designator": "QTXMA"
+      },
+      "sha256": "09b2d9b03ca54c058d87849eadb6cd31273809a33888c5aba7041343eb44f126"
+    },
+    "controls": {
+      "monoalphabetic_substitution": {
+        "baseline": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": -9.422252777,
+            "raw": -348.623352744
+          },
+          "training": {
+            "known_letters": 111,
+            "per_letter": -9.22835268,
+            "raw": -1024.347147476
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": -9.384100398,
+            "raw": -347.211714734
+          },
+          "plaintext": "UXVPHTROPXPDYGPGGTEOBQHYPPOGZBYTXUTUREIGTGGXNXTITTHFNCOTHSRRPUGQRNSTYYPTRGCZYXTYRPHTTTHONXUDORIHXCYXTOPPPGFXVDCRTVPPTFRTGZRSZRFPTOGTTTVRDRHIQZHCTTQC",
+          "training": {
+            "known_letters": 111,
+            "per_letter": -8.947562565,
+            "raw": -993.179444689
+          }
+        },
+        "ciphertext_length": 148,
+        "delta": {
+          "held_out_score_per_letter": 0.038152379,
+          "training_score_per_letter": 0.280790115
+        },
+        "evaluations": 2880,
+        "held_out_characters": 37,
+        "key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            1,
+            0,
+            3,
+            4,
+            2
+          ]
+        },
+        "method": "exhaustive",
+        "training_characters": 111
+      },
+      "positive_accuracy_rule": "Recovery accuracy is the best positional agreement over all cyclic rotations of the known plaintext; the exact-offset agreement is recorded alongside it.",
+      "positive_double_transposition": {
+        "baseline": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": -8.706412865,
+            "raw": -322.137276004
+          },
+          "training": {
+            "known_letters": 111,
+            "per_letter": -8.437213332,
+            "raw": -936.530679804
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": -6.251289663,
+            "raw": -231.297717514
+          },
+          "plaintext": "OMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDI",
+          "training": {
+            "known_letters": 111,
+            "per_letter": -6.765737215,
+            "raw": -750.996830832
+          }
+        },
+        "ciphertext_length": 148,
+        "delta": {
+          "held_out_score_per_letter": 2.455123202,
+          "training_score_per_letter": 1.671476117
+        },
+        "evaluations": 2880,
+        "held_out_characters": 37,
+        "id": "primary",
+        "key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            3,
+            0,
+            2,
+            4,
+            1
+          ]
+        },
+        "known_key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        },
+        "method": "exhaustive",
+        "passed": true,
+        "plaintext_accuracy": 0.972972973,
+        "plaintext_agreement": {
+          "best_over_rotations": 0.972972973,
+          "exact": 0.060810811,
+          "rotation_offset": 4
+        },
+        "rationale": "",
+        "rotation_degeneracy_possible": [
+          4
+        ],
+        "searched_width_pairs": [
+          [
+            4,
+            5
+          ]
+        ],
+        "training_characters": 111
+      },
+      "positive_passed": true,
+      "positive_transposition_controls": [
+        {
+          "baseline": {
+            "held_out": {
+              "known_letters": 37,
+              "per_letter": -8.706412865,
+              "raw": -322.137276004
+            },
+            "training": {
+              "known_letters": 111,
+              "per_letter": -8.437213332,
+              "raw": -936.530679804
+            }
+          },
+          "candidate": {
+            "held_out": {
+              "known_letters": 37,
+              "per_letter": -6.251289663,
+              "raw": -231.297717514
+            },
+            "plaintext": "OMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDI",
+            "training": {
+              "known_letters": 111,
+              "per_letter": -6.765737215,
+              "raw": -750.996830832
+            }
+          },
+          "ciphertext_length": 148,
+          "delta": {
+            "held_out_score_per_letter": 2.455123202,
+            "training_score_per_letter": 1.671476117
+          },
+          "evaluations": 2880,
+          "held_out_characters": 37,
+          "id": "primary",
+          "key": {
+            "first_order": [
+              2,
+              0,
+              3,
+              1
+            ],
+            "second_order": [
+              3,
+              0,
+              2,
+              4,
+              1
+            ]
+          },
+          "known_key": {
+            "first_order": [
+              2,
+              0,
+              3,
+              1
+            ],
+            "second_order": [
+              4,
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          "method": "exhaustive",
+          "passed": true,
+          "plaintext_accuracy": 0.972972973,
+          "plaintext_agreement": {
+            "best_over_rotations": 0.972972973,
+            "exact": 0.060810811,
+            "rotation_offset": 4
+          },
+          "rationale": "",
+          "rotation_degeneracy_possible": [
+            4
+          ],
+          "searched_width_pairs": [
+            [
+              4,
+              5
+            ]
+          ],
+          "training_characters": 111
+        },
+        {
+          "baseline": {
+            "held_out": {
+              "known_letters": 34,
+              "per_letter": -7.596923729,
+              "raw": -258.295406774
+            },
+            "training": {
+              "known_letters": 99,
+              "per_letter": -8.225011396,
+              "raw": -814.276128199
+            }
+          },
+          "candidate": {
+            "held_out": {
+              "known_letters": 34,
+              "per_letter": -6.121989175,
+              "raw": -208.147631938
+            },
+            "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+            "training": {
+              "known_letters": 99,
+              "per_letter": -6.503195251,
+              "raw": -643.816329835
+            }
+          },
+          "ciphertext_length": 133,
+          "delta": {
+            "held_out_score_per_letter": 1.474934554,
+            "training_score_per_letter": 1.721816145
+          },
+          "evaluations": 2880,
+          "held_out_characters": 34,
+          "id": "ragged-both-stages",
+          "key": {
+            "first_order": [
+              1,
+              3,
+              0,
+              2
+            ],
+            "second_order": [
+              2,
+              4,
+              0,
+              3,
+              1
+            ]
+          },
+          "known_key": {
+            "first_order": [
+              1,
+              3,
+              0,
+              2
+            ],
+            "second_order": [
+              2,
+              4,
+              0,
+              3,
+              1
+            ]
+          },
+          "method": "exhaustive",
+          "passed": true,
+          "plaintext_accuracy": 1.0,
+          "plaintext_agreement": {
+            "best_over_rotations": 1.0,
+            "exact": 1.0,
+            "rotation_offset": 0
+          },
+          "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+          "rotation_degeneracy_possible": [],
+          "searched_width_pairs": [
+            [
+              4,
+              5
+            ]
+          ],
+          "training_characters": 99
+        }
+      ]
+    },
+    "environment": {
+      "cpu_count": 20,
+      "determinism_note": "Each seed uses local random.Random instances; exhaustive branches and all seed runs execute serially.",
+      "parallel_workers": 1,
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "processor": "x86_64",
+      "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+    },
+    "experiment_id": "phase7-qtxma-source-and-scorer-v2",
+    "hypothesis": "QTXMA is compatible with a bounded double-columnar-transposition model that generalizes from a training prefix to an unscored held-out suffix.",
+    "hypothesis_supported": false,
+    "inputs": {
+      "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
+      "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+      "phase5_evidence": {
+        "path": "/home/mythos/repos/enigma-attack/artifacts/phase5-model-triage.json",
+        "route": "frequency_preserving_manual",
+        "sha256": "e308558cac92cae5060046479a1d4406489e09f111104c382dfc40914e56c701",
+        "signals": {
+          "frequency_preserving": true,
+          "lag_structure": false,
+          "periodic_structure": false,
+          "repeated_blocks": false,
+          "uniform_random_compatible": false
+        }
+      }
+    },
+    "interpretation": "The true-transposition control passed, but the bounded QTXMA search did not satisfy the held-out and substitution-control criteria. This does not exclude widths or procedures outside the preregistered smoke search.",
+    "limitations": [
+      "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
+      "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
+      "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+      "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
+      "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction."
+    ],
+    "method": {
+      "cipher": "double columnar transposition with ragged final rows",
+      "score": "Smoothed published 1941 Army plaintext bigram and trigram log likelihood; no monogram terms.",
+      "selection_boundary": "Candidate keys are selected from the training prefix only; held-out suffix scores are computed after key selection."
+    },
+    "next_decision": "Do not enlarge the search solely from training-score improvements; first recover original grouping or add a stronger independently validated scorer.",
+    "observed": {
+      "held_out_deltas_by_seed": [
+        -0.830167343,
+        -0.749779244,
+        -0.760903862
+      ],
+      "median_held_out_delta": -0.760903862,
+      "median_margin_over_substitution_control": -0.799056241,
+      "passing_seed_count": 0,
+      "seed_count": 3,
+      "substitution_control_held_out_delta": 0.038152379
+    },
+    "refuted_by": "The positive control must be recovered first. If it is, the target still fails unless at least two seeds improve the held-out suffix and the median target gain exceeds the monoalphabetic-substitution control by the preregistered margin.",
+    "schema": "enigma-attack.phase6-experiment/v1",
+    "status": "not_supported_under_preregistered_smoke",
+    "target": {
+      "designator": "QTXMA",
+      "seed_results": [
+        {
+          "baseline": {
+            "held_out": {
+              "known_letters": 39,
+              "per_letter": -9.180920942,
+              "raw": -358.055916725
+            },
+            "training": {
+              "known_letters": 116,
+              "per_letter": -9.669496936,
+              "raw": -1121.661644587
+            }
+          },
+          "candidate": {
+            "held_out": {
+              "known_letters": 39,
+              "per_letter": -10.011088285,
+              "raw": -390.432443119
+            },
+            "plaintext": "QCJMAYXYMMKOTXVACSQWCCLEKABEYIXJXLALYVOVAJEERSQBYNOXXYCZJKHYQSMBJXZYBVAPMEYSOEIVRXABWEJJTZAVYATXOYLYABTALEXOSXOESSLMYYACYABMQYCJBYJQOOXJYVSBJMYRKEMTHCTTVTB",
+            "training": {
+              "known_letters": 116,
+              "per_letter": -9.025588377,
+              "raw": -1046.968251697
+            }
+          },
+          "ciphertext_length": 155,
+          "delta": {
+            "held_out_score_per_letter": -0.830167343,
+            "training_score_per_letter": 0.643908559
+          },
+          "evaluations": 56184,
+          "held_out_characters": 39,
+          "key": {
+            "first_order": [
+              2,
+              0,
+              4,
+              1,
+              3
+            ],
+            "second_order": [
+              0,
+              3,
+              5,
+              6,
+              2,
+              4,
+              1
+            ]
+          },
+          "method": "simulated_annealing",
+          "seed": 20260921,
+          "training_characters": 116
+        },
+        {
+          "baseline": {
+            "held_out": {
+              "known_letters": 39,
+              "per_letter": -9.180920942,
+              "raw": -358.055916725
+            },
+            "training": {
+              "known_letters": 116,
+              "per_letter": -9.669496936,
+              "raw": -1121.661644587
+            }
+          },
+          "candidate": {
+            "held_out": {
+              "known_letters": 39,
+              "per_letter": -9.930700186,
+              "raw": -387.297307238
+            },
+            "plaintext": "AYXJMMTOTMWKBSXKACLEICCYYVXBELALYXQVAJVORAQBECSJXYYOXKHJZJEBNXSMBVAPYYYSOMEVQXAIZRZJBTEJYAYAVELWAOYALEXTTXOEOSLXYYSQMBBAYYAJBXYCSOCJQOSBJMVMKEMYRCJTVHCTYQT",
+            "training": {
+              "known_letters": 116,
+              "per_letter": -9.047139468,
+              "raw": -1049.46817825
+            }
+          },
+          "ciphertext_length": 155,
+          "delta": {
+            "held_out_score_per_letter": -0.749779244,
+            "training_score_per_letter": 0.622357468
+          },
+          "evaluations": 56184,
+          "held_out_characters": 39,
+          "key": {
+            "first_order": [
+              3,
+              1,
+              0,
+              2,
+              4
+            ],
+            "second_order": [
+              0,
+              2,
+              5,
+              6,
+              1,
+              3,
+              4
+            ]
+          },
+          "method": "simulated_annealing",
+          "seed": 20260922,
+          "training_characters": 116
+        },
+        {
+          "baseline": {
+            "held_out": {
+              "known_letters": 39,
+              "per_letter": -9.180920942,
+              "raw": -358.055916725
+            },
+            "training": {
+              "known_letters": 116,
+              "per_letter": -9.669496936,
+              "raw": -1121.661644587
+            }
+          },
+          "candidate": {
+            "held_out": {
+              "known_letters": 39,
+              "per_letter": -9.941824804,
+              "raw": -387.731167353
+            },
+            "plaintext": "YAKOJMMQCTXWTXLEIABELACCSOKXBYYVAYXQVSQVERLXBYCAJKHJOJMBVZJXEYXSEBNSPYYYRXMIVAJABZQOYAYEZYALAVJSTAOELWOXTTXMYOSLEAYAQXEJBXYBOSBYCBRYJQSOCEMVMKTTYHCJMVTCJMY",
+            "training": {
+              "known_letters": 116,
+              "per_letter": -9.03875925,
+              "raw": -1048.496073048
+            }
+          },
+          "ciphertext_length": 155,
+          "delta": {
+            "held_out_score_per_letter": -0.760903862,
+            "training_score_per_letter": 0.630737686
+          },
+          "evaluations": 56184,
+          "held_out_characters": 39,
+          "key": {
+            "first_order": [
+              4,
+              2,
+              1,
+              3,
+              0
+            ],
+            "second_order": [
+              0,
+              4,
+              3,
+              6,
+              1,
+              2,
+              5
+            ]
+          },
+          "method": "simulated_annealing",
+          "seed": 20260923,
+          "training_characters": 116
+        }
+      ]
+    },
+    "timing": {
+      "finished_at": "2026-09-23T15:11:11.713729+00:00",
+      "runtime_seconds": 14.38419,
+      "started_at": "2026-09-23T15:10:57.332927+00:00"
+    }
+  },
+  "source_audit": {
+    "body_length": 155,
+    "body_sha256": "99d35d4d30c8c89e721a990318eb3ee493169298de6136f0faaa5fa52bd253fe",
+    "checks": {
+      "body_length_matches": true,
+      "body_matches_corpus": true,
+      "designator_matches": true,
+      "reported_group_count_matches": true,
+      "reported_total_matches": true
+    },
+    "groups": [
+      "QTXMA",
+      "JVMOY",
+      "CZAYM",
+      "RVLCB",
+      "SOQXY",
+      "BATSX",
+      "JBQLA",
+      "EJKYT",
+      "YXJOE",
+      "MYBLO",
+      "EMYOK",
+      "SRMTA",
+      "VLBCX",
+      "JAMOE",
+      "SRXYT",
+      "VAOEY",
+      "AVYXK",
+      "CJVCM",
+      "EISHT",
+      "BAYVX",
+      "XAJWC",
+      "ZQCYP",
+      "XMEHA",
+      "BLKYJ",
+      "YASOE",
+      "IJYXO",
+      "QXYTL",
+      "BASYE",
+      "ESTAQ",
+      "XJVNW",
+      "CBJZB",
+      "YQYTM"
+    ],
+    "interpretation": "Published source grouping yields exactly the current 155-letter solver input; no new body boundary or character correction was found.",
+    "passed": true,
+    "row_count": 8,
+    "source_form": {
+      "facsimile_sha256": "9ec87f2b3f2000cfb5979ed47229cbb3a979bca1cae53b575f4877e7345e342c",
+      "facsimile_url": "https://cryptocellar.org/bgac/spruch/29091941-006-out.pdf",
+      "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html"
+    }
+  },
+  "status": "not_supported_under_preregistered_smoke",
+  "timing": {
+    "finished_at": "2026-09-23T15:11:11.720929+00:00",
+    "started_at": "2026-09-23T15:10:56.955336+00:00"
+  }
+}
