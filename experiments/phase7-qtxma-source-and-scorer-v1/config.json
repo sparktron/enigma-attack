@@ -1,0 +1,58 @@
+{
+  "schema": "enigma-attack.phase7-config/v1",
+  "experiment_id": "phase7-qtxma-source-and-scorer-v1",
+  "hypothesis": "A scorer built from published 1941 Army plaintext n-gram counts will distinguish separately published solved plaintexts from frequency-preserving shuffles, recover a known double transposition, and give QTXMA a held-out gain beyond a substitution control in a bounded width search.",
+  "refuted_by": "Failure of source consistency, authentic-plaintext discrimination, the true-transposition control, or the Phase 6 held-out and substitution-control acceptance rules.",
+  "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+  "phase6_artifact": "artifacts/phase6-qtxma-double-transposition-smoke.json",
+  "corpus": "corpus.json",
+  "output": "artifacts/phase7-qtxma-source-and-scorer.json",
+  "source_form": {
+    "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html",
+    "facsimile_url": "https://cryptocellar.org/bgac/spruch/29091941-006-out.pdf",
+    "facsimile_sha256": "9ec87f2b3f2000cfb5979ed47229cbb3a979bca1cae53b575f4877e7345e342c",
+    "reported_groups": 32,
+    "reported_total_letters": 160,
+    "rows": [
+      ["QTXMA", "JVMOY", "CZAYM", "RVLCB"],
+      ["SOQXY", "BATSX", "JBQLA", "EJKYT"],
+      ["YXJOE", "MYBLO", "EMYOK", "SRMTA"],
+      ["VLBCX", "JAMOE", "SRXYT", "VAOEY"],
+      ["AVYXK", "CJVCM", "EISHT", "BAYVX"],
+      ["XAJWC", "ZQCYP", "XMEHA", "BLKYJ"],
+      ["YASOE", "IJYXO", "QXYTL", "BASYE"],
+      ["ESTAQ", "XJVNW", "CBJZB", "YQYTM"]
+    ]
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [17, 29, 43, 71, 101, 137, 173, 211, 257, 307, 359, 401, 463, 509, 563, 617],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {"id": "1941-09-02-15", "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"},
+      {"id": "1941-08-22-30", "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"},
+      {"id": "1941-09-06-36", "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"},
+      {"id": "1941-09-14-46", "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"},
+      {"id": "1941-09-24-94", "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"}
+    ]
+  },
+  "search": {
+    "target_width_pairs": [[4, 5], [5, 4], [5, 5], [5, 7], [7, 5], [7, 7]],
+    "seeds": [20260921, 20260922, 20260923]
+  },
+  "limitations": [
+    "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
+    "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
+    "This remains a bounded search over ordinary double columnar transposition with ragged final rows."
+  ]
+}

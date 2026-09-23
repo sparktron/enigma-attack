@@ -20,12 +20,13 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from enigma import A
+from resources import output_path, resource_root
 
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = resource_root()
 DEFAULT_CORPUS = ROOT / "corpus.json"
 DEFAULT_CRIBS = ROOT / "cribs.json"
-DEFAULT_OUTPUT = ROOT / "artifacts" / "phase2-network-cribs.json"
+DEFAULT_OUTPUT = output_path("phase2-network-cribs.json")
 
 EVIDENCE_WEIGHTS = {"fact": 1.0, "inference": 0.5, "speculation": 0.15}
 CONTEXT_WEIGHTS = {

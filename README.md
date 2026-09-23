@@ -11,6 +11,9 @@ CryptoCellar's September 1941 Batch C contains mixed traffic. Five messages are 
 
 Total ciphertext length: **577**, matching the 2005 CryptoCellar summary for the five unbroken Enigma message parts in Batch C.
 
+The publisher's September 2026 unbroken list names BYQMZ, FKQLZ, and XFEDT;
+the present status of QTXMA and SZAEJ needs separate source confirmation.
+
 Important: BYQMZ contains one uncertain source character. Keep uncertainty explicit rather than silently normalizing it.
 
 ## Working hypotheses
@@ -114,6 +117,10 @@ because the source says it appears not to have been used operationally.
 Moving-reflector Abwehr machines and four-wheel M4 are recorded as unsupported
 instead of being approximated with the wrong mechanism.
 
+The historical v1 result is preserved. Swiss K stepping was corrected and the
+affected comparison was reissued as `artifacts/phase3-variant-smoke-v2.json`;
+`python3 phase3.py` now writes that v2 path by default.
+
 The highest raw score came from an M3 profile, but its plaintext is incoherent,
 its Army-indicator treatment is explicitly artificial, and its larger rotor pool
 creates a multiple-comparisons advantage. No plaintext was accepted. The run
@@ -152,11 +159,14 @@ while withholding SZAEJ and XFEDT, used five fixed seeds, preserved rotor
 permutations and fixed-point-free reflector involutions, and alternated shared
 machine mutations with date-specific order/ring/plugboard mutations.
 
-The hypothesis was refuted. All five seeds improved the visible training score
-by roughly 0.19-0.22 per letter, but zero reached the required +0.02 held-out
-improvement and the median held-out change was -0.1067. The result is a useful
-overfitting demonstration, not an alternate-machine candidate. The recorded
-decision is to avoid scaling blind wiring search until the corpus partition or
+This historical v1 run used a Phase 3 baseline selected with the messages later
+called held out. Its held-out deltas are selection-contaminated. The v2 runner
+selects each daily-key baseline from training messages only and records the
+selection in `artifacts/phase4-joint-machine-smoke.v2.json`.
+
+The v2 training-only-baseline experiment did not support the hypothesis: its
+median held-out score change was -0.106713. No alternate-machine candidate was
+accepted. Avoid scaling blind wiring search until corpus partitioning or the
 language model is strengthened.
 
 See `docs/phase4-experiment-history.md` for the preregistration, observations,
@@ -200,12 +210,12 @@ See `docs/phase5-research.md` for the fact/inference/speculation boundary and
 
 ## Phase 6 — Frequency-preserving family experiment
 
-Follow the Phase 5 routing decision with a family-specific experiment that can
-falsify training-only improvements. The first branch tests bounded double
-columnar transposition on QTXMA, because it was the sole message with a strong
-frequency-preserving signal. Candidate keys must be selected without consulting
-the held-out plaintext suffix, and a true-transposition positive control plus a
-monoalphabetic-substitution control must bracket the result.
+Follow the Phase 5 routing decision with a family-specific experiment. The
+first branch tests bounded double columnar transposition on QTXMA. The v2
+search scores the full candidate and calibrates the selected maximum by rerunning
+the complete width-and-seed search on matched shuffled ciphertexts. A candidate
+suffix is descriptive, because different keys move source letters across its
+boundary. Exact known-key controls gate the target search.
 
 ### Phase 6 execution status
 
@@ -217,6 +227,11 @@ python3 phase6.py \
   --output artifacts/phase6-qtxma-double-transposition-smoke.json
 ~~~
 
+The v1 artifact below is preserved as a historical run; its suffix was not an
+independent holdout. Run `python3 phase6.py` for the corrected v2 experiment.
+The full-text 4×5 control is recovered exactly; an independent 5×7 known-key
+message fails under annealing, so v2 makes no QTXMA target-search calls.
+
 The positive control recovered its exact 4x5 double-transposition plaintext and
 keys, while the substitution control gained nothing on its held-out suffix.
 QTXMA did not pass: all three fixed seeds improved the visible training prefix
@@ -227,6 +242,36 @@ exclusion of double transposition generally and not a cipher identification.
 
 See `docs/phase6-experiment-history.md` for the preregistration boundary,
 controls, observations, interpretation, and next decision.
+
+## Phase 7 — Source grouping and independently checked scorer
+
+The original QTXMA form was reviewed and its eight rows of four five-letter
+groups were recorded. After removing the `QTXMA` designator, the body matches
+the existing 155-letter solver input exactly. CryptoCellar's published 1941
+Army bigram and trigram counts were imported as a versioned scorer input and
+checked against five separately published solved plaintexts and deterministic
+frequency-preserving shuffles.
+
+~~~bash
+python3 phase7.py \
+  --config experiments/phase7-qtxma-source-and-scorer-v1/config.json \
+  --output artifacts/phase7-qtxma-source-and-scorer.json
+~~~
+
+The v1 runner stopped before QTXMA when prefix scoring selected a displaced
+plaintext with 6.1% positionwise accuracy. Full-text exhaustive scoring ranks
+the exact plaintext and key first among all 2,880 controls; the old prefix
+objective ranks that key fifth. The corrected v2 runner (`python3 phase7.py`)
+then tests an independent solved-message 5×7 annealing control. That control
+fails, so QTXMA remains unsearched. See `docs/STATUS.md` and the v2 artifact.
+
+## Installed use
+
+Build or install the wheel with `python3 -m pip install .`. The distribution
+includes the input corpus, catalogs, experiment configs, published n-gram
+tables, and Phase 2 and 7 commands. From outside the checkout,
+`enigma-phase7` reads those installed inputs and writes its default artifact
+under the current working directory. Supply `--output` to choose another path.
 
 ## Acceptance criteria
 
@@ -250,7 +295,8 @@ A credible break should satisfy most of these simultaneously:
 - `phase3.py` — documented-variant comparison and certificate generator
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation
 - `phase5.py` — deterministic ciphertext-only alternative-family triage
-- `phase6.py` — held-out-validated double-columnar-transposition smoke runner
+- `phase6.py` — calibrated full-text double-columnar-transposition smoke runner
+- `phase7.py` — original-form audit and published n-gram validation gate
 - `cribs.json` — source-backed crib catalog with evidence levels
 - `variants.json` — source-linked rotor, reflector, entry-wheel, and stepping catalog
 - `cipher-families.json` — source-linked Phase 5 candidate-family catalog

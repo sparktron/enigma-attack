@@ -1,0 +1,769 @@
+{
+  "accepted_break": false,
+  "baseline": {
+    "artifact": "/home/mythos/repos/enigma-attack/artifacts/phase6-qtxma-double-transposition-smoke.json",
+    "experiment_id": "phase6-qtxma-double-transposition-smoke-v1",
+    "median_held_out_delta": -0.026923077
+  },
+  "code": {
+    "branch": "codex/fix-nine-audit-findings",
+    "commit": "bb889b9149c56acef361c8dfe6ca67ffa5df1f27",
+    "dirty": true,
+    "phase7_runner_sha256": "3fe57ee55d5b8ec8da594c3ee72f453683b8feb2f03500fded93233540cec756",
+    "runner_sha256": "e06545d85e6a3739cf3cb36588338d930057703703e7bd800f75541aa353e1a9",
+    "status": [
+      "M artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
+      " M artifacts/phase7-qtxma-source-and-scorer.v2.json",
+      " M experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
+      " M phase6.py",
+      " M phase7.py",
+      " M tests/test_phase6.py",
+      " M tests/test_phase7.py"
+    ]
+  },
+  "configuration": {
+    "exact_arguments": [],
+    "path": "/home/mythos/repos/enigma-attack/experiments/phase7-qtxma-source-and-scorer-v2/config.json",
+    "payload": {
+      "corpus": "corpus.json",
+      "experiment_id": "phase7-qtxma-source-and-scorer-v2",
+      "hypothesis": "Source and scorer checks plus exact control recovery permit a calibrated full-text transposition search.",
+      "limitations": [
+        "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
+        "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
+        "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
+        "The historical Phase 6 baseline is preserved for comparison, not reused as validation."
+      ],
+      "output": "artifacts/phase7-qtxma-source-and-scorer.v2.json",
+      "phase6_artifact": "artifacts/phase6-qtxma-double-transposition-smoke.json",
+      "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
+      "refuted_by": "Source or scorer checks fail, a known-key control fails exact recovery, or the target maximum fails matched complete-search calibration.",
+      "schema": "enigma-attack.phase7-config/v1",
+      "scorer": {
+        "additive_smoothing": 0.1,
+        "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+        "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+        "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+        "bigram_weight": 0.5,
+        "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+        "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+        "trigram_weight": 0.5
+      },
+      "search": {
+        "seeds": [
+          20260921,
+          20260922,
+          20260923
+        ],
+        "target_width_pairs": [
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            7,
+            5
+          ],
+          [
+            7,
+            7
+          ]
+        ]
+      },
+      "source_form": {
+        "facsimile_sha256": "9ec87f2b3f2000cfb5979ed47229cbb3a979bca1cae53b575f4877e7345e342c",
+        "facsimile_url": "https://cryptocellar.org/bgac/spruch/29091941-006-out.pdf",
+        "reported_groups": 32,
+        "reported_total_letters": 160,
+        "rows": [
+          [
+            "QTXMA",
+            "JVMOY",
+            "CZAYM",
+            "RVLCB"
+          ],
+          [
+            "SOQXY",
+            "BATSX",
+            "JBQLA",
+            "EJKYT"
+          ],
+          [
+            "YXJOE",
+            "MYBLO",
+            "EMYOK",
+            "SRMTA"
+          ],
+          [
+            "VLBCX",
+            "JAMOE",
+            "SRXYT",
+            "VAOEY"
+          ],
+          [
+            "AVYXK",
+            "CJVCM",
+            "EISHT",
+            "BAYVX"
+          ],
+          [
+            "XAJWC",
+            "ZQCYP",
+            "XMEHA",
+            "BLKYJ"
+          ],
+          [
+            "YASOE",
+            "IJYXO",
+            "QXYTL",
+            "BASYE"
+          ],
+          [
+            "ESTAQ",
+            "XJVNW",
+            "CBJZB",
+            "YQYTM"
+          ]
+        ],
+        "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html"
+      },
+      "validation": {
+        "minimum_messages_above_all_shuffles": 4,
+        "plaintexts": [
+          {
+            "id": "1941-09-02-15",
+            "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+          },
+          {
+            "id": "1941-08-22-30",
+            "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+          },
+          {
+            "id": "1941-09-06-36",
+            "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+          },
+          {
+            "id": "1941-09-14-46",
+            "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+          },
+          {
+            "id": "1941-09-24-94",
+            "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+          }
+        ],
+        "shuffle_seeds": [
+          17,
+          29,
+          43,
+          71,
+          101,
+          137,
+          173,
+          211,
+          257,
+          307,
+          359,
+          401,
+          463,
+          509,
+          563,
+          617
+        ],
+        "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
+      }
+    },
+    "sha256": "b0969e780273724204979d2aa2ab3ce08f271f73b39e672294097bd8407c7e83"
+  },
+  "environment": {
+    "cpu_count": 20,
+    "determinism_note": "Each control shuffle uses its own fixed random.Random seed; the transposition search runs serially.",
+    "parallel_workers": 1,
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+  },
+  "experiment_id": "phase7-qtxma-source-and-scorer-v2",
+  "hypothesis": "Source and scorer checks plus exact control recovery permit a calibrated full-text transposition search.",
+  "hypothesis_supported": false,
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "frequency_tables": {
+      "bigram_counts": {
+        "path": "data/phase7/BigramFrequency1941.txt",
+        "sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+      },
+      "trigram_counts": {
+        "path": "data/phase7/TrigramFrequency1941.txt",
+        "sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+      }
+    },
+    "phase6_baseline_sha256": "3c2dd923b50abd47cb874fc23a817c2a66f87cc6586e3bcef3d663d77632982e",
+    "phase6_config_sha256": "d2107a00d629f25b2e077b30d7db22f57bc7c9ea7e9152aa2d815067756de381"
+  },
+  "interpretation": "A known-key transposition control failed exact recovery; the QTXMA target search was skipped.",
+  "limitations": [
+    "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
+    "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
+    "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
+    "The historical Phase 6 baseline is preserved for comparison, not reused as validation."
+  ],
+  "next_decision": "Improve and validate the failing search branch on independent known-key messages.",
+  "positive_control_preflight": {
+    "additional_known_key_controls": [
+      {
+        "evaluations": 12008,
+        "id": "independent-solved-army-text-1941-09-24-94",
+        "known_key": {
+          "first_order": [
+            3,
+            0,
+            4,
+            1,
+            2
+          ],
+          "second_order": [
+            6,
+            1,
+            4,
+            0,
+            5,
+            2,
+            3
+          ]
+        },
+        "method": "simulated_annealing",
+        "passed": false,
+        "plaintext_accuracy": 0.05263157894736842,
+        "selected_key": {
+          "first_order": [
+            4,
+            1,
+            0,
+            2,
+            3
+          ],
+          "second_order": [
+            6,
+            1,
+            4,
+            0,
+            5,
+            2,
+            3
+          ]
+        }
+      }
+    ],
+    "all_known_key_controls_passed": false,
+    "baseline": {
+      "full": {
+        "known_letters": 148,
+        "per_letter": -8.595024686,
+        "raw": -1272.063653575
+      },
+      "suffix_descriptive": {
+        "known_letters": 0,
+        "per_letter": null,
+        "raw": 0.0
+      },
+      "training": {
+        "known_letters": 148,
+        "per_letter": -8.595024686,
+        "raw": -1272.063653575
+      }
+    },
+    "candidate": {
+      "full": {
+        "known_letters": 148,
+        "per_letter": -6.678803227,
+        "raw": -988.462877642
+      },
+      "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+      "suffix_descriptive": {
+        "known_letters": 0,
+        "per_letter": null,
+        "raw": 0.0
+      },
+      "training": {
+        "known_letters": 148,
+        "per_letter": -6.678803227,
+        "raw": -988.462877642
+      }
+    },
+    "ciphertext_length": 148,
+    "delta": {
+      "full_score_per_letter": 1.916221459,
+      "suffix_descriptive_score_per_letter": null,
+      "training_score_per_letter": 1.916221459
+    },
+    "diagnostics": {
+      "edit_distance": 0,
+      "evaluated_keys": 2880,
+      "exact_plaintext": true,
+      "known_key_rank": 1,
+      "longest_matching_segment": 148,
+      "objective": "full_text",
+      "segment_offsets": {
+        "candidate": 0,
+        "truth": 0
+      },
+      "top_candidates": [
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+          "rank": 1,
+          "score_per_letter": -6.678803227311316,
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "OMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDI",
+          "rank": 2,
+          "score_per_letter": -6.704359578216046,
+          "second_order": [
+            3,
+            0,
+            2,
+            4,
+            1
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "NDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDIAMOM",
+          "rank": 3,
+          "score_per_letter": -6.7697867813765455,
+          "second_order": [
+            2,
+            4,
+            1,
+            3,
+            0
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "TELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDIAMOMSOND",
+          "rank": 4,
+          "score_per_letter": -6.832834643406166,
+          "second_order": [
+            1,
+            3,
+            0,
+            2,
+            4
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "EMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDIAMOMSONDLLTE",
+          "rank": 5,
+          "score_per_letter": -6.85663000055095,
+          "second_order": [
+            0,
+            2,
+            4,
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    "evaluations": 2880,
+    "exact_key": true,
+    "exact_plaintext": true,
+    "held_out_characters": 0,
+    "key": {
+      "first_order": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "second_order": [
+        4,
+        1,
+        3,
+        0,
+        2
+      ]
+    },
+    "known_key": {
+      "first_order": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "second_order": [
+        4,
+        1,
+        3,
+        0,
+        2
+      ]
+    },
+    "legacy_prefix_diagnostics": {
+      "edit_distance": 8,
+      "evaluated_keys": 2880,
+      "exact_plaintext": false,
+      "known_key_rank": 5,
+      "longest_matching_segment": 144,
+      "objective": "prefix_0.75",
+      "segment_offsets": {
+        "candidate": 0,
+        "truth": 4
+      },
+      "top_candidates": [
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "OMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDI",
+          "rank": 1,
+          "score_per_letter": -6.7657372147042905,
+          "second_order": [
+            3,
+            0,
+            2,
+            4,
+            1
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "NDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDIAMOM",
+          "rank": 2,
+          "score_per_letter": -6.773324212647634,
+          "second_order": [
+            2,
+            4,
+            1,
+            3,
+            0
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "TELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDIAMOMSOND",
+          "rank": 3,
+          "score_per_letter": -6.794796481559301,
+          "second_order": [
+            1,
+            3,
+            0,
+            2,
+            4
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "EMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDEKEDIAMOMSONDLLTE",
+          "rank": 4,
+          "score_per_letter": -6.801315835924288,
+          "second_order": [
+            0,
+            2,
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+          "rank": 5,
+          "score_per_letter": -6.803581266784462,
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    "method": "exhaustive",
+    "passed": true,
+    "plaintext_accuracy": 1.0,
+    "training_characters": 148
+  },
+  "refuted_by": "Source or scorer checks fail, a known-key control fails exact recovery, or the target maximum fails matched complete-search calibration.",
+  "schema": "enigma-attack.phase7-experiment/v1",
+  "scorer_validation": {
+    "messages": [
+      {
+        "authentic_score_per_letter": -6.041605649,
+        "id": "1941-09-02-15",
+        "length": 36,
+        "margin_over_best_shuffle": 0.955322868,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -7.53381238,
+          -7.138965234,
+          -7.957878911,
+          -7.729892505,
+          -6.996928517,
+          -7.713943316,
+          -7.838237335,
+          -8.142174904,
+          -7.598699043,
+          -7.431054332,
+          -7.972140343,
+          -7.611678603,
+          -8.151700296,
+          -7.657444266,
+          -7.550083665,
+          -7.780321492
+        ]
+      },
+      {
+        "authentic_score_per_letter": -6.283889072,
+        "id": "1941-08-22-30",
+        "length": 46,
+        "margin_over_best_shuffle": 1.135246277,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -7.968581626,
+          -7.419135349,
+          -7.806293305,
+          -7.808875711,
+          -7.686267614,
+          -8.265622519,
+          -7.993060744,
+          -8.067796545,
+          -7.465451599,
+          -7.728003386,
+          -8.17733991,
+          -7.698991665,
+          -8.274964894,
+          -7.989477064,
+          -7.971299542,
+          -7.955495162
+        ]
+      },
+      {
+        "authentic_score_per_letter": -6.708148394,
+        "id": "1941-09-06-36",
+        "length": 48,
+        "margin_over_best_shuffle": 1.167889493,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -8.816263798,
+          -8.102734021,
+          -8.515933937,
+          -7.876037887,
+          -8.002299791,
+          -8.186431878,
+          -8.403116894,
+          -7.931246188,
+          -8.166665948,
+          -8.546867284,
+          -8.450565149,
+          -8.347104407,
+          -8.315764661,
+          -8.017910537,
+          -8.273352821,
+          -8.362505014
+        ]
+      },
+      {
+        "authentic_score_per_letter": -7.177161225,
+        "id": "1941-09-14-46",
+        "length": 69,
+        "margin_over_best_shuffle": 1.10530391,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -8.675908687,
+          -8.675470911,
+          -8.497716346,
+          -8.779147011,
+          -8.282465135,
+          -8.635697295,
+          -8.641996226,
+          -8.61997743,
+          -8.371093781,
+          -8.807484713,
+          -8.619025631,
+          -8.993581533,
+          -8.559283085,
+          -8.921036452,
+          -8.782698615,
+          -8.715187932
+        ]
+      },
+      {
+        "authentic_score_per_letter": -6.701798158,
+        "id": "1941-09-24-94",
+        "length": 76,
+        "margin_over_best_shuffle": 1.380315704,
+        "passed": true,
+        "shuffled_scores_per_letter": [
+          -8.69004742,
+          -8.826037456,
+          -8.370787634,
+          -8.354428861,
+          -8.496953699,
+          -8.415178937,
+          -8.681825002,
+          -8.417311977,
+          -8.602547877,
+          -8.179790622,
+          -8.54097936,
+          -8.560020672,
+          -8.082113862,
+          -8.30474769,
+          -8.745480038,
+          -8.575674967
+        ]
+      }
+    ],
+    "passed": true,
+    "passing_messages": 5,
+    "required_messages": 4,
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
+  },
+  "search": null,
+  "source_audit": {
+    "body_length": 155,
+    "body_sha256": "99d35d4d30c8c89e721a990318eb3ee493169298de6136f0faaa5fa52bd253fe",
+    "checks": {
+      "body_length_matches": true,
+      "body_matches_corpus": true,
+      "designator_matches": true,
+      "reported_group_count_matches": true,
+      "reported_total_matches": true
+    },
+    "groups": [
+      "QTXMA",
+      "JVMOY",
+      "CZAYM",
+      "RVLCB",
+      "SOQXY",
+      "BATSX",
+      "JBQLA",
+      "EJKYT",
+      "YXJOE",
+      "MYBLO",
+      "EMYOK",
+      "SRMTA",
+      "VLBCX",
+      "JAMOE",
+      "SRXYT",
+      "VAOEY",
+      "AVYXK",
+      "CJVCM",
+      "EISHT",
+      "BAYVX",
+      "XAJWC",
+      "ZQCYP",
+      "XMEHA",
+      "BLKYJ",
+      "YASOE",
+      "IJYXO",
+      "QXYTL",
+      "BASYE",
+      "ESTAQ",
+      "XJVNW",
+      "CBJZB",
+      "YQYTM"
+    ],
+    "interpretation": "Published source grouping yields exactly the current 155-letter solver input; no new body boundary or character correction was found.",
+    "passed": true,
+    "row_count": 8,
+    "source_form": {
+      "facsimile_sha256": "9ec87f2b3f2000cfb5979ed47229cbb3a979bca1cae53b575f4877e7345e342c",
+      "facsimile_url": "https://cryptocellar.org/bgac/spruch/29091941-006-out.pdf",
+      "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html"
+    }
+  },
+  "status": "invalid_positive_control_failure",
+  "timing": {
+    "finished_at": "2026-09-23T00:57:14.455573+00:00",
+    "started_at": "2026-09-23T00:57:13.043458+00:00"
+  }
+}
