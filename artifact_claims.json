@@ -48,7 +48,7 @@
         "archive_queries[].query"
       ]
     },
-    "artifacts/phase3-variant-smoke.json": {
+    "artifacts/phase3-variant-smoke-v2.json": {
       "runner": [
         "phase3.py"
       ],
@@ -67,11 +67,11 @@
         "results[].dates[].evaluations"
       ]
     },
-    "artifacts/phase4-joint-machine-smoke.json": {
+    "artifacts/phase4-joint-machine-smoke.v2.json": {
       "runner": [
         "phase4.py",
         "--config",
-        "experiments/phase4-joint-machine-smoke-v1/config.json"
+        "experiments/phase4-joint-machine-smoke-v2/config.json"
       ],
       "claim_paths": [
         "schema",
@@ -114,9 +114,11 @@
         "messages[].analysis.statistics.trigram_repeat_pairs"
       ]
     },
-    "artifacts/phase6-qtxma-double-transposition-smoke.json": {
+    "artifacts/phase6-qtxma-double-transposition-smoke.v2.json": {
       "runner": [
-        "phase6.py"
+        "phase6.py",
+        "--config",
+        "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json"
       ],
       "claim_paths": [
         "schema",
@@ -128,24 +130,33 @@
         "inputs.phase5_evidence.sha256",
         "inputs.phase5_evidence.route",
         "controls.positive_passed",
-        "controls.positive_transposition_controls[].id",
-        "controls.positive_transposition_controls[].passed",
-        "controls.positive_transposition_controls[].key.*",
-        "controls.positive_transposition_controls[].known_key.*",
-        "controls.positive_transposition_controls[].plaintext_agreement.*",
-        "controls.positive_transposition_controls[].rotation_degeneracy_possible",
-        "controls.positive_transposition_controls[].delta.*",
-        "controls.monoalphabetic_substitution.delta.*",
-        "controls.monoalphabetic_substitution.key.*",
+        "controls.positive_double_transposition.passed",
+        "controls.positive_double_transposition.exact_plaintext",
+        "controls.positive_double_transposition.exact_key",
+        "controls.positive_double_transposition.key.*",
+        "controls.positive_double_transposition.known_key.*",
+        "controls.positive_double_transposition.plaintext_agreement.*",
+        "controls.positive_double_transposition.rotation_degeneracy_possible",
+        "controls.positive_double_transposition.diagnostics.known_key_rank",
+        "controls.positive_double_transposition.diagnostics.evaluated_keys",
+        "controls.positive_double_transposition.diagnostics.exact_plaintext",
+        "controls.positive_double_transposition.all_known_key_controls_passed",
+        "controls.additional_known_key[].id",
+        "controls.additional_known_key[].passed",
+        "controls.additional_known_key[].exact_plaintext",
+        "controls.additional_known_key[].exact_key",
+        "controls.additional_known_key[].known_key.*",
+        "controls.additional_known_key[].selected_key.*",
+        "controls.additional_known_key[].plaintext_agreement.*",
+        "controls.additional_known_key[].rotation_degeneracy_possible",
+        "controls.monoalphabetic_substitution",
         "target.designator",
-        "target.seed_results[].seed",
-        "target.seed_results[].key.*",
-        "target.seed_results[].delta.*",
-        "target.seed_results[].candidate.plaintext",
+        "target.seed_results",
+        "target.skipped_reason",
         "observed.*"
       ]
     },
-    "artifacts/phase7-qtxma-source-and-scorer-v2.json": {
+    "artifacts/phase7-qtxma-source-and-scorer.v2.json": {
       "runner": [
         "phase7.py",
         "--config",
@@ -170,21 +181,20 @@
         "scorer_validation.messages[].authentic_score_per_letter",
         "scorer_validation.messages[].margin_over_best_shuffle",
         "positive_control_preflight.passed",
-        "positive_control_preflight.controls[].id",
-        "positive_control_preflight.controls[].passed",
-        "positive_control_preflight.controls[].key.*",
-        "positive_control_preflight.controls[].known_key.*",
-        "positive_control_preflight.controls[].plaintext_agreement.*",
-        "positive_control_preflight.controls[].rotation_degeneracy_possible",
-        "positive_control_preflight.controls[].delta.*",
-        "search.status",
-        "search.hypothesis_supported",
-        "search.observed.*",
-        "search.target.seed_results[].seed",
-        "search.target.seed_results[].key.*",
-        "search.target.seed_results[].delta.*",
-        "search.target.seed_results[].candidate.plaintext",
-        "search.controls.monoalphabetic_substitution.delta.*"
+        "positive_control_preflight.exact_plaintext",
+        "positive_control_preflight.exact_key",
+        "positive_control_preflight.key.*",
+        "positive_control_preflight.known_key.*",
+        "positive_control_preflight.plaintext_agreement.*",
+        "positive_control_preflight.rotation_degeneracy_possible",
+        "positive_control_preflight.all_known_key_controls_passed",
+        "positive_control_preflight.additional_known_key_controls[].id",
+        "positive_control_preflight.additional_known_key_controls[].passed",
+        "positive_control_preflight.additional_known_key_controls[].exact_plaintext",
+        "positive_control_preflight.additional_known_key_controls[].exact_key",
+        "positive_control_preflight.additional_known_key_controls[].plaintext_agreement.*",
+        "positive_control_preflight.additional_known_key_controls[].rotation_degeneracy_possible",
+        "search"
       ]
     }
   },

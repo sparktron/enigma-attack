@@ -2,14 +2,15 @@
 
 This stage follows the Phase 5 routing decision for QTXMA.  It deliberately
 uses a bounded key-width search and a scorer that excludes monograms, because
-columnar transposition preserves monographic frequencies.  Candidate keys are
-selected on a plaintext prefix; the suffix is scored only after selection.
+columnar transposition preserves monographic frequencies. Candidate keys are
+selected on the full text and complete searches are calibrated against nulls.
 """
 
 from __future__ import annotations
 
 import argparse
 import dataclasses
+import difflib
 import datetime as dt
 import hashlib
 import itertools
@@ -19,7 +20,6 @@ import os
 import pathlib
 import platform
 import random
-import statistics
 import subprocess
 import sys
 import time
@@ -27,13 +27,14 @@ from collections.abc import Mapping, Sequence
 from typing import Any, Protocol
 
 from phase1 import NGRAM_WEIGHTS, load_corpus
+from resources import output_path, resolve_output, resource_root
 
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = resource_root()
 DEFAULT_CONFIG = (
-    ROOT / "experiments" / "phase6-qtxma-double-transposition-smoke-v1" / "config.json"
+    ROOT / "experiments" / "phase6-qtxma-double-transposition-smoke-v2" / "config.json"
 )
-DEFAULT_OUTPUT = ROOT / "artifacts" / "phase6-qtxma-double-transposition-smoke.json"
+DEFAULT_OUTPUT = output_path("phase6-qtxma-double-transposition-smoke.v2.json")
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
@@ -70,7 +71,7 @@ class SearchCandidate:
     plaintext: str
     first_order: tuple[int, ...]
     second_order: tuple[int, ...]
-    train_score_per_letter: float
+    score_per_letter: float
     method: str
     evaluations: int
 
@@ -175,8 +176,8 @@ def _score_per_letter(scorer: TextScorer, text: str) -> float:
 def _is_better(candidate: SearchCandidate, incumbent: SearchCandidate | None) -> bool:
     if incumbent is None:
         return True
-    if candidate.train_score_per_letter != incumbent.train_score_per_letter:
-        return candidate.train_score_per_letter > incumbent.train_score_per_letter
+    if candidate.score_per_letter != incumbent.score_per_letter:
+        return candidate.score_per_letter > incumbent.score_per_letter
     return (
         candidate.first_order,
         candidate.second_order,
@@ -195,7 +196,6 @@ def _exhaustive_pair(
     training_fraction: float,
     scorer: TextScorer,
 ) -> SearchCandidate:
-    train_end = _train_end(len(ciphertext), training_fraction)
     best: SearchCandidate | None = None
     evaluations = 0
     first_orders = tuple(itertools.permutations(range(first_width)))
@@ -203,13 +203,13 @@ def _exhaustive_pair(
         intermediate = columnar_untranspose(ciphertext, second_order)
         for first_order in first_orders:
             plaintext = columnar_untranspose(intermediate, first_order)
-            score = _score_per_letter(scorer, plaintext[:train_end])
+            score = _score_per_letter(scorer, plaintext)
             evaluations += 1
             candidate = SearchCandidate(
                 plaintext=plaintext,
                 first_order=first_order,
                 second_order=second_order,
-                train_score_per_letter=score,
+                score_per_letter=score,
                 method="exhaustive",
                 evaluations=evaluations,
             )
@@ -243,7 +243,6 @@ def _anneal_pair(
     temperature_start: float,
     temperature_end: float,
 ) -> SearchCandidate:
-    train_end = _train_end(len(ciphertext), training_fraction)
     rng = random.Random(seed)
     best: SearchCandidate | None = None
     evaluations = 0
@@ -258,7 +257,7 @@ def _anneal_pair(
         current_plaintext = double_columnar_untranspose(
             ciphertext, current_first, current_second
         )
-        current_score = _score_per_letter(scorer, current_plaintext[:train_end])
+        current_score = _score_per_letter(scorer, current_plaintext)
         evaluations += 1
         initial = SearchCandidate(
             current_plaintext,
@@ -285,9 +284,7 @@ def _anneal_pair(
             proposal_plaintext = double_columnar_untranspose(
                 ciphertext, proposal_first, proposal_second
             )
-            proposal_score = _score_per_letter(
-                scorer, proposal_plaintext[:train_end]
-            )
+            proposal_score = _score_per_letter(scorer, proposal_plaintext)
             evaluations += 1
             delta = proposal_score - current_score
             if delta >= 0 or rng.random() < math.exp(delta / temperature):
@@ -323,10 +320,10 @@ def search_double_transposition(
     temperature_start: float = 0.2,
     temperature_end: float = 0.002,
 ) -> SearchCandidate:
-    """Select a candidate without ever passing the held-out suffix to the scorer."""
+    """Select the highest scoring full plaintext under a bounded key search."""
 
-    if not 0 < training_fraction < 1:
-        raise ValueError("training_fraction must be between zero and one")
+    if not 0 < training_fraction <= 1:
+        raise ValueError("training_fraction must be in (0, 1]")
     if restarts < 1 or iterations < 1:
         raise ValueError("search needs positive restarts and iterations")
     scorer = scorer or AdjacencyScorer()
@@ -372,13 +369,22 @@ def search_double_transposition(
     return dataclasses.replace(best, evaluations=total_evaluations)
 
 
-def _rounded_score(scorer: TextScorer, text: str) -> dict[str, float | int]:
+def _rounded_score(scorer: TextScorer, text: str) -> dict[str, float | int | None]:
     raw, known = scorer.score(text)
     return {
         "raw": round(raw, 9),
         "known_letters": known,
-        "per_letter": round(raw / known, 9) if known else float("-inf"),
+        "per_letter": round(raw / known, 9) if known else None,
     }
+
+
+def _score_delta(
+    candidate: Mapping[str, float | int | None],
+    baseline: Mapping[str, float | int | None],
+) -> float | None:
+    if candidate["per_letter"] is None or baseline["per_letter"] is None:
+        return None
+    return round(candidate["per_letter"] - baseline["per_letter"], 9)
 
 
 def evaluate_search(
@@ -387,9 +393,11 @@ def evaluate_search(
     training_fraction: float,
     scorer: TextScorer,
 ) -> dict[str, Any]:
-    """Score the held-out suffix only after the search has selected a key."""
+    """Report the full objective and descriptive prefix/suffix statistics."""
 
-    train_end = _train_end(len(ciphertext), training_fraction)
+    train_end = len(ciphertext) if training_fraction == 1 else _train_end(len(ciphertext), training_fraction)
+    baseline_full = _rounded_score(scorer, ciphertext)
+    candidate_full = _rounded_score(scorer, candidate.plaintext)
     baseline_train = _rounded_score(scorer, ciphertext[:train_end])
     baseline_held_out = _rounded_score(scorer, ciphertext[train_end:])
     candidate_train = _rounded_score(scorer, candidate.plaintext[:train_end])
@@ -405,24 +413,98 @@ def evaluate_search(
             "second_order": list(candidate.second_order),
         },
         "baseline": {
+            "full": baseline_full,
             "training": baseline_train,
-            "held_out": baseline_held_out,
+            "suffix_descriptive": baseline_held_out,
         },
         "candidate": {
             "plaintext": candidate.plaintext,
+            "full": candidate_full,
             "training": candidate_train,
-            "held_out": candidate_held_out,
+            "suffix_descriptive": candidate_held_out,
         },
         "delta": {
-            "training_score_per_letter": round(
-                candidate_train["per_letter"] - baseline_train["per_letter"], 9
-            ),
-            "held_out_score_per_letter": round(
-                candidate_held_out["per_letter"]
-                - baseline_held_out["per_letter"],
-                9,
+            "full_score_per_letter": _score_delta(candidate_full, baseline_full),
+            "training_score_per_letter": _score_delta(candidate_train, baseline_train),
+            "suffix_descriptive_score_per_letter": _score_delta(
+                candidate_held_out, baseline_held_out
             ),
         },
+    }
+
+
+def _edit_distance(first: str, second: str) -> int:
+    previous = list(range(len(second) + 1))
+    for row, left in enumerate(first, 1):
+        current = [row]
+        for column, right in enumerate(second, 1):
+            current.append(min(
+                current[-1] + 1, previous[column] + 1,
+                previous[column - 1] + (left != right),
+            ))
+        previous = current
+    return previous[-1]
+
+
+def _control_diagnostics(
+    ciphertext: str, truth: str, first_order: Sequence[int],
+    second_order: Sequence[int], scorer: TextScorer, keep: int = 5,
+    prefix_fraction: float | None = None,
+) -> dict[str, Any]:
+    """Rank a known key across the complete, small exhaustive control space."""
+    ranked = []
+    for second in itertools.permutations(range(len(second_order))):
+        intermediate = columnar_untranspose(ciphertext, second)
+        for first in itertools.permutations(range(len(first_order))):
+            plaintext = columnar_untranspose(intermediate, first)
+            scored_text = plaintext if prefix_fraction is None else plaintext[:_train_end(len(plaintext), prefix_fraction)]
+            ranked.append((-_score_per_letter(scorer, scored_text), first, second, plaintext))
+    ranked.sort()
+    known = (tuple(first_order), tuple(second_order))
+    true_rank = next(index for index, (_, first, second, _) in enumerate(ranked, 1)
+                     if (first, second) == known)
+    winner = ranked[0][3]
+    segment = difflib.SequenceMatcher(None, winner, truth, autojunk=False).find_longest_match()
+    return {
+        "objective": "full_text" if prefix_fraction is None else f"prefix_{prefix_fraction}",
+        "known_key_rank": true_rank,
+        "evaluated_keys": len(ranked),
+        "exact_plaintext": winner == truth,
+        "edit_distance": _edit_distance(winner, truth),
+        "longest_matching_segment": segment.size,
+        "segment_offsets": {"candidate": segment.a, "truth": segment.b},
+        "top_candidates": [
+            {"rank": rank, "score_per_letter": -neg_score,
+             "first_order": list(first), "second_order": list(second),
+             "plaintext": plaintext}
+            for rank, (neg_score, first, second, plaintext) in enumerate(ranked[:keep], 1)
+        ],
+    }
+
+
+def _calibrate_search(
+    ciphertext: str, observed: float, config: Mapping[str, Any],
+    scorer: TextScorer, options: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Compare the selected maximum to matched complete-search shuffle nulls."""
+    search = config["search"]
+    maxima = []
+    for replicate in range(search.get("null_replicates", 0)):
+        letters = list(ciphertext)
+        random.Random(0xC0DE + replicate).shuffle(letters)
+        shuffled = "".join(letters)
+        selected = [search_double_transposition(
+            shuffled, search["target_width_pairs"], scorer=scorer, seed=seed,
+            **options,
+        ).score_per_letter for seed in search["seeds"]]
+        maxima.append(max(selected))
+    p_value = (1 + sum(value >= observed for value in maxima)) / (len(maxima) + 1)
+    return {
+        "null_model": "shuffle observed ciphertext positions, then rerun all widths and seeds",
+        "replicate_maxima": maxima,
+        "observed_maximum": observed,
+        "empirical_p_value": p_value,
+        "minimum_resolvable_p_value": 1 / (len(maxima) + 1),
     }
 
 
@@ -492,6 +574,46 @@ def plaintext_agreement(
     }
 
 
+def recovery_verdict(
+    control: Mapping[str, Any],
+    candidate: SearchCandidate,
+    acceptance: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Judge a known-key recovery, crediting only reachable whole-row shifts.
+
+    Exact plaintext and exact key recovery are recorded separately, so that a
+    control passed on a rotation stays distinguishable from one that landed on
+    the known key itself.
+    """
+
+    plaintext = control["plaintext"]
+    width_pairs = [list(pair) for pair in control["width_pairs"]]
+    widths, allowed_offsets = degenerate_rotation_offsets(len(plaintext), width_pairs)
+    agreement = plaintext_agreement(candidate.plaintext, plaintext, allowed_offsets)
+    minimum = acceptance.get("minimum_positive_plaintext_accuracy", 1.0)
+    verdict = {
+        "id": control["id"],
+        "rationale": control.get("rationale", ""),
+        "known_key": {
+            "first_order": list(control["first_order"]),
+            "second_order": list(control["second_order"]),
+        },
+        "searched_width_pairs": width_pairs,
+        "plaintext_agreement": agreement,
+        "plaintext_accuracy": agreement["best_over_allowed_rotations"],
+        "rotation_degeneracy_possible": widths,
+        "exact_plaintext": candidate.plaintext == plaintext,
+        "exact_key": (
+            candidate.first_order == tuple(control["first_order"])
+            and candidate.second_order == tuple(control["second_order"])
+        ),
+        "passed": agreement["best_over_allowed_rotations"] >= minimum,
+    }
+    if control.get("source"):
+        verdict["source"] = control["source"]
+    return verdict
+
+
 def evaluate_positive_control(
     control: Mapping[str, Any],
     scorer: TextScorer,
@@ -499,34 +621,18 @@ def evaluate_positive_control(
     options: Mapping[str, Any],
     training_fraction: float,
     acceptance: Mapping[str, Any],
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], str, SearchCandidate]:
     """Encipher a known plaintext, search it back, and judge the recovery."""
 
-    plaintext = control["plaintext"]
-    first_order = list(control["first_order"])
-    second_order = list(control["second_order"])
-    width_pairs = [list(pair) for pair in control["width_pairs"]]
-    ciphertext = double_columnar_transpose(plaintext, first_order, second_order)
+    ciphertext = double_columnar_transpose(
+        control["plaintext"], control["first_order"], control["second_order"]
+    )
     candidate = search_double_transposition(
-        ciphertext, width_pairs, scorer=scorer, seed=seed, **options
+        ciphertext, control["width_pairs"], scorer=scorer, seed=seed, **options
     )
     result = evaluate_search(ciphertext, candidate, training_fraction, scorer)
-    widths, allowed_offsets = degenerate_rotation_offsets(len(plaintext), width_pairs)
-    agreement = plaintext_agreement(candidate.plaintext, plaintext, allowed_offsets)
-    result["id"] = control["id"]
-    result["rationale"] = control.get("rationale", "")
-    result["known_key"] = {"first_order": first_order, "second_order": second_order}
-    result["searched_width_pairs"] = width_pairs
-    result["plaintext_agreement"] = agreement
-    result["plaintext_accuracy"] = agreement["best_over_allowed_rotations"]
-    result["rotation_degeneracy_possible"] = widths
-    result["passed"] = (
-        agreement["best_over_allowed_rotations"]
-        >= acceptance["minimum_positive_plaintext_accuracy"]
-        and result["delta"]["held_out_score_per_letter"]
-        >= acceptance["minimum_positive_held_out_delta"]
-    )
-    return result
+    result.update(recovery_verdict(control, candidate, acceptance))
+    return result, ciphertext, candidate
 
 
 def _substitute(text: str, cipher_alphabet: str) -> str:
@@ -588,6 +694,7 @@ def _normalize_positive_controls(payload: Mapping[str, Any]) -> list[dict[str, A
                 "second_order": list(second_order),
                 "width_pairs": [list(pair) for pair in width_pairs],
                 "rationale": entry.get("rationale", ""),
+                "source": entry.get("source", ""),
             }
         )
     return controls
@@ -595,34 +702,51 @@ def _normalize_positive_controls(payload: Mapping[str, Any]) -> list[dict[str, A
 
 def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
+    return validate_config(payload)
+
+
+def validate_config(payload: dict[str, Any]) -> dict[str, Any]:
+    """Validate the effective configuration after any downstream overrides."""
     if payload.get("schema") != "enigma-attack.phase6-config/v1":
         raise ValueError("unsupported Phase 6 configuration schema")
     if payload["search"]["algorithm"] != "bounded_exhaustive_or_annealing":
         raise ValueError("unsupported Phase 6 optimizer")
     fraction = payload["split"]["training_fraction"]
-    if not 0 < fraction < 1:
-        raise ValueError("training_fraction must be between zero and one")
+    if not 0 < fraction <= 1:
+        raise ValueError("training_fraction must be in (0, 1]")
+    if "legacy_prefix_fraction" in payload and not 0 < payload["legacy_prefix_fraction"] < 1:
+        raise ValueError("legacy_prefix_fraction must be in (0, 1)")
     search = payload["search"]
     if not search["seeds"] or search["restarts"] < 1 or search["iterations"] < 1:
         raise ValueError("search needs seeds, positive restarts, and iterations")
-    if not 0 < search["temperature_end"] <= search["temperature_start"]:
+    if not 0 < search["temperature_end"] <= search["temperature_start"] or not all(
+        math.isfinite(search[name]) for name in ("temperature_start", "temperature_end")
+    ):
         raise ValueError("invalid annealing temperatures")
+    if search.get("null_replicates", 0) < 0:
+        raise ValueError("null_replicates cannot be negative")
     for name in ("target_width_pairs", "control_width_pairs"):
         if not search[name]:
             raise ValueError(f"{name} cannot be empty")
         for pair in search[name]:
             if len(pair) != 2 or min(pair) < 2:
                 raise ValueError(f"invalid width pair in {name}: {pair}")
-    payload["positive_controls"] = _normalize_positive_controls(payload)
+    _normalize_positive_controls(payload)
     _substitute("A", payload["substitution_control"]["cipher_alphabet"])
     acceptance = payload["acceptance"]
-    if acceptance["minimum_passing_seeds"] > len(search["seeds"]):
+    if acceptance.get("minimum_passing_seeds", 0) > len(search["seeds"]):
         raise ValueError("minimum_passing_seeds exceeds configured seeds")
+    if not 0 < acceptance.get("maximum_empirical_p_value", 0.05) <= 1:
+        raise ValueError("maximum_empirical_p_value must be in (0, 1]")
     return payload
 
 
-def _phase5_evidence(path: pathlib.Path, designator: str) -> dict[str, Any]:
+def _phase5_evidence(
+    path: pathlib.Path, designator: str, corpus_path: pathlib.Path,
+) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("inputs", {}).get("corpus_sha256") != _sha256(corpus_path):
+        raise ValueError("Phase 5 artifact corpus hash does not match search corpus")
     supported_schemas = {
         "enigma-attack.phase5-model-triage/v1",
         "enigma-attack.phase5-model-triage/v2",
@@ -662,7 +786,7 @@ def run_experiment(
         )
     except StopIteration as error:
         raise ValueError(f"corpus does not contain {target_name}") from error
-    phase5 = _phase5_evidence(phase5_path, target_name)
+    phase5 = _phase5_evidence(phase5_path, target_name, corpus_path)
     scorer = scorer or AdjacencyScorer()
     search = config["search"]
     options = _search_options(config)
@@ -671,94 +795,103 @@ def run_experiment(
     started_clock = time.perf_counter()
 
     acceptance = config["acceptance"]
-    positive_controls = config["positive_controls"]
-    positive_results = [
-        evaluate_positive_control(
-            control, scorer, search["seeds"][0], options, training_fraction, acceptance
+    # Normalized at the point of use: a caller such as Phase 7 may add controls
+    # to the loaded configuration, and a cached list would go stale.
+    controls = _normalize_positive_controls(config)
+    primary = controls[0]
+    positive_plaintext = primary["plaintext"]
+    positive_result, positive_ciphertext, positive_candidate = evaluate_positive_control(
+        primary, scorer, search["seeds"][0], options, training_fraction, acceptance
+    )
+    positive_passed = positive_result["passed"]
+    known_key = positive_result["known_key"]
+    if math.factorial(len(known_key["first_order"])) * math.factorial(len(known_key["second_order"])) <= search["max_exhaustive_states"]:
+        positive_result["diagnostics"] = _control_diagnostics(
+            positive_ciphertext, positive_plaintext,
+            known_key["first_order"], known_key["second_order"], scorer,
         )
-        for control in positive_controls
-    ]
-    positive_result = positive_results[0]
-    positive_plaintext = positive_controls[0]["plaintext"]
+        if "legacy_prefix_fraction" in config:
+            positive_result["legacy_prefix_diagnostics"] = _control_diagnostics(
+                positive_ciphertext, positive_plaintext,
+                known_key["first_order"], known_key["second_order"], scorer,
+                prefix_fraction=config["legacy_prefix_fraction"],
+            )
 
-    substitution_ciphertext = _substitute(
-        positive_plaintext,
-        config["substitution_control"]["cipher_alphabet"],
-    )
-    substitution_candidate = search_double_transposition(
-        substitution_ciphertext,
-        search["control_width_pairs"],
-        scorer=scorer,
-        seed=search["seeds"][0],
-        **options,
-    )
-    substitution_result = evaluate_search(
-        substitution_ciphertext,
-        substitution_candidate,
-        training_fraction,
-        scorer,
-    )
+    # Every additional control is evaluated even after one fails: a control
+    # whose geometry admits no rotation is what distinguishes a genuine search
+    # failure from the rotation degeneracy that a strict metric misreports, and
+    # that evidence is only available if the run does not stop at the first
+    # failure.
+    additional_controls = []
+    if positive_passed:
+        for control in controls[1:]:
+            control_ciphertext = double_columnar_transpose(
+                control["plaintext"], control["first_order"], control["second_order"]
+            )
+            selected = search_double_transposition(
+                control_ciphertext, control["width_pairs"], scorer=scorer,
+                seed=search["seeds"][0], **options,
+            )
+            verdict = recovery_verdict(control, selected, acceptance)
+            additional_controls.append({
+                **verdict,
+                "method": selected.method,
+                "evaluations": selected.evaluations,
+                "selected_key": {"first_order": list(selected.first_order),
+                                 "second_order": list(selected.second_order)},
+            })
+            if not verdict["passed"]:
+                positive_passed = False
+    positive_result["all_known_key_controls_passed"] = positive_passed
+    positive_result["additional_known_key_controls"] = additional_controls
 
+    substitution_result = None
     target_results = []
-    for seed in search["seeds"]:
-        candidate = search_double_transposition(
-            target.ciphertext,
-            search["target_width_pairs"],
-            scorer=scorer,
-            seed=seed,
-            **options,
+    calibration = None
+    substitution_score = None
+    observed_score = None
+    if positive_passed:
+        substitution_ciphertext = _substitute(
+            positive_plaintext, config["substitution_control"]["cipher_alphabet"]
         )
-        result = evaluate_search(target.ciphertext, candidate, training_fraction, scorer)
-        result["seed"] = seed
-        target_results.append(result)
+        substitution_candidate = search_double_transposition(
+            substitution_ciphertext, search["control_width_pairs"],
+            scorer=scorer, seed=search["seeds"][0], **options,
+        )
+        substitution_result = evaluate_search(
+            substitution_ciphertext, substitution_candidate, training_fraction, scorer
+        )
+        substitution_score = substitution_candidate.score_per_letter
+        for seed in search["seeds"]:
+            candidate = search_double_transposition(
+                target.ciphertext, search["target_width_pairs"],
+                scorer=scorer, seed=seed, **options,
+            )
+            result = evaluate_search(target.ciphertext, candidate, training_fraction, scorer)
+            result["seed"] = seed
+            result["round_trip_verified"] = (
+                double_columnar_transpose(
+                    candidate.plaintext, candidate.first_order, candidate.second_order
+                ) == target.ciphertext
+            )
+            target_results.append(result)
+        observed_score = max(result["candidate"]["full"]["per_letter"] for result in target_results)
+        calibration = _calibrate_search(target.ciphertext, observed_score, config, scorer, options)
 
-    positive_passed = all(result["passed"] for result in positive_results)
-    held_out_deltas = [
-        result["delta"]["held_out_score_per_letter"] for result in target_results
-    ]
-    passing_seeds = sum(
-        delta >= acceptance["minimum_seed_held_out_delta"]
-        for delta in held_out_deltas
-    )
-    median_delta = statistics.median(held_out_deltas)
-    substitution_delta = substitution_result["delta"]["held_out_score_per_letter"]
-    margin = median_delta - substitution_delta
-    hypothesis_supported = (
-        positive_passed
-        and passing_seeds >= acceptance["minimum_passing_seeds"]
-        and median_delta >= acceptance["minimum_median_held_out_delta"]
-        and margin >= acceptance["minimum_margin_over_substitution_control"]
-    )
-
+    calibrated = bool(calibration and calibration["empirical_p_value"] <= acceptance.get("maximum_empirical_p_value", 0.05))
+    hypothesis_supported = calibrated and all(result["round_trip_verified"] for result in target_results)
     if not positive_passed:
         status = "invalid_positive_control_failure"
-        interpretation = (
-            "The bounded search failed its preregistered true-transposition control, "
-            "so the target result is not interpretable."
-        )
-        next_decision = "Strengthen the scorer or optimizer before rerunning any target search."
+        interpretation = "The complete search failed exact plaintext/key recovery on a known-key control; no target search was run."
+        next_decision = "Validate the scorer and search branch on independent known-key controls."
     elif hypothesis_supported:
-        status = "supported_under_preregistered_smoke"
-        interpretation = (
-            "The bounded transposition model improved an unscored target suffix and "
-            "cleared the substitution-control margin. This is only model evidence, "
-            "not an accepted plaintext."
-        )
-        next_decision = (
-            "Require readable German, cross-seed key convergence, a wider key-length "
-            "search, and independent scoring before treating the candidate as a break."
-        )
+        status = "signal_under_search_calibrated_null"
+        interpretation = "The selected full-text score exceeded the matched search null; this is model evidence, not an accepted plaintext."
+        next_decision = "Independently verify readable plaintext and reproduce the exact key before claiming a break."
     else:
-        status = "not_supported_under_preregistered_smoke"
-        interpretation = (
-            "The true-transposition control passed, but the bounded QTXMA search did "
-            "not satisfy the held-out and substitution-control criteria. This does "
-            "not exclude widths or procedures outside the preregistered smoke search."
-        )
-        next_decision = (
-            "Do not enlarge the search solely from training-score improvements; first "
-            "recover original grouping or add a stronger independently validated scorer."
-        )
+        status = "not_supported_under_search_calibrated_null"
+        interpretation = "The bounded full-text search did not clear the complete-search null calibration."
+        next_decision = "Validate additional known-key controls before changing the model or budget."
 
     finished_at = dt.datetime.now(dt.timezone.utc)
     return {
@@ -799,10 +932,8 @@ def run_experiment(
         },
         "method": {
             "cipher": "double columnar transposition with ragged final rows",
-            "selection_boundary": (
-                "Candidate keys are selected from the training prefix only; held-out "
-                "suffix scores are computed after key selection."
-            ),
+            "selection_objective": "Full candidate plaintext score across all searched widths and seeds.",
+            "suffix_statistic": "Descriptive only; candidate permutations change which source positions enter the suffix.",
             "score": (
                 "Order-sensitive length-two-or-longer n-grams from the Phase 1 "
                 "bootstrap model; monogram terms excluded."
@@ -810,26 +941,26 @@ def run_experiment(
         },
         "controls": {
             "positive_double_transposition": positive_result,
-            "positive_transposition_controls": positive_results,
+            "additional_known_key": additional_controls,
             "monoalphabetic_substitution": substitution_result,
             "positive_passed": positive_passed,
             "positive_accuracy_rule": (
-                "Recovery accuracy is the best positional agreement over all cyclic "
-                "rotations of the known plaintext; the exact-offset agreement is "
+                "Recovery accuracy is the best positional agreement over the "
+                "whole-row rotations the stage geometry can actually produce; "
+                "the exact-offset agreement and exact key recovery are "
                 "recorded alongside it."
             ),
         },
         "target": {
             "designator": target_name,
             "seed_results": target_results,
+            "skipped_reason": None if positive_passed else "positive_control_failed",
         },
         "observed": {
-            "held_out_deltas_by_seed": held_out_deltas,
-            "passing_seed_count": passing_seeds,
+            "selected_full_score_per_letter": observed_score,
+            "substitution_control_full_score_per_letter": substitution_score,
+            "search_calibration": calibration,
             "seed_count": len(target_results),
-            "median_held_out_delta": round(median_delta, 9),
-            "substitution_control_held_out_delta": substitution_delta,
-            "median_margin_over_substitution_control": round(margin, 9),
         },
         "interpretation": interpretation,
         "next_decision": next_decision,
@@ -852,16 +983,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     parsed_arguments = list(argv) if argv is not None else sys.argv[1:]
     args = build_parser().parse_args(parsed_arguments)
     config = load_config(args.config)
-    output = args.output or _resolve_path(config.get("output", DEFAULT_OUTPUT))
+    output = args.output or resolve_output(config.get("output", DEFAULT_OUTPUT))
     artifact = run_experiment(config, args.config, parsed_arguments)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
-        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        json.dumps(artifact, indent=2, sort_keys=True, allow_nan=False) + "\n",
         encoding="utf-8",
     )
     print(
         f"wrote {output}; status={artifact['status']}; "
-        f"median held-out delta={artifact['observed']['median_held_out_delta']:+.6f}"
+        f"calibrated p={artifact['observed']['search_calibration']['empirical_p_value'] if artifact['observed']['search_calibration'] else 'not run'}"
     )
     return 0
 

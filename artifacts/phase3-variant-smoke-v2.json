@@ -1,0 +1,1347 @@
+{
+  "decision": {
+    "accepted_break": false,
+    "coverage_gaps": [
+      "Only explicitly supplied plugboards were tested; the default is no plugs. This does not exclude the historically normal steckered service keyspace.",
+      "Only explicitly supplied reflector positions were tested; the default is A.",
+      "Naval and commercial-family profiles are scored under a deliberately artificial Army-indicator assumption.",
+      "Four-wheel and moving-reflector/geared machines are not approximated."
+    ],
+    "negative_claim": "None. This smoke comparison does not exclude unsearched rings, plugboards, reflector positions, procedures, or arbitrary wirings.",
+    "reason": "Language-score ranking alone is not an acceptance test, and no candidate has external plaintext confirmation.",
+    "status": "screening_complete_no_validated_plaintext"
+  },
+  "generated_at": "2026-09-22T20:21:28.235263+00:00",
+  "inputs": {
+    "catalog": "/home/mythos/repos/enigma-attack/variants.json",
+    "catalog_sha256": "0f4e4baa89732982bb84d80f95afdeee81bab65a47077974a0d31303e38a556f",
+    "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "runner_sha256": "cd91ab4599ae02a629b6996bf4b746120930ebc95ba905643e94d0197c57bcf1"
+  },
+  "research_boundary": {
+    "question": "Which documented three-wheel Enigma-family configurations are plausible enough to screen before arbitrary rotor recovery?",
+    "scope": "Documented, executable three-wheel variants only.",
+    "sources": {
+      "enigma_variations": {
+        "authors": [
+          "David Hamer",
+          "Geoff Sullivan",
+          "Frode Weierud"
+        ],
+        "supports": [
+          "Railway Enigma, Swiss K, and Enigma T wirings",
+          "commercial-derived machine characteristics",
+          "Swiss Army 1941 stepping modification",
+          "Abwehr moving-reflector and cyclometric-stepping distinction",
+          "Enigma T operational-use caveat"
+        ],
+        "title": "Enigma Variations: An Extended Family of Machines",
+        "url": "https://www.cryptocellar.org/pubs/enigvar.pdf"
+      },
+      "hamer_wirings": {
+        "author": "David Hamer",
+        "supports": [
+          "service rotors I-VIII and turnover letters",
+          "wide reflectors A, B, and C"
+        ],
+        "title": "Enigma Rotor Wiring",
+        "url": "https://enigmamuseum.com/rotwirg.htm"
+      },
+      "py_enigma_reference": {
+        "supports": [
+          "independent standard-service rotor and reflector catalog",
+          "VI-VIII association with Kriegsmarine M3/M4"
+        ],
+        "title": "Py-Enigma Reference",
+        "url": "https://py-enigma.readthedocs.io/en/latest/reference.html"
+      }
+    },
+    "unsupported": [
+      {
+        "id": "abwehr_11_15_17",
+        "reason": "These machines used a moving reflector and cyclometric/geared stepping; substituting pawl stepping would test the wrong machine.",
+        "source_ids": [
+          "enigma_variations"
+        ]
+      },
+      {
+        "id": "abwehr_ggg_4j",
+        "reason": "The documented machine used different commercial-family wirings that are not established in this catalog.",
+        "source_ids": [
+          "enigma_variations"
+        ]
+      },
+      {
+        "id": "kriegsmarine_m4",
+        "reason": "The four-wheel model and its thin reflectors fall outside the Phase 3 three-wheel scope.",
+        "source_ids": [
+          "py_enigma_reference"
+        ]
+      }
+    ]
+  },
+  "results": [
+    {
+      "best_score_per_letter": -3.551637925,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 336,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "NIC",
+                  "plaintext": "CWRSMTRIDRXPMBRNKSCHSGCKNTINBXJDXNRMSLPOTMRXGXHBHFWPNYVKVTMBEGLCYZHFAZCSNAQUMPDELKQVNFRBIDGDKGREFQURFTVOESZUTJGISAHXSNHCJNRGVUTPJSJDWZJRNFJGREBMGKCXEQAFTEI",
+                  "raw_score": -551.632265
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "JUZ",
+                  "plaintext": "MVRQNSEHWUPQRMKRKATOYDDGGKGXSXDNBINVNQKUJHTHHLENPIR",
+                  "raw_score": -180.005147
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "II",
+                "VIII",
+                "IV"
+              ],
+              "score_per_letter": -3.551637925
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "ZSJ",
+                  "plaintext": "FEIQDZSRDSWFVPSXWNUOEZQPVGVZMFFESXQELGKRJCEIZFGCGUNULQUFDULIDFCSQAJTFVLFYZZVIKDCADUFXXNDTYFHEBCOGRJHIXXBABAHDIZTZXUSUFPTUTNEXIFDSFAVDJRRMRDTPMWGDRIINDOJEQW",
+                  "raw_score": -556.817169
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "BSV",
+                  "plaintext": "WUTDRMUBDZWCEZNDUXOTWDEXVAOXLWBIZQBOHNLULDIIPYLTAZV",
+                  "raw_score": -181.572503
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "VI",
+                "VII",
+                "III"
+              ],
+              "score_per_letter": -3.584415885
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 336,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "MFK",
+                  "plaintext": "OZMRKMAZTAAZXFOGGEZLOROPBNSW?JGZIEIVHSFXGSWSRORXJXCILWTBETQGSSRECQIKFSIGROMPGAXODZFSEUIKHHXTTCDOBQZJNERBGRDGIDKOQTAKEATRDGXNTESXJCSDMEQMDVBQDEVVGIXUWWXYUYNCZVLZDVASRKR",
+                  "raw_score": -586.696836
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "OLS",
+                  "plaintext": "YASODXBGRKVDBTEHAUNHAZVRJRDBFNBNOVPQFRMEGBTBIVTIVFFTAFLIISTLXVGZBUVQHINEILXDLPUHMRAQWPNICSHFTNULBVGAWHVIQJQ",
+                  "raw_score": -381.223026
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "MDQ",
+                  "plaintext": "RFLMNJVDAKQSMERYFHDXZMJQZKDCIFYHMFQYXALEWLKWDKXCDECDRRXHFLFPNPRBCNWBCGJVXFMMSOBCLTOFAGEXHYJLLKZSL",
+                  "raw_score": -372.360814
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "VIII",
+                "IV",
+                "VII"
+              ],
+              "score_per_letter": -3.622380204
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "KRO",
+                  "plaintext": "GFMSAGPJYKINAZKISAABGUNJYRRK?TWRGULOLIJSLGPUFTPMHXBFXEGLTGEAGWNULBCVINBOORDFVAUUYKXCGCOUYOSWFNTFLBWOBWBZMPZGJEQMZDCGGRZOGAVARDKIYQBGTWFBDGWEDOXRGZWLGUTBJRTKWERUSVNZIQN",
+                  "raw_score": -610.331575
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "NMQ",
+                  "plaintext": "FYZMJJNKNUCTCNSLXGLLIJRXENTJKWHBSRNGEJUGTKASPCANXRDTOGUIJDDJONWZVLEWOLBWLUMVUSDACWGOLNIONCCHBULRHAINFCGKCUA",
+                  "raw_score": -373.122738
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "QMX",
+                  "plaintext": "QUARMFCHIDHYAFJSZUKPYFTUKONPCALVFRLHLVNFWVVDPOCTNFUXDXZATZHOFOKEYUQSEHMCCFBKEFCOBNMPIXQISFIEOWNGK",
+                  "raw_score": -359.399653
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "II",
+                "V"
+              ],
+              "score_per_letter": -3.629335041
+            }
+          ]
+        }
+      ],
+      "historical_note": "Mechanically representable, but naval operating procedures are not modeled by the Army clear-indicator runner.",
+      "historical_prior": "low",
+      "label": "Kriegsmarine M3, UKW B",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "profile_id": "kriegsmarine_m3_ukw_b",
+      "rotor_order_count": 336,
+      "source_ids": [
+        "hamer_wirings",
+        "py_enigma_reference"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.559570732,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 336,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "JZO",
+                  "plaintext": "XQKEEPKUBAVZNQLANMKLJNIQAILLUCVZUJFCIAQHJTNKEBEVJHREBVEPYHESUDXKYBOLCWPOCSBJRWVIGZPHLHENJUNGXGRIZIJLUMEGTGNGMTNHQEXSSZJORBQKRTRLAUWMEHNKLSTLUTGSIWVRUEWONDK",
+                  "raw_score": -550.302272
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "ABT",
+                  "plaintext": "BWLABLTGWHOMBXZDDJKGTXBRUNKEBREZTDZXQNRRUSNYOIPCFZT",
+                  "raw_score": -182.969299
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "VIII",
+                "VII",
+                "VI"
+              ],
+              "score_per_letter": -3.559570732
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "LLB",
+                  "plaintext": "QKCALWLLDISEYRXCLCEIUSIVCRHOSPHFQAUGEABBSILGACKLJNHMFJCXSZTOSSOHGTNFAKHJMNWGTGARETRORAZMAHQSNILISIXVTXIFHSQZBIUBHHRCMCIBNSJMUEMEBTCBFJSBLJBDSWOMGZXDPQZWWQU",
+                  "raw_score": -541.383714
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "XMH",
+                  "plaintext": "JLIEKBRALBKHIQPZRMFVTUNKRLHOUGGJZVEDIZJLYJEAGKKGXHZ",
+                  "raw_score": -192.820076
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "II",
+                "VII",
+                "I"
+              ],
+              "score_per_letter": -3.564096065
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 336,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "EZN",
+                  "plaintext": "RNYUNZXLDNKRNSJQBZFDCIBDFBYN?UEROMBTCJVXTEMNHICEAYUVDWDQNORUJCCDWNODQOZDFXQDIGWOYBIFDBNXOFAUNOFCHEHQHHXQDBELJDMDNEPVFLLHSABKXQZNRBNSDSHXRXONFDULNXNXWXLMKGBLASUBKPJMSAA",
+                  "raw_score": -597.40775
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "UOV",
+                  "plaintext": "KFRRKHARCAUIREUIKGRBPVUXEZTWWZOQQUGNAUOFIOGWMBMHMTBNZNSTCDTVBVHAZIKBVBWQYIKKTVWLWFLVCZZTPDIOFDJBEHFKUBSLNEU",
+                  "raw_score": -385.61309
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "TFI",
+                  "plaintext": "FZMDQAWSDLSDOMDGSTJBRCLQYFGNVGGUVHSXGENDJMQOYGQRTIKTEDIWKZGAEIRBVLJHRXLGBPIDMKIGLPRMECSTAUNNHEIHA",
+                  "raw_score": -338.200267
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "VIII",
+                "I",
+                "IV"
+              ],
+              "score_per_letter": -3.570867859
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "UBR",
+                  "plaintext": "ZBMHRCCHJSZDNQCOBBABLERSWBLC?LVRMIMVNIQTTRWTICCBMKAUBQXAFUNJVCFZEZKDJEJTVDSUBJPSFHHNNZQSRGECCQXCGIBITLNQYCTQLHLUVNNPFFNKITEGMMGGPXAFVNEMJQTBFHNODEHJHKAPRFHRMHWGRMBJHFN",
+                  "raw_score": -594.90114
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "EUH",
+                  "plaintext": "WVJTCSXYRKXZZQCGFRTHSRMRPCRWGTBKIKCLLAZELNLVMNIPVAROWOMIAJASWDANHEEGCNMWDQGGKEFEVZYJNUNECWELYFLLVRKXDMRBGGP",
+                  "raw_score": -387.11257
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "SZC",
+                  "plaintext": "NGYRSGNSPQCSTMCIHOFIRYXFCVUDKGVGRRQPBPGQHXJBIOZUPTFOUGJUNXNYKTDHXQRXEJIXGSZRWDLMNAILTCHVERAOMOPER",
+                  "raw_score": -355.560068
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "VI",
+                "VII",
+                "VIII"
+              ],
+              "score_per_letter": -3.615064262
+            }
+          ]
+        }
+      ],
+      "historical_note": "Mechanically representable, but naval operating procedures are not modeled by the Army clear-indicator runner.",
+      "historical_prior": "low",
+      "label": "Kriegsmarine M3, UKW C",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "profile_id": "kriegsmarine_m3_ukw_c",
+      "rotor_order_count": 336,
+      "source_ids": [
+        "hamer_wirings",
+        "py_enigma_reference"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.584324743,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 60,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "YXM",
+                  "plaintext": "ETSAVNHFWAMNXVDQDFHLHDLGIGPHHKQCASKTHNEGYUXANVBNWXOBDQEIVAIHGWXWQIDZUGSDARKIXGSJGDAQEJWFOWTQVOEIGRTNLZMEHKHIESNHFRLATUUNJIXLTSZCZFLITOCFQMJMCHAIYKGOWKVODYF",
+                  "raw_score": -549.530859
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "HST",
+                  "plaintext": "XIEIFQLDSFPGEWLQRUFBTQFZOLLKCMBMPXPGKLWELOHGZVRIZUJ",
+                  "raw_score": -188.840038
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "IV",
+                "II",
+                "III"
+              ],
+              "score_per_letter": -3.584324743
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "HMI",
+                  "plaintext": "XJBLZTHKBBMLGGJMYLQWTSPKDQERBMIYNANGGXKNXUHKSDLCEPXVDKSYOUMORIKKTPOPUWPTDUGSDCBSGUBPGHFYCAPGHARSHIMOEBEEWZSMNIZCIDHMXXECHTQKQGNEBBRSTCHXZQERPUGDFATNVUOSSQD",
+                  "raw_score": -556.451317
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "HEM",
+                  "plaintext": "DGSYJWJHGPGMZMHUDBDHEAQGVILSGVTRIHBIUDVBTISXFWNTHBW",
+                  "raw_score": -183.911246
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "II",
+                "IV"
+              ],
+              "score_per_letter": -3.593993021
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 60,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "PQQ",
+                  "plaintext": "VTCLXYNYOMWAYIFKDIOEHFTUSSYK?PVVXUCNRUEDJMNMXEEUHKEKLHSXVNEMYXYRDMOOBVLQLMNLVBHBIAIHMLTBLLRUUVAGSJWWAFZGMTPAUIJJPIRXXRNGJARUEIGLMHTMGQELAGMYRNSSPMGUIQKVGBFANLUCTCJLKOS",
+                  "raw_score": -609.288994
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "WXF",
+                  "plaintext": "CGLHGDEHZRSDSUDHBPTZIVXCHLJVHKJJCAUGWNFCCOFOLUYZMDQKIDSPRNRBJMICEPPUOVBTRSDIPKMIAVNDZUSNLMFDXNDCEUUICVKVZWU",
+                  "raw_score": -383.928997
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "JKK",
+                  "plaintext": "MJVZURKKZMRDBZNRNUIFTQBDIFOVWBEMEEWNGAFBPITHZDDMQULIWIMPGODNMHOYNDMMUKIFDGCXKQKPWUEZJHDNEALGPQMPN",
+                  "raw_score": -348.382433
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "IV",
+                "III",
+                "I"
+              ],
+              "score_per_letter": -3.625947091
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "LKV",
+                  "plaintext": "RTETVNYVKYGOWYUSRROOQVSFDLDM?MFHZNFRLTXAGZXDTMHPXKLHUSSMGVWDAJHDTLGCUZEAIZZFOPTWBWINKLQTZNGXCRREAXSVJDZUSWKJARDOAEAIMBJYGFBWIKEFSIUJUDIKGBBDERZNPCUDPWGSPCYTVDQUHZVSKQA",
+                  "raw_score": -609.354347
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "OXA",
+                  "plaintext": "UKEMGMFEVUOFHOTMIDDTZMLGDANOWXEMMZBNRCEGWERPZZEZTZQDPGEZFMIEVFHINCBGLYBJVAQKVSRNESBXBWVPESCATWSNLFSLDHQQRXI",
+                  "raw_score": -373.426307
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "YTD",
+                  "plaintext": "TQZOAMKRXEKSOXJIFPGGEDKJQHUEGXPVUDHAPBMLDUJRMQUJZHDNZIQTRXRFWCDTQAZHPRKWSUOYMVRPJXDQMLIRKLMVXTMJP",
+                  "raw_score": -371.21186
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "IV",
+                "II"
+              ],
+              "score_per_letter": -3.659439225
+            }
+          ]
+        }
+      ],
+      "historical_note": "Documented service reflector, but UKW A was superseded before the main wartime UKW B period.",
+      "historical_prior": "low",
+      "label": "Steckered service Enigma, UKW A",
+      "procedure_compatibility": "army_clear_indicator",
+      "profile_id": "wehrmacht_ukw_a",
+      "rotor_order_count": 60,
+      "source_ids": [
+        "hamer_wirings"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.587903217,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 60,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "FOK",
+                  "plaintext": "MBCVHGMJHLTAQHWCJGJBFCBJTMMNBWUEZKNDITTZSZRNUZTXFPIXHIEZCZKUVNLUQHLLFBFKAUTHMUAPGURABWATTDLESLPMBGUNUEMFWEKHQVVONKEGFZGFBZPDMXDFMSEHANKHRLSVGLXWLVRSWJXATOU",
+                  "raw_score": -550.989835
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "NQQ",
+                  "plaintext": "GENRNTKHVREFYZNJDPCVIUDKIPHJTOWMCWFKCQIURXXCBJHWSNF",
+                  "raw_score": -188.118227
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "II",
+                "V"
+              ],
+              "score_per_letter": -3.587903217
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "CFF",
+                  "plaintext": "DZYZNHEDKAKPYGEDSIBTETDERLRLRFILMKPSBWBFYCZIQPLXKUPEQLCCBNDTPWLVJMSGTEHUMPEXQNOISNJIBSYICEIPACERVXGRGRIXSHQAPPSIVEYDSTUINBMFLIHRCFLJDWHCXAKKSDFWAZQXPJXIJKU",
+                  "raw_score": -560.679076
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "MIA",
+                  "plaintext": "ELXOIYFWJNKNTVKEFELRJJMWIWMUSMMHQKNDNYKEPIKAZSIDRER",
+                  "raw_score": -183.842125
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "IV",
+                "I"
+              ],
+              "score_per_letter": -3.614180589
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 60,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "KRO",
+                  "plaintext": "GFMSAGPJYKINAZKISAABGUNJYRRK?TWRGULOLIJSLGPUFTPMHXBFXEGLTGEAGWNULBCVINBOORDFVAUUYKXCGCOUYOSWFNTFLBWOBWBZMPZGJEQMZDCGGRZOGAVARDKIYQBGTWFBDGWEDOXRGZWLGUTBJRTKWERUSVNZIQN",
+                  "raw_score": -610.331575
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "NMQ",
+                  "plaintext": "FYZMJJNKNUCTCNSLXGLLIJRXENTJKWHBSRNGEJUGTKASPCANXRDTOGUIJDDJONWZVLEWOLBWLUMVUSDACWGOLNIONCCHBULRHAINFCGKCUA",
+                  "raw_score": -373.122738
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "QMX",
+                  "plaintext": "QUARMFCHIDHYAFJSZUKPYFTUKONPCALVFRLHLVNFWVVDPOCTNFUXDXZATZHOFOKEYUQSEHMCCFBKEFCOBNMPIXQISFIEOWNGK",
+                  "raw_score": -359.399653
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "II",
+                "V"
+              ],
+              "score_per_letter": -3.629335041
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "ZLE",
+                  "plaintext": "USKNKMAKEDEWMKOEVUYNDJUFFYEZ?SDURDKKMRQIUCFDWNLJYJHJDYTGEGGVZGREIKSGEZDNITSDEKLWQJAWMNYXGLPUNWSRCMGKHUULLPGRPMTLLPYPTNNEVZHWTBSQGOKBVAQHXLBKGWFJOPZDBUJEAHJAKNSUJGNDJEW",
+                  "raw_score": -614.580696
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "UEM",
+                  "plaintext": "MMMMWODWBAZIZLUIABSEUGSHSICVLPTRYSVEQAYFWQZCOFWXTATMBDUAKJODUMHTUIQFLSHBIYZUMQPYKKCRPTWUKQRUWHABRLPPCIEANDD",
+                  "raw_score": -393.111453
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "SOA",
+                  "plaintext": "PAQCINWOWTZSRILIXJMTUOBSPVAFKMDIOUZHIFLRCGGDTBDCSUCTLACUCPZUHMJAKCUKMXSUAHZTJRGPSRSRUNXDTYCOCIMIL",
+                  "raw_score": -341.335796
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "IV",
+                "II",
+                "III"
+              ],
+              "score_per_letter": -3.646021472
+            }
+          ]
+        }
+      ],
+      "historical_note": "Phase 1 baseline and the best procedural match for the corpus framing.",
+      "historical_prior": "high",
+      "label": "Steckered service Enigma, UKW B",
+      "procedure_compatibility": "army_clear_indicator",
+      "profile_id": "wehrmacht_ukw_b",
+      "rotor_order_count": 60,
+      "source_ids": [
+        "hamer_wirings",
+        "py_enigma_reference"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.599966851,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 6,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "ELA",
+                  "plaintext": "XEKCBWTZKIKBDMZASSAKRZAKNTQUTELIVLWLTFKQXAXGUDLJDOVONQGURWNRZHANPDVQSMLMSRGHCWEJNCGVEFSFBPJSGELGFGVMMIFZZHTMCZASLLBGQNKRTTXOWRVDFKSJFWBMKQQUEGAXRHCCQEDVZQI",
+                  "raw_score": -558.074461
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "FFS",
+                  "plaintext": "JSDKCELPDLCEDEQJLDTEFGGHKTPQWVNJXSORVKTQRQHCCMDOHTT",
+                  "raw_score": -183.51871
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "II",
+                "III",
+                "I"
+              ],
+              "score_per_letter": -3.599966851
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "TOQ",
+                  "plaintext": "XODCOUITHKDRBEEHCJDITCAUBPSFTCRXRLYMZHYMIIMBVXTCCPUFQDLFOHGVOYXCOAPORRNXTKKISSEWGAQQIQJUFWKQCSMSMDYFQDIEADNRQIEXDXUEJTXDELWWUZNTUBATGCCUAHRFIFZSRIWLFGKTVGH",
+                  "raw_score": -553.960912
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "LIX",
+                  "plaintext": "RCECIABOBEKDCJQPCOSLLKTVQIIGCXVXQUMLJJAQBTONUYMGOZH",
+                  "raw_score": -194.228761
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "III",
+                "II"
+              ],
+              "score_per_letter": -3.631988707
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 6,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "UEC",
+                  "plaintext": "LHMMRZTWIPDFLCBXEUVZAXLWUTRK?RILSBPZQBGNWTRFIRSCSXYWLWTMHTZZGPUMLXKIFVUMGOLFBHDTNNZCMNNSKNEIMRVBJLRIGOWTQKGFJGZBDJMLCPZTQBWMKFCUXNMAUWVCLARJRQSQRAWUDYEOCQTONBSKCQGXKEM",
+                  "raw_score": -605.601058
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "YYZ",
+                  "plaintext": "ABMZUTKSWVPHEAIIEMYHTYEKXQPPYQLSUMQTWXMQCRSOETSOTEKYERGIJUCXIEGDWVRJFYIZRZVAUFIYQDHPBEFGRMGSNUMIZGMJJYEKSEE",
+                  "raw_score": -401.773154
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "RRS",
+                  "plaintext": "VNIJTVYQEVTGXRIZCOLWFNEOCSDYITCMKLQEUDDWERMRLVWTNNBGXDRLPSGENCWPBKRJWBZMGUFLOXYAYTBJYSEKWKPKLSDUQ",
+                  "raw_score": -363.878292
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "I",
+                "II"
+              ],
+              "score_per_letter": -3.706087847
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "BZR",
+                  "plaintext": "YBXYVWTBLSSUMNDLQSGWLDBHSUAZ?VGEUHDHBETPXFNZEKVBIGXUEDDDOGHVUQRZFCBVHKYPBIIOKKLNTLGUJMPOOXSOXPJFNDQYJQTEEJIXHBCSPWPVFHDETSVDQVHFTUNMJFQXCHQKDGKUOLVWISGYUZTIUAAGQESSELR",
+                  "raw_score": -616.619075
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "OIY",
+                  "plaintext": "YKVFEVTIXIOJIUIKNWQKXIUNZHTKEKYTUEDCUFCXUBVFSDZNUTNBKDAXLEIOBHAJEOSGJUDFMQGXFYQNYILZTYUTNDYLAUFXDFLVTNNWPZD",
+                  "raw_score": -401.017637
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "RRJ",
+                  "plaintext": "APPUUZZQDZZCAQSMQQUERHSJOOPOHIWFEQCWNWEPTXFULTQLFRQRAXDIJJWLHGDIYTPDEEXRNBJAJCJBQMSBGFCFFDUIMOJFA",
+                  "raw_score": -363.312164
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "II",
+                "I",
+                "III"
+              ],
+              "score_per_letter": -3.73229426
+            }
+          ]
+        }
+      ],
+      "historical_note": "Models the documented Swiss Army modification: right wheel fixed, middle wheel fast, slow wheel and UKW stepping.",
+      "historical_prior": "very_low",
+      "label": "Swiss K, 1941 Army stepping",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "profile_id": "swiss_k_army_1941",
+      "rotor_order_count": 6,
+      "source_ids": [
+        "enigma_variations"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.607623216,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 60,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "FEV",
+                  "plaintext": "UGACIBYNUVHQSXWYFRMWJKFHMUNZOOPROZPAGOACFPJIGFOXYCCIXWQWOIKALKXGAWIURGHWZUUUZEBDILNSXAXGNYEOFOHUKHKINKBCADOCBWGKDQAGLDEARNRDINWAZWSFGQMTIDJXIMCTPQXMORHHGXR",
+                  "raw_score": -565.50476
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "TIF",
+                  "plaintext": "NWRSCILQXCTEVJEHLTAOZGLRSMHFSJUMUAGCUPAAVMHXJAZSDOI",
+                  "raw_score": -177.665623
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "V",
+                "II",
+                "IV"
+              ],
+              "score_per_letter": -3.607623216
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "NDA",
+                  "plaintext": "MNEABYAUHIZXFNQNAXEUISAZBLJJBGYFOZFDMIQOBOCJZXRTPSTCQAUNNWKRYZXXAJIECVFVSKOLHUCFRKIDFAURAOMLBUEEEWSRECZMIJEAMGSBQAGSLCKOCPBUNVOTNTTYUTSJQKLDZHHJEEPBEGZPGRB",
+                  "raw_score": -560.016578
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "SVL",
+                  "plaintext": "AVENUHTKONCEDEHRZJALMAVUZGQEFFNUYYYKNLDFLABEZUVFWWL",
+                  "raw_score": -186.519447
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "IV",
+                "III",
+                "I"
+              ],
+              "score_per_letter": -3.623961285
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 60,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "QGB",
+                  "plaintext": "GAUQRIXVILHWQSMIEGRJLGAEEWQW?SNMGVYOFXLCNHGRTOPPEZDWEEFSPTVCQTHPRPGAFGZHSQFCXFQSDFFKOCXZTSYBPMYNVTEQFBXECITMZAMXCHYDVNOPGXMYFUCTXIBLZFFOZKSIDYKRCZZXRGKIPJVEYWCONZVLIWS",
+                  "raw_score": -629.229844
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "FFW",
+                  "plaintext": "ZIDSTVPUETCNKHXEUFVQMAEIENOLQCYKDJSFWFLTWVNRVCMRANESGDAHQSLNXRIPKFZJXCWMQLDMODRCMSWTJIHSEYULJXLBYLIISTSOGQE",
+                  "raw_score": -381.39771
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "ZZU",
+                  "plaintext": "VMMDRCEDLGUUFKXMIDCIZUACKTRKNNSHSCRDFWXWMFHDUOJQEZGZQLQCJAWDOSJOGORNHTMFJGMNUTXWAVFCMDZELSAANZCSL",
+                  "raw_score": -341.352199
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "II",
+                "III"
+              ],
+              "score_per_letter": -3.653999333
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "OSU",
+                  "plaintext": "IDFRSAVNGJDTKVOSEPZOFVCLGGGD?HBDULZUDUUOWJOTHVHWLDNCQCFJNVOILJNWWHKETNDLMNIZPGPMQGAUUYCTLHOEDNFLOVBDAXZSXVWNTUHNSBRDKYTFRMBOGUXHGROIQEVTFQVTRGGJUVEQMVFPHQGKHIZOFCHTXBD",
+                  "raw_score": -604.479439
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "ESR",
+                  "plaintext": "FCMCFFMSQSICLCILSWALPHQUFZEUWPEIKBCLQBENVVLTXWDYDEBXJHWAUQMBTUKXNTPYCQWRGMURNXPXCHUYAUPALYKKZBYXSOOUWGMAEUW",
+                  "raw_score": -403.792151
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "ZRE",
+                  "plaintext": "DSCKGAIQWWXMGEDLKMXDDTXTLNDSTFIHLEZKEBCJROLMCPRYIMNDTRFSJGQUGVZQAEWBIOPNABGLPOESIOPIFPNYCFNBSGFSF",
+                  "raw_score": -344.019834
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "II",
+                "V"
+              ],
+              "score_per_letter": -3.654841687
+            }
+          ]
+        }
+      ],
+      "historical_note": "Documented service reflector; network and date still govern actual plausibility.",
+      "historical_prior": "medium",
+      "label": "Steckered service Enigma, UKW C",
+      "procedure_compatibility": "army_clear_indicator",
+      "profile_id": "wehrmacht_ukw_c",
+      "rotor_order_count": 60,
+      "source_ids": [
+        "hamer_wirings",
+        "py_enigma_reference"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.617765682,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 6,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "HXM",
+                  "plaintext": "ECOHHZOUDQZUHTMNFBTAQLVODEOXSYYSEJNXNEFKHCHZERVNTWCLCSYMBHHTVWZNFKVSUWXRQWVTSKUILXLMNOZVVFUCANWPBWRLLJQKVELHDQSWWALONIPDMBQZTUJPYWEOIGLRNPXHJREENUJTGCRGTNA",
+                  "raw_score": -563.08603
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "OIJ",
+                  "plaintext": "GKSUFZUSXVDDTDXBWJCLCCHAEAKUUPFRTAFPTYZECMUQZRVJVOH",
+                  "raw_score": -190.679332
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "II",
+                "I",
+                "III"
+              ],
+              "score_per_letter": -3.659055155
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "ELB",
+                  "plaintext": "QZLAQIMRQSXEFYCMIPBDIIVZCYZWBKWWAJIPHNZVUJMNSIFILGXCIOCUTEWMEXOXABEYURTFRWJPKUOUESQBEQDQTKGCCXNULCLHRLMUFTOYUVPRCEHRBQYRUARDTKUSJTFWBUPUULWILHFZCGGECQIHKRO",
+                  "raw_score": -569.582496
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "SHK",
+                  "plaintext": "BHJFOPTJLMLPENTPSTIUULBYVHMOCDPRQUNZYSGYOOBOUYFJSXN",
+                  "raw_score": -201.883525
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "III",
+                "II"
+              ],
+              "score_per_letter": -3.744980686
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 6,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "NAO",
+                  "plaintext": "MLXRFNGXXUDEROOIWRYDMOPHWBLS?VITLOSMINXTFMJIKMONWAMUFDOBGTRGNPKEPBZCCOSJIBFIHNCXUWZJECCIHWZMOKNNJSORPBJRRSUZTEXDKDJOIAGAIGPJUWKZNZWDEBEOCXYORMUOQQJGLPATLRVRZTLFDXCVLRK",
+                  "raw_score": -599.753937
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "ZAQ",
+                  "plaintext": "IXDNFNFYDUTAZFVXPBWAXQZQIJUUCDADBDEMPTCBTLRZDORGIFGTAMWADIZBMTGNFURIBTUGGKSHFRAWFQCECQGHHPXUMXBQOODYKLERDOB",
+                  "raw_score": -384.974169
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "MLD",
+                  "plaintext": "EIENDIZPKNUPERQFJACWVYMLBOKPGQJBREBMGBUPQJEVTKLAPWOCYTBDSZBZSGIFLABNTAEWDSZMVZGXLMBLJSLSONFXHEELR",
+                  "raw_score": -353.845197
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "III",
+                "II"
+              ],
+              "score_per_letter": -3.617765682
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "BGS",
+                  "plaintext": "LGOSDETNHBEMAATSHRPVGXJZLFMQ?SGWXIYLOEBXJUSTEROVEQHIMHZINBTYYSFBNAVDPNRBNIHQEGPBMVLCZUNNQWDCZHPZCZGNHZZLNDNVJKQFRFAWJRFUGNCQVPEAIGMFRIIRPTXPMNBECDNYYKZOMAGDWNSHJKQWLPR",
+                  "raw_score": -605.852406
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "MLE",
+                  "plaintext": "TDMZFFBBUDKBNFCBPNTVLWVMEKJIBJGHNRSZWKWPZVYBYHBIEVPXWBBRJXRWYQLYWJVJBEWHUHJVNAUNLXGPQMXDQZVOLBKEPLPSGBCWLGT",
+                  "raw_score": -426.53888
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "CNQ",
+                  "plaintext": "PTKNAGOTQDZKVTDEQZPXFUCWIERWIDWRIUYGWESKVOLYHLUJLOCOETWAJTZBWOSLCBEIRASISEDYODVNGAEWEOZENYDXWPVZD",
+                  "raw_score": -347.614592
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "II",
+                "I"
+              ],
+              "score_per_letter": -3.729745615
+            }
+          ]
+        }
+      ],
+      "historical_note": "Documented Swiss wiring, but the corpus is framed as German Army-style traffic.",
+      "historical_prior": "very_low",
+      "label": "Swiss K, unmodified stepping",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "profile_id": "swiss_k_unmodified",
+      "rotor_order_count": 6,
+      "source_ids": [
+        "enigma_variations"
+      ]
+    },
+    {
+      "best_score_per_letter": -3.662967801,
+      "dates": [
+        {
+          "date": "1941-09-29",
+          "evaluations": 6,
+          "messages": 2,
+          "top_candidates": [
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "DDA",
+                  "plaintext": "DLEEXEADAUGTTRFTAGINIXLUDKFNROUOQQIRJASDINHCCUVSMNFJEEUHYFWZHGGZSDAVLDGWZJDYSGJFLXYNGIZDOEMLGJLFQCXIVAJMXRVXTPYGLWRDHAFQVENJCBMZNHKLEHQMIHWUMRMRYHUBFFMLLKT",
+                  "raw_score": -563.623176
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "CDP",
+                  "plaintext": "WPOKBAFVVCPMNOJWBUVMENDMHYCAWVNOKMUEBDOUVFWEHBLNPWM",
+                  "raw_score": -190.948191
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "II",
+                "III"
+              ],
+              "score_per_letter": -3.662967801
+            },
+            {
+              "date": "1941-09-29",
+              "messages": [
+                {
+                  "designator": "QTXMA",
+                  "known_letters": 155,
+                  "message_key": "ONE",
+                  "plaintext": "IYSRZRRYTDMEIAJNQZFLTGJPYXLYFZNRLGGMTLJTVWJVKDXZZAPXSIUHYZJIRRHUGJVILNHBBNKTILUHHRQHSJEOUHPRRSDOQINQAJEVDICHVKOFCLAIHMFUZEVPAMOMDSIJCOCPHJSBZKUEODVOKPSLJCN",
+                  "raw_score": -581.468666
+                },
+                {
+                  "designator": "SZAEJ",
+                  "known_letters": 51,
+                  "message_key": "ZAB",
+                  "plaintext": "SIKTREUBSYZBWEVEATIURWSNKKQNWHMSKTQGAUGLLVOXIWLHPDK",
+                  "raw_score": -178.697796
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "I",
+                "II"
+              ],
+              "score_per_letter": -3.690128456
+            }
+          ]
+        },
+        {
+          "date": "1941-09-30",
+          "evaluations": 6,
+          "messages": 3,
+          "top_candidates": [
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "WVU",
+                  "plaintext": "SGSEBYWGTFXWZKBVGPAOLDFPWVFR?LVGIWWNXPLEABPSKOVEBNNGTSLTQCWWWIFSVNHYPGMIYFSJEKPEEJEJQDEVHXBFDVJUJCWJXOULYLNODHDSHDSVKIQPUAHFYKIEALBMYKMZETTMFHSWOJOHIFIUIPYJICGEBYOXZLL",
+                  "raw_score": -634.926361
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "BFA",
+                  "plaintext": "LLLOCBFRCOLEAZRUBSIHMWILBPLPPHGAMBYGPGFXJZCTZZAUXNYYILEYIHIGUCHCWVOCNVVOQYPWCLVZDFWZVVUXFICWUGFINIVSYSXJBXB",
+                  "raw_score": -418.002509
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "GFL",
+                  "plaintext": "ICBEMEOEECCILIVMIFSLDZHENEUMOIIEALHOQKLWSEHBCGCIGDKHSPHZWSILXPBXXHNBJBSUQRZABTESGFCWPCMFVVUSEKSBZ",
+                  "raw_score": -327.55081
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "I",
+                "III",
+                "II"
+              ],
+              "score_per_letter": -3.731026163
+            },
+            {
+              "date": "1941-09-30",
+              "messages": [
+                {
+                  "designator": "BYQMZ",
+                  "known_letters": 166,
+                  "message_key": "OJI",
+                  "plaintext": "QEHQJZXNOSZBHBONQZHKWXKHRJYS?CCKYJPQKVSBPVIBFAWPIDKRXNBPHATINSISUGKKINGNAMHPMBBNILWLJSIALFLUDPCLQIALAXLXNQCGZIMCYJLOGEZZQLMZUOUNBQQYIKRQPRVUBRBVYHLMBSXDBJPJLUSDBBZMWBZ",
+                  "raw_score": -638.441592
+                },
+                {
+                  "designator": "FKQLZ",
+                  "known_letters": 107,
+                  "message_key": "OHY",
+                  "plaintext": "HOIZXCXOAVJXDCMBRVDOSXLPDDQYCDECOPRPDCAVCEUTVLIQJITGGFZSZJZEGWQFXYROCHLYTLWKWCRWSMWKSXVGWJBKKFCCPAQUODLEPZD",
+                  "raw_score": -412.291311
+                },
+                {
+                  "designator": "XFEDT",
+                  "known_letters": 97,
+                  "message_key": "CRK",
+                  "plaintext": "DPTDPVBLITWCUENLKJMBYZLBEBTCDINMETKLXDFKJHAMXRBRUILFEMCUXRMRHJLYMDMICFXHSHGLDQUAPFPLWECFAYWCUAJSM",
+                  "raw_score": -353.165614
+                }
+              ],
+              "plugboard": "",
+              "reflector_position": "A",
+              "rings": "AAA",
+              "rotors": [
+                "III",
+                "II",
+                "I"
+              ],
+              "score_per_letter": -3.794320315
+            }
+          ]
+        }
+      ],
+      "historical_note": "Used by the German Reichsbahn in eastern Europe, Russia, and the Balkans; the corpus procedure is not evidence of Railway traffic.",
+      "historical_prior": "low",
+      "label": "Railway Enigma",
+      "procedure_compatibility": "mechanical_assumption_only",
+      "profile_id": "railway_enigma",
+      "rotor_order_count": 6,
+      "source_ids": [
+        "enigma_variations"
+      ]
+    }
+  ],
+  "schema": "enigma-attack.phase3-variant-smoke/v1",
+  "search": {
+    "indicator_assumption": "The corpus clear Grundstellung/encrypted message-key convention is applied uniformly; non-Army profiles are marked mechanical-only.",
+    "plugboards": [
+      ""
+    ],
+    "profiles": [
+      "wehrmacht_ukw_a",
+      "wehrmacht_ukw_b",
+      "wehrmacht_ukw_c",
+      "kriegsmarine_m3_ukw_b",
+      "kriegsmarine_m3_ukw_c",
+      "railway_enigma",
+      "swiss_k_unmodified",
+      "swiss_k_army_1941"
+    ],
+    "reflector_positions": [
+      "A"
+    ],
+    "rings": [
+      "AAA"
+    ],
+    "top_candidates_kept": 2,
+    "total_daily_key_evaluations": 1740
+  }
+}

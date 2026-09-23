@@ -19,12 +19,13 @@ import random
 from typing import Any, Mapping, Sequence
 
 from phase1 import load_corpus
+from resources import output_path, resource_root
 
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = resource_root()
 DEFAULT_CORPUS = ROOT / "corpus.json"
 DEFAULT_CATALOG = ROOT / "cipher-families.json"
-DEFAULT_OUTPUT = ROOT / "artifacts" / "phase5-model-triage.json"
+DEFAULT_OUTPUT = output_path("phase5-model-triage.json")
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 RANDOM_IC = 1.0 / len(ALPHABET)
 

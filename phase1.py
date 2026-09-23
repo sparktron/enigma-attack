@@ -25,11 +25,12 @@ from dataclasses import dataclass
 from typing import Iterable, Sequence
 
 from enigma import A, EnigmaI, ROTOR_WIRINGS
+from resources import output_path, resource_root
 
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = resource_root()
 DEFAULT_CORPUS = ROOT / "corpus.json"
-DEFAULT_CERTIFICATE = ROOT / "artifacts" / "phase1-smoke-certificate.json"
+DEFAULT_CERTIFICATE = output_path("phase1-smoke-certificate.json")
 
 # German monogram frequencies, adjusted slightly so X/Q conventions in raw
 # Army traffic are not rejected as harshly as they would be in newspaper text.

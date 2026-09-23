@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import dataclasses
 import datetime as dt
 import hashlib
 import json
@@ -22,9 +23,11 @@ from typing import Any
 
 from enigma import A, EnigmaMachine, REFLECTOR_WIRINGS, ROTOR_WIRINGS
 from phase1 import ArmyGermanScorer, CorpusMessage, load_corpus
+import phase3
+from resources import resolve_output, resource_root
 
-ROOT = pathlib.Path(__file__).resolve().parent
-DEFAULT_CONFIG = ROOT / "experiments" / "phase4-joint-machine-smoke-v1" / "config.json"
+ROOT = resource_root()
+DEFAULT_CONFIG = ROOT / "experiments" / "phase4-joint-machine-smoke-v2" / "config.json"
 
 
 @dataclass(frozen=True)
@@ -98,8 +101,22 @@ def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
         raise ValueError("unsupported optimizer")
     if optimizer["iterations"] < 1 or not optimizer["seeds"]:
         raise ValueError("optimizer needs positive iterations and at least one seed")
-    if not 0 < optimizer["temperature_end"] <= optimizer["temperature_start"]:
+    if (not 0 < optimizer["temperature_end"] <= optimizer["temperature_start"]
+            or not all(math.isfinite(optimizer[key]) for key in ("temperature_start", "temperature_end"))):
         raise ValueError("invalid annealing temperatures")
+    if optimizer["trace_every"] < 1:
+        raise ValueError("trace_every must be positive")
+    if not 0 <= optimizer["max_plugboard_pairs"] <= 13:
+        raise ValueError("max_plugboard_pairs must be between zero and 13")
+    for date, key in payload["initial_daily_keys"].items():
+        if len(key.get("plugboard", "").split()) > optimizer["max_plugboard_pairs"]:
+            raise ValueError(f"initial plugboard exceeds pair capacity for {date}")
+    for name in ("machine_mutation_weights", "daily_mutation_weights", "complexity_penalty"):
+        weights = optimizer[name]
+        if not weights or any(not math.isfinite(value) or value < 0 for value in weights.values()):
+            raise ValueError(f"invalid {name}")
+        if name != "complexity_penalty" and sum(weights.values()) <= 0:
+            raise ValueError(f"{name} must have positive total weight")
     train = set(payload["split"]["train_designators"])
     held_out = set(payload["split"]["held_out_designators"])
     if not train or not held_out or train.intersection(held_out):
@@ -338,6 +355,10 @@ def _mutate_plugboard(
     rng: random.Random,
     max_pairs: int,
 ) -> tuple[str, ...]:
+    if not 0 <= max_pairs <= 13 or len(pairs) > max_pairs:
+        raise ValueError("invalid plugboard pair capacity")
+    if max_pairs == 0:
+        return pairs
     pair_list = list(pairs)
     used = set("".join(pair_list))
     available_actions = ["edit"] if pair_list else []
@@ -575,45 +596,40 @@ def _split_messages(
     return train, held_out
 
 
-def _verify_phase3_baseline(
-    path: pathlib.Path,
-    baseline: MachineState,
-) -> dict[str, Any]:
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    profile = next(
-        (
-            result
-            for result in payload["results"]
-            if result["profile_id"] == "wehrmacht_ukw_b"
-        ),
-        None,
-    )
-    if profile is None:
-        raise ValueError("Phase 3 artifact lacks the UKW-B baseline")
-    comparisons: list[dict[str, Any]] = []
-    for date_result in profile["dates"]:
-        date = date_result["date"]
-        candidate = date_result["top_candidates"][0]
-        key = baseline.daily_keys[date]
-        matches = (
-            tuple(candidate["rotors"]) == key.rotors
-            and candidate["rings"] == key.rings
-            and candidate["plugboard"] == key.plugboard
+def _training_only_baseline(
+    config: Mapping[str, Any], train_messages: Sequence[CorpusMessage],
+    scorer: ArmyGermanScorer,
+) -> tuple[MachineState, dict[str, Any]]:
+    """Select each daily key using training messages before evaluating holdouts."""
+    baseline = initial_state(config)
+    _, profiles = phase3.load_variant_catalog()
+    profile = next(item for item in profiles if item.id == "wehrmacht_ukw_b")
+    profile = dataclasses.replace(profile, rotor_pool=tuple(baseline.rotor_wirings))
+    selections = []
+    for date, old_key in baseline.daily_keys.items():
+        training = [message for message in train_messages if message.date == date]
+        if not training:
+            raise ValueError(f"no training message for baseline date {date}")
+        top, evaluations = phase3._search_profile_date(
+            profile, date, training, (old_key.rings,), ("A",),
+            (old_key.plugboard,), scorer, 1,
         )
-        if not matches:
-            raise ValueError(f"configured baseline does not match Phase 3 for {date}")
-        comparisons.append(
-            {
-                "date": date,
-                "phase3_score_per_letter": candidate["score_per_letter"],
-                "settings_match": True,
-            }
+        winner = top[0]
+        baseline.daily_keys[date] = DailyKey(
+            tuple(winner["rotors"]), winner["rings"], old_key.plugboard_pairs,
         )
-    return {
-        "artifact": str(path),
-        "sha256": _sha256(path),
-        "profile_id": "wehrmacht_ukw_b",
-        "dates": comparisons,
+        selections.append({
+            "date": date,
+            "train_designators": [message.designator for message in training],
+            "evaluations": evaluations,
+            "score_per_letter": winner["score_per_letter"],
+            "daily_key": {"rotors": winner["rotors"], "rings": winner["rings"],
+                          "plugboard": winner["plugboard"]},
+        })
+    return baseline, {
+        "selection": "training_only",
+        "catalog_sha256": _sha256(phase3.DEFAULT_CATALOG),
+        "dates": selections,
     }
 
 
@@ -626,9 +642,14 @@ def run_experiment(
     phase3_path = _resolve_path(config["phase3_baseline_artifact"])
     messages = load_corpus(corpus_path)
     train_messages, held_out_messages = _split_messages(messages, config)
-    baseline = initial_state(config)
-    phase3_comparison = _verify_phase3_baseline(phase3_path, baseline)
     scorer = ArmyGermanScorer()
+    baseline, baseline_selection = _training_only_baseline(
+        config, train_messages, scorer
+    )
+    phase3_comparison = {
+        "artifact": str(phase3_path), "sha256": _sha256(phase3_path),
+        "role": "historical_reference_only_selection_contaminated",
+    }
     baseline_train = score_state(baseline, train_messages, scorer)
     baseline_held_out = score_state(baseline, held_out_messages, scorer)
     started_at = dt.datetime.now(dt.timezone.utc)
@@ -731,6 +752,7 @@ def run_experiment(
             "corpus": str(corpus_path),
             "corpus_sha256": _sha256(corpus_path),
             "phase3_baseline": phase3_comparison,
+            "baseline_selection": baseline_selection,
         },
         "baseline": {
             "state_signature": state_signature(baseline),
@@ -761,7 +783,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parsed_arguments = list(argv) if argv is not None else sys.argv[1:]
     args = build_parser().parse_args(parsed_arguments)
     config = load_config(args.config)
-    output = args.output or _resolve_path(config["output"])
+    output = args.output or resolve_output(config["output"])
     artifact = run_experiment(config, args.config, parsed_arguments)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
