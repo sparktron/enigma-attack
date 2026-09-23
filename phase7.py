@@ -187,6 +187,21 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
         "invalid_positive_control_failure" if search_result is None else
         search_result["status"]
     )
+    if status == "source_audit_failed":
+        interpretation = "The source grouping does not match the audited corpus; no target search was run."
+        next_decision = "Resolve the source and corpus discrepancy before testing a cipher model."
+    elif status == "scorer_validation_failed":
+        interpretation = "The published scorer failed its plaintext discrimination check; no target search was run."
+        next_decision = "Validate the scorer on independently sourced plaintexts before searching QTXMA."
+    elif status == "invalid_positive_control_failure":
+        interpretation = "A known-key transposition control failed exact recovery; the QTXMA target search was skipped."
+        next_decision = "Improve and validate the failing search branch on independent known-key messages."
+    elif search_result["hypothesis_supported"]:
+        interpretation = "The target score passed complete-search null calibration; this is model evidence, not an accepted plaintext."
+        next_decision = "Independently reproduce the key and readable plaintext before claiming a break."
+    else:
+        interpretation = "The bounded target search did not pass complete-search null calibration."
+        next_decision = "Validate search recovery and seek additional procedure evidence before expanding widths."
     counts = {
         key: {"path": config["scorer"][key], "sha256": sha256(resolve_path(config["scorer"][key]))}
         for key in ("bigram_counts", "trigram_counts")
@@ -209,16 +224,8 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
         "search": search_result,
         "baseline": {"experiment_id": "phase6-qtxma-double-transposition-smoke-v1", "artifact": str(baseline_path), "median_held_out_delta": baseline_payload["observed"]["median_held_out_delta"]},
         "limitations": config["limitations"],
-        "interpretation": (
-            "Inference: the new scorer passed external plaintext discrimination and the bounded search met its controls and held-out rule; a readable independently reproduced plaintext is still required."
-            if search_result and search_result["hypothesis_supported"] else
-            "Inference: the preregistered validation or held-out criterion failed; the tested model does not establish a QTXMA transposition break."
-        ),
-        "next_decision": (
-            "Inspect key convergence and candidate plaintext; independently reproduce any readable result before enlarging the search."
-            if search_result and search_result["hypothesis_supported"] else
-            "Do not expand transposition widths from training gains; seek archival procedure evidence or a separately sourced, held-out Army plaintext model."
-        ),
+        "interpretation": interpretation,
+        "next_decision": next_decision,
         "timing": {"started_at": started.isoformat(), "finished_at": dt.datetime.now(dt.timezone.utc).isoformat()},
     }
 
@@ -235,7 +242,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     output = args.output or resolve_output(config["output"])
     result = run_experiment(config, args.config, arguments)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output.write_text(json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
     print(f"wrote {output}; status={result['status']}")
     return 0
 

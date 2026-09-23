@@ -61,6 +61,9 @@ class Phase7Tests(unittest.TestCase):
             result = phase7.run_experiment(self.config, phase7.DEFAULT_CONFIG, ["--config", str(phase7.DEFAULT_CONFIG)])
         self.assertEqual(result["status"], "invalid_positive_control_failure")
         self.assertIsNone(result["search"])
+        self.assertIn("known-key transposition control failed", result["interpretation"])
+        self.assertNotIn("held-out", result["interpretation"])
+        json.dumps(result, allow_nan=False)
         target_search.assert_called_once()
 
     def test_audited_corpus_is_forwarded_to_search(self) -> None:

@@ -116,6 +116,11 @@ class Phase6ArtifactTests(unittest.TestCase):
             result["training_characters"] + result["held_out_characters"],
             result["ciphertext_length"],
         )
+        self.assertEqual(result["held_out_characters"], 0)
+        self.assertIsNone(result["candidate"]["suffix_descriptive"]["per_letter"])
+        self.assertIsNone(result["delta"]["suffix_descriptive_score_per_letter"])
+        self.assertFalse(any("first 75 percent" in note for note in artifact["limitations"]))
+        json.dumps(artifact, allow_nan=False)
 
     def test_failed_control_makes_no_target_search_calls(self) -> None:
         config = copy.deepcopy(load_config(DEFAULT_CONFIG))

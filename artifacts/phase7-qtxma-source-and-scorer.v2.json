@@ -7,39 +7,18 @@
   },
   "code": {
     "branch": "codex/fix-nine-audit-findings",
-    "commit": "36399219ad02fc29091bffbe5b1eeef1a9ecdf4c",
+    "commit": "bb889b9149c56acef361c8dfe6ca67ffa5df1f27",
     "dirty": true,
-    "phase7_runner_sha256": "284807ad49335fa9f3b68e99f4da50aca084a271388f797af900f08b7e8d8cb8",
-    "runner_sha256": "f94dfc34cd1c050a57519467519cac5e6f24d541e0b3f4d490b2e7952c2f4571",
+    "phase7_runner_sha256": "3fe57ee55d5b8ec8da594c3ee72f453683b8feb2f03500fded93233540cec756",
+    "runner_sha256": "e06545d85e6a3739cf3cb36588338d930057703703e7bd800f75541aa353e1a9",
     "status": [
-      "M docs/STATUS.md",
-      " M enigma.py",
-      " M phase1.py",
-      " M phase2.py",
-      " M phase3.py",
-      " M phase4.py",
-      " M phase5.py",
+      "M artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
+      " M artifacts/phase7-qtxma-source-and-scorer.v2.json",
+      " M experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
       " M phase6.py",
       " M phase7.py",
-      " M pyproject.toml",
-      " M recon.py",
-      " M tests/test_phase3.py",
-      " M tests/test_phase4.py",
       " M tests/test_phase6.py",
-      " M tests/test_phase7.py",
-      "?? .github/",
-      "?? artifacts/phase3-variant-smoke-v2.json",
-      "?? artifacts/phase4-joint-machine-smoke.v2.json",
-      "?? artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
-      "?? artifacts/phase7-qtxma-source-and-scorer.v2.json",
-      "?? docs/ATTACK_PLAN.md",
-      "?? docs/code-review-2026-09-22.md",
-      "?? experiments/phase4-joint-machine-smoke-v2/",
-      "?? experiments/phase6-qtxma-double-transposition-smoke-v2/",
-      "?? experiments/phase7-qtxma-source-and-scorer-v2/",
-      "?? resources.py",
-      "?? tests/test_recon.py",
-      "?? tests/test_wheel_install.py"
+      " M tests/test_phase7.py"
     ]
   },
   "configuration": {
@@ -230,16 +209,16 @@
       }
     },
     "phase6_baseline_sha256": "3c2dd923b50abd47cb874fc23a817c2a66f87cc6586e3bcef3d663d77632982e",
-    "phase6_config_sha256": "727be5f6f62bea509391c0a681281ceae1449de7eb06dee4fc685b350c8dc9c0"
+    "phase6_config_sha256": "d2107a00d629f25b2e077b30d7db22f57bc7c9ea7e9152aa2d815067756de381"
   },
-  "interpretation": "Inference: the preregistered validation or held-out criterion failed; the tested model does not establish a QTXMA transposition break.",
+  "interpretation": "A known-key transposition control failed exact recovery; the QTXMA target search was skipped.",
   "limitations": [
     "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
     "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
     "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
     "The historical Phase 6 baseline is preserved for comparison, not reused as validation."
   ],
-  "next_decision": "Do not expand transposition widths from training gains; seek archival procedure evidence or a separately sourced, held-out Army plaintext model.",
+  "next_decision": "Improve and validate the failing search branch on independent known-key messages.",
   "positive_control_preflight": {
     "additional_known_key_controls": [
       {
@@ -295,7 +274,7 @@
       },
       "suffix_descriptive": {
         "known_letters": 0,
-        "per_letter": -Infinity,
+        "per_letter": null,
         "raw": 0.0
       },
       "training": {
@@ -313,7 +292,7 @@
       "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
       "suffix_descriptive": {
         "known_letters": 0,
-        "per_letter": -Infinity,
+        "per_letter": null,
         "raw": 0.0
       },
       "training": {
@@ -325,7 +304,7 @@
     "ciphertext_length": 148,
     "delta": {
       "full_score_per_letter": 1.916221459,
-      "suffix_descriptive_score_per_letter": NaN,
+      "suffix_descriptive_score_per_letter": null,
       "training_score_per_letter": 1.916221459
     },
     "diagnostics": {
@@ -784,7 +763,7 @@
   },
   "status": "invalid_positive_control_failure",
   "timing": {
-    "finished_at": "2026-09-22T20:21:51.590069+00:00",
-    "started_at": "2026-09-22T20:21:50.140759+00:00"
+    "finished_at": "2026-09-23T00:57:14.455573+00:00",
+    "started_at": "2026-09-23T00:57:13.043458+00:00"
   }
 }

@@ -1,38 +1,17 @@
 {
   "accepted_break": false,
   "code": {
-    "commit": "36399219ad02fc29091bffbe5b1eeef1a9ecdf4c",
+    "commit": "bb889b9149c56acef361c8dfe6ca67ffa5df1f27",
     "dirty": true,
-    "runner_sha256": "f94dfc34cd1c050a57519467519cac5e6f24d541e0b3f4d490b2e7952c2f4571",
+    "runner_sha256": "e06545d85e6a3739cf3cb36588338d930057703703e7bd800f75541aa353e1a9",
     "status": [
-      "M docs/STATUS.md",
-      " M enigma.py",
-      " M phase1.py",
-      " M phase2.py",
-      " M phase3.py",
-      " M phase4.py",
-      " M phase5.py",
+      "M artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
+      " M artifacts/phase7-qtxma-source-and-scorer.v2.json",
+      " M experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
       " M phase6.py",
       " M phase7.py",
-      " M pyproject.toml",
-      " M recon.py",
-      " M tests/test_phase3.py",
-      " M tests/test_phase4.py",
       " M tests/test_phase6.py",
-      " M tests/test_phase7.py",
-      "?? .github/",
-      "?? artifacts/phase3-variant-smoke-v2.json",
-      "?? artifacts/phase4-joint-machine-smoke.v2.json",
-      "?? artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
-      "?? artifacts/phase7-qtxma-source-and-scorer.v2.json",
-      "?? docs/ATTACK_PLAN.md",
-      "?? docs/code-review-2026-09-22.md",
-      "?? experiments/phase4-joint-machine-smoke-v2/",
-      "?? experiments/phase6-qtxma-double-transposition-smoke-v2/",
-      "?? experiments/phase7-qtxma-source-and-scorer-v2/",
-      "?? resources.py",
-      "?? tests/test_recon.py",
-      "?? tests/test_wheel_install.py"
+      " M tests/test_phase7.py"
     ]
   },
   "configuration": {
@@ -73,12 +52,12 @@
       ],
       "corpus": "corpus.json",
       "experiment_id": "phase6-qtxma-double-transposition-smoke-v2",
-      "hypothesis": "The full-text transposition search recovers the exact known control and exceeds the matched complete-search shuffle null on QTXMA.",
+      "hypothesis": "The full-text transposition search recovers all known-key controls exactly and exceeds the matched complete-search shuffle null on QTXMA.",
       "legacy_prefix_fraction": 0.75,
       "notes": [
         "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
-        "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
-        "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+        "Only order-sensitive n-grams are optimized: Phase 6 uses the bootstrap scorer and Phase 7 substitutes published 1941 counts. Monograms are excluded because transposition preserves them.",
+        "Candidate keys are selected by scoring each complete proposed plaintext. Any prefix or suffix statistics are descriptive only.",
         "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
         "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction.",
         "The candidate suffix is descriptive only; no independent held-out claim is made from it."
@@ -101,7 +80,7 @@
           2
         ]
       },
-      "refuted_by": "The known control is not recovered exactly, or the target maximum fails complete-search calibration.",
+      "refuted_by": "A known-key control is not recovered exactly, or the target maximum fails complete-search calibration.",
       "schema": "enigma-attack.phase6-config/v1",
       "search": {
         "algorithm": "bounded_exhaustive_or_annealing",
@@ -150,7 +129,7 @@
       },
       "target_designator": "QTXMA"
     },
-    "sha256": "727be5f6f62bea509391c0a681281ceae1449de7eb06dee4fc685b350c8dc9c0"
+    "sha256": "d2107a00d629f25b2e077b30d7db22f57bc7c9ea7e9152aa2d815067756de381"
   },
   "controls": {
     "additional_known_key": [
@@ -254,7 +233,7 @@
         },
         "suffix_descriptive": {
           "known_letters": 0,
-          "per_letter": -Infinity,
+          "per_letter": null,
           "raw": 0.0
         },
         "training": {
@@ -272,7 +251,7 @@
         "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
         "suffix_descriptive": {
           "known_letters": 0,
-          "per_letter": -Infinity,
+          "per_letter": null,
           "raw": 0.0
         },
         "training": {
@@ -284,7 +263,7 @@
       "ciphertext_length": 148,
       "delta": {
         "full_score_per_letter": 0.228716216,
-        "suffix_descriptive_score_per_letter": NaN,
+        "suffix_descriptive_score_per_letter": null,
         "training_score_per_letter": 0.228716216
       },
       "diagnostics": {
@@ -545,7 +524,7 @@
     "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
   },
   "experiment_id": "phase6-qtxma-double-transposition-smoke-v2",
-  "hypothesis": "The full-text transposition search recovers the exact known control and exceeds the matched complete-search shuffle null on QTXMA.",
+  "hypothesis": "The full-text transposition search recovers all known-key controls exactly and exceeds the matched complete-search shuffle null on QTXMA.",
   "hypothesis_supported": false,
   "inputs": {
     "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
@@ -566,8 +545,8 @@
   "interpretation": "The complete search failed exact plaintext/key recovery on a known-key control; no target search was run.",
   "limitations": [
     "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
-    "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
-    "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+    "Only order-sensitive n-grams are optimized: Phase 6 uses the bootstrap scorer and Phase 7 substitutes published 1941 counts. Monograms are excluded because transposition preserves them.",
+    "Candidate keys are selected by scoring each complete proposed plaintext. Any prefix or suffix statistics are descriptive only.",
     "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
     "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction.",
     "The candidate suffix is descriptive only; no independent held-out claim is made from it."
@@ -585,7 +564,7 @@
     "selected_full_score_per_letter": null,
     "substitution_control_full_score_per_letter": null
   },
-  "refuted_by": "The known control is not recovered exactly, or the target maximum fails complete-search calibration.",
+  "refuted_by": "A known-key control is not recovered exactly, or the target maximum fails complete-search calibration.",
   "schema": "enigma-attack.phase6-experiment/v1",
   "status": "invalid_positive_control_failure",
   "target": {
@@ -594,8 +573,8 @@
     "skipped_reason": "positive_control_failed"
   },
   "timing": {
-    "finished_at": "2026-09-22T20:21:50.081822+00:00",
-    "runtime_seconds": 6.037654,
-    "started_at": "2026-09-22T20:21:44.048879+00:00"
+    "finished_at": "2026-09-23T00:57:12.987966+00:00",
+    "runtime_seconds": 6.049437,
+    "started_at": "2026-09-23T00:57:06.942621+00:00"
   }
 }

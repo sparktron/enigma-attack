@@ -1,8 +1,8 @@
 {
   "schema": "enigma-attack.phase6-config/v1",
   "experiment_id": "phase6-qtxma-double-transposition-smoke-v2",
-  "hypothesis": "The full-text transposition search recovers the exact known control and exceeds the matched complete-search shuffle null on QTXMA.",
-  "refuted_by": "The known control is not recovered exactly, or the target maximum fails complete-search calibration.",
+  "hypothesis": "The full-text transposition search recovers all known-key controls exactly and exceeds the matched complete-search shuffle null on QTXMA.",
+  "refuted_by": "A known-key control is not recovered exactly, or the target maximum fails complete-search calibration.",
   "corpus": "corpus.json",
   "phase5_artifact": "artifacts/phase5-model-triage.json",
   "output": "artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
@@ -73,8 +73,8 @@
   },
   "notes": [
     "This is a bounded smoke experiment, not an exhaustive double-transposition exclusion.",
-    "Only adjacency n-grams from the existing transparent bootstrap scorer are optimized; monogram frequencies are excluded because transposition preserves them.",
-    "Candidate keys are selected using only the first 75 percent of each proposed plaintext. The suffix score is computed only after selection.",
+    "Only order-sensitive n-grams are optimized: Phase 6 uses the bootstrap scorer and Phase 7 substitutes published 1941 counts. Monograms are excluded because transposition preserves them.",
+    "Candidate keys are selected by scoring each complete proposed plaintext. Any prefix or suffix statistics are descriptive only.",
     "The target widths are a small first-pass set centered on short hand-cipher keys and do not include every historically possible rectangle.",
     "A score-only candidate is not an accepted break without coherent plaintext, historical procedure, and independent reproduction.",
     "The candidate suffix is descriptive only; no independent held-out claim is made from it."

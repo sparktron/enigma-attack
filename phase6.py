@@ -369,13 +369,22 @@ def search_double_transposition(
     return dataclasses.replace(best, evaluations=total_evaluations)
 
 
-def _rounded_score(scorer: TextScorer, text: str) -> dict[str, float | int]:
+def _rounded_score(scorer: TextScorer, text: str) -> dict[str, float | int | None]:
     raw, known = scorer.score(text)
     return {
         "raw": round(raw, 9),
         "known_letters": known,
-        "per_letter": round(raw / known, 9) if known else float("-inf"),
+        "per_letter": round(raw / known, 9) if known else None,
     }
+
+
+def _score_delta(
+    candidate: Mapping[str, float | int | None],
+    baseline: Mapping[str, float | int | None],
+) -> float | None:
+    if candidate["per_letter"] is None or baseline["per_letter"] is None:
+        return None
+    return round(candidate["per_letter"] - baseline["per_letter"], 9)
 
 
 def evaluate_search(
@@ -415,14 +424,10 @@ def evaluate_search(
             "suffix_descriptive": candidate_held_out,
         },
         "delta": {
-            "full_score_per_letter": round(candidate_full["per_letter"] - baseline_full["per_letter"], 9),
-            "training_score_per_letter": round(
-                candidate_train["per_letter"] - baseline_train["per_letter"], 9
-            ),
-            "suffix_descriptive_score_per_letter": round(
-                candidate_held_out["per_letter"]
-                - baseline_held_out["per_letter"],
-                9,
+            "full_score_per_letter": _score_delta(candidate_full, baseline_full),
+            "training_score_per_letter": _score_delta(candidate_train, baseline_train),
+            "suffix_descriptive_score_per_letter": _score_delta(
+                candidate_held_out, baseline_held_out
             ),
         },
     }
@@ -835,7 +840,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     artifact = run_experiment(config, args.config, parsed_arguments)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
-        json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+        json.dumps(artifact, indent=2, sort_keys=True, allow_nan=False) + "\n",
         encoding="utf-8",
     )
     print(
