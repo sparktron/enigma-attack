@@ -52,7 +52,7 @@ class Phase7Tests(unittest.TestCase):
         # so an alternative key reads out the same plaintext rotated by one row.
         primary = controls["primary"]["plaintext_agreement"]
         self.assertLess(primary["exact"], 0.1)
-        self.assertGreaterEqual(primary["best_over_rotations"], 0.95)
+        self.assertGreaterEqual(primary["best_over_allowed_rotations"], 0.95)
         self.assertEqual(primary["rotation_offset"], 4)
 
         # The 133-letter control divides neither width, so no rotation is
@@ -60,6 +60,7 @@ class Phase7Tests(unittest.TestCase):
         ragged = controls["ragged-both-stages"]
         self.assertEqual(ragged["plaintext_agreement"]["exact"], 1.0)
         self.assertEqual(ragged["rotation_degeneracy_possible"], [])
+        self.assertEqual(ragged["plaintext_agreement"]["allowed_rotation_offsets"], 1)
         self.assertEqual(ragged["key"], ragged["known_key"])
 
     def test_failed_positive_control_stops_target_search(self) -> None:

@@ -11,6 +11,7 @@ from phase6 import (
     columnar_untranspose,
     double_columnar_transpose,
     double_columnar_untranspose,
+    degenerate_rotation_offsets,
     load_config,
     plaintext_agreement,
     run_experiment,
@@ -116,23 +117,49 @@ class PlaintextAgreementTests(unittest.TestCase):
     def test_exact_match_has_zero_offset(self) -> None:
         agreement = plaintext_agreement("ANGRIFFXENDE", "ANGRIFFXENDE")
         self.assertEqual(agreement["exact"], 1.0)
-        self.assertEqual(agreement["best_over_rotations"], 1.0)
+        self.assertEqual(agreement["best_over_allowed_rotations"], 1.0)
         self.assertEqual(agreement["rotation_offset"], 0)
 
     def test_rotated_recovery_is_credited_at_its_offset(self) -> None:
         expected = "DIEKOMMANDOSTELLEMELDETXENDE"
         agreement = plaintext_agreement(expected[4:] + expected[:4], expected)
         self.assertLess(agreement["exact"], 0.5)
-        self.assertEqual(agreement["best_over_rotations"], 1.0)
+        self.assertEqual(agreement["best_over_allowed_rotations"], 1.0)
         self.assertEqual(agreement["rotation_offset"], 4)
 
     def test_unrelated_text_stays_low_under_every_rotation(self) -> None:
         agreement = plaintext_agreement("QWERTZUIOPASDFGH", "DIEKOMMANDOSTELL")
-        self.assertLess(agreement["best_over_rotations"], 0.3)
+        self.assertLess(agreement["best_over_allowed_rotations"], 0.3)
 
     def test_length_mismatch_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             plaintext_agreement("ANGRIFF", "ANGRIFFX")
+
+    def test_rotation_credit_needs_a_width_that_divides_the_length(self) -> None:
+        # 20 is a multiple of 4, so one whole row of shift is reachable.
+        widths, offsets = degenerate_rotation_offsets(20, [[4, 5]])
+        self.assertEqual(widths, [4, 5])
+        self.assertIn(4, offsets)
+        # 133 divides neither width, so nothing but exact recovery is allowed.
+        widths, offsets = degenerate_rotation_offsets(133, [[4, 5]])
+        self.assertEqual(widths, [])
+        self.assertEqual(offsets, [0])
+
+    def test_inadmissible_shift_gets_no_credit(self) -> None:
+        expected = "DIEKOMMANDOSTELLEMELDETXENDE"
+        rotated = expected[4:] + expected[:4]
+        _, offsets = degenerate_rotation_offsets(len(expected), [[4, 5]])
+        credited = plaintext_agreement(rotated, expected, offsets)
+        self.assertEqual(credited["best_over_allowed_rotations"], 1.0)
+
+        # The same recovery against a control whose geometry admits no shift
+        # scores its exact agreement, while the unexplained near-match stays
+        # visible as a diagnostic.
+        strict = plaintext_agreement(rotated, expected, [0])
+        self.assertEqual(strict["best_over_allowed_rotations"], strict["exact"])
+        self.assertLess(strict["best_over_allowed_rotations"], 0.5)
+        self.assertEqual(strict["best_over_any_rotation"], 1.0)
+        self.assertEqual(strict["unrestricted_rotation_offset"], 4)
 
 
 if __name__ == "__main__":

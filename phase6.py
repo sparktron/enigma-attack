@@ -426,34 +426,69 @@ def evaluate_search(
     }
 
 
-def plaintext_agreement(observed: str, expected: str) -> dict[str, Any]:
-    """Compare a recovered plaintext with a known one, allowing cyclic shifts.
+def degenerate_rotation_offsets(
+    length: int, width_pairs: Sequence[Sequence[int]]
+) -> tuple[list[int], list[int]]:
+    """Return the stage widths that divide ``length`` and the shifts they allow.
+
+    A whole-row rotation is only reachable by an alternative key when a stage
+    width divides the message length exactly; the reachable shifts are then the
+    multiples of that width.  When no width divides the length, the only
+    admissible offset is zero, so the comparison reduces to exact agreement.
+    """
+
+    widths = sorted(
+        {width for pair in width_pairs for width in pair if width > 0 and length % width == 0}
+    )
+    offsets = {0}
+    for width in widths:
+        offsets.update(range(width, length, width))
+    return widths, sorted(offsets)
+
+
+def plaintext_agreement(
+    observed: str,
+    expected: str,
+    allowed_offsets: Sequence[int] | None = None,
+) -> dict[str, Any]:
+    """Compare a recovered plaintext with a known one over admissible shifts.
 
     Double columnar transposition has near-degenerate keys.  When the message
     length is an exact multiple of a stage width, a different column order can
     read out the same text rotated by whole rows, so strict positional
-    agreement reports an essentially correct recovery as a total failure.  The
-    comparison therefore also records the best agreement over every rotation
-    and the offset that achieved it; both numbers are kept so a rotated
-    recovery stays visibly distinct from an exact one.
+    agreement reports an essentially correct recovery as a total failure.
+
+    Credit is given only for shifts the stage geometry can actually produce,
+    passed in ``allowed_offsets``; a control whose length divides no stage
+    width admits offset zero alone and is therefore held to exact recovery.
+    The best agreement over *every* shift is also reported, but only as a
+    diagnostic, so that an unexplained near-match stays visible without being
+    able to pass the control.  Omitting ``allowed_offsets`` permits every
+    shift and is intended for inspection rather than acceptance.
     """
 
     length = len(expected)
     if length == 0 or len(observed) != length:
         raise ValueError("plaintext comparison needs two equal non-empty strings")
-    exact = sum(a == b for a, b in zip(observed, expected)) / length
-    best = exact
-    best_offset = 0
-    for offset in range(1, length):
+
+    def agreement_at(offset: int) -> float:
         rotated = expected[offset:] + expected[:offset]
-        agreement = sum(a == b for a, b in zip(observed, rotated)) / length
-        if agreement > best:
-            best = agreement
-            best_offset = offset
+        return sum(a == b for a, b in zip(observed, rotated)) / length
+
+    every = {offset: agreement_at(offset) for offset in range(length)}
+    admissible = range(length) if allowed_offsets is None else sorted({0, *allowed_offsets})
+    for offset in admissible:
+        if not 0 <= offset < length:
+            raise ValueError(f"rotation offset {offset} outside the plaintext")
+    best_offset = max(admissible, key=lambda offset: (every[offset], -offset))
+    unrestricted_offset = max(every, key=lambda offset: (every[offset], -offset))
     return {
-        "exact": round(exact, 9),
-        "best_over_rotations": round(best, 9),
+        "exact": round(every[0], 9),
+        "best_over_allowed_rotations": round(every[best_offset], 9),
         "rotation_offset": best_offset,
+        "allowed_rotation_offsets": len(admissible),
+        "best_over_any_rotation": round(every[unrestricted_offset], 9),
+        "unrestricted_rotation_offset": unrestricted_offset,
     }
 
 
@@ -476,18 +511,17 @@ def evaluate_positive_control(
         ciphertext, width_pairs, scorer=scorer, seed=seed, **options
     )
     result = evaluate_search(ciphertext, candidate, training_fraction, scorer)
-    agreement = plaintext_agreement(candidate.plaintext, plaintext)
+    widths, allowed_offsets = degenerate_rotation_offsets(len(plaintext), width_pairs)
+    agreement = plaintext_agreement(candidate.plaintext, plaintext, allowed_offsets)
     result["id"] = control["id"]
     result["rationale"] = control.get("rationale", "")
     result["known_key"] = {"first_order": first_order, "second_order": second_order}
     result["searched_width_pairs"] = width_pairs
     result["plaintext_agreement"] = agreement
-    result["plaintext_accuracy"] = agreement["best_over_rotations"]
-    result["rotation_degeneracy_possible"] = sorted(
-        {width for pair in width_pairs for width in pair if len(plaintext) % width == 0}
-    )
+    result["plaintext_accuracy"] = agreement["best_over_allowed_rotations"]
+    result["rotation_degeneracy_possible"] = widths
     result["passed"] = (
-        agreement["best_over_rotations"]
+        agreement["best_over_allowed_rotations"]
         >= acceptance["minimum_positive_plaintext_accuracy"]
         and result["delta"]["held_out_score_per_letter"]
         >= acceptance["minimum_positive_held_out_delta"]
