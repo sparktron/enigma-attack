@@ -239,16 +239,32 @@ frequency-preserving shuffles.
 
 ~~~bash
 python3 phase7.py \
-  --config experiments/phase7-qtxma-source-and-scorer-v1/config.json \
-  --output artifacts/phase7-qtxma-source-and-scorer.json
+  --config experiments/phase7-qtxma-source-and-scorer-v2/config.json \
+  --output artifacts/phase7-qtxma-source-and-scorer-v2.json
 ~~~
 
-The scorer passed all five plaintext/shuffle checks but failed to recover the
-known double-transposition control (6.1% plaintext accuracy versus the
-preregistered 95% threshold). The runner therefore stopped before a QTXMA
-search. This is a scorer/optimizer validation failure, not evidence for or
-against QTXMA's cipher family. See `docs/phase7-experiment-history.md` and the
-raw artifact for exact inputs, hashes, observations, and next decision.
+The v1 run stopped before a QTXMA search because its positive control scored
+6.1% plaintext accuracy. That reading was a measurement artifact. Double
+columnar transposition is degenerate when the message length is an exact
+multiple of a stage width: an alternative key reads out the same plaintext
+rotated by whole rows. The v1 control is 148 letters over a 4-wide first
+stage, and its "failed" recovery was the true plaintext rotated by four
+characters, agreeing at 97.3% at that offset.
+
+v2 therefore measures recovery as the best positional agreement over all
+cyclic rotations, keeping the exact-offset figure alongside it, and adds a
+second positive control whose 133-letter plaintext is a multiple of neither
+stage width, so no rotation is available to it. Both controls pass; the
+ragged control recovers its plaintext and both stage keys exactly.
+
+With the gate open, the bounded QTXMA search ran and was refuted. All three
+seeds improved the training prefix by roughly +0.62 to +0.64 score per letter
+while losing -0.75 to -0.83 on the untouched suffix, against +0.038 for the
+monoalphabetic substitution control, and the selected keys did not converge.
+This is evidence against the preregistered widths and this scorer, not an
+exclusion of double transposition generally. See
+`docs/phase7-experiment-history.md` and the raw artifacts for exact inputs,
+hashes, observations, and next decisions.
 
 ## Acceptance criteria
 
@@ -282,8 +298,11 @@ A credible break should satisfy most of these simultaneously:
 - `docs/phase4-experiment-history.md` — preregistration and negative-result ledger
 - `docs/phase5-research.md` — dated evidence boundary and Phase 5 recommendation
 - `docs/phase6-experiment-history.md` — Phase 6 preregistration and negative-result ledger
+- `docs/phase7-experiment-history.md` — Phase 7 v1 and v2 preregistration and negative-result ledger
 - `experiments/phase4-joint-machine-smoke-v1/config.json` — exact Phase 4 experiment configuration
 - `experiments/phase6-qtxma-double-transposition-smoke-v1/config.json` — exact Phase 6 experiment configuration
+- `experiments/phase7-qtxma-source-and-scorer-v1/config.json` — superseded Phase 7 configuration, retained as the historical record
+- `experiments/phase7-qtxma-source-and-scorer-v2/config.json` — rotation-aware Phase 7 configuration with both positive controls
 - `tests/` — simulator, procedure, corpus, scorer, and certificate tests
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
@@ -291,6 +310,8 @@ A credible break should satisfy most of these simultaneously:
 - `artifacts/phase4-joint-machine-smoke.json` — raw multi-seed traces, states, and held-out result
 - `artifacts/phase5-model-triage.json` — per-message structural tests and family routes
 - `artifacts/phase6-qtxma-double-transposition-smoke.json` — raw Phase 6 controls, seeds, scores, keys, and candidates
+- `artifacts/phase7-qtxma-source-and-scorer.json` — Phase 7 v1 record; its positive-control verdict is superseded
+- `artifacts/phase7-qtxma-source-and-scorer-v2.json` — Phase 7 v2 source audit, scorer validation, both controls, and the QTXMA search
 
 ## Primary references
 

@@ -67,3 +67,83 @@ Next decision: obtain additional independently sourced Army plaintext and
 validate a stronger scorer against authentic held-out messages and several
 known transposition keys before another QTXMA width search. Archival procedure
 or status evidence could redirect this branch earlier.
+
+## phase7-qtxma-source-and-scorer-v2
+
+Status: completed 2026-09-23; both positive controls passed, the QTXMA search
+ran, and the hypothesis was refuted on the held-out and substitution-control
+rules. Supersedes the v1 reading of the control, not its source audit or
+scorer validation.
+
+Revision cause: the v1 run reported 6.1% positive-control recovery accuracy and
+gated off the target search. Re-reading the v1 artifact showed the recovered
+plaintext was the control plaintext rotated by four characters, agreeing at
+97.3% at that offset. The 148-letter control is an exact multiple of its 4-wide
+first stage, so an alternative second-stage key reads out the same text shifted
+by one whole row. The v1 acceptance metric was strict positional agreement,
+which scores such a recovery as a total failure. The recorded v1 conclusion —
+that the scorer could not rank the correct key — was therefore a metric
+artifact.
+
+Changes from v1:
+
+- `plaintext_agreement` reports exact positional agreement, the best agreement
+  over all cyclic rotations, and the offset achieving it. The positive-control
+  gate uses the rotation-aware number; the exact number is retained so a
+  rotated recovery stays distinguishable from an exact one.
+- A second positive control, `ragged-both-stages`, uses a 133-letter plaintext.
+  133 is a multiple of neither 4 nor 5, so both stages have ragged final rows
+  and no whole-row rotation is available. It separates the rotation artifact
+  from genuine scorer or optimizer weakness.
+- `evaluate_positive_control` is shared by `phase6.py` and `phase7.py`, which
+  previously carried two copies of the control logic.
+
+Hypothesis: with a rotation-aware recovery metric and a control that admits no
+rotation, the published 1941 Army n-gram scorer will recover both known
+transpositions and then give QTXMA a held-out gain beyond a substitution
+control over six preregistered width pairs.
+
+Code: commit `36399219ad02fc29091bffbe5b1eeef1a9ecdf4c` with a dirty tree; the
+raw result records the exact `phase6.py` and `phase7.py` hashes. Python
+3.10.12, serial execution, 15.2 s.
+
+Raw result: [Phase 7 v2 artifact](../artifacts/phase7-qtxma-source-and-scorer-v2.json).
+
+Observed:
+
+- Source audit and scorer validation reproduced v1 exactly: the 31 non-designator
+  groups give the 155-letter solver input, and all five published plaintexts
+  scored above all 16 shuffles.
+- Primary control: exact agreement 0.060811, best-over-rotations 0.972973 at
+  offset 4, held-out delta +2.455123. Passed. The first-stage key was recovered
+  exactly; only the second-stage order differs.
+- Ragged control: exact agreement 1.000000 at offset 0, both stage keys
+  recovered exactly, held-out delta +1.474935. Passed. No rotation was
+  available to it.
+- QTXMA, three seeds: training gains of +0.643909, +0.622357 and +0.630738 per
+  letter, against held-out deltas of -0.830167, -0.749779 and -0.760904. Zero
+  seeds passed. The monoalphabetic substitution control scored +0.038152, so
+  the median margin over it was -0.799056. The three seeds selected three
+  different 5x7 key pairs and their plaintexts are incoherent.
+
+Interpretation (inference): the scorer and the bounded optimizer do recover
+known double transpositions, including one with no rotation degeneracy and no
+ragged-row shortcut. The v1 scorer-weakness conclusion is withdrawn. Applied to
+QTXMA under the same machinery, the search buys a large training-prefix gain
+and pays for it on the untouched suffix, losing to a substitution control that
+cannot be a transposition at all. That is the signature of fitting noise, and
+it is now a clean negative result rather than an uninterpretable one.
+
+Boundary: this refutes the preregistered widths and this scorer for QTXMA. It
+does not exclude double transposition with other widths, a different ragged-row
+convention, nulls, or a transposition applied to something other than the
+literal 155-letter body. Both positive controls are constructed plaintexts, not
+authentic held-out Army traffic, so they test the machinery and not corpus
+representativeness. The published counts' training messages are still not
+enumerated, so overlap with the five validation plaintexts remains unexcluded.
+
+Next decision: do not enlarge the width search from training gains. The
+transposition branch for QTXMA is now bounded by a trustworthy negative, so
+the higher-value moves are archival — procedure or message-status evidence —
+or a separately sourced held-out Army plaintext model that would let the
+substitution control and the target be compared on authentic text.

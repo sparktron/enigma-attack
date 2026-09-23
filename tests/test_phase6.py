@@ -12,6 +12,7 @@ from phase6 import (
     double_columnar_transpose,
     double_columnar_untranspose,
     load_config,
+    plaintext_agreement,
     run_experiment,
     search_double_transposition,
 )
@@ -109,6 +110,29 @@ class Phase6ArtifactTests(unittest.TestCase):
             result["training_characters"] + result["held_out_characters"],
             result["ciphertext_length"],
         )
+
+
+class PlaintextAgreementTests(unittest.TestCase):
+    def test_exact_match_has_zero_offset(self) -> None:
+        agreement = plaintext_agreement("ANGRIFFXENDE", "ANGRIFFXENDE")
+        self.assertEqual(agreement["exact"], 1.0)
+        self.assertEqual(agreement["best_over_rotations"], 1.0)
+        self.assertEqual(agreement["rotation_offset"], 0)
+
+    def test_rotated_recovery_is_credited_at_its_offset(self) -> None:
+        expected = "DIEKOMMANDOSTELLEMELDETXENDE"
+        agreement = plaintext_agreement(expected[4:] + expected[:4], expected)
+        self.assertLess(agreement["exact"], 0.5)
+        self.assertEqual(agreement["best_over_rotations"], 1.0)
+        self.assertEqual(agreement["rotation_offset"], 4)
+
+    def test_unrelated_text_stays_low_under_every_rotation(self) -> None:
+        agreement = plaintext_agreement("QWERTZUIOPASDFGH", "DIEKOMMANDOSTELL")
+        self.assertLess(agreement["best_over_rotations"], 0.3)
+
+    def test_length_mismatch_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            plaintext_agreement("ANGRIFF", "ANGRIFFX")
 
 
 if __name__ == "__main__":

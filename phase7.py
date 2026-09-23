@@ -19,7 +19,7 @@ from typing import Any
 import phase6
 
 ROOT = pathlib.Path(__file__).resolve().parent
-DEFAULT_CONFIG = ROOT / "experiments/phase7-qtxma-source-and-scorer-v1/config.json"
+DEFAULT_CONFIG = ROOT / "experiments/phase7-qtxma-source-and-scorer-v2/config.json"
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
@@ -163,38 +163,29 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
     phase6_config["experiment_id"] = config["experiment_id"]
     phase6_config["search"]["target_width_pairs"] = config["search"]["target_width_pairs"]
     phase6_config["search"]["seeds"] = config["search"]["seeds"]
-    positive = phase6_config["positive_control"]
-    positive_ciphertext = phase6.double_columnar_transpose(
-        positive["plaintext"], positive["first_order"], positive["second_order"]
-    )
-    positive_candidate = phase6.search_double_transposition(
-        positive_ciphertext,
-        phase6_config["search"]["control_width_pairs"],
-        scorer=scorer,
-        seed=phase6_config["search"]["seeds"][0],
-        **phase6._search_options(phase6_config),
-    )
-    positive_result = phase6.evaluate_search(
-        positive_ciphertext,
-        positive_candidate,
-        phase6_config["split"]["training_fraction"],
-        scorer,
-    )
-    positive_accuracy = sum(
-        observed == expected
-        for observed, expected in zip(positive_candidate.plaintext, positive["plaintext"])
-    ) / len(positive["plaintext"])
+    if "additional_positive_controls" in config:
+        phase6_config["additional_positive_controls"] = config["additional_positive_controls"]
+        phase6_config["positive_controls"] = phase6._normalize_positive_controls(phase6_config)
     acceptance = phase6_config["acceptance"]
-    positive_passed = (
-        positive_accuracy >= acceptance["minimum_positive_plaintext_accuracy"]
-        and positive_result["delta"]["held_out_score_per_letter"]
-        >= acceptance["minimum_positive_held_out_delta"]
-    )
-    positive_result["plaintext_accuracy"] = round(positive_accuracy, 9)
-    positive_result["passed"] = positive_passed
-    positive_result["known_key"] = {
-        "first_order": positive["first_order"],
-        "second_order": positive["second_order"],
+    positive_results = [
+        phase6.evaluate_positive_control(
+            control,
+            scorer,
+            phase6_config["search"]["seeds"][0],
+            phase6._search_options(phase6_config),
+            phase6_config["split"]["training_fraction"],
+            acceptance,
+        )
+        for control in phase6_config["positive_controls"]
+    ]
+    positive_passed = all(result["passed"] for result in positive_results)
+    positive_result = {
+        "controls": positive_results,
+        "passed": positive_passed,
+        "accuracy_rule": (
+            "Best positional agreement over all cyclic rotations of the known "
+            "plaintext; the exact-offset agreement is recorded per control."
+        ),
     }
     search_result = None
     if form["passed"] and validation["passed"] and positive_passed:

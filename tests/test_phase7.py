@@ -1,3 +1,4 @@
+import copy
 import json
 import unittest
 from unittest import mock
@@ -28,9 +29,52 @@ class Phase7Tests(unittest.TestCase):
         self.assertEqual(known, 4)
         self.assertAlmostEqual(score, scorer.score("AB")[0] + scorer.score("CD")[0])
 
-    def test_failed_positive_control_stops_target_search(self) -> None:
+    def test_positive_controls_pass_under_rotation_aware_accuracy(self) -> None:
         with mock.patch("phase7.phase6.run_experiment") as target_search:
-            result = phase7.run_experiment(self.config, phase7.DEFAULT_CONFIG, ["--config", str(phase7.DEFAULT_CONFIG)])
+            target_search.return_value = {
+                "status": "stubbed",
+                "method": {},
+                "hypothesis_supported": False,
+                "controls": {},
+                "target": {},
+                "observed": {},
+            }
+            result = phase7.run_experiment(
+                self.config, phase7.DEFAULT_CONFIG, ["--config", str(phase7.DEFAULT_CONFIG)]
+            )
+        preflight = result["positive_control_preflight"]
+        self.assertTrue(preflight["passed"])
+        controls = {control["id"]: control for control in preflight["controls"]}
+        self.assertEqual(set(controls), {"primary", "ragged-both-stages"})
+        target_search.assert_called_once()
+
+        # The 148-letter control is an exact multiple of its 4-wide first stage,
+        # so an alternative key reads out the same plaintext rotated by one row.
+        primary = controls["primary"]["plaintext_agreement"]
+        self.assertLess(primary["exact"], 0.1)
+        self.assertGreaterEqual(primary["best_over_rotations"], 0.95)
+        self.assertEqual(primary["rotation_offset"], 4)
+
+        # The 133-letter control divides neither width, so no rotation is
+        # available and the search must land on the exact key to pass.
+        ragged = controls["ragged-both-stages"]
+        self.assertEqual(ragged["plaintext_agreement"]["exact"], 1.0)
+        self.assertEqual(ragged["rotation_degeneracy_possible"], [])
+        self.assertEqual(ragged["key"], ragged["known_key"])
+
+    def test_failed_positive_control_stops_target_search(self) -> None:
+        config = copy.deepcopy(self.config)
+        config["additional_positive_controls"] = [
+            {
+                "id": "unrecoverable",
+                "plaintext": "A" * 60 + "B" * 73,
+                "first_order": [1, 3, 0, 2],
+                "second_order": [2, 4, 0, 3, 1],
+                "width_pairs": [[4, 5]],
+            }
+        ]
+        with mock.patch("phase7.phase6.run_experiment") as target_search:
+            result = phase7.run_experiment(config, phase7.DEFAULT_CONFIG, ["--config", "test"])
         self.assertEqual(result["status"], "invalid_positive_control_failure")
         self.assertIsNone(result["search"])
         target_search.assert_not_called()

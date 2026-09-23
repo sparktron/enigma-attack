@@ -426,6 +426,75 @@ def evaluate_search(
     }
 
 
+def plaintext_agreement(observed: str, expected: str) -> dict[str, Any]:
+    """Compare a recovered plaintext with a known one, allowing cyclic shifts.
+
+    Double columnar transposition has near-degenerate keys.  When the message
+    length is an exact multiple of a stage width, a different column order can
+    read out the same text rotated by whole rows, so strict positional
+    agreement reports an essentially correct recovery as a total failure.  The
+    comparison therefore also records the best agreement over every rotation
+    and the offset that achieved it; both numbers are kept so a rotated
+    recovery stays visibly distinct from an exact one.
+    """
+
+    length = len(expected)
+    if length == 0 or len(observed) != length:
+        raise ValueError("plaintext comparison needs two equal non-empty strings")
+    exact = sum(a == b for a, b in zip(observed, expected)) / length
+    best = exact
+    best_offset = 0
+    for offset in range(1, length):
+        rotated = expected[offset:] + expected[:offset]
+        agreement = sum(a == b for a, b in zip(observed, rotated)) / length
+        if agreement > best:
+            best = agreement
+            best_offset = offset
+    return {
+        "exact": round(exact, 9),
+        "best_over_rotations": round(best, 9),
+        "rotation_offset": best_offset,
+    }
+
+
+def evaluate_positive_control(
+    control: Mapping[str, Any],
+    scorer: TextScorer,
+    seed: int,
+    options: Mapping[str, Any],
+    training_fraction: float,
+    acceptance: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Encipher a known plaintext, search it back, and judge the recovery."""
+
+    plaintext = control["plaintext"]
+    first_order = list(control["first_order"])
+    second_order = list(control["second_order"])
+    width_pairs = [list(pair) for pair in control["width_pairs"]]
+    ciphertext = double_columnar_transpose(plaintext, first_order, second_order)
+    candidate = search_double_transposition(
+        ciphertext, width_pairs, scorer=scorer, seed=seed, **options
+    )
+    result = evaluate_search(ciphertext, candidate, training_fraction, scorer)
+    agreement = plaintext_agreement(candidate.plaintext, plaintext)
+    result["id"] = control["id"]
+    result["rationale"] = control.get("rationale", "")
+    result["known_key"] = {"first_order": first_order, "second_order": second_order}
+    result["searched_width_pairs"] = width_pairs
+    result["plaintext_agreement"] = agreement
+    result["plaintext_accuracy"] = agreement["best_over_rotations"]
+    result["rotation_degeneracy_possible"] = sorted(
+        {width for pair in width_pairs for width in pair if len(plaintext) % width == 0}
+    )
+    result["passed"] = (
+        agreement["best_over_rotations"]
+        >= acceptance["minimum_positive_plaintext_accuracy"]
+        and result["delta"]["held_out_score_per_letter"]
+        >= acceptance["minimum_positive_held_out_delta"]
+    )
+    return result
+
+
 def _substitute(text: str, cipher_alphabet: str) -> str:
     if sorted(cipher_alphabet) != sorted(ALPHABET):
         raise ValueError("substitution cipher_alphabet must permute A-Z")
@@ -443,6 +512,51 @@ def _search_options(config: Mapping[str, Any]) -> dict[str, Any]:
         "temperature_start": search["temperature_start"],
         "temperature_end": search["temperature_end"],
     }
+
+
+def _normalize_positive_controls(payload: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Flatten the primary and any additional positive controls into one list.
+
+    A configuration that predates multiple controls carries only
+    ``positive_control``; it normalizes to a single-entry list so older
+    experiments keep running unchanged.
+    """
+
+    default_pairs = payload["search"]["control_width_pairs"]
+    raw = [{"id": "primary", **payload["positive_control"]}]
+    raw.extend(payload.get("additional_positive_controls", []))
+    controls = []
+    seen: set[str] = set()
+    for entry in raw:
+        identifier = entry["id"]
+        if identifier in seen:
+            raise ValueError(f"duplicate positive control id: {identifier}")
+        seen.add(identifier)
+        first_order = _validate_order(entry["first_order"])
+        second_order = _validate_order(entry["second_order"])
+        width_pairs = entry.get("width_pairs") or default_pairs
+        for pair in width_pairs:
+            if len(pair) != 2 or min(pair) < 2:
+                raise ValueError(f"invalid width pair for control {identifier}: {pair}")
+        if [len(first_order), len(second_order)] not in [list(pair) for pair in width_pairs]:
+            raise ValueError(
+                f"control {identifier} key widths are outside its searched width pairs"
+            )
+        if not entry["plaintext"] or any(
+            character not in ALPHABET for character in entry["plaintext"]
+        ):
+            raise ValueError(f"control {identifier} plaintext must be A-Z only")
+        controls.append(
+            {
+                "id": identifier,
+                "plaintext": entry["plaintext"],
+                "first_order": list(first_order),
+                "second_order": list(second_order),
+                "width_pairs": [list(pair) for pair in width_pairs],
+                "rationale": entry.get("rationale", ""),
+            }
+        )
+    return controls
 
 
 def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
@@ -465,9 +579,7 @@ def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
         for pair in search[name]:
             if len(pair) != 2 or min(pair) < 2:
                 raise ValueError(f"invalid width pair in {name}: {pair}")
-    positive = payload["positive_control"]
-    _validate_order(positive["first_order"])
-    _validate_order(positive["second_order"])
+    payload["positive_controls"] = _normalize_positive_controls(payload)
     _substitute("A", payload["substitution_control"]["cipher_alphabet"])
     acceptance = payload["acceptance"]
     if acceptance["minimum_passing_seeds"] > len(search["seeds"]):
@@ -524,31 +636,16 @@ def run_experiment(
     started_at = dt.datetime.now(dt.timezone.utc)
     started_clock = time.perf_counter()
 
-    positive_plaintext = config["positive_control"]["plaintext"]
-    positive_ciphertext = double_columnar_transpose(
-        positive_plaintext,
-        config["positive_control"]["first_order"],
-        config["positive_control"]["second_order"],
-    )
-    positive_candidate = search_double_transposition(
-        positive_ciphertext,
-        search["control_width_pairs"],
-        scorer=scorer,
-        seed=search["seeds"][0],
-        **options,
-    )
-    positive_result = evaluate_search(
-        positive_ciphertext, positive_candidate, training_fraction, scorer
-    )
-    positive_accuracy = sum(
-        observed == expected
-        for observed, expected in zip(positive_candidate.plaintext, positive_plaintext)
-    ) / len(positive_plaintext)
-    positive_result["plaintext_accuracy"] = round(positive_accuracy, 9)
-    positive_result["known_key"] = {
-        "first_order": list(config["positive_control"]["first_order"]),
-        "second_order": list(config["positive_control"]["second_order"]),
-    }
+    acceptance = config["acceptance"]
+    positive_controls = config["positive_controls"]
+    positive_results = [
+        evaluate_positive_control(
+            control, scorer, search["seeds"][0], options, training_fraction, acceptance
+        )
+        for control in positive_controls
+    ]
+    positive_result = positive_results[0]
+    positive_plaintext = positive_controls[0]["plaintext"]
 
     substitution_ciphertext = _substitute(
         positive_plaintext,
@@ -581,12 +678,7 @@ def run_experiment(
         result["seed"] = seed
         target_results.append(result)
 
-    acceptance = config["acceptance"]
-    positive_passed = (
-        positive_accuracy >= acceptance["minimum_positive_plaintext_accuracy"]
-        and positive_result["delta"]["held_out_score_per_letter"]
-        >= acceptance["minimum_positive_held_out_delta"]
-    )
+    positive_passed = all(result["passed"] for result in positive_results)
     held_out_deltas = [
         result["delta"]["held_out_score_per_letter"] for result in target_results
     ]
@@ -684,8 +776,14 @@ def run_experiment(
         },
         "controls": {
             "positive_double_transposition": positive_result,
+            "positive_transposition_controls": positive_results,
             "monoalphabetic_substitution": substitution_result,
             "positive_passed": positive_passed,
+            "positive_accuracy_rule": (
+                "Recovery accuracy is the best positional agreement over all cyclic "
+                "rotations of the known plaintext; the exact-offset agreement is "
+                "recorded alongside it."
+            ),
         },
         "target": {
             "designator": target_name,
