@@ -190,13 +190,51 @@ the randomizing control: its IC is 0.057729 (uniform-null upper-tail
 (`p = 0.0875`), maximum-period (`p = 0.1647`), and repeated-trigram
 (`p = 0.0820`) tests are not significant at `alpha = 0.01`. SZAEJ, BYQMZ,
 FKQLZ, and XFEDT remain uniform-random-compatible on the configured tests.
-QTXMA therefore remains the frequency-preserving follow-up target, but there is
-no separate evidence here for periodic, lag, or repeated-block structure. The
-result does not distinguish double transposition from substitution or prove
-that QTXMA is non-Enigma.
+There is no evidence here for periodic, lag, or repeated-block structure.
 
-See `docs/phase5-research.md` for the fact/inference/speculation boundary and
-`cipher-families.json` for the source-linked candidate catalog.
+#### Conservation gate
+
+Elevated IC says a ciphertext is not flat. It does not say the concentrated
+letters are *plaintext* letters, and routing on IC alone sent Phases 6 and 7 at
+a hypothesis that was already excluded.
+
+A transposition permutes the plaintext and cannot change which letters are
+present. So a frequency-preserving cipher over German Army plaintext must show
+Army plaintext monograms. QTXMA does not. It contains **no D, F, G or U** in 155
+characters, where the published 1941 Army counts put D at 2.90% and U at 4.47%,
+and its commonest letter is Y at 12.3% against a reference 0.89%. Its
+chi-square distance from Army monograms is 3.38 per letter; genuine
+transpositions of known Army plaintexts score 0.17 to 0.68.
+
+`frequency_preserving` therefore now requires two things: `ic_elevated` **and**
+`plaintext_unigram_compatible`. The second fails when either the reference
+chi-square or the absent-letter surprisal is significant against a
+length-matched null. When it fails, the frequency-preserving family is recorded
+as `excluded_by_conservation` and `phase6.py` and `phase7.py` refuse the target
+outright rather than spending a search proving it.
+
+The gate must first pass known true transpositions. Each published Army
+plaintext in `data/phase5/army-plaintext-controls.json` is shuffled — which is
+exactly a transposition — and the gate has to find it compatible. All five pass
+with the worst at `p = 0.0947`, about 9.5x alpha, against QTXMA's `p = 0.0002`.
+If any control failed the gate would be recorded but **not applied**. The null
+draws each message's letter distribution from a Dirichlet centred on the
+reference, so ordinary between-message variation is not mistaken for a
+departure from plaintext; the concentration was chosen so the controls clear
+with margin, which deliberately biases the gate against excluding. An exclusion
+therefore means something and a non-exclusion means very little.
+
+QTXMA now routes to `non_plaintext_alphabet_substitution`: something maps
+plaintext onto its 22-letter alphabet before or instead of any reordering. This
+phase does not identify what.
+
+The gate excludes a transposition of German Army *plaintext*. It does not
+exclude a transposition applied to an already-substituted or encoded layer, and
+it does not prove QTXMA is non-Enigma.
+
+See `docs/phase5-research.md` for the fact/inference/speculation boundary,
+`cipher-families.json` for the source-linked candidate catalog, and
+`data/phase5/README.md` for the control provenance.
 
 ## Phase 6 — Frequency-preserving family experiment
 
@@ -227,6 +265,15 @@ exclusion of double transposition generally and not a cipher identification.
 
 See `docs/phase6-experiment-history.md` for the preregistration boundary,
 controls, observations, interpretation, and next decision.
+
+> **Superseded 2026-09-23.** The Phase 5 conservation gate excludes
+> frequency-preserving ciphers for QTXMA, so `phase6.py` now refuses this target
+> and the command above raises rather than searching. A transposition preserves
+> the plaintext letter multiset, and QTXMA's letters are not Army plaintext
+> letters, so no key in any width could have reconciled them. The experiment was
+> methodologically sound; the hypothesis was excluded before it ran. The artifact
+> is retained as the record of a search that was real when performed.
+
 
 ## Phase 7 — Source grouping and independently checked scorer
 
@@ -267,6 +314,13 @@ exclusion of double transposition generally. See
 `docs/phase7-experiment-history.md` and the raw artifacts for exact inputs,
 hashes, observations, and next decisions.
 
+> **Superseded 2026-09-23.** As with Phase 6, `phase7.py` now refuses QTXMA on
+> the Phase 5 conservation exclusion. The source audit and the scorer validation
+> in this phase stand and are reused: the gate's unigram reference is derived
+> from the same published 1941 Army counts imported here. What is withdrawn is
+> the premise that a transposition search on this target was worth running.
+
+
 ## Acceptance criteria
 
 A credible break should satisfy most of these simultaneously:
@@ -288,16 +342,18 @@ A credible break should satisfy most of these simultaneously:
 - `phase2.py` — traffic graph, archive priorities, and provenance-aware crib ranker
 - `phase3.py` — documented-variant comparison and certificate generator
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation
-- `phase5.py` — deterministic ciphertext-only alternative-family triage
+- `phase5.py` — deterministic ciphertext-only alternative-family triage and conservation gate
 - `phase6.py` — held-out-validated double-columnar-transposition smoke runner
 - `phase7.py` — original-form audit and published n-gram validation gate
 - `cribs.json` — source-backed crib catalog with evidence levels
 - `variants.json` — source-linked rotor, reflector, entry-wheel, and stepping catalog
 - `cipher-families.json` — source-linked Phase 5 candidate-family catalog
+- `data/phase5/army-plaintext-controls.json` — known Army plaintexts used as conservation-gate positive controls
+- `data/phase7/BigramFrequency1941.txt` — published 1941 Army counts; the gate's unigram reference is derived from these
 - `docs/phase2-research.md` — dated Phase 2 evidence and recommendation trail
 - `docs/phase3-research.md` — dated Phase 3 facts, inferences, gaps, and recommendation
 - `docs/phase4-experiment-history.md` — preregistration and negative-result ledger
-- `docs/phase5-research.md` — dated evidence boundary and Phase 5 recommendation
+- `docs/phase5-research.md` — dated evidence boundary, Phase 5 recommendation, and the conservation-gate addendum
 - `docs/phase6-experiment-history.md` — Phase 6 preregistration and negative-result ledger
 - `docs/phase7-experiment-history.md` — Phase 7 v1 and v2 preregistration and negative-result ledger
 - `experiments/phase4-joint-machine-smoke-v1/config.json` — exact Phase 4 experiment configuration
@@ -312,7 +368,7 @@ A credible break should satisfy most of these simultaneously:
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
 - `artifacts/phase3-variant-smoke.json` — bounded documented-variant comparison
 - `artifacts/phase4-joint-machine-smoke.json` — raw multi-seed traces, states, and held-out result
-- `artifacts/phase5-model-triage.json` — per-message structural tests and family routes
+- `artifacts/phase5-model-triage.json` — per-message structural tests, conservation measurements, gate calibration, and family routes
 - `artifacts/phase6-qtxma-double-transposition-smoke.json` — raw Phase 6 controls, seeds, scores, keys, and candidates
 - `artifacts/phase7-qtxma-source-and-scorer.json` — Phase 7 v1 record; its positive-control verdict is superseded
 - `artifacts/phase7-qtxma-source-and-scorer-v2.json` — Phase 7 v2 source audit, scorer validation, both controls, and the QTXMA search

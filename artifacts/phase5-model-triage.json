@@ -17,24 +17,120 @@
       "uniform_chi_square": 17.18918918918919
     }
   },
+  "conservation_gate_calibration": {
+    "alpha": 0.01,
+    "calibrated": true,
+    "concentration": 200.0,
+    "control_count": 5,
+    "controls": [
+      {
+        "chi_square_per_letter": 0.6778086407694488,
+        "compatible": true,
+        "id": "1941-09-02-15",
+        "length": 36,
+        "minimum_p_value": 0.6500874781304674,
+        "p_values": {
+          "absence_surprisal_upper": 0.8005498625343664,
+          "reference_chi_square_upper": 0.6500874781304674
+        },
+        "transformation": "uniform shuffle, a true transposition of the plaintext"
+      },
+      {
+        "chi_square_per_letter": 0.44388393173724117,
+        "compatible": true,
+        "id": "1941-08-22-30",
+        "length": 46,
+        "minimum_p_value": 0.6073481629592602,
+        "p_values": {
+          "absence_surprisal_upper": 0.6073481629592602,
+          "reference_chi_square_upper": 0.844288927768058
+        },
+        "transformation": "uniform shuffle, a true transposition of the plaintext"
+      },
+      {
+        "chi_square_per_letter": 0.5804349218361181,
+        "compatible": true,
+        "id": "1941-09-06-36",
+        "length": 48,
+        "minimum_p_value": 0.0947263184203949,
+        "p_values": {
+          "absence_surprisal_upper": 0.0947263184203949,
+          "reference_chi_square_upper": 0.5491127218195451
+        },
+        "transformation": "uniform shuffle, a true transposition of the plaintext"
+      },
+      {
+        "chi_square_per_letter": 0.6717497353284825,
+        "compatible": true,
+        "id": "1941-09-14-46",
+        "length": 69,
+        "minimum_p_value": 0.12071982004498875,
+        "p_values": {
+          "absence_surprisal_upper": 0.6695826043489128,
+          "reference_chi_square_upper": 0.12071982004498875
+        },
+        "transformation": "uniform shuffle, a true transposition of the plaintext"
+      },
+      {
+        "chi_square_per_letter": 0.17367175808079968,
+        "compatible": true,
+        "id": "1941-09-24-94",
+        "length": 76,
+        "minimum_p_value": 0.9700074981254686,
+        "p_values": {
+          "absence_surprisal_upper": 0.9700074981254686,
+          "reference_chi_square_upper": 0.9965008747813047
+        },
+        "transformation": "uniform shuffle, a true transposition of the plaintext"
+      }
+    ],
+    "effect_if_uncalibrated": "Exclusions are recorded but not applied; every message keeps the route it would have had without the gate.",
+    "failures": [],
+    "margin_over_alpha": 9.47263184203949,
+    "source": {
+      "accessed": "2026-09-22",
+      "attribution": "Geoff Sullivan and Frode Weierud, CryptoCellar",
+      "license": "CC BY-NC-SA 4.0",
+      "note": "Whitespace was removed from the published strings; letters are otherwise unchanged. The same plaintexts appear in the Phase 7 experiment configuration, where they validate the n-gram scorer rather than this gate.",
+      "url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
+    },
+    "worst_control_p_value": 0.0947263184203949
+  },
   "decision": {
     "accepted_break": false,
-    "negative_claim": "None; short ciphertexts and diagnostic null tests do not exclude any family.",
-    "next_experiment": "Run a family-specific, held-out-validated experiment for QTXMA on route frequency_preserving_manual.",
+    "conservation_exclusions": {
+      "frequency_preserving_family_excluded": [
+        "BYQMZ",
+        "QTXMA",
+        "SZAEJ"
+      ],
+      "gate_applied": true,
+      "note": "A flat ciphertext is incompatible with plaintext monograms too, so the family exclusion covers Enigma-like messages that were never routed to a transposition search. Only routing_changed_by_gate reflects work the gate prevents.",
+      "routing_changed_by_gate": [
+        "QTXMA"
+      ]
+    },
+    "negative_claim": "Frequency-preserving ciphers over German Army plaintext are excluded by letter conservation for ['BYQMZ', 'QTXMA', 'SZAEJ']; of those, ['QTXMA'] had the elevated index of coincidence that would otherwise have justified a transposition search. No other family is excluded; short ciphertexts and diagnostic null tests do not exclude the rest.",
+    "next_experiment": "Run a family-specific, held-out-validated experiment for QTXMA on route non_plaintext_alphabet_substitution.",
     "status": "phase5_structural_triage_complete",
     "unresolved": [
+      "QTXMA is concentrated but not on plaintext letters, and this phase does not identify what maps plaintext onto its 22-letter alphabet.",
       "Original five-letter grouping and typography may contain model-selection evidence absent from normalized ciphertext.",
       "QTXMA and SZAEJ are absent from the current three-message unbroken list, but their disposition is not documented in the corpus sources.",
       "Random-like ciphertext cannot distinguish Enigma, cipher teleprinter, and strong superencipherment without traffic metadata or cribs."
     ]
   },
-  "generated_at": "2026-09-21T17:11:29.211085+00:00",
+  "generated_at": "2026-09-23T20:51:49.098152+00:00",
   "inputs": {
     "catalog": "/home/mythos/repos/enigma-attack/cipher-families.json",
     "catalog_sha256": "5284cbd3c7649b01e750d885682ad7ab41e4a15cad92b29b329d3c8012b83dde",
+    "control_plaintexts": "/home/mythos/repos/enigma-attack/data/phase5/army-plaintext-controls.json",
+    "control_plaintexts_sha256": "b96883a77c6db189a9cd4730f1084efff54f6abbcee6b8db819dba9990e53fb8",
     "corpus": "/home/mythos/repos/enigma-attack/corpus.json",
     "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
-    "runner_sha256": "ec4bd218843bdb64628b365f7ebfc695a38cbd12b7e55daaad002a2007f31840"
+    "runner_sha256": "e43ce5626ec06ef68a3a8d6177282165eac1e8d099e9e6dffab6b6b0ec5a6bc0",
+    "unigram_reference": "/home/mythos/repos/enigma-attack/data/phase7/BigramFrequency1941.txt",
+    "unigram_reference_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
   },
   "messages": [
     {
@@ -59,10 +155,107 @@
         },
         "length_known": 155,
         "length_total": 155,
+        "plaintext_conservation": {
+          "absences": {
+            "absence_surprisal": 20.86025750522195,
+            "absent_letters": [
+              "D",
+              "F",
+              "G",
+              "U"
+            ],
+            "improbable_absences": [
+              {
+                "absence_probability": 0.0008343612428857418,
+                "letter": "U",
+                "reference_frequency": 0.04470441957725783
+              },
+              {
+                "absence_probability": 0.008421237026266475,
+                "letter": "F",
+                "reference_frequency": 0.030349270939301457
+              },
+              {
+                "absence_probability": 0.01036468640966056,
+                "letter": "D",
+                "reference_frequency": 0.029049395275234542
+              },
+              {
+                "absence_probability": 0.011973444183045294,
+                "letter": "G",
+                "reference_frequency": 0.02814513394370973
+              }
+            ],
+            "length_known": 155
+          },
+          "gate": {
+            "absence_compatible": false,
+            "applied": true,
+            "effect": "When this gate is closed, frequency-preserving families are excluded by conservation and no transposition search is justified for this message against this reference.",
+            "plaintext_unigram_compatible": false,
+            "unigram_fit_compatible": false
+          },
+          "invariant": "A transposition permutes plaintext letters and cannot change the multiset of letters, so a frequency-preserving cipher over German Army plaintext must show Army plaintext monograms.",
+          "limits": [
+            "The gate excludes a transposition of German Army plaintext, not a transposition of an already-substituted or encoded layer.",
+            "The null draws letters independently within a message; real plaintext is autocorrelated, so the null understates clustering.",
+            "The Dirichlet concentration was chosen so known true transpositions pass with margin, which biases the gate toward not excluding. Non-exclusion is therefore weak evidence.",
+            "The reference is derived from published counts whose source messages are not enumerated."
+          ],
+          "null": {
+            "concentration": 200.0,
+            "condition": "per-message letter distribution drawn from a Dirichlet centred on the reference, then letters drawn from it",
+            "seed": 15620971070501688098,
+            "simulations": 4000
+          },
+          "observed_absence_surprisal": 20.86025750522195,
+          "observed_chi_square": 524.5965643915958,
+          "observed_chi_square_per_letter": 3.3844939638167473,
+          "p_values": {
+            "absence_surprisal_upper": 0.0004998750312421895,
+            "reference_chi_square_upper": 0.00024993751562109475
+          },
+          "reference": {
+            "bigram_count_total": 17694,
+            "derivation": "mean of first-position and second-position marginals of the published 1941 Army bigram count table, renormalized over A-Z",
+            "source": "/home/mythos/repos/enigma-attack/data/phase7/BigramFrequency1941.txt",
+            "source_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+          },
+          "reference_probabilities": {
+            "A": 0.060868090878263816,
+            "B": 0.02198485362269696,
+            "C": 0.007234090652198486,
+            "D": 0.029049395275234542,
+            "E": 0.12908330507516672,
+            "F": 0.030349270939301457,
+            "G": 0.02814513394370973,
+            "H": 0.018763422629139822,
+            "I": 0.061433254210466824,
+            "J": 0.004125692325081949,
+            "K": 0.019950265626766134,
+            "L": 0.03905278625522776,
+            "M": 0.02724087261218492,
+            "N": 0.0840963038318074,
+            "O": 0.04416751441166497,
+            "P": 0.014694246637278174,
+            "Q": 0.020176330959647337,
+            "R": 0.0686673448626653,
+            "S": 0.062337515541991635,
+            "T": 0.05414264722504804,
+            "U": 0.04470441957725783,
+            "V": 0.013846501638973663,
+            "W": 0.016757092799819146,
+            "X": 0.06979767152707132,
+            "Y": 0.008873064315587204,
+            "Z": 0.02045891262574884
+          }
+        },
         "signals": {
-          "frequency_preserving": true,
+          "frequency_preserving": false,
+          "ic_elevated": true,
           "lag_structure": false,
           "periodic_structure": false,
+          "plaintext_unigram_compatible": false,
           "repeated_blocks": false,
           "uniform_random_compatible": false
         },
@@ -104,21 +297,6 @@
       "date": "1941-09-29",
       "designator": "QTXMA",
       "family_assessments": [
-        {
-          "family_id": "double-transposition",
-          "historical_prior": "plausible German Army hand-cipher branch",
-          "label": "Double transposition or another frequency-preserving hand cipher",
-          "limits": [
-            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
-            "A high index of coincidence is routing evidence, not a key recovery."
-          ],
-          "screening_signature": "frequency_preserving",
-          "source_ids": [
-            "friedman-lectures-double-transposition",
-            "nsa-wwii-nara-releases"
-          ],
-          "status": "supported_for_follow_up"
-        },
         {
           "family_id": "code-or-superencipherment",
           "historical_prior": "plausible but underspecified German field-system branch",
@@ -174,9 +352,24 @@
             "friedman-military-cryptanalysis-part-ii"
           ],
           "status": "not_supported"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "excluded_by_conservation"
         }
       ],
-      "route": "frequency_preserving_manual"
+      "route": "non_plaintext_alphabet_substitution"
     },
     {
       "analysis": {
@@ -200,10 +393,100 @@
         },
         "length_known": 51,
         "length_total": 51,
+        "plaintext_conservation": {
+          "absences": {
+            "absence_surprisal": 15.340393069501223,
+            "absent_letters": [
+              "D",
+              "F",
+              "I",
+              "L",
+              "Q",
+              "R",
+              "U"
+            ],
+            "improbable_absences": [
+              {
+                "absence_probability": 0.026567235842115677,
+                "letter": "R",
+                "reference_frequency": 0.0686673448626653
+              },
+              {
+                "absence_probability": 0.03942060626818168,
+                "letter": "I",
+                "reference_frequency": 0.061433254210466824
+              }
+            ],
+            "length_known": 51
+          },
+          "gate": {
+            "absence_compatible": false,
+            "applied": true,
+            "effect": "When this gate is closed, frequency-preserving families are excluded by conservation and no transposition search is justified for this message against this reference.",
+            "plaintext_unigram_compatible": false,
+            "unigram_fit_compatible": false
+          },
+          "invariant": "A transposition permutes plaintext letters and cannot change the multiset of letters, so a frequency-preserving cipher over German Army plaintext must show Army plaintext monograms.",
+          "limits": [
+            "The gate excludes a transposition of German Army plaintext, not a transposition of an already-substituted or encoded layer.",
+            "The null draws letters independently within a message; real plaintext is autocorrelated, so the null understates clustering.",
+            "The Dirichlet concentration was chosen so known true transpositions pass with margin, which biases the gate toward not excluding. Non-exclusion is therefore weak evidence.",
+            "The reference is derived from published counts whose source messages are not enumerated."
+          ],
+          "null": {
+            "concentration": 200.0,
+            "condition": "per-message letter distribution drawn from a Dirichlet centred on the reference, then letters drawn from it",
+            "seed": 11493643803742535452,
+            "simulations": 4000
+          },
+          "observed_absence_surprisal": 15.340393069501223,
+          "observed_chi_square": 123.73300354238025,
+          "observed_chi_square_per_letter": 2.426137324360397,
+          "p_values": {
+            "absence_surprisal_upper": 0.004498875281179705,
+            "reference_chi_square_upper": 0.0007498125468632841
+          },
+          "reference": {
+            "bigram_count_total": 17694,
+            "derivation": "mean of first-position and second-position marginals of the published 1941 Army bigram count table, renormalized over A-Z",
+            "source": "/home/mythos/repos/enigma-attack/data/phase7/BigramFrequency1941.txt",
+            "source_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+          },
+          "reference_probabilities": {
+            "A": 0.060868090878263816,
+            "B": 0.02198485362269696,
+            "C": 0.007234090652198486,
+            "D": 0.029049395275234542,
+            "E": 0.12908330507516672,
+            "F": 0.030349270939301457,
+            "G": 0.02814513394370973,
+            "H": 0.018763422629139822,
+            "I": 0.061433254210466824,
+            "J": 0.004125692325081949,
+            "K": 0.019950265626766134,
+            "L": 0.03905278625522776,
+            "M": 0.02724087261218492,
+            "N": 0.0840963038318074,
+            "O": 0.04416751441166497,
+            "P": 0.014694246637278174,
+            "Q": 0.020176330959647337,
+            "R": 0.0686673448626653,
+            "S": 0.062337515541991635,
+            "T": 0.05414264722504804,
+            "U": 0.04470441957725783,
+            "V": 0.013846501638973663,
+            "W": 0.016757092799819146,
+            "X": 0.06979767152707132,
+            "Y": 0.008873064315587204,
+            "Z": 0.02045891262574884
+          }
+        },
         "signals": {
           "frequency_preserving": false,
+          "ic_elevated": false,
           "lag_structure": false,
           "periodic_structure": false,
+          "plaintext_unigram_compatible": false,
           "repeated_blocks": false,
           "uniform_random_compatible": true
         },
@@ -288,21 +571,6 @@
           "status": "inconclusive"
         },
         {
-          "family_id": "double-transposition",
-          "historical_prior": "plausible German Army hand-cipher branch",
-          "label": "Double transposition or another frequency-preserving hand cipher",
-          "limits": [
-            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
-            "A high index of coincidence is routing evidence, not a key recovery."
-          ],
-          "screening_signature": "frequency_preserving",
-          "source_ids": [
-            "friedman-lectures-double-transposition",
-            "nsa-wwii-nara-releases"
-          ],
-          "status": "not_supported"
-        },
-        {
           "family_id": "periodic-polyalphabetic",
           "historical_prior": "analytic control; no attribution to this traffic",
           "label": "Repeating-key polyalphabetic hand cipher",
@@ -315,6 +583,21 @@
             "friedman-military-cryptanalysis-part-ii"
           ],
           "status": "not_supported"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "excluded_by_conservation"
         }
       ],
       "route": "randomizing_machine_or_combiner"
@@ -341,10 +624,81 @@
         },
         "length_known": 166,
         "length_total": 167,
+        "plaintext_conservation": {
+          "absences": {
+            "absence_surprisal": 0,
+            "absent_letters": [],
+            "improbable_absences": [],
+            "length_known": 166
+          },
+          "gate": {
+            "absence_compatible": true,
+            "applied": true,
+            "effect": "When this gate is closed, frequency-preserving families are excluded by conservation and no transposition search is justified for this message against this reference.",
+            "plaintext_unigram_compatible": false,
+            "unigram_fit_compatible": false
+          },
+          "invariant": "A transposition permutes plaintext letters and cannot change the multiset of letters, so a frequency-preserving cipher over German Army plaintext must show Army plaintext monograms.",
+          "limits": [
+            "The gate excludes a transposition of German Army plaintext, not a transposition of an already-substituted or encoded layer.",
+            "The null draws letters independently within a message; real plaintext is autocorrelated, so the null understates clustering.",
+            "The Dirichlet concentration was chosen so known true transpositions pass with margin, which biases the gate toward not excluding. Non-exclusion is therefore weak evidence.",
+            "The reference is derived from published counts whose source messages are not enumerated."
+          ],
+          "null": {
+            "concentration": 200.0,
+            "condition": "per-message letter distribution drawn from a Dirichlet centred on the reference, then letters drawn from it",
+            "seed": 2934716997871360432,
+            "simulations": 4000
+          },
+          "observed_absence_surprisal": 0,
+          "observed_chi_square": 138.52451663490623,
+          "observed_chi_square_per_letter": 0.8344850399693147,
+          "p_values": {
+            "absence_surprisal_upper": 1.0,
+            "reference_chi_square_upper": 0.000999750062484379
+          },
+          "reference": {
+            "bigram_count_total": 17694,
+            "derivation": "mean of first-position and second-position marginals of the published 1941 Army bigram count table, renormalized over A-Z",
+            "source": "/home/mythos/repos/enigma-attack/data/phase7/BigramFrequency1941.txt",
+            "source_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+          },
+          "reference_probabilities": {
+            "A": 0.060868090878263816,
+            "B": 0.02198485362269696,
+            "C": 0.007234090652198486,
+            "D": 0.029049395275234542,
+            "E": 0.12908330507516672,
+            "F": 0.030349270939301457,
+            "G": 0.02814513394370973,
+            "H": 0.018763422629139822,
+            "I": 0.061433254210466824,
+            "J": 0.004125692325081949,
+            "K": 0.019950265626766134,
+            "L": 0.03905278625522776,
+            "M": 0.02724087261218492,
+            "N": 0.0840963038318074,
+            "O": 0.04416751441166497,
+            "P": 0.014694246637278174,
+            "Q": 0.020176330959647337,
+            "R": 0.0686673448626653,
+            "S": 0.062337515541991635,
+            "T": 0.05414264722504804,
+            "U": 0.04470441957725783,
+            "V": 0.013846501638973663,
+            "W": 0.016757092799819146,
+            "X": 0.06979767152707132,
+            "Y": 0.008873064315587204,
+            "Z": 0.02045891262574884
+          }
+        },
         "signals": {
           "frequency_preserving": false,
+          "ic_elevated": false,
           "lag_structure": false,
           "periodic_structure": false,
+          "plaintext_unigram_compatible": false,
           "repeated_blocks": false,
           "uniform_random_compatible": true
         },
@@ -431,21 +785,6 @@
           "status": "inconclusive"
         },
         {
-          "family_id": "double-transposition",
-          "historical_prior": "plausible German Army hand-cipher branch",
-          "label": "Double transposition or another frequency-preserving hand cipher",
-          "limits": [
-            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
-            "A high index of coincidence is routing evidence, not a key recovery."
-          ],
-          "screening_signature": "frequency_preserving",
-          "source_ids": [
-            "friedman-lectures-double-transposition",
-            "nsa-wwii-nara-releases"
-          ],
-          "status": "not_supported"
-        },
-        {
           "family_id": "periodic-polyalphabetic",
           "historical_prior": "analytic control; no attribution to this traffic",
           "label": "Repeating-key polyalphabetic hand cipher",
@@ -458,6 +797,21 @@
             "friedman-military-cryptanalysis-part-ii"
           ],
           "status": "not_supported"
+        },
+        {
+          "family_id": "double-transposition",
+          "historical_prior": "plausible German Army hand-cipher branch",
+          "label": "Double transposition or another frequency-preserving hand cipher",
+          "limits": [
+            "Monographic statistics cannot distinguish transposition from monoalphabetic substitution.",
+            "A high index of coincidence is routing evidence, not a key recovery."
+          ],
+          "screening_signature": "frequency_preserving",
+          "source_ids": [
+            "friedman-lectures-double-transposition",
+            "nsa-wwii-nara-releases"
+          ],
+          "status": "excluded_by_conservation"
         }
       ],
       "route": "randomizing_machine_or_combiner"
@@ -484,10 +838,83 @@
         },
         "length_known": 107,
         "length_total": 107,
+        "plaintext_conservation": {
+          "absences": {
+            "absence_surprisal": 0.44236223278227066,
+            "absent_letters": [
+              "J"
+            ],
+            "improbable_absences": [],
+            "length_known": 107
+          },
+          "gate": {
+            "absence_compatible": true,
+            "applied": true,
+            "effect": "When this gate is closed, frequency-preserving families are excluded by conservation and no transposition search is justified for this message against this reference.",
+            "plaintext_unigram_compatible": true,
+            "unigram_fit_compatible": true
+          },
+          "invariant": "A transposition permutes plaintext letters and cannot change the multiset of letters, so a frequency-preserving cipher over German Army plaintext must show Army plaintext monograms.",
+          "limits": [
+            "The gate excludes a transposition of German Army plaintext, not a transposition of an already-substituted or encoded layer.",
+            "The null draws letters independently within a message; real plaintext is autocorrelated, so the null understates clustering.",
+            "The Dirichlet concentration was chosen so known true transpositions pass with margin, which biases the gate toward not excluding. Non-exclusion is therefore weak evidence.",
+            "The reference is derived from published counts whose source messages are not enumerated."
+          ],
+          "null": {
+            "concentration": 200.0,
+            "condition": "per-message letter distribution drawn from a Dirichlet centred on the reference, then letters drawn from it",
+            "seed": 13395520690587191791,
+            "simulations": 4000
+          },
+          "observed_absence_surprisal": 0.44236223278227066,
+          "observed_chi_square": 72.1160411313632,
+          "observed_chi_square_per_letter": 0.6739816928164786,
+          "p_values": {
+            "absence_surprisal_upper": 0.9940014996250938,
+            "reference_chi_square_upper": 0.02024493876530867
+          },
+          "reference": {
+            "bigram_count_total": 17694,
+            "derivation": "mean of first-position and second-position marginals of the published 1941 Army bigram count table, renormalized over A-Z",
+            "source": "/home/mythos/repos/enigma-attack/data/phase7/BigramFrequency1941.txt",
+            "source_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+          },
+          "reference_probabilities": {
+            "A": 0.060868090878263816,
+            "B": 0.02198485362269696,
+            "C": 0.007234090652198486,
+            "D": 0.029049395275234542,
+            "E": 0.12908330507516672,
+            "F": 0.030349270939301457,
+            "G": 0.02814513394370973,
+            "H": 0.018763422629139822,
+            "I": 0.061433254210466824,
+            "J": 0.004125692325081949,
+            "K": 0.019950265626766134,
+            "L": 0.03905278625522776,
+            "M": 0.02724087261218492,
+            "N": 0.0840963038318074,
+            "O": 0.04416751441166497,
+            "P": 0.014694246637278174,
+            "Q": 0.020176330959647337,
+            "R": 0.0686673448626653,
+            "S": 0.062337515541991635,
+            "T": 0.05414264722504804,
+            "U": 0.04470441957725783,
+            "V": 0.013846501638973663,
+            "W": 0.016757092799819146,
+            "X": 0.06979767152707132,
+            "Y": 0.008873064315587204,
+            "Z": 0.02045891262574884
+          }
+        },
         "signals": {
           "frequency_preserving": false,
+          "ic_elevated": false,
           "lag_structure": false,
           "periodic_structure": false,
+          "plaintext_unigram_compatible": true,
           "repeated_blocks": false,
           "uniform_random_compatible": true
         },
@@ -625,10 +1052,83 @@
         },
         "length_known": 97,
         "length_total": 97,
+        "plaintext_conservation": {
+          "absences": {
+            "absence_surprisal": 0.40101996803626405,
+            "absent_letters": [
+              "J"
+            ],
+            "improbable_absences": [],
+            "length_known": 97
+          },
+          "gate": {
+            "absence_compatible": true,
+            "applied": true,
+            "effect": "When this gate is closed, frequency-preserving families are excluded by conservation and no transposition search is justified for this message against this reference.",
+            "plaintext_unigram_compatible": true,
+            "unigram_fit_compatible": true
+          },
+          "invariant": "A transposition permutes plaintext letters and cannot change the multiset of letters, so a frequency-preserving cipher over German Army plaintext must show Army plaintext monograms.",
+          "limits": [
+            "The gate excludes a transposition of German Army plaintext, not a transposition of an already-substituted or encoded layer.",
+            "The null draws letters independently within a message; real plaintext is autocorrelated, so the null understates clustering.",
+            "The Dirichlet concentration was chosen so known true transpositions pass with margin, which biases the gate toward not excluding. Non-exclusion is therefore weak evidence.",
+            "The reference is derived from published counts whose source messages are not enumerated."
+          ],
+          "null": {
+            "concentration": 200.0,
+            "condition": "per-message letter distribution drawn from a Dirichlet centred on the reference, then letters drawn from it",
+            "seed": 10377127704216408791,
+            "simulations": 4000
+          },
+          "observed_absence_surprisal": 0.40101996803626405,
+          "observed_chi_square": 70.45294739653882,
+          "observed_chi_square_per_letter": 0.7263190453251425,
+          "p_values": {
+            "absence_surprisal_upper": 0.9970007498125468,
+            "reference_chi_square_upper": 0.019745063734066485
+          },
+          "reference": {
+            "bigram_count_total": 17694,
+            "derivation": "mean of first-position and second-position marginals of the published 1941 Army bigram count table, renormalized over A-Z",
+            "source": "/home/mythos/repos/enigma-attack/data/phase7/BigramFrequency1941.txt",
+            "source_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f"
+          },
+          "reference_probabilities": {
+            "A": 0.060868090878263816,
+            "B": 0.02198485362269696,
+            "C": 0.007234090652198486,
+            "D": 0.029049395275234542,
+            "E": 0.12908330507516672,
+            "F": 0.030349270939301457,
+            "G": 0.02814513394370973,
+            "H": 0.018763422629139822,
+            "I": 0.061433254210466824,
+            "J": 0.004125692325081949,
+            "K": 0.019950265626766134,
+            "L": 0.03905278625522776,
+            "M": 0.02724087261218492,
+            "N": 0.0840963038318074,
+            "O": 0.04416751441166497,
+            "P": 0.014694246637278174,
+            "Q": 0.020176330959647337,
+            "R": 0.0686673448626653,
+            "S": 0.062337515541991635,
+            "T": 0.05414264722504804,
+            "U": 0.04470441957725783,
+            "V": 0.013846501638973663,
+            "W": 0.016757092799819146,
+            "X": 0.06979767152707132,
+            "Y": 0.008873064315587204,
+            "Z": 0.02045891262574884
+          }
+        },
         "signals": {
           "frequency_preserving": false,
+          "ic_elevated": false,
           "lag_structure": false,
           "periodic_structure": false,
+          "plaintext_unigram_compatible": true,
           "repeated_blocks": false,
           "uniform_random_compatible": true
         },
@@ -748,9 +1248,17 @@
   "method": {
     "alpha": 0.01,
     "base_seed": 20260921,
+    "conservation_gate": {
+      "calibrated": true,
+      "positive_control_requirement": "Every known Army plaintext in the control set, shuffled into a true transposition, must be found compatible. Otherwise the gate is recorded but not applied.",
+      "rationale": "Elevated IC measures concentration, not which letters are concentrated. Routing to a frequency-preserving family on IC alone sent Phases 6 and 7 at a hypothesis that letter conservation already excluded.",
+      "rule": "frequency_preserving requires ic_elevated and plaintext_unigram_compatible. The second fails when either the reference chi-square or the absence-surprisal upper-tail p-value is at or below alpha.",
+      "status_when_closed": "excluded_by_conservation"
+    },
     "max_lag": 30,
     "max_period": 20,
     "nulls": {
+      "conservation": "independent draws from 1941 Army plaintext unigram frequencies at the observed known length",
       "monographic": "independent uniform A-Z symbols with source unknown positions preserved",
       "structural": "frequency-preserving permutations of each observed ciphertext with source unknown positions preserved"
     },
@@ -760,9 +1268,11 @@
       "chi-square distance from uniform monograms",
       "repeated trigram pair count",
       "maximum lag coincidence z-score",
-      "maximum pooled within-column IC over candidate periods"
+      "maximum pooled within-column IC over candidate periods",
+      "chi-square distance from 1941 Army plaintext monograms",
+      "joint improbability of wholly absent reference-common letters"
     ],
-    "warning": "Statuses are diagnostic routing labels, not posterior probabilities or exclusions of a cipher family."
+    "warning": "Statuses other than excluded_by_conservation are diagnostic routing labels, not posterior probabilities. An exclusion is a claim about the reference plaintext only: it rules out a frequency-preserving cipher over German Army plaintext, not one applied to an already-substituted or encoded layer."
   },
   "model_selection": {
     "heterogeneous_routes": true,
@@ -774,7 +1284,7 @@
       "XFEDT"
     ],
     "route_counts": {
-      "frequency_preserving_manual": 1,
+      "non_plaintext_alphabet_substitution": 1,
       "randomizing_machine_or_combiner": 4
     }
   },
@@ -822,5 +1332,5 @@
     ],
     "speculation": "Any mapping from one Batch C message to a non-Enigma family remains speculative until a key, plaintext, or archival procedure is found."
   },
-  "schema": "enigma-attack.phase5-model-triage/v2"
+  "schema": "enigma-attack.phase5-model-triage/v3"
 }

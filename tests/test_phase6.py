@@ -88,7 +88,8 @@ class Phase6ArtifactTests(unittest.TestCase):
         self.assertEqual(config["split"]["training_fraction"], 0.75)
         self.assertIn([5, 7], config["search"]["target_width_pairs"])
 
-    def test_smoke_artifact_preserves_scope_and_controls(self) -> None:
+    @staticmethod
+    def _smoke_config() -> dict:
         config = copy.deepcopy(load_config(DEFAULT_CONFIG))
         config["experiment_id"] = "phase6-unit-smoke"
         config["search"]["target_width_pairs"] = [[3, 4]]
@@ -96,8 +97,48 @@ class Phase6ArtifactTests(unittest.TestCase):
         config["search"]["restarts"] = 1
         config["search"]["iterations"] = 3
         config["acceptance"]["minimum_passing_seeds"] = 1
+        return config
+
+    @staticmethod
+    def _ungated_phase5(directory: pathlib.Path) -> pathlib.Path:
+        """Copy the Phase 5 artifact with QTXMA's conservation gate suspended.
+
+        The gate now blocks this search outright, which is the point of it.  The
+        search machinery still has to work, so the fixture reproduces what Phase
+        5 records when its gate is uncalibrated and therefore not applied.
+        """
+        source = pathlib.Path("artifacts/phase5-model-triage.json").resolve()
+        payload = json.loads(source.read_text(encoding="utf-8"))
+        for message in payload["messages"]:
+            if message["designator"] != "QTXMA":
+                continue
+            signals = message["analysis"]["signals"]
+            signals["plaintext_unigram_compatible"] = True
+            signals["frequency_preserving"] = True
+            message["analysis"]["plaintext_conservation"]["gate"]["applied"] = False
+            message["route"] = "frequency_preserving_manual"
+        target = directory / "phase5-ungated.json"
+        target.write_text(json.dumps(payload), encoding="utf-8")
+        return target
+
+    def test_conservation_gate_blocks_the_qtxma_search(self) -> None:
+        """Phase 5 letter conservation must stop this search before it starts."""
+        config = self._smoke_config()
         with tempfile.TemporaryDirectory() as directory:
             config_path = pathlib.Path(directory) / "config.json"
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ValueError) as caught:
+                run_experiment(config, config_path, ["--config", str(config_path)])
+        message = str(caught.exception)
+        self.assertIn("letter conservation", message)
+        self.assertIn("QTXMA", message)
+
+    def test_smoke_artifact_preserves_scope_and_controls(self) -> None:
+        config = self._smoke_config()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            config["phase5_artifact"] = str(self._ungated_phase5(root))
+            config_path = root / "config.json"
             config_path.write_text(json.dumps(config), encoding="utf-8")
             artifact = run_experiment(config, config_path, ["--config", str(config_path)])
 

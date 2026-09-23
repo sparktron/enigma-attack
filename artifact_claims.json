@@ -102,8 +102,18 @@
         "decision.status",
         "decision.accepted_break",
         "decision.next_experiment",
+        "decision.conservation_exclusions.gate_applied",
+        "decision.conservation_exclusions.frequency_preserving_family_excluded",
+        "decision.conservation_exclusions.routing_changed_by_gate",
         "inputs.corpus_sha256",
         "inputs.catalog_sha256",
+        "inputs.unigram_reference_sha256",
+        "inputs.control_plaintexts_sha256",
+        "conservation_gate_calibration.calibrated",
+        "conservation_gate_calibration.failures",
+        "conservation_gate_calibration.concentration",
+        "conservation_gate_calibration.controls[].id",
+        "conservation_gate_calibration.controls[].compatible",
         "cohorts.*",
         "messages[].designator",
         "messages[].route",
@@ -111,7 +121,12 @@
         "messages[].analysis.statistics.index_of_coincidence",
         "messages[].analysis.statistics.entropy_bits",
         "messages[].analysis.statistics.uniform_chi_square",
-        "messages[].analysis.statistics.trigram_repeat_pairs"
+        "messages[].analysis.statistics.trigram_repeat_pairs",
+        "messages[].analysis.plaintext_conservation.gate.applied",
+        "messages[].analysis.plaintext_conservation.gate.plaintext_unigram_compatible",
+        "messages[].analysis.plaintext_conservation.absences.absent_letters",
+        "messages[].family_assessments[].family_id",
+        "messages[].family_assessments[].status"
       ]
     },
     "artifacts/phase6-qtxma-double-transposition-smoke.json": {
@@ -143,7 +158,8 @@
         "target.seed_results[].delta.*",
         "target.seed_results[].candidate.plaintext",
         "observed.*"
-      ]
+      ],
+      "superseded": "Phase 5 excludes frequency-preserving ciphers for QTXMA by letter conservation, so phase6.py and phase7.py now refuse this target and the artifact cannot be regenerated. It is retained as the record of the search that was run before the gate existed."
     },
     "artifacts/phase7-qtxma-source-and-scorer-v2.json": {
       "runner": [
@@ -185,8 +201,10 @@
         "search.target.seed_results[].delta.*",
         "search.target.seed_results[].candidate.plaintext",
         "search.controls.monoalphabetic_substitution.delta.*"
-      ]
+      ],
+      "superseded": "Phase 5 excludes frequency-preserving ciphers for QTXMA by letter conservation, so phase6.py and phase7.py now refuse this target and the artifact cannot be regenerated. It is retained as the record of the search that was run before the gate existed."
     }
   },
-  "provenance_note": "Source-file hashes and git provenance are deliberately not claim paths. They change whenever the code changes, including for edits with no effect on the result, so gating on them would make the check fire on every commit and train reviewers to ignore it. Input-data hashes are claim paths, because a changed input means a different experiment."
+  "provenance_note": "Source-file hashes and git provenance are deliberately not claim paths. They change whenever the code changes, including for edits with no effect on the result, so gating on them would make the check fire on every commit and train reviewers to ignore it. Input-data hashes are claim paths, because a changed input means a different experiment.",
+  "superseded_semantics": "An entry with a 'superseded' note is kept on disk and checked for existence only. Its runner is no longer expected to succeed, because a later phase established that the experiment should not be run. Removing the artifact would delete a real negative result; regenerating it would require reopening a closed question."
 }

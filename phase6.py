@@ -626,6 +626,7 @@ def _phase5_evidence(path: pathlib.Path, designator: str) -> dict[str, Any]:
     supported_schemas = {
         "enigma-attack.phase5-model-triage/v1",
         "enigma-attack.phase5-model-triage/v2",
+        "enigma-attack.phase5-model-triage/v3",
     }
     if payload.get("schema") not in supported_schemas:
         raise ValueError("unsupported Phase 5 artifact schema")
@@ -635,6 +636,22 @@ def _phase5_evidence(path: pathlib.Path, designator: str) -> dict[str, Any]:
         )
     except StopIteration as error:
         raise ValueError(f"Phase 5 artifact does not contain {designator}") from error
+    signals = message["analysis"]["signals"]
+    # A transposition cannot change which letters are present, so when Phase 5
+    # has found the target's monograms incompatible with Army plaintext there is
+    # no key this phase could find.  Refuse rather than spend a search proving it.
+    if signals.get("plaintext_unigram_compatible") is False:
+        conservation = message["analysis"].get("plaintext_conservation", {})
+        p_values = conservation.get("p_values", {})
+        raise ValueError(
+            f"Phase 5 excluded frequency-preserving ciphers for {designator} by "
+            f"letter conservation (chi-square p="
+            f"{p_values.get('reference_chi_square_upper')}, absence p="
+            f"{p_values.get('absence_surprisal_upper')}). A transposition "
+            "preserves the plaintext letter multiset, so no key in any width "
+            "can reconcile this ciphertext with German Army plaintext. Attack a "
+            "substitution or encoding layer first."
+        )
     if message["route"] != "frequency_preserving_manual":
         raise ValueError(
             f"Phase 5 did not route {designator} to frequency_preserving_manual"
@@ -643,7 +660,8 @@ def _phase5_evidence(path: pathlib.Path, designator: str) -> dict[str, Any]:
         "path": str(path),
         "sha256": _sha256(path),
         "route": message["route"],
-        "signals": message["analysis"]["signals"],
+        "signals": signals,
+        "conservation": message["analysis"].get("plaintext_conservation", {}).get("gate"),
     }
 
 

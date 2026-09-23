@@ -40,3 +40,109 @@ Main risk: short ciphertexts create unstable tail statistics and can make an ord
 Strongest case against: the forms and indicator trigrams may already make standard Enigma so much more likely that alternative-family work has low expected value.
 
 Reverse this if: the missing status history for QTXMA/SZAEJ reveals a confirmed solution or reclassification, or the facsimiles show that normalization created the apparent structure.
+
+---
+
+# Addendum 2026-09-23 — conservation gate
+
+## Cause
+
+The recommendation above routed QTXMA to a double-transposition experiment on a
+frequency-preserving signal that was measured only as elevated index of
+coincidence. Phases 6 and 7 followed that route, ran preregistered searches with
+controls, and recorded refutations. Both were methodologically sound and both
+were aimed at a hypothesis that letter conservation had already excluded.
+
+The error was in this document's routing logic, not in the experiments that
+obeyed it. Index of coincidence measures how concentrated a letter distribution
+is. It is blind to *which* letters carry the concentration. Routing to a
+frequency-preserving family requires the second fact and never tested for it.
+
+## Fact
+
+- A transposition permutes plaintext symbols. It cannot create or destroy a
+  letter, so the ciphertext letter multiset equals the plaintext letter multiset.
+- Unigram frequencies derived from the published 1941 Army bigram counts
+  (`data/phase7/BigramFrequency1941.txt`, 17,694 bigrams) give D at 2.90%, U at
+  4.47%, F at 3.03%, G at 2.81%, and Y at 0.89%. E leads at 12.91% and X reaches
+  6.98%, consistent with Army operator text where X marks punctuation.
+- QTXMA contains no D, F, G or U in 155 characters. Its commonest letter is Y at
+  12.3%.
+- QTXMA's chi-square distance from those reference monograms is 3.384 per
+  letter. Shuffles of five published Army plaintexts — true transpositions —
+  score 0.174 to 0.678.
+- SZAEJ, the other 29 September message, also lacks D, F and U, and scores 2.426
+  per letter.
+
+## Inference
+
+- QTXMA is not a transposition of German Army plaintext. This follows from
+  conservation and does not depend on any search, scorer or key.
+- Its letters are concentrated on a 22-letter alphabet that is not the plaintext
+  alphabet, which places a substitution or encoding step between Army plaintext
+  and the observed text.
+- The shared {D, F, U} absence across exactly the two messages that left the
+  unbroken list is suggestive of a shared system, but two messages is not a
+  pattern and 51 characters of SZAEJ is thin evidence.
+
+## Method
+
+`frequency_preserving` now requires `ic_elevated` and
+`plaintext_unigram_compatible`. The second fails when either the reference
+chi-square or the absent-letter surprisal is significant against a
+length-matched null at alpha.
+
+The null draws each trial message's letter distribution from a Dirichlet centred
+on the reference before drawing letters, because real messages differ from the
+pooled corpus by more than sampling noise — each has its own subject, place
+names and numerals. Without that term the null is too tight and excludes genuine
+transpositions.
+
+The absent-letter test scores total surprisal rather than the joint probability
+of the absences. The raw joint product shrinks with message length whether or
+not anything is anomalous, so it cannot be compared against a fixed threshold; a
+first implementation of this gate did exactly that and wrongly excluded
+`1941-09-06-36`, a true transposition.
+
+The gate is a positive-control construct in the Phase 6 and 7 sense. Every
+control plaintext in `data/phase5/army-plaintext-controls.json` is shuffled into
+a true transposition and must be found compatible. All five pass, worst at
+`p = 0.0947` against alpha 0.01. If any failed, the gate would be recorded and
+not applied, and every message would keep its pre-gate route.
+
+## Speculation
+
+- A digraphic system would produce a restricted alphabet and an IC near the
+  observed 0.0577. QTXMA's length of 155 is odd, which argues against a pure
+  bigram cipher and should be checked before any such family is implemented.
+- No family has been added to `cipher-families.json` for this route. Doing so
+  requires sourced provenance for a specific system, which this addendum does
+  not have.
+
+## Unresolved
+
+- What maps Army plaintext onto QTXMA's 22-letter alphabet.
+- Whether SZAEJ shares that mechanism or merely resembles it at 51 characters.
+- Whether the conservation exclusion would survive a plaintext layer that is not
+  German Army text — a codebook output, for instance, would have its own
+  monograms and the gate's reference would not apply.
+
+## Recommendation
+
+Do not reopen a transposition search for QTXMA on width or scorer grounds. It is
+closed by conservation, and reopening it needs a positive reason to believe the
+underlying layer is not German Army plaintext.
+
+Apply the conservation test before any future family-specific search. It is
+O(n), it needs no optimizer, and it would have saved two preregistered
+experiments and a revision cycle here.
+
+Main risk: the gate's reference is derived from published counts whose source
+messages are not enumerated, so it inherits whatever selection produced them.
+
+Strongest case against: the gate tests German Army plaintext specifically, and a
+transposition over any other plaintext layer escapes it entirely.
+
+Reverse this if: archival evidence shows QTXMA's body is a superencipherment of
+code groups rather than of literal text, in which case the reference
+distribution is the wrong one and the exclusion does not apply.
