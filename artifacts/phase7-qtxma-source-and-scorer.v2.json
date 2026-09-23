@@ -7,43 +7,11 @@
   },
   "code": {
     "branch": "claude/phase7-rotation-aware-controls",
-    "commit": "d74dc622b3a4e6193653aca669ffd6ed8beaae05",
-    "dirty": true,
+    "commit": "91f98ecc229772f169ed910cd6d20d6d4da22596",
+    "dirty": false,
     "phase7_runner_sha256": "f6beb63107d0b2b4a6f59cca581d988d4f729380cac94372755b44b3824ea89c",
     "runner_sha256": "09264361813b7bee8f5c4ec06206f94faf58d6d90197bed64d413ca695b31a2f",
-    "status": [
-      "A  .github/workflows/tests.yml",
-      "UU README.md",
-      " M artifact_claims.json",
-      "A  artifacts/phase3-variant-smoke-v2.json",
-      "A  artifacts/phase4-joint-machine-smoke.v2.json",
-      "AM artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
-      "D  artifacts/phase7-qtxma-source-and-scorer-v2.json",
-      "A  artifacts/phase7-qtxma-source-and-scorer.v2.json",
-      "A  docs/ATTACK_PLAN.md",
-      "UU docs/STATUS.md",
-      "A  docs/code-review-2026-09-22.md",
-      "M  enigma.py",
-      "A  experiments/phase4-joint-machine-smoke-v2/config.json",
-      "A  experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
-      "AA experiments/phase7-qtxma-source-and-scorer-v2/config.json",
-      "M  phase1.py",
-      "M  phase2.py",
-      "M  phase3.py",
-      "M  phase4.py",
-      "M  phase5.py",
-      "UU phase6.py",
-      "UU phase7.py",
-      "M  pyproject.toml",
-      "M  recon.py",
-      "A  resources.py",
-      "M  tests/test_phase3.py",
-      "M  tests/test_phase4.py",
-      "M  tests/test_phase6.py",
-      "UU tests/test_phase7.py",
-      "A  tests/test_recon.py",
-      "A  tests/test_wheel_install.py"
-    ]
+    "status": []
   },
   "configuration": {
     "exact_arguments": [],
@@ -912,7 +880,7 @@
   },
   "status": "invalid_positive_control_failure",
   "timing": {
-    "finished_at": "2026-09-23T21:21:54.845639+00:00",
-    "started_at": "2026-09-23T21:21:53.100262+00:00"
+    "finished_at": "2026-09-23T21:31:25.034998+00:00",
+    "started_at": "2026-09-23T21:31:23.397435+00:00"
   }
 }
