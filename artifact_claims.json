@@ -1,0 +1,192 @@
+{
+  "schema": "enigma-attack.artifact-claims/v1",
+  "purpose": "Declare which paths of each generated artifact constitute the experiment's claim. The drift check compares only these paths, so a field that is not listed is not checked. The list is an allowlist rather than a denylist of volatile fields: failing to list a field leaves it unchecked and visible, whereas omitting a field from a denylist would silently stop checking a conclusion.",
+  "path_syntax": "Dot-separated keys. '[]' matches every element of a list. A trailing '*' matches every key of the object at that point.",
+  "artifacts": {
+    "artifacts/phase1-smoke-certificate.json": {
+      "runner": [
+        "phase1.py",
+        "search",
+        "--rings",
+        "AAA"
+      ],
+      "claim_paths": [
+        "schema",
+        "implementation.files_sha256.corpus",
+        "simulator_validation[].name",
+        "simulator_validation[].expected",
+        "simulator_validation[].actual",
+        "simulator_validation[].passed",
+        "procedure",
+        "search_space.reflector",
+        "search_space.ring_settings",
+        "search_space.uncertain_source_characters",
+        "search_space.bounded_source_error_budget_per_message",
+        "search_space.source_error_penalty",
+        "counts.*",
+        "result.status",
+        "result.full_phase_1_negative_result"
+      ]
+    },
+    "artifacts/phase2-network-cribs.json": {
+      "runner": [
+        "phase2.py"
+      ],
+      "claim_paths": [
+        "schema",
+        "inputs.corpus_sha256",
+        "inputs.cribs_sha256",
+        "network.cluster_edge_threshold",
+        "network.nodes[].designator",
+        "network.nodes[].current_status",
+        "network.edges[].source",
+        "network.edges[].target",
+        "network.edges[].score",
+        "network.clusters[].id",
+        "network.clusters[].messages",
+        "archive_queries[].priority",
+        "archive_queries[].query"
+      ]
+    },
+    "artifacts/phase3-variant-smoke.json": {
+      "runner": [
+        "phase3.py"
+      ],
+      "claim_paths": [
+        "schema",
+        "decision.status",
+        "decision.accepted_break",
+        "decision.negative_claim",
+        "inputs.catalog_sha256",
+        "inputs.corpus_sha256",
+        "results[].profile_id",
+        "results[].best_score_per_letter",
+        "results[].rotor_order_count",
+        "results[].procedure_compatibility",
+        "results[].dates[].date",
+        "results[].dates[].evaluations"
+      ]
+    },
+    "artifacts/phase4-joint-machine-smoke.json": {
+      "runner": [
+        "phase4.py",
+        "--config",
+        "experiments/phase4-joint-machine-smoke-v1/config.json"
+      ],
+      "claim_paths": [
+        "schema",
+        "status",
+        "hypothesis_supported",
+        "configuration.sha256",
+        "baseline.train.score_per_letter",
+        "baseline.held_out.score_per_letter",
+        "baseline.state_signature",
+        "observed.*",
+        "seed_results[].seed",
+        "seed_results[].best_state_signature",
+        "seed_results[].best_iteration",
+        "seed_results[].objective",
+        "seed_results[].complexity.*",
+        "seed_results[].delta_from_baseline.*",
+        "seed_results[].train.score_per_letter",
+        "seed_results[].held_out.score_per_letter",
+        "seed_results[].passes_preregistered_seed_threshold"
+      ]
+    },
+    "artifacts/phase5-model-triage.json": {
+      "runner": [
+        "phase5.py"
+      ],
+      "claim_paths": [
+        "schema",
+        "decision.status",
+        "decision.accepted_break",
+        "decision.next_experiment",
+        "inputs.corpus_sha256",
+        "inputs.catalog_sha256",
+        "cohorts.*",
+        "messages[].designator",
+        "messages[].route",
+        "messages[].analysis.signals.*",
+        "messages[].analysis.statistics.index_of_coincidence",
+        "messages[].analysis.statistics.entropy_bits",
+        "messages[].analysis.statistics.uniform_chi_square",
+        "messages[].analysis.statistics.trigram_repeat_pairs"
+      ]
+    },
+    "artifacts/phase6-qtxma-double-transposition-smoke.json": {
+      "runner": [
+        "phase6.py"
+      ],
+      "claim_paths": [
+        "schema",
+        "status",
+        "hypothesis_supported",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.corpus_sha256",
+        "inputs.phase5_evidence.sha256",
+        "inputs.phase5_evidence.route",
+        "controls.positive_passed",
+        "controls.positive_transposition_controls[].id",
+        "controls.positive_transposition_controls[].passed",
+        "controls.positive_transposition_controls[].key.*",
+        "controls.positive_transposition_controls[].known_key.*",
+        "controls.positive_transposition_controls[].plaintext_agreement.*",
+        "controls.positive_transposition_controls[].rotation_degeneracy_possible",
+        "controls.positive_transposition_controls[].delta.*",
+        "controls.monoalphabetic_substitution.delta.*",
+        "controls.monoalphabetic_substitution.key.*",
+        "target.designator",
+        "target.seed_results[].seed",
+        "target.seed_results[].key.*",
+        "target.seed_results[].delta.*",
+        "target.seed_results[].candidate.plaintext",
+        "observed.*"
+      ]
+    },
+    "artifacts/phase7-qtxma-source-and-scorer-v2.json": {
+      "runner": [
+        "phase7.py",
+        "--config",
+        "experiments/phase7-qtxma-source-and-scorer-v2/config.json"
+      ],
+      "claim_paths": [
+        "schema",
+        "status",
+        "hypothesis_supported",
+        "accepted_break",
+        "configuration.sha256",
+        "source_audit.passed",
+        "source_audit.checks.*",
+        "source_audit.body_sha256",
+        "source_audit.body_length",
+        "inputs.frequency_tables.bigram_counts.sha256",
+        "inputs.frequency_tables.trigram_counts.sha256",
+        "scorer_validation.passed",
+        "scorer_validation.passing_messages",
+        "scorer_validation.messages[].id",
+        "scorer_validation.messages[].passed",
+        "scorer_validation.messages[].authentic_score_per_letter",
+        "scorer_validation.messages[].margin_over_best_shuffle",
+        "positive_control_preflight.passed",
+        "positive_control_preflight.controls[].id",
+        "positive_control_preflight.controls[].passed",
+        "positive_control_preflight.controls[].key.*",
+        "positive_control_preflight.controls[].known_key.*",
+        "positive_control_preflight.controls[].plaintext_agreement.*",
+        "positive_control_preflight.controls[].rotation_degeneracy_possible",
+        "positive_control_preflight.controls[].delta.*",
+        "search.status",
+        "search.hypothesis_supported",
+        "search.observed.*",
+        "search.target.seed_results[].seed",
+        "search.target.seed_results[].key.*",
+        "search.target.seed_results[].delta.*",
+        "search.target.seed_results[].candidate.plaintext",
+        "search.controls.monoalphabetic_substitution.delta.*"
+      ]
+    }
+  },
+  "provenance_note": "Source-file hashes and git provenance are deliberately not claim paths. They change whenever the code changes, including for edits with no effect on the result, so gating on them would make the check fire on every commit and train reviewers to ignore it. Input-data hashes are claim paths, because a changed input means a different experiment."
+}
