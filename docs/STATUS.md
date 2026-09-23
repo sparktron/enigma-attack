@@ -48,10 +48,12 @@ No ciphertext break has been accepted. See
   its positive-control verdict is superseded.
 - The Phase 7 v2 artifact was produced from a clean checkout at commit
   `3b384f1`, and the run reproduced bit-for-bit across three executions.
-- The repository has no CI configuration. Every validation claim in this file
-  is a local result on one machine, Python 3.10.12. Nothing has been run on a
-  fresh clone or a second Python version, so environment-dependent breakage
-  would not be caught.
+- CI runs the unit tests on Python 3.10 through 3.13, then two checks over the
+  generated artifacts. Drift regenerates each artifact and fails the build when
+  a value declared in `artifact_claims.json` changes, reporting an added or
+  removed key as a warning instead. Determinism runs each experiment twice in
+  one environment and requires the declared paths to agree.
+- All seven artifacts currently pass both checks.
 
 ## Next
 

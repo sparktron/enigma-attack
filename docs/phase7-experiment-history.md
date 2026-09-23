@@ -88,9 +88,18 @@ artifact.
 Changes from v1:
 
 - `plaintext_agreement` reports exact positional agreement, the best agreement
-  over all cyclic rotations, and the offset achieving it. The positive-control
-  gate uses the rotation-aware number; the exact number is retained so a
+  over the rotations the stage geometry can actually produce, and the offset
+  achieving it. Credit is restricted to multiples of a stage width that divides
+  the message length; a control with no such width admits offset zero alone and
+  is held to exact recovery. The best agreement over every shift is still
+  reported, but only as a diagnostic that cannot pass a control, so an
+  unexplained near-match stays visible. The exact number is retained so a
   rotated recovery stays distinguishable from an exact one.
+
+  The first version of this metric credited any cyclic shift, which would have
+  let the ragged control pass on a shift no key could produce — defeating the
+  exactness that control exists to enforce. The Codex review bot raised this on
+  pull request #6 and the restriction was added before the result was recorded.
 - A second positive control, `ragged-both-stages`, uses a 133-letter plaintext.
   133 is a multiple of neither 4 nor 5, so both stages have ragged final rows
   and no whole-row rotation is available. It separates the rotation artifact
@@ -124,12 +133,14 @@ Observed:
 - Source audit and scorer validation reproduced v1 exactly: the 31 non-designator
   groups give the 155-letter solver input, and all five published plaintexts
   scored above all 16 shuffles.
-- Primary control: exact agreement 0.060811, best-over-rotations 0.972973 at
-  offset 4, held-out delta +2.455123. Passed. The first-stage key was recovered
-  exactly; only the second-stage order differs.
+- Primary control: exact agreement 0.060811, best agreement over the 37
+  admissible offsets 0.972973 at offset 4, held-out delta +2.455123. Passed.
+  The first-stage key was recovered exactly; only the second-stage order
+  differs. Its 148-letter length is a multiple of the 4-wide first stage, so
+  the multiples of four are reachable and offset 4 is credited.
 - Ragged control: exact agreement 1.000000 at offset 0, both stage keys
-  recovered exactly, held-out delta +1.474935. Passed. No rotation was
-  available to it.
+  recovered exactly, held-out delta +1.474935. Passed. Its geometry admits a
+  single offset, zero, so it was held to exact recovery.
 - QTXMA, three seeds: training gains of +0.643909, +0.622357 and +0.630738 per
   letter, against held-out deltas of -0.830167, -0.749779 and -0.760904. Zero
   seeds passed. The monoalphabetic substitution control scored +0.038152, so

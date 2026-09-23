@@ -1,15 +1,15 @@
 {
   "schema": "enigma-attack.phase1-search-certificate/v1",
-  "started_at": "2026-09-20T02:10:32.538121+00:00",
-  "completed_at": "2026-09-20T02:10:32.621519+00:00",
-  "duration_seconds": 0.08341431399458088,
+  "started_at": "2026-09-23T17:13:08.446820+00:00",
+  "completed_at": "2026-09-23T17:13:08.555208+00:00",
+  "duration_seconds": 0.10840370000369148,
   "implementation": {
     "python": "3.10.12",
     "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
     "files_sha256": {
-      "corpus": "c50beefa44aa5cff8ed1771ee1389dd175bdc546dffad624d30a92f65a12c1b2",
-      "enigma.py": "ae571c6ee1e93cb779a6a9da6f4b9f41c50cc63e02b5bb3e8333a823a2ed3254",
-      "phase1.py": "a2a18207f62c0ada5598fa2106eb7046ab3981afd28ebe6cf04faf9179264825"
+      "corpus": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+      "enigma.py": "595cbea30cc7a59ae9825396bafb462663bbb71dea4af1709a549bae309abb03",
+      "phase1.py": "883a7797591387a00e0da4ee09216c30282204f880f13f8bb13c9b294602aa8d"
     }
   },
   "simulator_validation": [

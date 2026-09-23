@@ -251,10 +251,11 @@ rotated by whole rows. The v1 control is 148 letters over a 4-wide first
 stage, and its "failed" recovery was the true plaintext rotated by four
 characters, agreeing at 97.3% at that offset.
 
-v2 therefore measures recovery as the best positional agreement over all
-cyclic rotations, keeping the exact-offset figure alongside it, and adds a
-second positive control whose 133-letter plaintext is a multiple of neither
-stage width, so no rotation is available to it. Both controls pass; the
+v2 therefore credits only the rotations the stage geometry can actually
+produce — multiples of a stage width that divides the message length — keeping
+the exact-offset figure alongside it, and adds a second positive control whose
+133-letter plaintext is a multiple of neither stage width, so no rotation is
+available to it and it is held to exact recovery. Both controls pass; the
 ragged control recovers its plaintext and both stage keys exactly.
 
 With the gate open, the bounded QTXMA search ran and was refuted. All three
@@ -303,7 +304,10 @@ A credible break should satisfy most of these simultaneously:
 - `experiments/phase6-qtxma-double-transposition-smoke-v1/config.json` — exact Phase 6 experiment configuration
 - `experiments/phase7-qtxma-source-and-scorer-v1/config.json` — superseded Phase 7 configuration, retained as the historical record
 - `experiments/phase7-qtxma-source-and-scorer-v2/config.json` — rotation-aware Phase 7 configuration with both positive controls
-- `tests/` — simulator, procedure, corpus, scorer, and certificate tests
+- `check_artifacts.py` — artifact drift and determinism checks used by CI
+- `artifact_claims.json` — per-artifact allowlist of the paths that constitute each claim
+- `.github/workflows/ci.yml` — test matrix plus the two artifact checks
+- `tests/` — simulator, procedure, corpus, scorer, certificate, and artifact-check tests
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
 - `artifacts/phase3-variant-smoke.json` — bounded documented-variant comparison

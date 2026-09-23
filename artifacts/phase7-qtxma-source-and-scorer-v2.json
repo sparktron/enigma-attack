@@ -7,10 +7,10 @@
   },
   "code": {
     "branch": "claude/phase7-rotation-aware-controls",
-    "commit": "3b384f1b7febb5df00147753c10989091a4b8b2f",
+    "commit": "e4eaa08b45eac14a1ed1e1e63b706695e630a88f",
     "dirty": false,
     "phase7_runner_sha256": "9c94a41577d9f757647c6735ab44597b8326f01940d512b03c9956fc1829b889",
-    "runner_sha256": "0c5f00488bd9bb974c3c664f60458a961773f710ec87dc2da88cdf35bac2d733",
+    "runner_sha256": "1003d09e12be86f704af65f0b0f6468391a7a6be40d48b22d32e535929022099",
     "status": []
   },
   "configuration": {
@@ -18,7 +18,7 @@
       "--config",
       "experiments/phase7-qtxma-source-and-scorer-v2/config.json",
       "--output",
-      "artifacts/phase7-qtxma-source-and-scorer-v2.json"
+      "/tmp/claude-1000/-home-mythos-repos-enigma-attack/876673c0-2a88-4d3f-9e63-9665765d0243/scratchpad/regen/p7.json"
     ],
     "path": "experiments/phase7-qtxma-source-and-scorer-v2/config.json",
     "payload": {
@@ -317,9 +317,12 @@
         "passed": true,
         "plaintext_accuracy": 0.972972973,
         "plaintext_agreement": {
-          "best_over_rotations": 0.972972973,
+          "allowed_rotation_offsets": 37,
+          "best_over_allowed_rotations": 0.972972973,
+          "best_over_any_rotation": 0.972972973,
           "exact": 0.060810811,
-          "rotation_offset": 4
+          "rotation_offset": 4,
+          "unrestricted_rotation_offset": 4
         },
         "rationale": "",
         "rotation_degeneracy_possible": [
@@ -401,9 +404,12 @@
         "passed": true,
         "plaintext_accuracy": 1.0,
         "plaintext_agreement": {
-          "best_over_rotations": 1.0,
+          "allowed_rotation_offsets": 1,
+          "best_over_allowed_rotations": 1.0,
+          "best_over_any_rotation": 1.0,
           "exact": 1.0,
-          "rotation_offset": 0
+          "rotation_offset": 0,
+          "unrestricted_rotation_offset": 0
         },
         "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
         "rotation_degeneracy_possible": [],
@@ -574,9 +580,9 @@
   "search": {
     "accepted_break": false,
     "code": {
-      "commit": "3b384f1b7febb5df00147753c10989091a4b8b2f",
+      "commit": "e4eaa08b45eac14a1ed1e1e63b706695e630a88f",
       "dirty": false,
-      "runner_sha256": "0c5f00488bd9bb974c3c664f60458a961773f710ec87dc2da88cdf35bac2d733",
+      "runner_sha256": "1003d09e12be86f704af65f0b0f6468391a7a6be40d48b22d32e535929022099",
       "status": []
     },
     "configuration": {
@@ -584,7 +590,7 @@
         "--config",
         "experiments/phase7-qtxma-source-and-scorer-v2/config.json",
         "--output",
-        "artifacts/phase7-qtxma-source-and-scorer-v2.json"
+        "/tmp/claude-1000/-home-mythos-repos-enigma-attack/876673c0-2a88-4d3f-9e63-9665765d0243/scratchpad/regen/p7.json"
       ],
       "path": "/home/mythos/repos/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
       "payload": {
@@ -879,9 +885,12 @@
         "passed": true,
         "plaintext_accuracy": 0.972972973,
         "plaintext_agreement": {
-          "best_over_rotations": 0.972972973,
+          "allowed_rotation_offsets": 37,
+          "best_over_allowed_rotations": 0.972972973,
+          "best_over_any_rotation": 0.972972973,
           "exact": 0.060810811,
-          "rotation_offset": 4
+          "rotation_offset": 4,
+          "unrestricted_rotation_offset": 4
         },
         "rationale": "",
         "rotation_degeneracy_possible": [
@@ -965,9 +974,12 @@
           "passed": true,
           "plaintext_accuracy": 0.972972973,
           "plaintext_agreement": {
-            "best_over_rotations": 0.972972973,
+            "allowed_rotation_offsets": 37,
+            "best_over_allowed_rotations": 0.972972973,
+            "best_over_any_rotation": 0.972972973,
             "exact": 0.060810811,
-            "rotation_offset": 4
+            "rotation_offset": 4,
+            "unrestricted_rotation_offset": 4
           },
           "rationale": "",
           "rotation_degeneracy_possible": [
@@ -1049,9 +1061,12 @@
           "passed": true,
           "plaintext_accuracy": 1.0,
           "plaintext_agreement": {
-            "best_over_rotations": 1.0,
+            "allowed_rotation_offsets": 1,
+            "best_over_allowed_rotations": 1.0,
+            "best_over_any_rotation": 1.0,
             "exact": 1.0,
-            "rotation_offset": 0
+            "rotation_offset": 0,
+            "unrestricted_rotation_offset": 0
           },
           "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
           "rotation_degeneracy_possible": [],
@@ -1292,9 +1307,9 @@
       ]
     },
     "timing": {
-      "finished_at": "2026-09-23T15:11:11.713729+00:00",
-      "runtime_seconds": 14.38419,
-      "started_at": "2026-09-23T15:10:57.332927+00:00"
+      "finished_at": "2026-09-23T17:14:16.393188+00:00",
+      "runtime_seconds": 14.312843,
+      "started_at": "2026-09-23T17:14:02.083680+00:00"
     }
   },
   "source_audit": {
@@ -1352,7 +1367,7 @@
   },
   "status": "not_supported_under_preregistered_smoke",
   "timing": {
-    "finished_at": "2026-09-23T15:11:11.720929+00:00",
-    "started_at": "2026-09-23T15:10:56.955336+00:00"
+    "finished_at": "2026-09-23T17:14:16.400019+00:00",
+    "started_at": "2026-09-23T17:14:01.715853+00:00"
   }
 }
