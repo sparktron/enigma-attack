@@ -1,19 +1,17 @@
 {
   "accepted_break": false,
   "code": {
-    "commit": "0fa08da90533439968a9b3e204a6c6eda435aca5",
+    "commit": "e4eaa08b45eac14a1ed1e1e63b706695e630a88f",
     "dirty": false,
-    "runner_sha256": "82732006720c5600def5fa15575b434f2de9aaa18f5349685374f4a4d9d5e315",
+    "runner_sha256": "1003d09e12be86f704af65f0b0f6468391a7a6be40d48b22d32e535929022099",
     "status": []
   },
   "configuration": {
     "exact_arguments": [
-      "--config",
-      "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
       "--output",
-      "artifacts/phase6-qtxma-double-transposition-smoke.json"
+      "/tmp/claude-1000/-home-mythos-repos-enigma-attack/876673c0-2a88-4d3f-9e63-9665765d0243/scratchpad/regen/p6.json"
     ],
-    "path": "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+    "path": "/home/mythos/repos/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
     "payload": {
       "acceptance": {
         "minimum_margin_over_substitution_control": 0.005,
@@ -51,6 +49,32 @@
           2
         ]
       },
+      "positive_controls": [
+        {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "id": "primary",
+          "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+          "rationale": "",
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ],
+          "width_pairs": [
+            [
+              4,
+              5
+            ]
+          ]
+        }
+      ],
       "refuted_by": "The positive control must be recovered first. If it is, the target still fails unless at least two seeds improve the held-out suffix and the median target gain exceeds the monoalphabetic-substitution control by the preregistered margin.",
       "schema": "enigma-attack.phase6-config/v1",
       "search": {
@@ -153,6 +177,7 @@
       "method": "exhaustive",
       "training_characters": 111
     },
+    "positive_accuracy_rule": "Recovery accuracy is the best positional agreement over all cyclic rotations of the known plaintext; the exact-offset agreement is recorded alongside it.",
     "positive_double_transposition": {
       "baseline": {
         "held_out": {
@@ -186,6 +211,7 @@
       },
       "evaluations": 2880,
       "held_out_characters": 37,
+      "id": "primary",
       "key": {
         "first_order": [
           2,
@@ -217,10 +243,118 @@
         ]
       },
       "method": "exhaustive",
+      "passed": true,
       "plaintext_accuracy": 1.0,
+      "plaintext_agreement": {
+        "allowed_rotation_offsets": 37,
+        "best_over_allowed_rotations": 1.0,
+        "best_over_any_rotation": 1.0,
+        "exact": 1.0,
+        "rotation_offset": 0,
+        "unrestricted_rotation_offset": 0
+      },
+      "rationale": "",
+      "rotation_degeneracy_possible": [
+        4
+      ],
+      "searched_width_pairs": [
+        [
+          4,
+          5
+        ]
+      ],
       "training_characters": 111
     },
-    "positive_passed": true
+    "positive_passed": true,
+    "positive_transposition_controls": [
+      {
+        "baseline": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": 0.02027027,
+            "raw": 0.75
+          },
+          "training": {
+            "known_letters": 111,
+            "per_letter": 0.045945946,
+            "raw": 5.1
+          }
+        },
+        "candidate": {
+          "held_out": {
+            "known_letters": 37,
+            "per_letter": 0.218918919,
+            "raw": 8.1
+          },
+          "plaintext": "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXDIEEINHEITRUECKTUMDREIUHRVORXDERFEINDSTEHTWESTLICHDESDORFESXVERSTAERKUNGUNDVERSORGUNGWERDENANGEFORDERTXENDE",
+          "training": {
+            "known_letters": 111,
+            "per_letter": 0.281531532,
+            "raw": 31.25
+          }
+        },
+        "ciphertext_length": 148,
+        "delta": {
+          "held_out_score_per_letter": 0.198648649,
+          "training_score_per_letter": 0.235585586
+        },
+        "evaluations": 2880,
+        "held_out_characters": 37,
+        "id": "primary",
+        "key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        },
+        "known_key": {
+          "first_order": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "second_order": [
+            4,
+            1,
+            3,
+            0,
+            2
+          ]
+        },
+        "method": "exhaustive",
+        "passed": true,
+        "plaintext_accuracy": 1.0,
+        "plaintext_agreement": {
+          "allowed_rotation_offsets": 37,
+          "best_over_allowed_rotations": 1.0,
+          "best_over_any_rotation": 1.0,
+          "exact": 1.0,
+          "rotation_offset": 0,
+          "unrestricted_rotation_offset": 0
+        },
+        "rationale": "",
+        "rotation_degeneracy_possible": [
+          4
+        ],
+        "searched_width_pairs": [
+          [
+            4,
+            5
+          ]
+        ],
+        "training_characters": 111
+      }
+    ]
   },
   "environment": {
     "cpu_count": 20,
@@ -455,8 +589,8 @@
     ]
   },
   "timing": {
-    "finished_at": "2026-09-21T22:42:41.106358+00:00",
-    "runtime_seconds": 51.870312,
-    "started_at": "2026-09-21T22:41:49.239660+00:00"
+    "finished_at": "2026-09-23T17:14:01.667508+00:00",
+    "runtime_seconds": 53.062562,
+    "started_at": "2026-09-23T17:13:08.608529+00:00"
   }
 }

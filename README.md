@@ -230,7 +230,9 @@ python3 phase6.py \
 The v1 artifact below is preserved as a historical run; its suffix was not an
 independent holdout. Run `python3 phase6.py` for the corrected v2 experiment.
 The full-text 4×5 control is recovered exactly; an independent 5×7 known-key
-message fails under annealing, so v2 makes no QTXMA target-search calls.
+message fails, so v2 makes no QTXMA target-search calls. Control recovery is
+judged over the whole-row rotations the stage geometry can produce, with the
+exact-offset agreement and exact key recovery recorded beside it.
 
 The positive control recovered its exact 4x5 double-transposition plaintext and
 keys, while the substitution control gained nothing on its held-out suffix.
@@ -258,12 +260,27 @@ python3 phase7.py \
   --output artifacts/phase7-qtxma-source-and-scorer.json
 ~~~
 
-The v1 runner stopped before QTXMA when prefix scoring selected a displaced
-plaintext with 6.1% positionwise accuracy. Full-text exhaustive scoring ranks
-the exact plaintext and key first among all 2,880 controls; the old prefix
-objective ranks that key fifth. The corrected v2 runner (`python3 phase7.py`)
-then tests an independent solved-message 5×7 annealing control. That control
-fails, so QTXMA remains unsearched. See `docs/STATUS.md` and the v2 artifact.
+The v1 run stopped before a QTXMA search because its positive control scored
+6.1% plaintext accuracy. Two independent defects produced that reading.
+Selecting keys on a training prefix ranked the true key fifth of all 2,880
+controls; full-text selection ranks it first. The recovered plaintext was also
+the control plaintext rotated by four characters, a degeneracy available
+because the 148-letter control is an exact multiple of its 4-wide first stage.
+
+The corrected v2 runner (`python3 phase7.py`) selects on the full text and
+credits only the whole-row rotations the stage geometry can actually produce,
+keeping the exact-offset agreement and exact key recovery alongside. It adds a
+third control whose 133-letter plaintext is a multiple of neither stage width,
+so no rotation is available to it and it is held to exact recovery.
+
+Two of the three controls pass exactly: the 148-letter 4×5 control and the
+133-letter ragged control, the latter recovering both stage keys. The
+independent solved-message 5×7 control fails at 5.3% positional agreement, so
+QTXMA remains unsearched. That failure is a whole-message rotation rather than
+a scrambled miss — the recovery agrees with the known plaintext completely at
+an offset of 75 of 76 positions, which neither stage width can produce — so the
+open question is the ragged-row convention at that length, not the scorer. See
+`docs/phase7-experiment-history.md`, `docs/STATUS.md`, and the v2 artifact.
 
 ## Installed use
 
@@ -305,15 +322,28 @@ A credible break should satisfy most of these simultaneously:
 - `docs/phase4-experiment-history.md` — preregistration and negative-result ledger
 - `docs/phase5-research.md` — dated evidence boundary and Phase 5 recommendation
 - `docs/phase6-experiment-history.md` — Phase 6 preregistration and negative-result ledger
-- `experiments/phase4-joint-machine-smoke-v1/config.json` — exact Phase 4 experiment configuration
-- `experiments/phase6-qtxma-double-transposition-smoke-v1/config.json` — exact Phase 6 experiment configuration
-- `tests/` — simulator, procedure, corpus, scorer, and certificate tests
+- `docs/phase7-experiment-history.md` — Phase 7 v1 and v2 preregistration and negative-result ledger
+- `experiments/phase4-joint-machine-smoke-v1/config.json` — superseded Phase 4 experiment configuration
+- `experiments/phase4-joint-machine-smoke-v2/config.json` — exact Phase 4 experiment configuration
+- `experiments/phase6-qtxma-double-transposition-smoke-v1/config.json` — superseded Phase 6 experiment configuration
+- `experiments/phase6-qtxma-double-transposition-smoke-v2/config.json` — exact Phase 6 experiment configuration
+- `experiments/phase7-qtxma-source-and-scorer-v1/config.json` — superseded Phase 7 configuration, retained as the historical record
+- `experiments/phase7-qtxma-source-and-scorer-v2/config.json` — full-text, rotation-aware Phase 7 configuration with the ragged control
+- `check_artifacts.py` — artifact drift and determinism checks used by CI
+- `artifact_claims.json` — per-artifact allowlist of the paths that constitute each claim
+- `.github/workflows/ci.yml` — test matrix plus the two artifact checks
+- `tests/` — simulator, procedure, corpus, scorer, certificate, and artifact-check tests
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
-- `artifacts/phase3-variant-smoke.json` — bounded documented-variant comparison
-- `artifacts/phase4-joint-machine-smoke.json` — raw multi-seed traces, states, and held-out result
+- `artifacts/phase3-variant-smoke.json` — superseded bounded documented-variant comparison
+- `artifacts/phase3-variant-smoke-v2.json` — bounded documented-variant comparison
+- `artifacts/phase4-joint-machine-smoke.json` — superseded multi-seed traces, states, and held-out result
+- `artifacts/phase4-joint-machine-smoke.v2.json` — raw multi-seed traces, states, and held-out result
 - `artifacts/phase5-model-triage.json` — per-message structural tests and family routes
-- `artifacts/phase6-qtxma-double-transposition-smoke.json` — raw Phase 6 controls, seeds, scores, keys, and candidates
+- `artifacts/phase6-qtxma-double-transposition-smoke.json` — superseded Phase 6 run; its suffix was not an independent holdout
+- `artifacts/phase6-qtxma-double-transposition-smoke.v2.json` — raw Phase 6 controls, scores, keys, and calibration
+- `artifacts/phase7-qtxma-source-and-scorer.json` — Phase 7 v1 record; its positive-control verdict is superseded
+- `artifacts/phase7-qtxma-source-and-scorer.v2.json` — Phase 7 v2 source audit, scorer validation, and all three known-key controls
 
 ## Primary references
 

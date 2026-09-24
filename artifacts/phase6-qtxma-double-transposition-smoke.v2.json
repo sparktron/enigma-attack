@@ -1,18 +1,10 @@
 {
   "accepted_break": false,
   "code": {
-    "commit": "bb889b9149c56acef361c8dfe6ca67ffa5df1f27",
-    "dirty": true,
-    "runner_sha256": "e06545d85e6a3739cf3cb36588338d930057703703e7bd800f75541aa353e1a9",
-    "status": [
-      "M artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
-      " M artifacts/phase7-qtxma-source-and-scorer.v2.json",
-      " M experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
-      " M phase6.py",
-      " M phase7.py",
-      " M tests/test_phase6.py",
-      " M tests/test_phase7.py"
-    ]
+    "commit": "e3b38877aa9f555758cad651b7ba6cf853460c15",
+    "dirty": false,
+    "runner_sha256": "09264361813b7bee8f5c4ec06206f94faf58d6d90197bed64d413ca695b31a2f",
+    "status": []
   },
   "configuration": {
     "exact_arguments": [],
@@ -135,6 +127,8 @@
     "additional_known_key": [
       {
         "evaluations": 12008,
+        "exact_key": false,
+        "exact_plaintext": false,
         "id": "independent-solved-army-text-1941-09-24-94",
         "known_key": {
           "first_order": [
@@ -156,7 +150,23 @@
         },
         "method": "simulated_annealing",
         "passed": false,
-        "plaintext_accuracy": 0.039473684210526314,
+        "plaintext_accuracy": 0.039473684,
+        "plaintext_agreement": {
+          "allowed_rotation_offsets": 1,
+          "best_over_allowed_rotations": 0.039473684,
+          "best_over_any_rotation": 0.210526316,
+          "exact": 0.039473684,
+          "rotation_offset": 0,
+          "unrestricted_rotation_offset": 11
+        },
+        "rationale": "",
+        "rotation_degeneracy_possible": [],
+        "searched_width_pairs": [
+          [
+            5,
+            7
+          ]
+        ],
         "selected_key": {
           "first_order": [
             2,
@@ -174,14 +184,18 @@
             6,
             0
           ]
-        }
+        },
+        "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
       }
     ],
     "monoalphabetic_substitution": null,
+    "positive_accuracy_rule": "Recovery accuracy is the best positional agreement over the whole-row rotations the stage geometry can actually produce; the exact-offset agreement and exact key recovery are recorded alongside it.",
     "positive_double_transposition": {
       "additional_known_key_controls": [
         {
           "evaluations": 12008,
+          "exact_key": false,
+          "exact_plaintext": false,
           "id": "independent-solved-army-text-1941-09-24-94",
           "known_key": {
             "first_order": [
@@ -203,7 +217,23 @@
           },
           "method": "simulated_annealing",
           "passed": false,
-          "plaintext_accuracy": 0.039473684210526314,
+          "plaintext_accuracy": 0.039473684,
+          "plaintext_agreement": {
+            "allowed_rotation_offsets": 1,
+            "best_over_allowed_rotations": 0.039473684,
+            "best_over_any_rotation": 0.210526316,
+            "exact": 0.039473684,
+            "rotation_offset": 0,
+            "unrestricted_rotation_offset": 11
+          },
+          "rationale": "",
+          "rotation_degeneracy_possible": [],
+          "searched_width_pairs": [
+            [
+              5,
+              7
+            ]
+          ],
           "selected_key": {
             "first_order": [
               2,
@@ -221,7 +251,8 @@
               6,
               0
             ]
-          }
+          },
+          "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
         }
       ],
       "all_known_key_controls_passed": false,
@@ -374,6 +405,7 @@
       "exact_key": true,
       "exact_plaintext": true,
       "held_out_characters": 0,
+      "id": "primary",
       "key": {
         "first_order": [
           2,
@@ -511,6 +543,24 @@
       "method": "exhaustive",
       "passed": true,
       "plaintext_accuracy": 1.0,
+      "plaintext_agreement": {
+        "allowed_rotation_offsets": 37,
+        "best_over_allowed_rotations": 1.0,
+        "best_over_any_rotation": 1.0,
+        "exact": 1.0,
+        "rotation_offset": 0,
+        "unrestricted_rotation_offset": 0
+      },
+      "rationale": "",
+      "rotation_degeneracy_possible": [
+        4
+      ],
+      "searched_width_pairs": [
+        [
+          4,
+          5
+        ]
+      ],
       "training_characters": 148
     },
     "positive_passed": false
@@ -573,8 +623,8 @@
     "skipped_reason": "positive_control_failed"
   },
   "timing": {
-    "finished_at": "2026-09-23T00:57:12.987966+00:00",
-    "runtime_seconds": 6.049437,
-    "started_at": "2026-09-23T00:57:06.942621+00:00"
+    "finished_at": "2026-09-23T21:31:23.323021+00:00",
+    "runtime_seconds": 6.169018,
+    "started_at": "2026-09-23T21:31:17.157679+00:00"
   }
 }

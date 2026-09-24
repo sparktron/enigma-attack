@@ -1,8 +1,8 @@
 {
   "schema": "enigma-attack.phase7-config/v1",
   "experiment_id": "phase7-qtxma-source-and-scorer-v2",
-  "hypothesis": "Source and scorer checks plus exact control recovery permit a calibrated full-text transposition search.",
-  "refuted_by": "Source or scorer checks fail, a known-key control fails exact recovery, or the target maximum fails matched complete-search calibration.",
+  "hypothesis": "Source and scorer checks, plus exact known-key recovery on controls that include one whose length is a multiple of neither stage width, permit a calibrated full-text transposition search of QTXMA.",
+  "refuted_by": "Source or scorer checks fail, a known-key control fails recovery under the rotation-aware accuracy rule, or the target maximum fails matched complete-search calibration.",
   "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
   "phase6_artifact": "artifacts/phase6-qtxma-double-transposition-smoke.json",
   "corpus": "corpus.json",
@@ -155,6 +155,36 @@
     "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
     "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
     "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
-    "The historical Phase 6 baseline is preserved for comparison, not reused as validation."
+    "The historical Phase 6 baseline is preserved for comparison, not reused as validation.",
+    "Rotation-aware accuracy credits a recovery that is correct up to a whole-row shift the stage geometry can produce; the exact-offset agreement and exact key recovery are recorded separately so the two cases stay distinguishable.",
+    "The known-key controls are constructed or independently solved plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
+  ],
+  "supersedes": "phase7-qtxma-source-and-scorer-v1",
+  "revision_rationale": "The v1 run reported 6.1% recovery accuracy on its positive control and gated off the target search. Two independent defects produced that reading. Selecting keys on a training prefix ranked the true key fifth of 2,880; full-text selection ranks it first. The recovered plaintext was also the control plaintext rotated by four characters, a degeneracy available because the 148-letter control is an exact multiple of its 4-wide first stage. v2 selects on the full text, measures accuracy only over the rotations the stage geometry can produce, and adds a control of length 133, which is a multiple of neither 4 nor 5, so that a rotated recovery cannot be mistaken for scorer success.",
+  "additional_positive_controls": [
+    {
+      "id": "ragged-both-stages",
+      "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+      "first_order": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "second_order": [
+        2,
+        4,
+        0,
+        3,
+        1
+      ],
+      "width_pairs": [
+        [
+          4,
+          5
+        ]
+      ],
+      "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading."
+    }
   ]
 }

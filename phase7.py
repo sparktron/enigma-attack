@@ -165,6 +165,15 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
     phase6_config["corpus"] = str(corpus_path)
     phase6_config["search"]["target_width_pairs"] = config["search"]["target_width_pairs"]
     phase6_config["search"]["seeds"] = config["search"]["seeds"]
+    # Phase 7 controls extend the inherited Phase 6 ones rather than replacing
+    # them, so the baseline known-key gates still apply to the target search.
+    inherited = list(phase6_config.get("additional_positive_controls", []))
+    known_ids = {control["id"] for control in inherited}
+    for control in config.get("additional_positive_controls", []):
+        if control["id"] in known_ids:
+            raise ValueError(f"duplicate positive control id: {control['id']}")
+        inherited.append(control)
+    phase6_config["additional_positive_controls"] = inherited
     phase6.validate_config(phase6_config)
     baseline_payload = json.loads(baseline_path.read_text(encoding="utf-8"))
     if baseline_payload.get("inputs", {}).get("corpus_sha256") != sha256(corpus_path):

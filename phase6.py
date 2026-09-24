@@ -508,6 +508,133 @@ def _calibrate_search(
     }
 
 
+def degenerate_rotation_offsets(
+    length: int, width_pairs: Sequence[Sequence[int]]
+) -> tuple[list[int], list[int]]:
+    """Return the stage widths that divide ``length`` and the shifts they allow.
+
+    A whole-row rotation is only reachable by an alternative key when a stage
+    width divides the message length exactly; the reachable shifts are then the
+    multiples of that width.  When no width divides the length, the only
+    admissible offset is zero, so the comparison reduces to exact agreement.
+    """
+
+    widths = sorted(
+        {width for pair in width_pairs for width in pair if width > 0 and length % width == 0}
+    )
+    offsets = {0}
+    for width in widths:
+        offsets.update(range(width, length, width))
+    return widths, sorted(offsets)
+
+
+def plaintext_agreement(
+    observed: str,
+    expected: str,
+    allowed_offsets: Sequence[int] | None = None,
+) -> dict[str, Any]:
+    """Compare a recovered plaintext with a known one over admissible shifts.
+
+    Double columnar transposition has near-degenerate keys.  When the message
+    length is an exact multiple of a stage width, a different column order can
+    read out the same text rotated by whole rows, so strict positional
+    agreement reports an essentially correct recovery as a total failure.
+
+    Credit is given only for shifts the stage geometry can actually produce,
+    passed in ``allowed_offsets``; a control whose length divides no stage
+    width admits offset zero alone and is therefore held to exact recovery.
+    The best agreement over *every* shift is also reported, but only as a
+    diagnostic, so that an unexplained near-match stays visible without being
+    able to pass the control.  Omitting ``allowed_offsets`` permits every
+    shift and is intended for inspection rather than acceptance.
+    """
+
+    length = len(expected)
+    if length == 0 or len(observed) != length:
+        raise ValueError("plaintext comparison needs two equal non-empty strings")
+
+    def agreement_at(offset: int) -> float:
+        rotated = expected[offset:] + expected[:offset]
+        return sum(a == b for a, b in zip(observed, rotated)) / length
+
+    every = {offset: agreement_at(offset) for offset in range(length)}
+    admissible = range(length) if allowed_offsets is None else sorted({0, *allowed_offsets})
+    for offset in admissible:
+        if not 0 <= offset < length:
+            raise ValueError(f"rotation offset {offset} outside the plaintext")
+    best_offset = max(admissible, key=lambda offset: (every[offset], -offset))
+    unrestricted_offset = max(every, key=lambda offset: (every[offset], -offset))
+    return {
+        "exact": round(every[0], 9),
+        "best_over_allowed_rotations": round(every[best_offset], 9),
+        "rotation_offset": best_offset,
+        "allowed_rotation_offsets": len(admissible),
+        "best_over_any_rotation": round(every[unrestricted_offset], 9),
+        "unrestricted_rotation_offset": unrestricted_offset,
+    }
+
+
+def recovery_verdict(
+    control: Mapping[str, Any],
+    candidate: SearchCandidate,
+    acceptance: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Judge a known-key recovery, crediting only reachable whole-row shifts.
+
+    Exact plaintext and exact key recovery are recorded separately, so that a
+    control passed on a rotation stays distinguishable from one that landed on
+    the known key itself.
+    """
+
+    plaintext = control["plaintext"]
+    width_pairs = [list(pair) for pair in control["width_pairs"]]
+    widths, allowed_offsets = degenerate_rotation_offsets(len(plaintext), width_pairs)
+    agreement = plaintext_agreement(candidate.plaintext, plaintext, allowed_offsets)
+    minimum = acceptance.get("minimum_positive_plaintext_accuracy", 1.0)
+    verdict = {
+        "id": control["id"],
+        "rationale": control.get("rationale", ""),
+        "known_key": {
+            "first_order": list(control["first_order"]),
+            "second_order": list(control["second_order"]),
+        },
+        "searched_width_pairs": width_pairs,
+        "plaintext_agreement": agreement,
+        "plaintext_accuracy": agreement["best_over_allowed_rotations"],
+        "rotation_degeneracy_possible": widths,
+        "exact_plaintext": candidate.plaintext == plaintext,
+        "exact_key": (
+            candidate.first_order == tuple(control["first_order"])
+            and candidate.second_order == tuple(control["second_order"])
+        ),
+        "passed": agreement["best_over_allowed_rotations"] >= minimum,
+    }
+    if control.get("source"):
+        verdict["source"] = control["source"]
+    return verdict
+
+
+def evaluate_positive_control(
+    control: Mapping[str, Any],
+    scorer: TextScorer,
+    seed: int,
+    options: Mapping[str, Any],
+    training_fraction: float,
+    acceptance: Mapping[str, Any],
+) -> tuple[dict[str, Any], str, SearchCandidate]:
+    """Encipher a known plaintext, search it back, and judge the recovery."""
+
+    ciphertext = double_columnar_transpose(
+        control["plaintext"], control["first_order"], control["second_order"]
+    )
+    candidate = search_double_transposition(
+        ciphertext, control["width_pairs"], scorer=scorer, seed=seed, **options
+    )
+    result = evaluate_search(ciphertext, candidate, training_fraction, scorer)
+    result.update(recovery_verdict(control, candidate, acceptance))
+    return result, ciphertext, candidate
+
+
 def _substitute(text: str, cipher_alphabet: str) -> str:
     if sorted(cipher_alphabet) != sorted(ALPHABET):
         raise ValueError("substitution cipher_alphabet must permute A-Z")
@@ -525,6 +652,52 @@ def _search_options(config: Mapping[str, Any]) -> dict[str, Any]:
         "temperature_start": search["temperature_start"],
         "temperature_end": search["temperature_end"],
     }
+
+
+def _normalize_positive_controls(payload: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Flatten the primary and any additional positive controls into one list.
+
+    A configuration that predates multiple controls carries only
+    ``positive_control``; it normalizes to a single-entry list so older
+    experiments keep running unchanged.
+    """
+
+    default_pairs = payload["search"]["control_width_pairs"]
+    raw = [{"id": "primary", **payload["positive_control"]}]
+    raw.extend(payload.get("additional_positive_controls", []))
+    controls = []
+    seen: set[str] = set()
+    for entry in raw:
+        identifier = entry["id"]
+        if identifier in seen:
+            raise ValueError(f"duplicate positive control id: {identifier}")
+        seen.add(identifier)
+        first_order = _validate_order(entry["first_order"])
+        second_order = _validate_order(entry["second_order"])
+        width_pairs = entry.get("width_pairs") or default_pairs
+        for pair in width_pairs:
+            if len(pair) != 2 or min(pair) < 2:
+                raise ValueError(f"invalid width pair for control {identifier}: {pair}")
+        if [len(first_order), len(second_order)] not in [list(pair) for pair in width_pairs]:
+            raise ValueError(
+                f"control {identifier} key widths are outside its searched width pairs"
+            )
+        if not entry["plaintext"] or any(
+            character not in ALPHABET for character in entry["plaintext"]
+        ):
+            raise ValueError(f"control {identifier} plaintext must be A-Z only")
+        controls.append(
+            {
+                "id": identifier,
+                "plaintext": entry["plaintext"],
+                "first_order": list(first_order),
+                "second_order": list(second_order),
+                "width_pairs": [list(pair) for pair in width_pairs],
+                "rationale": entry.get("rationale", ""),
+                "source": entry.get("source", ""),
+            }
+        )
+    return controls
 
 
 def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
@@ -558,9 +731,7 @@ def validate_config(payload: dict[str, Any]) -> dict[str, Any]:
         for pair in search[name]:
             if len(pair) != 2 or min(pair) < 2:
                 raise ValueError(f"invalid width pair in {name}: {pair}")
-    positive = payload["positive_control"]
-    _validate_order(positive["first_order"])
-    _validate_order(positive["second_order"])
+    _normalize_positive_controls(payload)
     _substitute("A", payload["substitution_control"]["cipher_alphabet"])
     acceptance = payload["acceptance"]
     if acceptance.get("minimum_passing_seeds", 0) > len(search["seeds"]):
@@ -623,42 +794,17 @@ def run_experiment(
     started_at = dt.datetime.now(dt.timezone.utc)
     started_clock = time.perf_counter()
 
-    positive_plaintext = config["positive_control"]["plaintext"]
-    positive_ciphertext = double_columnar_transpose(
-        positive_plaintext,
-        config["positive_control"]["first_order"],
-        config["positive_control"]["second_order"],
-    )
-    positive_candidate = search_double_transposition(
-        positive_ciphertext,
-        search["control_width_pairs"],
-        scorer=scorer,
-        seed=search["seeds"][0],
-        **options,
-    )
-    positive_result = evaluate_search(
-        positive_ciphertext, positive_candidate, training_fraction, scorer
-    )
-    positive_accuracy = sum(
-        observed == expected
-        for observed, expected in zip(positive_candidate.plaintext, positive_plaintext)
-    ) / len(positive_plaintext)
-    positive_result["plaintext_accuracy"] = round(positive_accuracy, 9)
-    positive_result["known_key"] = {
-        "first_order": list(config["positive_control"]["first_order"]),
-        "second_order": list(config["positive_control"]["second_order"]),
-    }
-
     acceptance = config["acceptance"]
-    known_key = positive_result["known_key"]
-    exact_key = (
-        positive_candidate.first_order == tuple(known_key["first_order"])
-        and positive_candidate.second_order == tuple(known_key["second_order"])
+    # Normalized at the point of use: a caller such as Phase 7 may add controls
+    # to the loaded configuration, and a cached list would go stale.
+    controls = _normalize_positive_controls(config)
+    primary = controls[0]
+    positive_plaintext = primary["plaintext"]
+    positive_result, positive_ciphertext, positive_candidate = evaluate_positive_control(
+        primary, scorer, search["seeds"][0], options, training_fraction, acceptance
     )
-    positive_passed = positive_candidate.plaintext == positive_plaintext and exact_key
-    positive_result["exact_plaintext"] = positive_candidate.plaintext == positive_plaintext
-    positive_result["exact_key"] = exact_key
-    positive_result["passed"] = positive_passed
+    positive_passed = positive_result["passed"]
+    known_key = positive_result["known_key"]
     if math.factorial(len(known_key["first_order"])) * math.factorial(len(known_key["second_order"])) <= search["max_exhaustive_states"]:
         positive_result["diagnostics"] = _control_diagnostics(
             positive_ciphertext, positive_plaintext,
@@ -671,9 +817,14 @@ def run_experiment(
                 prefix_fraction=config["legacy_prefix_fraction"],
             )
 
+    # Every additional control is evaluated even after one fails: a control
+    # whose geometry admits no rotation is what distinguishes a genuine search
+    # failure from the rotation degeneracy that a strict metric misreports, and
+    # that evidence is only available if the run does not stop at the first
+    # failure.
     additional_controls = []
     if positive_passed:
-        for control in config.get("additional_positive_controls", []):
+        for control in controls[1:]:
             control_ciphertext = double_columnar_transpose(
                 control["plaintext"], control["first_order"], control["second_order"]
             )
@@ -681,26 +832,16 @@ def run_experiment(
                 control_ciphertext, control["width_pairs"], scorer=scorer,
                 seed=search["seeds"][0], **options,
             )
-            exact = (
-                selected.plaintext == control["plaintext"]
-                and selected.first_order == tuple(control["first_order"])
-                and selected.second_order == tuple(control["second_order"])
-            )
+            verdict = recovery_verdict(control, selected, acceptance)
             additional_controls.append({
-                "id": control["id"], "passed": exact,
-                "plaintext_accuracy": sum(a == b for a, b in zip(
-                    selected.plaintext, control["plaintext"]
-                )) / len(control["plaintext"]),
+                **verdict,
                 "method": selected.method,
                 "evaluations": selected.evaluations,
-                "known_key": {"first_order": control["first_order"],
-                              "second_order": control["second_order"]},
                 "selected_key": {"first_order": list(selected.first_order),
                                  "second_order": list(selected.second_order)},
             })
-            if not exact:
+            if not verdict["passed"]:
                 positive_passed = False
-                break
     positive_result["all_known_key_controls_passed"] = positive_passed
     positive_result["additional_known_key_controls"] = additional_controls
 
@@ -803,6 +944,12 @@ def run_experiment(
             "additional_known_key": additional_controls,
             "monoalphabetic_substitution": substitution_result,
             "positive_passed": positive_passed,
+            "positive_accuracy_rule": (
+                "Recovery accuracy is the best positional agreement over the "
+                "whole-row rotations the stage geometry can actually produce; "
+                "the exact-offset agreement and exact key recovery are "
+                "recorded alongside it."
+            ),
         },
         "target": {
             "designator": target_name,

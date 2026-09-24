@@ -6,38 +6,59 @@
     "median_held_out_delta": -0.026923077
   },
   "code": {
-    "branch": "codex/fix-nine-audit-findings",
-    "commit": "bb889b9149c56acef361c8dfe6ca67ffa5df1f27",
-    "dirty": true,
-    "phase7_runner_sha256": "3fe57ee55d5b8ec8da594c3ee72f453683b8feb2f03500fded93233540cec756",
-    "runner_sha256": "e06545d85e6a3739cf3cb36588338d930057703703e7bd800f75541aa353e1a9",
-    "status": [
-      "M artifacts/phase6-qtxma-double-transposition-smoke.v2.json",
-      " M artifacts/phase7-qtxma-source-and-scorer.v2.json",
-      " M experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
-      " M phase6.py",
-      " M phase7.py",
-      " M tests/test_phase6.py",
-      " M tests/test_phase7.py"
-    ]
+    "branch": "claude/phase7-rotation-aware-controls",
+    "commit": "91f98ecc229772f169ed910cd6d20d6d4da22596",
+    "dirty": false,
+    "phase7_runner_sha256": "f6beb63107d0b2b4a6f59cca581d988d4f729380cac94372755b44b3824ea89c",
+    "runner_sha256": "09264361813b7bee8f5c4ec06206f94faf58d6d90197bed64d413ca695b31a2f",
+    "status": []
   },
   "configuration": {
     "exact_arguments": [],
     "path": "/home/mythos/repos/enigma-attack/experiments/phase7-qtxma-source-and-scorer-v2/config.json",
     "payload": {
+      "additional_positive_controls": [
+        {
+          "first_order": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "id": "ragged-both-stages",
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDE",
+          "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+          "second_order": [
+            2,
+            4,
+            0,
+            3,
+            1
+          ],
+          "width_pairs": [
+            [
+              4,
+              5
+            ]
+          ]
+        }
+      ],
       "corpus": "corpus.json",
       "experiment_id": "phase7-qtxma-source-and-scorer-v2",
-      "hypothesis": "Source and scorer checks plus exact control recovery permit a calibrated full-text transposition search.",
+      "hypothesis": "Source and scorer checks, plus exact known-key recovery on controls that include one whose length is a multiple of neither stage width, permit a calibrated full-text transposition search of QTXMA.",
       "limitations": [
         "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
         "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
         "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
-        "The historical Phase 6 baseline is preserved for comparison, not reused as validation."
+        "The historical Phase 6 baseline is preserved for comparison, not reused as validation.",
+        "Rotation-aware accuracy credits a recovery that is correct up to a whole-row shift the stage geometry can produce; the exact-offset agreement and exact key recovery are recorded separately so the two cases stay distinguishable.",
+        "The known-key controls are constructed or independently solved plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
       ],
       "output": "artifacts/phase7-qtxma-source-and-scorer.v2.json",
       "phase6_artifact": "artifacts/phase6-qtxma-double-transposition-smoke.json",
       "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
-      "refuted_by": "Source or scorer checks fail, a known-key control fails exact recovery, or the target maximum fails matched complete-search calibration.",
+      "refuted_by": "Source or scorer checks fail, a known-key control fails recovery under the rotation-aware accuracy rule, or the target maximum fails matched complete-search calibration.",
+      "revision_rationale": "The v1 run reported 6.1% recovery accuracy on its positive control and gated off the target search. Two independent defects produced that reading. Selecting keys on a training prefix ranked the true key fifth of 2,880; full-text selection ranks it first. The recovered plaintext was also the control plaintext rotated by four characters, a degeneracy available because the 148-letter control is an exact multiple of its 4-wide first stage. v2 selects on the full text, measures accuracy only over the rotations the stage geometry can produce, and adds a control of length 133, which is a multiple of neither 4 nor 5, so that a rotated recovery cannot be mistaken for scorer success.",
       "schema": "enigma-attack.phase7-config/v1",
       "scorer": {
         "additive_smoothing": 0.1,
@@ -139,6 +160,7 @@
         ],
         "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html"
       },
+      "supersedes": "phase7-qtxma-source-and-scorer-v1",
       "validation": {
         "minimum_messages_above_all_shuffles": 4,
         "plaintexts": [
@@ -184,7 +206,7 @@
         "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
       }
     },
-    "sha256": "b0969e780273724204979d2aa2ab3ce08f271f73b39e672294097bd8407c7e83"
+    "sha256": "16cacee2b0011e10b3631761a20d60fb60b915eab8573ec8d5ea361626673ad9"
   },
   "environment": {
     "cpu_count": 20,
@@ -194,7 +216,7 @@
     "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
   },
   "experiment_id": "phase7-qtxma-source-and-scorer-v2",
-  "hypothesis": "Source and scorer checks plus exact control recovery permit a calibrated full-text transposition search.",
+  "hypothesis": "Source and scorer checks, plus exact known-key recovery on controls that include one whose length is a multiple of neither stage width, permit a calibrated full-text transposition search of QTXMA.",
   "hypothesis_supported": false,
   "inputs": {
     "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
@@ -208,7 +230,7 @@
         "sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
       }
     },
-    "phase6_baseline_sha256": "3c2dd923b50abd47cb874fc23a817c2a66f87cc6586e3bcef3d663d77632982e",
+    "phase6_baseline_sha256": "c389e53961d29d50ad93941fe56962219ff4ed7b8694ccfde2f3628676e0cca6",
     "phase6_config_sha256": "d2107a00d629f25b2e077b30d7db22f57bc7c9ea7e9152aa2d815067756de381"
   },
   "interpretation": "A known-key transposition control failed exact recovery; the QTXMA target search was skipped.",
@@ -216,13 +238,17 @@
     "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
     "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
     "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
-    "The historical Phase 6 baseline is preserved for comparison, not reused as validation."
+    "The historical Phase 6 baseline is preserved for comparison, not reused as validation.",
+    "Rotation-aware accuracy credits a recovery that is correct up to a whole-row shift the stage geometry can produce; the exact-offset agreement and exact key recovery are recorded separately so the two cases stay distinguishable.",
+    "The known-key controls are constructed or independently solved plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
   ],
   "next_decision": "Improve and validate the failing search branch on independent known-key messages.",
   "positive_control_preflight": {
     "additional_known_key_controls": [
       {
         "evaluations": 12008,
+        "exact_key": false,
+        "exact_plaintext": false,
         "id": "independent-solved-army-text-1941-09-24-94",
         "known_key": {
           "first_order": [
@@ -244,7 +270,23 @@
         },
         "method": "simulated_annealing",
         "passed": false,
-        "plaintext_accuracy": 0.05263157894736842,
+        "plaintext_accuracy": 0.052631579,
+        "plaintext_agreement": {
+          "allowed_rotation_offsets": 1,
+          "best_over_allowed_rotations": 0.052631579,
+          "best_over_any_rotation": 1.0,
+          "exact": 0.052631579,
+          "rotation_offset": 0,
+          "unrestricted_rotation_offset": 75
+        },
+        "rationale": "",
+        "rotation_degeneracy_possible": [],
+        "searched_width_pairs": [
+          [
+            5,
+            7
+          ]
+        ],
         "selected_key": {
           "first_order": [
             4,
@@ -261,6 +303,62 @@
             5,
             2,
             3
+          ]
+        },
+        "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html"
+      },
+      {
+        "evaluations": 2880,
+        "exact_key": true,
+        "exact_plaintext": true,
+        "id": "ragged-both-stages",
+        "known_key": {
+          "first_order": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "second_order": [
+            2,
+            4,
+            0,
+            3,
+            1
+          ]
+        },
+        "method": "exhaustive",
+        "passed": true,
+        "plaintext_accuracy": 1.0,
+        "plaintext_agreement": {
+          "allowed_rotation_offsets": 1,
+          "best_over_allowed_rotations": 1.0,
+          "best_over_any_rotation": 1.0,
+          "exact": 1.0,
+          "rotation_offset": 0,
+          "unrestricted_rotation_offset": 0
+        },
+        "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading.",
+        "rotation_degeneracy_possible": [],
+        "searched_width_pairs": [
+          [
+            4,
+            5
+          ]
+        ],
+        "selected_key": {
+          "first_order": [
+            1,
+            3,
+            0,
+            2
+          ],
+          "second_order": [
+            2,
+            4,
+            0,
+            3,
+            1
           ]
         }
       }
@@ -415,6 +513,7 @@
     "exact_key": true,
     "exact_plaintext": true,
     "held_out_characters": 0,
+    "id": "primary",
     "key": {
       "first_order": [
         2,
@@ -552,9 +651,27 @@
     "method": "exhaustive",
     "passed": true,
     "plaintext_accuracy": 1.0,
+    "plaintext_agreement": {
+      "allowed_rotation_offsets": 37,
+      "best_over_allowed_rotations": 1.0,
+      "best_over_any_rotation": 1.0,
+      "exact": 1.0,
+      "rotation_offset": 0,
+      "unrestricted_rotation_offset": 0
+    },
+    "rationale": "",
+    "rotation_degeneracy_possible": [
+      4
+    ],
+    "searched_width_pairs": [
+      [
+        4,
+        5
+      ]
+    ],
     "training_characters": 148
   },
-  "refuted_by": "Source or scorer checks fail, a known-key control fails exact recovery, or the target maximum fails matched complete-search calibration.",
+  "refuted_by": "Source or scorer checks fail, a known-key control fails recovery under the rotation-aware accuracy rule, or the target maximum fails matched complete-search calibration.",
   "schema": "enigma-attack.phase7-experiment/v1",
   "scorer_validation": {
     "messages": [
@@ -763,7 +880,7 @@
   },
   "status": "invalid_positive_control_failure",
   "timing": {
-    "finished_at": "2026-09-23T00:57:14.455573+00:00",
-    "started_at": "2026-09-23T00:57:13.043458+00:00"
+    "finished_at": "2026-09-23T21:31:25.034998+00:00",
+    "started_at": "2026-09-23T21:31:23.397435+00:00"
   }
 }

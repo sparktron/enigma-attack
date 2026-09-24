@@ -54,6 +54,35 @@ class Phase7Tests(unittest.TestCase):
         self.assertEqual(prefix["longest_matching_segment"], 144)
         self.assertEqual(prefix["segment_offsets"], {"candidate": 0, "truth": 4})
 
+    def test_ragged_control_extends_the_inherited_gate(self) -> None:
+        failed = {"status": "invalid_positive_control_failure",
+                  "controls": {"positive_double_transposition": {"passed": False}}}
+        with mock.patch("phase7.phase6.run_experiment", return_value=failed) as search:
+            phase7.run_experiment(self.config, phase7.DEFAULT_CONFIG, [])
+        forwarded = phase7.phase6._normalize_positive_controls(search.call_args.args[0])
+        identifiers = [control["id"] for control in forwarded]
+        self.assertEqual(identifiers[0], "primary")
+        self.assertIn("independent-solved-army-text-1941-09-24-94", identifiers)
+        self.assertIn("ragged-both-stages", identifiers)
+
+        # The ragged control is 133 letters over 4- and 5-wide stages, so no
+        # whole-row rotation is reachable and only exact recovery can pass it.
+        ragged = next(c for c in forwarded if c["id"] == "ragged-both-stages")
+        widths, offsets = phase7.phase6.degenerate_rotation_offsets(
+            len(ragged["plaintext"]), ragged["width_pairs"]
+        )
+        self.assertEqual(widths, [])
+        self.assertEqual(offsets, [0])
+
+    def test_duplicate_control_identifier_is_rejected(self) -> None:
+        config = copy.deepcopy(self.config)
+        config["additional_positive_controls"] = [
+            {**config["additional_positive_controls"][0],
+             "id": "independent-solved-army-text-1941-09-24-94"}
+        ]
+        with self.assertRaisesRegex(ValueError, "duplicate positive control id"):
+            phase7.run_experiment(config, phase7.DEFAULT_CONFIG, [])
+
     def test_failed_positive_control_stops_target_search(self) -> None:
         failed = {"status": "invalid_positive_control_failure",
                   "controls": {"positive_double_transposition": {"passed": False}}}
