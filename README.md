@@ -61,10 +61,39 @@ python3 phase1.py search --rings AAA --output artifacts/phase1-smoke-certificate
 
 The checked-in smoke certificate covers all 60 I–V rotor orders for ring setting
 `AAA`, with no stecker, independently for each date. It is a reproducible
-restricted baseline, **not** the final Phase 1 negative result. A complete result
-still requires a versioned Army-traffic language model and general stecker
-hill-climbing/Bombe constraints. The second validation vector and procedure
-example come from the [Py-Enigma user guide](https://py-enigma.readthedocs.io/en/latest/guide.html).
+restricted baseline, **not** the final Phase 1 negative result. The second
+validation vector and procedure example come from the
+[Py-Enigma user guide](https://py-enigma.readthedocs.io/en/latest/guide.html).
+
+### Phase 1 stecker calibration and sweeps
+
+`phase1_stecker.py` (with the table-driven kernel in `enigma_fast.py`,
+checked against `enigma.py` on every run) implements the two-stage attack
+this project cites — Weierud and Sullivan,
+[*Breaking German Army Ciphers*](https://cryptocellar.org/pubs/mcts.pdf) — and
+measures, before trusting it, whether that attack actually works on this
+corpus at these message lengths and stecker sizes.
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-stecker-calibration-v1/config.json
+python3 phase1_stecker.py --config experiments/phase1-indicator-sweep-v1/config.json
+python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v1/config.json --jobs 8
+```
+
+The calibration found that the index-of-coincidence stage the cited method
+uses has **no detection power at a ten-pair stecker**, at any length up to 800
+letters, and that the indicator-coupled formulation `phase1.py` implies
+**cannot be hill-climbed** — the plugboard sits inside the indicator machine,
+so a wrong stecker gives a wrong message key and a body of noise. It also
+found that a body-direct stecker climb (start position searched directly
+instead of derived from the indicator), run to convergence with an
+index-of-coincidence phase ahead of the n-gram phase, recovers a known
+ten-pair plugboard and its exact plaintext on every trial at 167 letters. The
+complete indicator-coupled search (2,109,120 daily keys, both indicator
+orderings) and a declared body-direct slice were both run to completion and
+found nothing, exactly as the calibration predicted. Full detail, numbers, and
+what this implies for the next experiment are in
+[docs/phase1-experiment-history.md](docs/phase1-experiment-history.md).
 
 ## Phase 2 — Network and archival crib generation
 
@@ -339,6 +368,8 @@ A credible break should satisfy most of these simultaneously:
 - `recon.py` — lightweight statistical reconnaissance
 - `enigma.py` — transparent configurable three-wheel simulator and Enigma I wrapper
 - `phase1.py` — reproducible Phase 1 reference search and certificate generator
+- `enigma_fast.py` — table-driven Enigma kernel for large sweeps, checked against `enigma.py`
+- `phase1_stecker.py` — Phase 1 stecker calibration, indicator-coupled sweep, and body-direct sweep
 - `phase2.py` — traffic graph, archive priorities, and provenance-aware crib ranker
 - `phase3.py` — documented-variant comparison and certificate generator
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation
@@ -365,6 +396,9 @@ A credible break should satisfy most of these simultaneously:
 - `.github/workflows/ci.yml` — test matrix plus the two artifact checks
 - `tests/` — simulator, procedure, corpus, scorer, certificate, and artifact-check tests
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
+- `artifacts/phase1-stecker-calibration-v1.json` — measured limits of the cited two-stage attack on this corpus
+- `artifacts/phase1-indicator-sweep-v1.json` — complete indicator-coupled daily-key search (2,109,120 keys)
+- `artifacts/phase1-body-direct-sweep-v1.json` — declared-slice body-direct stecker sweep on BYQMZ
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
 - `artifacts/phase3-variant-smoke.json` — bounded documented-variant comparison
 - `artifacts/phase4-joint-machine-smoke.json` — raw multi-seed traces, states, and held-out result

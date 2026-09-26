@@ -143,6 +143,13 @@ def check_drift(claims: dict[str, Any], workspace: pathlib.Path) -> int:
             else:
                 print(f"skip {name}: superseded - {entry['superseded']}")
             continue
+        if entry.get("long_running"):
+            # Regenerating this artifact costs more than a CI job can spend.  It
+            # is checked for existence only, and the code paths it exercises are
+            # covered by the unit tests and by a cheap artifact that shares them,
+            # which the entry has to name.
+            print(f"skip {name}: long-running - {entry['long_running']}")
+            continue
         committed = json.loads(committed_path.read_text(encoding="utf-8"))
         fresh = regenerate(entry["runner"], workspace / pathlib.Path(name).name)
         values, shapes, unmatched = compare(committed, fresh, entry["claim_paths"])
@@ -170,6 +177,9 @@ def check_determinism(claims: dict[str, Any], workspace: pathlib.Path) -> int:
     for name, entry in claims["artifacts"].items():
         if entry.get("superseded"):
             print(f"skip {name}: superseded - {entry['superseded']}")
+            continue
+        if entry.get("long_running"):
+            print(f"skip {name}: long-running - {entry['long_running']}")
             continue
         stem = pathlib.Path(name).stem
         first = regenerate(entry["runner"], workspace / f"{stem}-a.json")

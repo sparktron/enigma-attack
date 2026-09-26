@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-09-23
+Updated: 2026-09-26
 
 ## Current state
 
@@ -8,6 +8,23 @@ Phases 1-6 provide bounded, reproducible baselines and negative-result
 evidence. Phase 7 recovered the QTXMA source grouping and introduced a
 published 1941 Army n-gram scorer. The source grouping yields exactly the
 existing 155-letter ciphertext.
+
+Phase 1 has now been run at scale for the first time. The method the
+repository cites — Weierud and Sullivan's *Breaking German Army Ciphers* — was
+implemented, calibrated against known keys, and then run to completion. The
+calibration found that the cited method's first stage, an unsteckered
+index-of-coincidence sweep, **has no detection power at a ten-pair stecker**,
+at any length up to 800 letters, and that the indicator-coupled formulation
+`phase1.py` implies **cannot be hill-climbed** because the plugboard sits
+inside the indicator machine as well as the body. It also found that a
+body-direct stecker climb (start position searched directly, indicator used
+only as an independent check) recovers a known ten-pair plugboard and its exact
+plaintext on every trial at 167 letters, once an index-of-coincidence phase
+runs ahead of the n-gram phase. The complete indicator-coupled search
+(2,109,120 daily keys, both indicator orderings) and a declared 0.15% slice of
+the body-direct space on BYQMZ were both run to completion and found nothing,
+exactly as the calibration predicted. See
+[Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
 branch for QTXMA on grounds that do not depend on any search.
@@ -61,16 +78,39 @@ No ciphertext break has been accepted. See
 - The messages used to compile the published n-gram counts are not enumerated,
   so overlap with the solved-message validation set cannot be ruled out. The
   same caveat applies to the unigram reference the gate derives from them.
-- Phase 1 remains the largest unclosed gap. Its certificate records 120 daily
-  keys and 300 message decryptions. Rotor orders against meaningful ring
-  settings is about 40,560 daily keys per date, roughly 40 seconds on the
-  bundled simulator, and stecker hill-climbing is not implemented at all.
-  BYQMZ, FKQLZ and XFEDT are flat, full-alphabet, Enigma-compatible and have
-  never actually been attacked.
+- Phase 1's indicator-coupled space is now completely searched (2,109,120 daily
+  keys) and is a closed dead end: its IC statistic and its hill-climb both have
+  zero power at a ten-pair stecker, not a coverage gap. The body-direct
+  formulation works but its space is about 2.74 x 10^7 settings per message at
+  a measured ~456 ms of CPU time per converged climb, a projected 3,472
+  core-hours (about 8 days of wall-clock time on 18 cores) for one message in
+  pure Python; only 0.15% of it has been searched. Pure-Python speed is now the
+  binding constraint, and the historically correct answer to exactly this
+  problem — eliminating the plugboard algebraically instead of searching it —
+  is a crib-driven Bombe, which Phase 2's crib network was assembled to feed.
+- BYQMZ (167 letters) is the only message long enough for the body-direct
+  climb to reliably find a 10-pair stecker on its own (8/8 known-key trials).
+  XFEDT (97 letters) is below that threshold (1/8) and should not be attacked
+  alone. FKQLZ (107 letters) was not measured directly.
 
 ## Validation state
 
-- `python3 -m unittest discover -q`: 75 tests passed locally on 2026-09-23.
+- `python3 -m unittest discover -q`: 107 tests passed locally on 2026-09-26.
+- Phase 1 stecker calibration, the complete indicator-coupled sweep, and the
+  body-direct sweep are recorded in `artifacts/phase1-stecker-calibration-v1.json`,
+  `artifacts/phase1-indicator-sweep-v1.json`, and
+  `artifacts/phase1-body-direct-sweep-v1.json`. The fast kernel (`enigma_fast.py`)
+  is checked against `enigma.py` on pseudorandom settings at the start of every
+  run, and the fast n-gram scorer is checked against Phase 7's validated
+  `PublishedNgramScorer` the same way. Both preflight checks and two
+  preregistered known-key positive controls must pass before any target search
+  runs; a failed check or control makes zero target-search calls.
+- The two sweep artifacts are declared `long_running` in `artifact_claims.json`
+  and checked for existence only in CI: the indicator sweep costs about 4
+  minutes single-core and the body-direct sweep about 17 minutes wall-clock on
+  18 cores (about 5.1 core-hours), more than a CI job should spend twice over
+  per mode. Their code paths are covered by `tests/test_phase1_stecker.py` and
+  by the calibration artifact, which CI does regenerate.
 - Phase 5 conservation measurements, gate calibration and exclusions are
   recorded in `artifacts/phase5-model-triage.json` (schema v3).
 - Gate calibration passes all five control plaintexts; worst control
@@ -92,12 +132,16 @@ Do not enlarge the transposition width search. It is closed for QTXMA by
 conservation, not by a failed search, and reopening it needs a reason to think
 the plaintext layer is not German Army text.
 
-The highest-value move is now Phase 1, which has never been run at scale. The
-method is the one this repository already cites: an unsteckered sweep over
-rotor orders and ring settings scored by IC, top candidates retained, then
-stecker hill-climbing with the validated n-gram scorer. Both indicator
-orderings should be tried; `phase1.py` currently fixes the Grundstellung as the
-first trigram.
+Do not enlarge the Phase 1 indicator-coupled sweep or spend more time on
+IC-based stecker screening. Both are now closed on measurement grounds, not
+coverage grounds: the statistic and the hill-climb have zero power at a
+ten-pair stecker regardless of how much of the space is searched.
+
+The highest-value move is now a **crib-driven Bombe** for Phase 1: eliminate
+the plugboard algebraically through crib-derived menus instead of searching it,
+which is the historically correct answer to exactly the bottleneck this phase
+measured (rotor-setting enumeration, not stecker recovery). Phase 2's crib
+network (`artifacts/phase2-network-cribs.json`) exists to feed it.
 
 Second: identify what produces QTXMA's restricted alphabet, starting with cheap
 discriminators. Its length of 155 is odd, which argues against a pure bigram
