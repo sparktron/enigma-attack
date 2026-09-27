@@ -80,6 +80,21 @@ def resolve_path(value: str) -> pathlib.Path:
     return path if path.is_absolute() else ROOT / path
 
 
+def describe_path(path: pathlib.Path) -> str:
+    """Repo-relative when the path is inside the checkout, absolute otherwise.
+
+    ``--config`` accepts any readable path, so a configuration outside the
+    checkout is legitimate.  Recording it with ``relative_to`` would raise, and
+    the record is assembled after the experiment, so the failure would land
+    after a run that can take hours and leave no artifact at all.
+    """
+
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def sha256_file(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -1394,6 +1409,83 @@ def indicator_confirms(
     return True
 
 
+def pooled_date_score(
+    traffic: Sequence[Traffic],
+    order: Sequence[Any],
+    rings: Sequence[int],
+    plugboard: Sequence[int],
+    scorer: FastNgramScorer,
+    reflector: Sequence[int],
+    ordering: str,
+) -> tuple[float, list[str]]:
+    """Derive every message key from the clear indicator and score the date."""
+
+    total = 0.0
+    letters = 0
+    keys: list[str] = []
+    for message in traffic:
+        grundstellung, encrypted_key, body = message.oriented(ordering)
+        recovered = enigma_fast.crypt_indices(
+            order, list(rings), grundstellung, encrypted_key, plugboard, reflector
+        )
+        keys.append(enigma_fast.indices_to_text(recovered))
+        total += scorer.score_indices(
+            enigma_fast.crypt_indices(
+                order, list(rings), tuple(recovered), body, plugboard, reflector
+            )
+        )
+        letters += message.letters
+    return total / letters, keys
+
+
+def compatible_ring_settings(
+    message: Traffic,
+    swept_rings: Sequence[int],
+    swept_start: Sequence[int],
+    plugboard: Sequence[int],
+    order: Sequence[Any],
+    reflector: Sequence[int],
+    ordering: str,
+) -> list[tuple[int, int, int]]:
+    """Ring settings whose indicator-derived key reproduces the swept body.
+
+    The sweep holds the ring setting and searches the start position, so a
+    retained candidate pins down the left and middle wheels' *offset* — ring
+    subtracted from position — and not their absolute ring setting: shifting a
+    ring and its start position together leaves the body unchanged for as long
+    as that wheel does not step.  The held ``AAA`` is therefore the sweep's
+    parameterization and not a claim about the daily key.  The indicator is
+    enciphered at the clear Grundstellung, where that freedom is gone, so
+    deciphering it under the held rings uses a daily key the sweep never
+    proposed and can dismiss a genuine plaintext hit as noise.
+
+    The right-hand wheel's ring is not free — it moves the turnover inside the
+    message, which is why the slice declares it — so only the left and middle
+    are enumerated.  A ring setting qualifies only if the key it derives from
+    the indicator reproduces the exact body the sweep scored.  That is a test
+    against the machine rather than an offset identity, so a candidate whose
+    left wheel did step during the message is not credited by accident.
+    """
+
+    grundstellung, encrypted_key, body = message.oriented(ordering)
+    swept = enigma_fast.crypt_indices(
+        order, list(swept_rings), tuple(swept_start), body, plugboard, reflector
+    )
+    compatible: list[tuple[int, int, int]] = []
+    for left in range(26):
+        for middle in range(26):
+            rings = (left, middle, swept_rings[2])
+            key = enigma_fast.crypt_indices(
+                order, list(rings), grundstellung, encrypted_key, plugboard, reflector
+            )
+            reproduced = enigma_fast.crypt_indices(
+                order, list(rings), tuple(key), body, plugboard, reflector
+            )
+            if reproduced == swept:
+                compatible.append(rings)
+    return compatible
+
+
 def confirm_against_date(
     traffic: Sequence[Traffic],
     plugboard: Sequence[int],
@@ -1402,37 +1494,62 @@ def confirm_against_date(
     scorer: FastNgramScorer,
     reflector: Sequence[int],
     orderings: Sequence[str],
+    swept_message: Traffic | None = None,
+    swept_start: Sequence[int] | None = None,
 ) -> dict[str, Any]:
-    """Score a whole date under a candidate plugboard, keys from the indicator."""
+    """Score a whole date under a candidate plugboard, keys from the indicator.
+
+    ``swept_message`` and ``swept_start`` name the body-direct result being
+    confirmed.  Given them, the ring setting is recovered instead of assumed:
+    every setting that reproduces the swept body through the clear indicator is
+    scored and the best is reported.  Without them the passed rings are scored
+    as given, which is what a known-key control wants.
+
+    When no ring setting reproduces the swept body, the candidate is
+    inconsistent with the indicator under every ring setting the slice allows.
+    That is evidence against the candidate rather than a reason to skip the
+    check, so the held rings are scored as a floor and ``rings_recovered`` is
+    false on those arms.
+    """
 
     order = [enigma_fast.rotor_tables(name) for name in rotor_order]
-    letters = sum(message.letters for message in traffic)
     arms: list[dict[str, Any]] = []
     for ordering in orderings:
-        total = 0.0
-        keys: list[str] = []
-        for message in traffic:
-            grundstellung, encrypted_key, body = message.oriented(ordering)
-            recovered = enigma_fast.crypt_indices(
-                order, rings, grundstellung, encrypted_key, plugboard, reflector
+        if swept_message is None or swept_start is None:
+            ring_options: list[tuple[int, ...]] = [tuple(rings)]
+            recovered = True
+        else:
+            compatible = compatible_ring_settings(
+                swept_message,
+                rings,
+                swept_start,
+                plugboard,
+                order,
+                reflector,
+                ordering,
             )
-            keys.append(enigma_fast.indices_to_text(recovered))
-            total += scorer.score_indices(
-                enigma_fast.crypt_indices(
-                    order, rings, tuple(recovered), body, plugboard, reflector
-                )
+            recovered = bool(compatible)
+            ring_options = list(compatible) or [tuple(rings)]
+        for ring_setting in ring_options:
+            score, keys = pooled_date_score(
+                traffic, order, ring_setting, plugboard, scorer, reflector, ordering
             )
-        arms.append(
-            {
-                "indicator_ordering": ordering,
-                "pooled_score_per_letter": round(total / letters, 9),
-                "message_keys": keys,
-            }
-        )
+            arms.append(
+                {
+                    "indicator_ordering": ordering,
+                    "rings": "".join(chr(65 + value) for value in ring_setting),
+                    "rings_recovered": recovered,
+                    "pooled_score_per_letter": round(score, 9),
+                    "message_keys": keys,
+                }
+            )
     best = max(arms, key=lambda arm: arm["pooled_score_per_letter"])
     return {
         "arms": arms,
+        "compatible_ring_settings": sum(1 for arm in arms if arm["rings_recovered"]),
         "best_indicator_ordering": best["indicator_ordering"],
+        "best_rings": best["rings"],
+        "best_rings_recovered": best["rings_recovered"],
         "best_pooled_score_per_letter": best["pooled_score_per_letter"],
         "best_message_keys": best["message_keys"],
     }
@@ -1619,6 +1736,13 @@ def run_body_direct_sweep(
     # nothing from the extra letters, so the pooled score separates a real hit
     # from the best of the slice's noise far more sharply than the single-message
     # score can.
+    #
+    # The confirmation recovers the ring setting rather than reusing the held
+    # one.  The sweep absorbs the left and middle rings into the start position
+    # it searches, so the held value describes the parameterization and not the
+    # daily key, and the indicator's fixed clear Grundstellung does not share
+    # that freedom.  Deciphering the indicator under the held rings would test
+    # the wrong key and could dismiss a genuine hit.
     for candidate in ranked:
         candidate["indicator_confirmation"] = confirm_against_date(
             traffic,
@@ -1628,6 +1752,10 @@ def run_body_direct_sweep(
             scorer,
             reflector,
             config["indicator_orderings"],
+            swept_message=message,
+            swept_start=tuple(
+                ord(letter) - 65 for letter in candidate["start_position"]
+            ),
         )
     confirmation_scores = [
         candidate["indicator_confirmation"]["best_pooled_score_per_letter"]
@@ -1655,10 +1783,27 @@ def run_body_direct_sweep(
             "mean_pooled_score_per_letter": round(
                 statistics.fmean(confirmation_scores), 9
             ),
+            "candidates_with_a_compatible_ring_setting": sum(
+                1
+                for candidate in ranked
+                if candidate["indicator_confirmation"]["compatible_ring_settings"]
+            ),
+            "ring_recovery": (
+                "The sweep absorbs the left and middle ring settings into the "
+                "start position it searches, so the held AAA is the "
+                "parameterization and not a claim about the daily key. The "
+                "clear Grundstellung the indicator uses does not share that "
+                "freedom, so for each candidate every left and middle ring "
+                "setting that reproduces the swept body through the indicator "
+                "is scored and the best is reported. The right-hand ring is "
+                "fixed because it moves the turnover inside the message, which "
+                "is what the declared slice holds."
+            ),
             "method": (
-                "For each retained candidate the recovered plugboard and ring "
-                "setting are used with the clear indicator to derive all three "
-                "message keys, and the whole date is scored. The sweep itself "
+                "For each retained candidate the recovered plugboard and a "
+                "recovered ring setting are used with the clear indicator to "
+                "derive all three message keys, and the whole date is scored. "
+                "The sweep itself "
                 "never reads the indicator, so this is an independent check."
             ),
         },
@@ -1763,7 +1908,7 @@ def run_experiment(
         "completed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "duration_seconds": time.monotonic() - started_clock,
         "configuration": {
-            "path": str(config_path.relative_to(ROOT)),
+            "path": describe_path(config_path),
             "sha256": sha256_file(config_path),
             "arguments": list(argv),
         },

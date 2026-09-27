@@ -203,6 +203,148 @@ class ControlAndTrafficTests(unittest.TestCase):
             stecker.traffic_from_corpus(ROOT / "corpus.json", "1941-09-30", ["QTXMA"])
 
 
+class IndicatorConfirmationRingTests(unittest.TestCase):
+    """The confirmation has to recover the rings the sweep absorbed.
+
+    The body-direct sweep holds the ring setting and searches the start
+    position, so a retained candidate fixes the left and middle wheels' offset
+    and not their ring setting.  The indicator is enciphered at the clear
+    Grundstellung, which has no such freedom, so a confirmation that reuses the
+    held rings deciphers a daily key the sweep never proposed and can throw
+    away a genuine hit.
+    """
+
+    RINGS = "BCA"
+    PLUGBOARD = "AV BS CG DL FU HZ IN KM OW RX"
+    SPEC = {
+        "id": "ring-recovery",
+        "key": {
+            "rotor_order": ["II", "V", "III"],
+            "rings": RINGS,
+            "plugboard": PLUGBOARD,
+        },
+        "indicator_ordering": "grundstellung_first",
+        "messages": [
+            {
+                "designator": "RR-1",
+                "grundstellung": "QWE",
+                "message_key": "BNM",
+                "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+            },
+            {
+                "designator": "RR-2",
+                "grundstellung": "LDR",
+                "message_key": "KPT",
+                "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+            },
+            {
+                "designator": "RR-3",
+                "grundstellung": "ZUI",
+                "message_key": "VCX",
+                "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+            },
+        ],
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        cls.config = stecker.load_config(CALIBRATION_CONFIG)
+        cls.scorer = scorer_for(cls.config)
+        cls.reflector = enigma_fast.reflector_table("B")
+        cls.traffic, cls.truth = stecker.encipher_control(cls.SPEC)
+        cls.plugboard = enigma_fast.plugboard_table(cls.PLUGBOARD)
+        cls.order = [
+            enigma_fast.rotor_tables(name)
+            for name in cls.SPEC["key"]["rotor_order"]
+        ]
+        cls.rings = tuple(ord(letter) - 65 for letter in cls.RINGS)
+        cls.held = (0, 0, 0)
+        # The sweep would retain this candidate at the held rings: the ring and
+        # the start shift together, so the body is identical.
+        cls.true_key = tuple(
+            ord(letter) - 65 for letter in cls.SPEC["messages"][0]["message_key"]
+        )
+        cls.swept_start = tuple(
+            (key - ring) % 26 for key, ring in zip(cls.true_key, cls.rings)
+        )
+
+    def test_the_held_rings_reproduce_the_body_the_true_rings_produce(self):
+        body = self.traffic[0].body
+        under_truth = enigma_fast.crypt_indices(
+            self.order, list(self.rings), self.true_key, body,
+            self.plugboard, self.reflector,
+        )
+        under_held = enigma_fast.crypt_indices(
+            self.order, list(self.held), self.swept_start, body,
+            self.plugboard, self.reflector,
+        )
+        # If this ever fails the fixture has drifted into left-wheel stepping
+        # and the rest of the class is testing nothing.
+        self.assertEqual(under_truth, under_held)
+
+    def test_compatible_ring_settings_recovers_the_true_rings(self):
+        compatible = stecker.compatible_ring_settings(
+            self.traffic[0], self.held, self.swept_start, self.plugboard,
+            self.order, self.reflector, "grundstellung_first",
+        )
+        self.assertIn(self.rings, compatible)
+
+    def test_recovered_rings_confirm_the_true_message_keys(self):
+        expected = [
+            record["true_message_key"] for record in self.truth["truth"]["messages"]
+        ]
+        recovered = stecker.confirm_against_date(
+            self.traffic, self.plugboard,
+            self.SPEC["key"]["rotor_order"], self.held, self.scorer,
+            self.reflector, ["grundstellung_first"],
+            swept_message=self.traffic[0], swept_start=self.swept_start,
+        )
+        self.assertTrue(recovered["best_rings_recovered"])
+        self.assertEqual(recovered["best_rings"], self.RINGS)
+        self.assertEqual(recovered["best_message_keys"], expected)
+
+        # Reusing the held rings is the defect: the keys are wrong and the
+        # pooled score is noise, so a genuine hit would be dismissed.
+        held = stecker.confirm_against_date(
+            self.traffic, self.plugboard,
+            self.SPEC["key"]["rotor_order"], self.held, self.scorer,
+            self.reflector, ["grundstellung_first"],
+        )
+        self.assertNotEqual(held["best_message_keys"], expected)
+        self.assertGreater(
+            recovered["best_pooled_score_per_letter"],
+            held["best_pooled_score_per_letter"],
+        )
+
+    def test_an_inconsistent_candidate_is_flagged_rather_than_skipped(self):
+        # A start position the indicator cannot produce under any ring setting
+        # in the slice: the check still yields a score, marked unrecovered.
+        wrong_start = tuple((value + 5) % 26 for value in self.swept_start)
+        result = stecker.confirm_against_date(
+            self.traffic, self.plugboard,
+            self.SPEC["key"]["rotor_order"], self.held, self.scorer,
+            self.reflector, ["grundstellung_first"],
+            swept_message=self.traffic[0], swept_start=wrong_start,
+        )
+        self.assertEqual(result["compatible_ring_settings"], 0)
+        self.assertFalse(result["best_rings_recovered"])
+        self.assertEqual(result["best_rings"], "AAA")
+
+
+class ConfigPathTests(unittest.TestCase):
+    def test_a_config_outside_the_checkout_is_recorded_absolutely(self):
+        # The record is assembled after the experiment, so raising here would
+        # discard a run that can take hours.
+        inside = stecker.describe_path(CALIBRATION_CONFIG)
+        self.assertEqual(
+            inside, "experiments/phase1-stecker-calibration-v1/config.json"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            outside = pathlib.Path(directory) / "config.json"
+            outside.write_text("{}", encoding="utf-8")
+            self.assertEqual(stecker.describe_path(outside), str(outside))
+
+
 class SweepTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
