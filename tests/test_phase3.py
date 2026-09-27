@@ -52,6 +52,20 @@ class ConfigurableMachineTests(unittest.TestCase):
         self.assertEqual(machine.positions, "ZFA")
         self.assertEqual(machine.reflector_position, "B")
 
+    def test_swiss_left_only_notch_advances_slow_wheel_once(self) -> None:
+        _, profiles = load_variant_catalog()
+        swiss = next(profile for profile in profiles if profile.id == "swiss_k_army_1941")
+        machine = EnigmaMachine(
+            ("I", "II", "III"), rings="BCA", positions="YAA",
+            rotor_wirings=swiss.rotor_wirings, reflector=swiss.reflector,
+            entry_wiring=swiss.entry_wiring, stepping=swiss.stepping,
+        )
+        states = []
+        for _ in range(3):
+            machine.step()
+            states.append((machine.positions, machine.reflector_position))
+        self.assertEqual(states, [("ZBA", "B"), ("ZCA", "B"), ("ZDA", "B")])
+
 
 class VariantCatalogTests(unittest.TestCase):
     def test_catalog_is_valid_and_keeps_explicit_exclusions(self) -> None:

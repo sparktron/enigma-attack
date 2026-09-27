@@ -1,12 +1,12 @@
 {
   "schema": "enigma-attack.phase7-config/v1",
   "experiment_id": "phase7-qtxma-source-and-scorer-v2",
-  "hypothesis": "With a rotation-aware recovery metric and a second positive control whose length is not a multiple of either stage width, the published 1941 Army n-gram scorer will recover both known double transpositions and then give QTXMA a held-out gain beyond a substitution control over six preregistered width pairs.",
-  "refuted_by": "Failure of source consistency, authentic-plaintext discrimination, either positive control under the rotation-aware accuracy rule, or the Phase 6 held-out and substitution-control acceptance rules.",
-  "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v1/config.json",
+  "hypothesis": "Source and scorer checks, plus exact known-key recovery on controls that include one whose length is a multiple of neither stage width, permit a calibrated full-text transposition search of QTXMA.",
+  "refuted_by": "Source or scorer checks fail, a known-key control fails recovery under the rotation-aware accuracy rule, or the target maximum fails matched complete-search calibration.",
+  "phase6_config": "experiments/phase6-qtxma-double-transposition-smoke-v2/config.json",
   "phase6_artifact": "artifacts/phase6-qtxma-double-transposition-smoke.json",
   "corpus": "corpus.json",
-  "output": "artifacts/phase7-qtxma-source-and-scorer-v2.json",
+  "output": "artifacts/phase7-qtxma-source-and-scorer.v2.json",
   "source_form": {
     "transcription_url": "https://cryptocellar.org/bgac/ultimate-enigma.html",
     "facsimile_url": "https://cryptocellar.org/bgac/spruch/29091941-006-out.pdf",
@@ -155,11 +155,12 @@
     "The published count corpus may overlap with some solved messages used for validation; message-level training membership is not documented.",
     "The source form confirms group boundaries but does not establish word boundaries or a cipher procedure.",
     "This remains a bounded search over ordinary double columnar transposition with ragged final rows.",
-    "Rotation-aware accuracy accepts a recovery that is correct up to a cyclic shift; the exact-offset agreement is recorded separately so the two cases stay distinguishable.",
-    "Both positive controls are constructed plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
+    "The historical Phase 6 baseline is preserved for comparison, not reused as validation.",
+    "Rotation-aware accuracy credits a recovery that is correct up to a whole-row shift the stage geometry can produce; the exact-offset agreement and exact key recovery are recorded separately so the two cases stay distinguishable.",
+    "The known-key controls are constructed or independently solved plaintexts, not authentic held-out Army traffic; they test the search and scorer, not corpus representativeness."
   ],
   "supersedes": "phase7-qtxma-source-and-scorer-v1",
-  "revision_rationale": "The v1 run reported 6.1% recovery accuracy on its positive control and gated off the target search. The recovered plaintext was in fact the control plaintext rotated by four characters (97.3% agreement at that offset), a degeneracy available because the 148-letter control is an exact multiple of its 4-wide first stage. v2 measures accuracy over cyclic rotations and adds a control of length 133, which is a multiple of neither 4 nor 5, so that a rotated recovery cannot be mistaken for scorer success.",
+  "revision_rationale": "The v1 run reported 6.1% recovery accuracy on its positive control and gated off the target search. Two independent defects produced that reading. Selecting keys on a training prefix ranked the true key fifth of 2,880; full-text selection ranks it first. The recovered plaintext was also the control plaintext rotated by four characters, a degeneracy available because the 148-letter control is an exact multiple of its 4-wide first stage. v2 selects on the full text, measures accuracy only over the rotations the stage geometry can produce, and adds a control of length 133, which is a multiple of neither 4 nor 5, so that a rotated recovery cannot be mistaken for scorer success.",
   "additional_positive_controls": [
     {
       "id": "ragged-both-stages",

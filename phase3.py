@@ -15,10 +15,11 @@ from typing import Any
 
 from enigma import EnigmaMachine
 from phase1 import ArmyGermanScorer, CorpusMessage, DEFAULT_CORPUS, load_corpus
+from resources import output_path, resource_root
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = resource_root()
 DEFAULT_CATALOG = ROOT / "variants.json"
-DEFAULT_CERTIFICATE = ROOT / "artifacts" / "phase3-variant-smoke.json"
+DEFAULT_CERTIFICATE = output_path("phase3-variant-smoke-v2.json")
 
 
 @dataclass(frozen=True)

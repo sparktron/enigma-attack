@@ -21,6 +21,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      # The installed-wheel test builds this project with --no-build-isolation,
+      # so the build backend has to be present in the runner environment.
+      - name: Install build dependencies
+        run: python -m pip install 'setuptools>=68' wheel
       - name: Run the unit tests
         run: python -m unittest discover -q
       - name: Reject whitespace errors

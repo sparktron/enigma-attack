@@ -19,12 +19,13 @@ import random
 from typing import Any, Mapping, Sequence
 
 from phase1 import load_corpus
+from resources import output_path, resource_root
 
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = resource_root()
 DEFAULT_CORPUS = ROOT / "corpus.json"
 DEFAULT_CATALOG = ROOT / "cipher-families.json"
-DEFAULT_OUTPUT = ROOT / "artifacts" / "phase5-model-triage.json"
+DEFAULT_OUTPUT = output_path("phase5-model-triage.json")
 DEFAULT_UNIGRAM_SOURCE = ROOT / "data" / "phase7" / "BigramFrequency1941.txt"
 DEFAULT_CONTROL_PLAINTEXTS = ROOT / "data" / "phase5" / "army-plaintext-controls.json"
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

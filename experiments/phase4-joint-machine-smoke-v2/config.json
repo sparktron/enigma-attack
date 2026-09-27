@@ -1,0 +1,93 @@
+{
+  "schema": "enigma-attack.phase4-config/v1",
+  "experiment_id": "phase4-joint-machine-smoke-v2",
+  "hypothesis": "A shared nonstandard three-rotor machine plus date-specific daily keys can generalize beyond the optimized messages: at least 3 of 5 fixed seeds will improve held-out score per known letter by at least 0.02 over the frozen standard-machine baseline, and the median held-out improvement will be at least 0.02.",
+  "refuted_by": "Fewer than 3 seeds reach a held-out improvement of 0.02, or the median held-out improvement is below 0.02.",
+  "corpus": "corpus.json",
+  "phase3_baseline_artifact": "artifacts/phase3-variant-smoke.json",
+  "output": "artifacts/phase4-joint-machine-smoke.v2.json",
+  "split": {
+    "train_designators": [
+      "QTXMA",
+      "BYQMZ",
+      "FKQLZ"
+    ],
+    "held_out_designators": [
+      "SZAEJ",
+      "XFEDT"
+    ]
+  },
+  "initial_machine": {
+    "rotor_sources": [
+      "III",
+      "II",
+      "V"
+    ],
+    "reflector": "B",
+    "entry_wiring": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "stepping": "pawl"
+  },
+  "initial_daily_keys": {
+    "1941-09-29": {
+      "rotors": [
+        "III",
+        "II",
+        "V"
+      ],
+      "rings": "AAA",
+      "plugboard": ""
+    },
+    "1941-09-30": {
+      "rotors": [
+        "III",
+        "II",
+        "V"
+      ],
+      "rings": "AAA",
+      "plugboard": ""
+    }
+  },
+  "optimizer": {
+    "algorithm": "alternating_simulated_annealing",
+    "iterations": 2500,
+    "seeds": [
+      104729,
+      130363,
+      155921,
+      196613,
+      2147483647
+    ],
+    "temperature_start": 0.03,
+    "temperature_end": 0.0015,
+    "trace_every": 25,
+    "max_plugboard_pairs": 6,
+    "machine_mutation_weights": {
+      "rotor_wiring_swap": 0.6,
+      "reflector_pair_rewire": 0.25,
+      "notch_move": 0.15
+    },
+    "daily_mutation_weights": {
+      "rotor_order_swap": 0.25,
+      "ring_move": 0.35,
+      "plugboard_edit": 0.4
+    },
+    "complexity_penalty": {
+      "rotor_wiring_changed_position": 0.0015,
+      "reflector_changed_position": 0.0015,
+      "changed_notch": 0.004,
+      "plugboard_pair": 0.002
+    }
+  },
+  "acceptance": {
+    "minimum_held_out_delta_per_seed": 0.02,
+    "minimum_passing_seeds": 3,
+    "minimum_median_held_out_delta": 0.02
+  },
+  "notes": [
+    "The held-out messages are not consulted during mutation acceptance or best-state selection.",
+    "The unknown source character remains masked while still advancing the machine.",
+    "This bounded experiment mutates three rotor permutations, their notch positions, a fixed-point-free involutive reflector, and date-specific order/rings/plugboard.",
+    "It does not search alternate stepping laws, entry wheels, more than three physical rotors, per-message procedure changes, or arbitrary source edits.",
+    "The daily-key baseline is selected from the training split only; the Phase 3 artifact is retained solely as a historical contaminated reference."
+  ]
+}

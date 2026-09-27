@@ -1,13 +1,14 @@
 # Project status
 
-Updated: 2026-09-26
+Updated: 2026-09-27
 
 ## Current state
 
-Phases 1-6 provide bounded, reproducible baselines and negative-result
-evidence. Phase 7 recovered the QTXMA source grouping and introduced a
-published 1941 Army n-gram scorer. The source grouping yields exactly the
-existing 155-letter ciphertext.
+The nine confirmed findings in the [repository audit](code-review-2026-09-22.md)
+have engineering fixes on `master`. The [attack plan](ATTACK_PLAN.md) still
+describes the broader research program. Historical Phase 3–7 artifacts and v1
+configurations remain available; corrected runs use new v2 identifiers and
+artifacts. No challenge plaintext has been accepted.
 
 Phase 1 has now been run at scale for the first time. The method the
 repository cites — Weierud and Sullivan's *Breaking German Army Ciphers* — was
@@ -55,10 +56,20 @@ because the 148-letter control is an exact multiple of its 4-wide first stage.
 Phase 7 v2 measures recovery over the rotations the stage geometry can produce
 and adds a 133-letter control that is a multiple of neither stage width.
 
-No ciphertext break has been accepted. See
-[Phase 7 history](phase7-experiment-history.md) and its linked raw artifacts.
+That failure had a second, independent cause. v1 selected keys on a
+training prefix, which ranked the true key fifth of all 2,880 controls; the
+full-text objective ranks it first and recovers the 148-character 4×5 control
+and its key exactly. Under both fixes two of the three v2 controls pass
+exactly, the 133-letter ragged control recovering both stage keys, and the
+independent solved-message 5×7 control still fails at 5.3% positional
+agreement. That failure is a whole-message rotation rather than a scrambled
+miss: the recovery agrees with the known plaintext completely at an offset of 75
+of its 76 positions, which neither stage width can produce. It is an open
+question about the ragged-row convention at that length, and it is now a
+question about the search machinery rather than about QTXMA, which conservation
+has already closed.
 
-## Active work and known problems
+## Correctness and evidence repairs
 
 - The conservation gate excludes a transposition of German Army *plaintext*. It
   does not exclude a transposition applied to an already-substituted or encoded
@@ -73,11 +84,51 @@ No ciphertext break has been accepted. See
 - QTXMA and SZAEJ are the two 29 September messages, both omitted from the
   2026-09-16 unbroken list, and they share the absent set {D, F, U}. That
   coincidence is unexplained.
+- Swiss K left-wheel double stepping now advances at either the middle or left
+  notch; reflector movement still follows the left notch. The Phase 3 variant
+  screen was reissued as `artifacts/phase3-variant-smoke-v2.json`.
+- Phase 4 selects each daily-key baseline using training messages only. The v2
+  experiment records the selected designators and leaves the Phase 3 artifact
+  as a historical, selection-contaminated reference. Its median held-out score
+  delta is -0.106713 under the bounded run.
+- Phase 7 forwards its audited corpus to Phase 6. Phase 6 rejects a Phase 5
+  artifact whose recorded corpus hash does not match that search input.
+- Reconnaissance preserves unknown positions for repeated n-grams and lag
+  matching. Zero-capacity plugboard mutation is safe and optimizer bounds are
+  validated.
+- The wheel includes every phase command and the corpus, catalog,
+  configuration, artifact, n-gram and Army-plaintext-control inputs they read.
+  Installed commands read those from the installed share directory and write
+  default outputs under the current working directory.
+- Phase 6 selects on the full plaintext, reports top candidates, exact
+  recovery, key rank, edit distance, and boundary displacement on its
+  exhaustive control, and treats the candidate suffix as descriptive. The
+  target acceptance rule uses matched complete-search shuffle nulls when the
+  controls pass. A failed mandatory control makes zero target-search calls.
+- Known-key control recovery is credited only over the whole-row rotations a
+  stage width that divides the message length can produce. The exact-offset
+  agreement, the exact key match, and the best agreement over every rotation
+  are all recorded, so a near-match that the geometry cannot explain stays
+  visible without being able to pass a control.
+- Every configured known-key control is evaluated even after one fails, because
+  a control whose geometry admits no rotation is what separates a genuine
+  search failure from a metric artifact.
+- The Phase 1 body-direct confirmation recovers the ring setting instead of
+  reusing the one the sweep held. The sweep absorbs the left and middle rings
+  into the start position it searches, and the indicator's fixed clear
+  Grundstellung does not share that freedom, so confirming under the held rings
+  tested a daily key the sweep never proposed and could have dismissed a
+  genuine hit. A candidate with no compatible ring setting is flagged rather
+  than skipped.
 - The published-count scorer is validated for recovering known double
   transpositions; the earlier claim that it could not is withdrawn.
+- Original form grouping adds no new body boundary. QTXMA's present status in
+  the source's unbroken list remains unresolved.
 - The messages used to compile the published n-gram counts are not enumerated,
   so overlap with the solved-message validation set cannot be ruled out. The
   same caveat applies to the unigram reference the gate derives from them.
+- The known-key transposition controls are constructed or independently solved
+  plaintexts, not authentic held-out Army traffic.
 - Phase 1's indicator-coupled space is now completely searched (2,109,120 daily
   keys) and is a closed dead end: its IC statistic and its hill-climb both have
   zero power at a ten-pair stecker, not a coverage gap. The body-direct
@@ -93,9 +144,14 @@ No ciphertext break has been accepted. See
   XFEDT (97 letters) is below that threshold (1/8) and should not be attacked
   alone. FKQLZ (107 letters) was not measured directly.
 
-## Validation state
+## Validation
 
-- `python3 -m unittest discover -q`: 107 tests passed locally on 2026-09-26.
+- `python3 -m unittest discover -q`: 125 tests passed locally on 2026-09-27.
+- `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built. A clean
+  virtual environment outside the checkout resolves its inputs from the
+  installed share directory and its default outputs under the current working
+  directory; `enigma-phase7` loads the corpus, both frequency tables and the
+  Phase 6 and Phase 7 configurations before stopping at the conservation gate.
 - Phase 1 stecker calibration, the complete indicator-coupled sweep, and the
   body-direct sweep are recorded in `artifacts/phase1-stecker-calibration-v1.json`,
   `artifacts/phase1-indicator-sweep-v1.json`, and
@@ -115,8 +171,12 @@ No ciphertext break has been accepted. See
   recorded in `artifacts/phase5-model-triage.json` (schema v3).
 - Gate calibration passes all five control plaintexts; worst control
   `p = 0.0947`, about 9.5x alpha.
-- `artifacts/phase7-qtxma-source-and-scorer.json` is retained as the v1 record;
-  its positive-control verdict is superseded.
+- Corrected bounded artifacts: `artifacts/phase3-variant-smoke-v2.json`,
+  `artifacts/phase4-joint-machine-smoke.v2.json`,
+  `artifacts/phase6-qtxma-double-transposition-smoke.v2.json`, and
+  `artifacts/phase7-qtxma-source-and-scorer.v2.json`. The v1 artifacts are
+  retained as historical records; their positive-control verdicts and held-out
+  readings are superseded.
 - The Phase 6 and Phase 7 v2 artifacts are marked `superseded` in
   `artifact_claims.json`. They are checked for existence but no longer
   regenerated, because the pipeline now refuses those targets by design.
@@ -125,6 +185,8 @@ No ciphertext break has been accepted. See
   a value declared in `artifact_claims.json` changes, reporting an added or
   removed key as a warning instead. Determinism runs each experiment twice in
   one environment and requires the declared paths to agree.
+- Every artifact that the current code can regenerate passes both checks; the
+  two superseded and two long-running ones are checked for existence.
 
 ## Next
 
@@ -149,3 +211,10 @@ cipher before any implementation work.
 
 Third, unchanged: archival evidence about the procedure or about why QTXMA and
 SZAEJ left the unbroken list.
+
+Lower priority, and no longer on the QTXMA path: the Phase 6 and Phase 7 5×7
+known-key control still fails, recovering the known plaintext rotated by one
+position over 76 letters. The ragged-row filling convention at that length is
+the thing to check. It is a defect in the transposition search machinery, which
+conservation has made irrelevant to this corpus' target but would matter if
+that machinery is reused.
