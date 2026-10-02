@@ -1,0 +1,34 @@
+{
+  "schema": "enigma-attack.phase5-conservation-controls/v1",
+  "purpose": "Known German Army plaintexts used as positive controls for the Phase 5 conservation gate. Each is shuffled into a true transposition; a gate that excludes any of them is miscalibrated and must not be applied.",
+  "source": {
+    "url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "attribution": "Geoff Sullivan and Frode Weierud, CryptoCellar",
+    "license": "CC BY-NC-SA 4.0",
+    "accessed": "2026-09-22",
+    "note": "Whitespace was removed from the published strings; letters are otherwise unchanged. The same plaintexts appear in the Phase 7 experiment configuration, where they validate the n-gram scorer rather than this gate."
+  },
+  "shuffle_seed": 20260921,
+  "plaintexts": [
+    {
+      "id": "1941-09-02-15",
+      "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+    },
+    {
+      "id": "1941-08-22-30",
+      "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+    },
+    {
+      "id": "1941-09-06-36",
+      "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+    },
+    {
+      "id": "1941-09-14-46",
+      "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN"
+    },
+    {
+      "id": "1941-09-24-94",
+      "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+    }
+  ]
+}
