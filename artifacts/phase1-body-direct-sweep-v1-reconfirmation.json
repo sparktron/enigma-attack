@@ -1,8 +1,8 @@
 {
   "schema": "enigma-attack.phase1-body-direct-reconfirmation/v1",
   "experiment_id": "phase1-body-direct-sweep-v1-reconfirmation",
-  "started_at": "2026-10-03T06:17:55.124647+00:00",
-  "completed_at": "2026-10-03T06:17:57.359259+00:00",
+  "started_at": "2026-10-03T06:18:08.112102+00:00",
+  "completed_at": "2026-10-03T06:18:10.325445+00:00",
   "source_artifact": {
     "path": "artifacts/phase1-body-direct-sweep-v1.json",
     "sha256": "c7cc0aa93619635860b28c997e3c772ea3c7f3defe6a473231d5c02c1b09c411",
@@ -20,12 +20,10 @@
   },
   "code": {
     "source": "git_checkout",
-    "commit": "021b907f7a7c7576253bb39159309eec5ecf597b",
+    "commit": "77f7af1b470c438f05b160fb181981360edbcc79",
     "branch": "claude/phase1-review-p4-p5-p6",
-    "dirty": true,
-    "status": [
-      " M artifacts/phase1-body-direct-sweep-v1-reconfirmation.json"
-    ],
+    "dirty": false,
+    "status": [],
     "files_sha256": {
       "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
       "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",

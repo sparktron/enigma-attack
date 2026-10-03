@@ -16,8 +16,8 @@ implemented, calibrated against known keys, and then run to completion. The
 calibration found that the cited method's first stage, an unsteckered
 index-of-coincidence sweep, **has almost no detection power at a ten-pair
 stecker**: averaged over 32 key draws, the true key reaches the top 200 of the
-2,109,120 keys the sweep ranks with probability 0% at 167 letters, 6% at 371
-and 18% at 800 (`phase1-ic-rank-v1`, which replaces a single-draw z ≥ 3 table).
+1,054,560 keys each indicator ordering ranks with probability 0% at 167
+letters, 6% at 371 and 19% at 800 (`phase1-ic-rank-v1`, which replaces a single-draw z ≥ 3 table).
 It also found that the indicator-coupled formulation
 `phase1.py` implies **cannot be hill-climbed** because the plugboard sits
 inside the indicator machine as well as the body. It also found that a

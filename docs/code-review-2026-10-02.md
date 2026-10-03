@@ -136,7 +136,7 @@ efficiency fix makes the main alternative affordable.
 
 ### P5 — Medium: the IC-stage calibration contradicts its own artifact and uses the wrong threshold
 
-> **Addressed 2026-10-03.** `phase1-ic-rank-v1` averages 32 draws per cell and reports expected rank and top-200 retention against 2,109,120 keys: 0% at 167 letters, 6.2% at 371 (its preregistered < 5% clause refuted), 18% at 800. The history's wording is corrected.
+> **Addressed 2026-10-03.** `phase1-ic-rank-v1` averages 32 draws per cell and reports expected rank and top-200 retention against one indicator ordering's 1,054,560 keys: 0% at 167 letters, 6.25% at 371 (its preregistered < 5% clause refuted), 19% at 800. The history's wording is corrected.
 
 
 - **Where:** `phase1_stecker.py:938` (`calibrate_ic_stage`);
