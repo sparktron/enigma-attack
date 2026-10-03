@@ -25,6 +25,11 @@ jobs:
       # so the build backend has to be present in the runner environment.
       - name: Install build dependencies
         run: python -m pip install 'setuptools>=68' wheel
+      # Optional: the batched stecker climb. Its tests skip without it, so the
+      # unit-test job installs it; the installed-wheel test builds a venv
+      # without it and exercises the pure-Python fallback.
+      - name: Install numpy
+        run: python -m pip install numpy
       - name: Run the unit tests
         run: python -m unittest discover -q
       - name: Reject whitespace errors
