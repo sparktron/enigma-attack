@@ -40,9 +40,11 @@ from __future__ import annotations
 import argparse
 import concurrent.futures as futures
 import datetime as dt
+import functools
 import hashlib
 import itertools
 import json
+import math
 import os
 import pathlib
 import platform
@@ -51,7 +53,7 @@ import statistics
 import subprocess
 import sys
 import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -808,30 +810,223 @@ def indicator_ic_sweep(
 # ---------------------------------------------------------------------------
 
 
+RING_RULES = ("held", "middle_past_notch", "middle_complete")
+
+Rings = tuple[int, int, int]
+Setting = tuple[Rings, tuple[int, int, int]]
+
+
+def middle_start_phases(notches: Iterable[int], length: int, complete: bool) -> list[int]:
+    """Visible middle-wheel start positions a sweep needs for one wheel.
+
+    Over ``length`` letters the right wheel passes its notch at most
+    ``ceil(length / 26)`` times, so the middle wheel advances at most that often.
+    A start from which none of the positions it can reach is a middle notch
+    never steps the left wheel, and the message is then enciphered by a machine
+    whose left wheel is fixed.  The first phase returned is the one just past
+    the notch, the farthest from it.  ``complete`` appends every other start,
+    those from which the notch falls inside the message, so a true key whose
+    left wheel does step still has an equivalent in the swept space.
+    """
+
+    notch_set = frozenset(notches)
+    advances = -(-length // 26)
+    clear = [
+        start
+        for start in range(26)
+        if not any((start + step) % 26 in notch_set for step in range(advances + 1))
+    ]
+    just_past = next(
+        ((notch + 1) % 26 for notch in sorted(notch_set) if (notch + 1) % 26 in clear), None
+    )
+    if just_past is None:
+        raise ValueError(f"no middle start keeps {sorted(notch_set)} out of {length} letters")
+    phases = [just_past]
+    if complete:
+        phases.extend(start for start in range(26) if start not in clear)
+    return phases
+
+
+@dataclass(frozen=True)
+class RingRule:
+    """How a sweep turns its searched axes into rings and visible positions.
+
+    Only the wheel *offset* (position minus ring) reaches the wiring, but the
+    stepping depends on the absolute position.  A swept setting that has the
+    true offsets and a different ring therefore agrees with the true key only
+    until a wheel passes its notch at a different moment than the true wheel
+    does.  The right wheel's position and ring both matter, because the middle
+    wheel steps when the right wheel passes its notch; the left wheel's ring
+    does not, because nothing follows it.  The middle wheel's ring matters
+    because its notch steps the left wheel.
+
+    ``held``
+        The rings are fixed (``held``) apart from the right ring, which takes
+        every value in ``right_rings``.  The start axes are visible positions.
+    ``middle_past_notch``
+        The left ring is fixed, the right ring is searched, and the middle ring
+        is chosen from the searched middle offset so that the middle wheel
+        starts just past its notch.  The start axes are the left and middle
+        *offsets* and the right position.
+    ``middle_complete``
+        As above, but every middle start from which the notch falls inside the
+        message is searched as well as the one past it.
+    """
+
+    name: str
+    held: Rings
+    right_rings: tuple[int, ...]
+    length: int
+
+    def __post_init__(self) -> None:
+        if self.name not in RING_RULES:
+            raise ValueError(f"unknown ring rule: {self.name!r}")
+
+    @classmethod
+    def from_config(cls, settings: Mapping[str, Any], length: int) -> "RingRule":
+        held = tuple(ord(letter) - 65 for letter in settings["rings"].upper())
+        right = (
+            tuple(resolve_axis(settings["right_ring"]))
+            if "right_ring" in settings
+            else (held[2],)
+        )
+        return cls(settings.get("ring_rule", "held"), held, right, length)  # type: ignore[arg-type]
+
+    def middle_phases(self, middle_wheel: str) -> list[int] | None:
+        if self.name == "held":
+            return None
+        return middle_start_phases(
+            enigma_fast.rotor_tables(middle_wheel).notches,
+            self.length,
+            self.name == "middle_complete",
+        )
+
+    def settings(
+        self, names: Sequence[str], starts: Sequence[tuple[int, int, int]]
+    ) -> list[Setting]:
+        phases = self.middle_phases(names[1])
+        out: list[Setting] = []
+        for start in starts:
+            if phases is None:
+                for ring in self.right_rings:
+                    out.append(((self.held[0], self.held[1], ring), tuple(start)))  # type: ignore[arg-type]
+                continue
+            offset_left, offset_middle, position_right = start
+            for phase in phases:
+                for ring in self.right_rings:
+                    out.append(
+                        (
+                            (self.held[0], (phase - offset_middle) % 26, ring),
+                            ((offset_left + self.held[0]) % 26, phase, position_right),
+                        )
+                    )
+        return out
+
+
+def reducible_space_size(rule_name: str, length: int, wheel_set: Sequence[str]) -> int:
+    """Settings a complete sweep of every wheel order would evaluate under a rule.
+
+    Each order has 26 left offsets, 26 middle offsets, 26 right positions and 26
+    right rings.  ``held`` and ``middle_past_notch`` evaluate one setting per
+    combination; ``middle_complete`` adds one per extra middle start.
+    """
+
+    rule = RingRule(rule_name, (0, 0, 0), (0,), length)
+    total = 0
+    for order in rotor_order_space("all_permutations", wheel_set):
+        phases = rule.middle_phases(order[1])
+        total += 26**4 * (1 if phases is None else len(phases))
+    return total
+
+
+def stepping_pattern(
+    middle_notches: Iterable[int],
+    right_notches: Iterable[int],
+    position_middle: int,
+    position_right: int,
+    length: int,
+) -> bytes:
+    """Which letters step the left and middle wheels, as ``position_permutations`` does."""
+
+    middle_set, right_set = frozenset(middle_notches), frozenset(right_notches)
+    pattern = bytearray()
+    for _ in range(length):
+        left = position_middle in middle_set
+        middle = left or position_right in right_set
+        if middle:
+            position_middle = (position_middle + 1) % 26
+        position_right = (position_right + 1) % 26
+        pattern.append(2 * left + middle)
+    return bytes(pattern)
+
+
+@functools.lru_cache(maxsize=None)
+def rule_key_coverage(rule_name: str, length: int, wheel_set: tuple[str, ...]) -> float:
+    """Fraction of true keys that have an exact equivalent in the swept space.
+
+    Two settings with equal offsets decipher a message identically exactly when
+    their left and middle wheels step at the same letters, so equivalence is a
+    comparison of stepping patterns.  The right wheel is always reachable
+    because the right ring is a searched axis.  Every wheel pair and every
+    true middle position, middle ring and right position is weighted equally,
+    which is uniform over daily keys because the left wheel does not enter.
+    """
+
+    rule = RingRule(rule_name, (0, 0, 0), (0,), length)
+    covered = total = 0
+    for middle_name in wheel_set:
+        for right_name in wheel_set:
+            if middle_name == right_name:
+                continue
+            middle_notches = enigma_fast.rotor_tables(middle_name).notches
+            right_notches = enigma_fast.rotor_tables(right_name).notches
+            patterns = {
+                (position_middle, position_right): stepping_pattern(
+                    middle_notches, right_notches, position_middle, position_right, length
+                )
+                for position_middle in range(26)
+                for position_right in range(26)
+            }
+            phases = rule.middle_phases(middle_name)
+            for position_middle in range(26):
+                for ring_middle in range(26):
+                    offset = (position_middle - ring_middle) % 26
+                    swept = [offset] if phases is None else phases
+                    for position_right in range(26):
+                        true_pattern = patterns[(position_middle, position_right)]
+                        total += 1
+                        if any(patterns[(start, position_right)] == true_pattern for start in swept):
+                            covered += 1
+    return covered / total
+
+
 _WORKER: dict[str, Any] = {}
 
 
 def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[str, Any],
-                 rings: list[int], reflector: list[int]) -> None:
-    _WORKER["scorer"] = FastNgramScorer(scorer_config)
+                 reflector: list[int]) -> None:
+    # Building the scorer reads both count tables, which a caller sweeping many
+    # small slices in one process would otherwise repeat for every slice.
+    key = json.dumps(scorer_config, sort_keys=True)
+    if _WORKER.get("scorer_key") != key:
+        _WORKER["scorer"] = FastNgramScorer(scorer_config)
+        _WORKER["scorer_key"] = key
     _WORKER["body"] = body
     _WORKER["settings"] = settings
-    _WORKER["rings"] = rings
     _WORKER["reflector"] = reflector
 
 
-def _worker_chunk(chunk: tuple[tuple[str, ...], list[tuple[int, int, int]]]) -> list[dict[str, Any]]:
-    names, starts = chunk
+def _worker_chunk(chunk: tuple[tuple[str, ...], list[Setting]]) -> list[dict[str, Any]]:
+    names, swept = chunk
     scorer = _WORKER["scorer"]
     body = _WORKER["body"]
     settings = _WORKER["settings"]
-    rings = _WORKER["rings"]
     reflector = _WORKER["reflector"]
     order = [enigma_fast.rotor_tables(name) for name in names]
     letters = sum(1 for value in body if value >= 0)
     phases = list(settings["phases"])
     results: list[dict[str, Any]] = []
-    for start in starts:
+    for rings, start in swept:
         table = enigma_fast.position_permutations(order, rings, start, len(body), reflector)
         plugboard, _, evaluations = run_climb_phases(
             phases,
@@ -846,6 +1041,7 @@ def _worker_chunk(chunk: tuple[tuple[str, ...], list[tuple[int, int, int]]]) -> 
             {
                 "score_per_letter": scorer.score_decryption(table, body, plugboard) / letters,
                 "rotor_order": list(names),
+                "rings": list(rings),
                 "start": list(start),
                 "plugboard": list(plugboard),
                 "plugboard_pairs": sum(1 for x in range(26) if plugboard[x] > x),
@@ -858,7 +1054,7 @@ def _worker_chunk(chunk: tuple[tuple[str, ...], list[tuple[int, int, int]]]) -> 
 def body_direct_sweep(
     message: Traffic,
     rotor_orders: Sequence[tuple[str, ...]],
-    rings: Sequence[int],
+    rings: Sequence[int] | RingRule,
     starts: Sequence[tuple[int, int, int]],
     scorer_config: Mapping[str, Any],
     reflector: Sequence[int],
@@ -868,13 +1064,22 @@ def body_direct_sweep(
 ) -> tuple[list[dict[str, Any]], int, dict[str, Any]]:
     """Full stecker climb at every rotor setting of a declared slice.
 
+    ``rings`` is either a ring setting held for the whole slice, with ``starts``
+    taken as visible positions, or a :class:`RingRule` that derives each
+    setting's rings and positions from the searched axes.
+
     There is no cheap pre-filter.  The index of coincidence does not separate
     the true setting under a ten-pair stecker at these lengths, and a truncated
     climb does not either, so every setting in the slice costs a converged
     climb.  That is the measured reason this sweep is expensive.
     """
 
-    chunks = [(names, list(starts)) for names in rotor_orders]
+    rule = (
+        rings
+        if isinstance(rings, RingRule)
+        else RingRule("held", tuple(rings), (rings[2],), len(message.body))  # type: ignore[arg-type]
+    )
+    chunks = [(names, rule.settings(names, starts)) for names in rotor_orders]
     collected: list[dict[str, Any]] = []
     if jobs > 1:
         with futures.ProcessPoolExecutor(
@@ -884,7 +1089,6 @@ def body_direct_sweep(
                 dict(scorer_config),
                 list(message.body),
                 dict(settings),
-                list(rings),
                 list(reflector),
             ),
         ) as pool:
@@ -897,7 +1101,6 @@ def body_direct_sweep(
             dict(scorer_config),
             list(message.body),
             dict(settings),
-            list(rings),
             list(reflector),
         )
         for chunk in chunks:
@@ -915,7 +1118,7 @@ def body_direct_sweep(
             "rank": position + 1,
             "score_per_letter": round(row["score_per_letter"], 9),
             "rotor_order_left_to_right": row["rotor_order"],
-            "rings": "".join(chr(65 + value) for value in rings),
+            "rings": "".join(chr(65 + value) for value in row["rings"]),
             "start_position": "".join(chr(65 + value) for value in row["start"]),
             "plugboard": enigma_fast.plugboard_pairs(row["plugboard"]),
             "plugboard_pairs": row["plugboard_pairs"],
@@ -1591,6 +1794,431 @@ def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[st
 
 
 # ---------------------------------------------------------------------------
+# End-to-end power
+# ---------------------------------------------------------------------------
+#
+# ``calibrate_climb_capability`` hands the climb the true rings and start, a
+# setting the sweep never visits: it holds rings, so what it reaches is an
+# *equivalent* setting whose wheels step at different letters.  The controls
+# below plant keys with random rings, sweep a slice that contains what the
+# sweep can reach, and count how often the sweep's best candidate is the key.
+
+
+_POWER: dict[str, Any] = {}
+
+
+def wilson_interval(successes: int, trials: int, z: float = 1.96) -> list[float]:
+    if trials == 0:
+        return [0.0, 1.0]
+    rate = successes / trials
+    denominator = 1 + z * z / trials
+    centre = (rate + z * z / (2 * trials)) / denominator
+    margin = (
+        z * math.sqrt(rate * (1 - rate) / trials + z * z / (4 * trials * trials)) / denominator
+    )
+    return [round(max(0.0, centre - margin), 4), round(min(1.0, centre + margin), 4)]
+
+
+def perturb_ciphertext(
+    ciphertext: str, kind: str, generator: random.Random
+) -> tuple[str, dict[str, Any]]:
+    """A transcription fault: none, or one letter dropped or inserted."""
+
+    if kind == "none":
+        return ciphertext, {"kind": "none"}
+    if kind == "indel":
+        position = generator.randrange(1, len(ciphertext) - 1)
+        if generator.random() < 0.5:
+            return (
+                ciphertext[:position] + ciphertext[position + 1 :],
+                {"kind": "deletion", "position": position},
+            )
+        letter = chr(65 + generator.randrange(26))
+        return (
+            ciphertext[:position] + letter + ciphertext[position:],
+            {"kind": "insertion", "position": position, "letter": letter},
+        )
+    raise ValueError(f"unknown perturbation: {kind!r}")
+
+
+def table_agreement(left: Sequence[int], right: Sequence[int], length: int) -> float:
+    """Fraction of letter positions at which two flattened tables are the same."""
+
+    return (
+        sum(1 for t in range(length) if left[26 * t : 26 * t + 26] == right[26 * t : 26 * t + 26])
+        / length
+    )
+
+
+def _power_init(config: Mapping[str, Any], scorer: FastNgramScorer | None = None) -> None:
+    _POWER["config"] = config
+    _POWER["scorer"] = scorer or FastNgramScorer(config["scorer"])
+    _POWER["reflector"] = enigma_fast.reflector_table(config["machine"]["reflector"])
+
+
+def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
+    cell_index, draw = task
+    config = _POWER["config"]
+    scorer = _POWER["scorer"]
+    reflector = _POWER["reflector"]
+    settings = config["end_to_end_power"]
+    cell = settings["cells"][cell_index]
+    wheels = list(config["machine"]["wheel_set"])
+    # One generator per draw, seeded from its coordinates, so a draw's key and
+    # its result do not depend on how the draws are spread over workers.
+    generator = random.Random(f"{settings['seed']}:{cell_index}:{draw}")
+    order = tuple(generator.sample(wheels, 3))
+    rings = tuple(generator.randrange(26) for _ in range(3))
+    start = tuple(generator.randrange(26) for _ in range(3))
+    plugboard = random_plugboard(generator, int(settings["stecker_pairs"]))
+    text = normalize_plaintext(settings["plaintext"])[: int(cell["length"])]
+    clean = EnigmaI(
+        rotors=order,
+        rings="".join(chr(65 + value) for value in rings),
+        positions="".join(chr(65 + value) for value in start),
+        plugboard=plugboard,
+    ).crypt(text)
+    ciphertext, perturbation = perturb_ciphertext(clean, cell["perturbation"], generator)
+    message = Traffic(
+        designator=f"POWER-{cell_index}-{draw}",
+        first_trigram=(0, 0, 0),
+        second_trigram=(0, 0, 0),
+        body=enigma_fast.text_to_indices(ciphertext),
+    )
+    expected_plugboard = enigma_fast.plugboard_pairs(enigma_fast.plugboard_table(plugboard))
+    order_tables = [enigma_fast.rotor_tables(name) for name in order]
+    true_table = enigma_fast.position_permutations(
+        order_tables, rings, start, len(clean), reflector
+    )
+    offsets = tuple((start[index] - rings[index]) % 26 for index in range(3))
+    unperturbed = perturbation["kind"] == "none"
+
+    arms: dict[str, Any] = {}
+    for arm in settings["arms"]:
+        right_a = arm["right_ring"] == "A"
+        right_rings = (0,) if right_a else (rings[2],)
+        right_base = offsets[2] if right_a else start[2]
+        starts = [
+            (
+                (offsets[0] + left) % 26,
+                (offsets[1] + middle) % 26,
+                (right_base + right) % 26,
+            )
+            for left in range(-int(settings["left_neighbours"]), int(settings["left_neighbours"]) + 1)
+            for middle in range(
+                -int(settings["middle_neighbours"]), int(settings["middle_neighbours"]) + 1
+            )
+            for right in range(
+                -int(settings["right_neighbours"]), int(settings["right_neighbours"]) + 1
+            )
+        ]
+        rule = RingRule(arm["ring_rule"], (0, 0, 0), right_rings, len(message.body))
+        swept = len(rule.settings(order, starts))
+        ranked, evaluated, _ = body_direct_sweep(
+            message, [order], rule, starts, config["scorer"], reflector, config["climb"], swept, 1
+        )
+        fractions: list[float | None] = []
+        for row in ranked:
+            if not unperturbed:
+                fractions.append(None)
+                continue
+            swept_table = enigma_fast.position_permutations(
+                order_tables,
+                tuple(ord(letter) - 65 for letter in row["rings"]),
+                tuple(ord(letter) - 65 for letter in row["start_position"]),
+                len(clean),
+                reflector,
+            )
+            fractions.append(table_agreement(swept_table, true_table, len(clean)))
+        top = ranked[0]
+        best = max((value for value in fractions if value is not None), default=None)
+        arms[arm["id"]] = {
+            "settings_evaluated": evaluated,
+            "best_equivalent_fraction": None if best is None else round(best, 6),
+            "exact_equivalent_exists": None if best is None else best == 1.0,
+            "top": {
+                "score_per_letter": top["score_per_letter"],
+                "rings": top["rings"],
+                "start_position": top["start_position"],
+                "plugboard": top["plugboard"],
+                "equivalent_fraction": None if fractions[0] is None else round(fractions[0], 6),
+                "plugboard_recovered_exactly": top["plugboard"] == expected_plugboard,
+            },
+            "rank_of_exact_plugboard": next(
+                (row["rank"] for row in ranked if row["plugboard"] == expected_plugboard), None
+            ),
+        }
+
+    # Wrong settings drawn the same way the existing capability calibration
+    # draws them, so the climb's score on a key it cannot recover has a
+    # reference distribution to be separated from.
+    null_scores: list[float] = []
+    for _ in range(int(settings["null_trials"])):
+        wrong_order = tuple(generator.sample(wheels, 3))
+        while wrong_order == order:
+            wrong_order = tuple(generator.sample(wheels, 3))
+        wrong_rings = tuple(generator.randrange(26) for _ in range(3))
+        wrong_start = tuple(generator.randrange(26) for _ in range(3))
+        null_scores.append(
+            body_direct_climb(
+                [message], wrong_order, wrong_rings, [wrong_start], scorer, reflector,
+                config["climb"],
+            )[0].score_per_letter
+        )
+    return {
+        "cell": cell_index,
+        "draw": draw,
+        "planted": {
+            "rotor_order_left_to_right": list(order),
+            "rings": "".join(chr(65 + value) for value in rings),
+            "start_position": "".join(chr(65 + value) for value in start),
+            "plugboard": expected_plugboard,
+            "perturbation": perturbation,
+        },
+        "arms": arms,
+        "null_scores": [round(value, 9) for value in null_scores],
+    }
+
+
+def evaluate_power_prediction(
+    prediction: Mapping[str, Any], cells: Sequence[Mapping[str, Any]]
+) -> dict[str, Any]:
+    """Score one preregistered prediction against the measured detection rates."""
+
+    def rate(cell_index: int, arm: str) -> float:
+        row = next(row for row in cells[cell_index]["arms"] if row["arm"] == arm)
+        return row["detection_rate"]
+
+    kind = prediction["kind"]
+    cell, arm = int(prediction["cell"]), prediction["arm"]
+    if kind == "rate_at_least":
+        observed = rate(cell, arm)
+        passed = observed >= prediction["value"]
+    elif kind == "rate_at_most":
+        observed = rate(cell, arm)
+        passed = observed <= prediction["value"]
+    elif kind == "rate_gain_at_least":
+        observed = rate(cell, arm) - rate(cell, prediction["over"])
+        passed = observed >= prediction["value"]
+    elif kind == "rate_ratio_at_most":
+        denominator = rate(int(prediction["over_cell"]), arm)
+        observed = rate(cell, arm) / denominator if denominator else None
+        passed = observed is not None and observed <= prediction["value"]
+    elif kind == "measured_exact_within_analytic":
+        row = next(row for row in cells[cell]["arms"] if row["arm"] == arm)
+        observed = abs(row["measured_exact_equivalent_rate"] - row["analytic_exact_key_coverage"])
+        passed = observed <= prediction["value"]
+    else:
+        raise ValueError(f"unknown prediction kind: {kind!r}")
+    return {
+        "id": prediction["id"],
+        "statement": prediction["statement"],
+        "kind": kind,
+        "threshold": prediction["value"],
+        "observed": None if observed is None else round(observed, 6),
+        "passed": bool(passed),
+    }
+
+
+def run_end_to_end_power(
+    config: Mapping[str, Any],
+    scorer: FastNgramScorer,
+    reflector: Sequence[int],
+    jobs: int,
+) -> dict[str, Any]:
+    settings = config["end_to_end_power"]
+    cells = settings["cells"]
+    draws = int(settings["draws"])
+    z_detect = float(settings["detection_z"])
+    tasks = [(index, draw) for index in range(len(cells)) for draw in range(draws)]
+    started = time.monotonic()
+    if jobs > 1:
+        with futures.ProcessPoolExecutor(
+            max_workers=jobs, initializer=_power_init, initargs=(dict(config),)
+        ) as pool:
+            # ``map`` preserves input order, so the record does not depend on
+            # which worker finished first.
+            results = list(pool.map(_power_draw, tasks))
+    else:
+        _power_init(config, scorer)
+        results = [_power_draw(task) for task in tasks]
+    elapsed = time.monotonic() - started
+
+    wheel_set = tuple(config["machine"]["wheel_set"])
+    summary: list[dict[str, Any]] = []
+    for index, cell in enumerate(cells):
+        mine = [row for row in results if row["cell"] == index]
+        pooled = [value for row in mine for value in row["null_scores"]]
+        null_mean, null_sd = statistics.fmean(pooled), statistics.pstdev(pooled)
+        threshold = null_mean + z_detect * null_sd
+        arm_rows: list[dict[str, Any]] = []
+        for arm in settings["arms"]:
+            per = [row["arms"][arm["id"]] for row in mine]
+            recovered = [item["top"]["plugboard_recovered_exactly"] for item in per]
+            detected = [
+                item["top"]["plugboard_recovered_exactly"]
+                and item["top"]["score_per_letter"] >= threshold
+                for item in per
+            ]
+            exact = [item["exact_equivalent_exists"] for item in per]
+            measured = [value for value in exact if value is not None]
+            if measured:
+                split = {
+                    "detected_when_an_exact_equivalent_exists": [
+                        sum(1 for flag, hit in zip(exact, detected) if flag and hit),
+                        sum(1 for flag in exact if flag),
+                    ],
+                    "detected_when_no_exact_equivalent_exists": [
+                        sum(1 for flag, hit in zip(exact, detected) if flag is False and hit),
+                        sum(1 for flag in exact if flag is False),
+                    ],
+                }
+            else:
+                split = {}
+            analytic = (
+                None
+                if arm["right_ring"] == "A"
+                else round(rule_key_coverage(arm["ring_rule"], int(cell["length"]), wheel_set), 6)
+            )
+            arm_rows.append(
+                {
+                    "arm": arm["id"],
+                    "ring_rule": arm["ring_rule"],
+                    "right_ring": arm["right_ring"],
+                    "draws": len(per),
+                    "settings_evaluated_per_draw": per[0]["settings_evaluated"],
+                    "plugboard_recovered_by_top_candidate": sum(recovered),
+                    "detected": sum(detected),
+                    "detection_rate": round(sum(detected) / len(per), 6),
+                    "detection_rate_95_interval": wilson_interval(sum(detected), len(per)),
+                    "plugboard_recovered_rate": round(sum(recovered) / len(per), 6),
+                    "measured_exact_equivalent_rate": (
+                        round(sum(1 for value in measured if value) / len(measured), 6)
+                        if measured
+                        else None
+                    ),
+                    "analytic_exact_key_coverage": analytic,
+                    "median_best_equivalent_fraction": (
+                        round(
+                            statistics.median(
+                                item["best_equivalent_fraction"]
+                                for item in per
+                                if item["best_equivalent_fraction"] is not None
+                            ),
+                            6,
+                        )
+                        if measured
+                        else None
+                    ),
+                    **split,
+                    "median_top_score_z_over_null": round(
+                        statistics.median(
+                            (item["top"]["score_per_letter"] - null_mean) / null_sd for item in per
+                        ),
+                        3,
+                    ),
+                }
+            )
+        summary.append(
+            {
+                "length": int(cell["length"]),
+                "perturbation": cell["perturbation"],
+                "null": {
+                    "samples": len(pooled),
+                    "mean_score_per_letter": round(null_mean, 9),
+                    "sd_score_per_letter": round(null_sd, 9),
+                    "detection_threshold_score_per_letter": round(threshold, 9),
+                },
+                "arms": arm_rows,
+            }
+        )
+
+    headline = settings["headline_arm"]
+    target = next(
+        row
+        for row in summary
+        if row["length"] >= int(settings["target_length"]) and row["perturbation"] == "none"
+    )
+    headline_row = next(row for row in target["arms"] if row["arm"] == headline)
+    indel = next(
+        (
+            next(row for row in cell["arms"] if row["arm"] == headline)
+            for cell in summary
+            if cell["length"] >= int(settings["target_length"]) and cell["perturbation"] == "indel"
+        ),
+        None,
+    )
+    predictions = [
+        evaluate_power_prediction(prediction, summary) for prediction in settings["predictions"]
+    ]
+    return {
+        "formulation": "end_to_end_power",
+        "seed": settings["seed"],
+        "draws_per_cell": draws,
+        "stecker_pairs": int(settings["stecker_pairs"]),
+        "detection_z": z_detect,
+        "jobs": jobs,
+        "seconds": round(elapsed, 3),
+        "slice": {
+            "wheel_orders": "the planted order only",
+            "left_neighbours": int(settings["left_neighbours"]),
+            "middle_neighbours": int(settings["middle_neighbours"]),
+            "right_neighbours": int(settings["right_neighbours"]),
+            "definition": (
+                "Each draw plants a random wheel order, ring setting, start "
+                "position and plugboard, then runs the sweep engine over the "
+                "left and middle offsets within the stated neighbourhood of the "
+                "planted ones. The right wheel's ring and position are taken at "
+                "the planted values (or, for the held-ring arm, at the "
+                "planted right offset with ring A), because the right wheel is "
+                "an exact axis that the full sweep enumerates and so always "
+                "visits. Every other wheel order and every distant start is "
+                "absent, so a detection here is a detection against the "
+                "planted key's own neighbourhood and the pooled wrong-setting "
+                "null, not against the full space."
+            ),
+            "detection_rule": (
+                "A draw is detected when the best-scoring candidate's plugboard "
+                "is the planted plugboard exactly and its score is at least "
+                "null mean + detection_z null standard deviations. The null is "
+                "the pooled climb score at wrong settings in the same cell; "
+                "detection_z is chosen above the extreme value expected from "
+                "2.7e7 normal draws."
+            ),
+        },
+        "cells": summary,
+        "coverage_by_rule": {
+            rule: {
+                "length": int(target["length"]),
+                "exact_key_coverage": round(
+                    rule_key_coverage(rule, int(target["length"]), wheel_set), 6
+                ),
+                "reducible_space_settings": reducible_space_size(
+                    rule, int(target["length"]), wheel_set
+                ),
+            }
+            for rule in RING_RULES
+        },
+        "findings": {
+            "headline_arm": headline,
+            "end_to_end_detection_rate_at_target_scale": headline_row["detection_rate"],
+            "end_to_end_detection_interval_95": headline_row["detection_rate_95_interval"],
+            "end_to_end_detection_lower_bound_95": headline_row["detection_rate_95_interval"][0],
+            "single_indel_detection_rate_at_target_length": (
+                None if indel is None else indel["detection_rate"]
+            ),
+            "stecker_stage_upper_bound_reference": (
+                "artifacts/phase1-stecker-calibration-v1.json, "
+                "climb_capability_calibration: the climb is handed the true "
+                "rings and start, so it bounds the stecker stage and not the sweep."
+            ),
+        },
+        "predictions": predictions,
+        "draws": results,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Modes
 # ---------------------------------------------------------------------------
 
@@ -1714,7 +2342,7 @@ def run_body_direct_sweep(
     rotor_orders = rotor_order_space(
         config["machine"]["rotor_orders"], config["machine"]["wheel_set"]
     )
-    rings = tuple(ord(letter) - 65 for letter in settings["rings"].upper())
+    rule = RingRule.from_config(settings, len(message.body))
     start_space = [
         (left, middle, right)
         for left in resolve_axis(settings["start_left"])
@@ -1725,7 +2353,7 @@ def run_body_direct_sweep(
     ranked, evaluated, distribution = body_direct_sweep(
         message,
         rotor_orders,
-        rings,
+        rule,
         start_space,
         config["scorer"],
         reflector,
@@ -1754,7 +2382,7 @@ def run_body_direct_sweep(
             traffic,
             candidate.pop("_plugboard"),
             candidate["rotor_order_left_to_right"],
-            rings,
+            tuple(ord(letter) - 65 for letter in candidate["rings"]),
             scorer,
             reflector,
             config["indicator_orderings"],
@@ -1771,12 +2399,16 @@ def run_body_direct_sweep(
     # Coverage is stated against the space that actually has to be searched,
     # not against the slice that was chosen, so the number cannot flatter the
     # run by redefining the denominator.
-    relevant = 60 * 26**4
+    wheel_set = tuple(config["machine"]["wheel_set"])
+    relevant = reducible_space_size(rule.name, len(message.body), wheel_set)
+    key_coverage = rule_key_coverage(rule.name, len(message.body), wheel_set)
     return {
         "formulation": "body_direct",
         "message": message.designator,
         "message_length": len(message.body),
         "rings_held_at": settings["rings"].upper(),
+        "ring_rule": rule.name,
+        "right_rings_searched": len(rule.right_rings),
         "rotor_orders": len(rotor_orders),
         "start_positions": len(start_space),
         "evaluated_settings": evaluated,
@@ -1802,8 +2434,8 @@ def run_body_direct_sweep(
                 "freedom, so for each candidate every left and middle ring "
                 "setting that reproduces the swept body through the indicator "
                 "is scored and the best is reported. The right-hand ring is "
-                "fixed because it moves the turnover inside the message, which "
-                "is what the declared slice holds."
+                "kept as the sweep used it, because it moves the turnover "
+                "inside the message and is an axis of the declared space."
             ),
             "method": (
                 "For each retained candidate the recovered plugboard and a "
@@ -1816,12 +2448,26 @@ def run_body_direct_sweep(
         "coverage": {
             "searched_settings": evaluated,
             "reducible_space_settings": relevant,
+            "ring_rule": rule.name,
             "reducible_space_definition": (
-                "60 wheel orders x 26^4, the parameters a message this short can "
-                "distinguish: the left and middle wheel offsets, and the right "
-                "wheel's offset and absolute position. It assumes the left wheel "
-                "does not step during the message, which holds for about "
-                "three quarters of start positions at this length."
+                "Every wheel order x 26^4: the left and middle wheel offsets, "
+                "the right wheel's offset and the right wheel's absolute "
+                "position (its ring), which fixes when the middle wheel steps. "
+                "The middle wheel's absolute position fixes when the left wheel "
+                "steps, so the rule that chooses the middle ring decides which "
+                "true keys have an exact equivalent in the space; under "
+                "middle_complete every middle start from which the middle notch "
+                "falls inside the message is searched too, which multiplies the "
+                "space."
+            ),
+            "exact_key_coverage_of_reducible_space": round(key_coverage, 6),
+            "exact_key_coverage_meaning": (
+                "Fraction of true daily keys for which some setting in the "
+                "reducible space deciphers this message exactly as the true key "
+                "does, by enumeration of the stepping patterns at this length. "
+                "A key outside it can still be found only if a partly "
+                "equivalent neighbour survives the climb, which the end-to-end "
+                "power calibration measures and which usually fails."
             ),
             "fraction_searched": round(evaluated / relevant, 9),
             "measured_wall_seconds_per_setting_at_this_parallelism": round(
@@ -1891,6 +2537,8 @@ def run_experiment(
         status = "complete"
         if mode == "calibration":
             body = run_calibration(config, scorer, reflector)
+        elif mode == "end_to_end_power":
+            body = run_end_to_end_power(config, scorer, reflector, jobs)
         else:
             traffic = traffic_from_corpus(
                 corpus_path, config["target"]["date"], config["target"]["messages"]
@@ -1998,7 +2646,12 @@ def load_config(path: pathlib.Path) -> dict[str, Any]:
     config = json.loads(path.read_text(encoding="utf-8"))
     if config.get("schema") != CONFIG_SCHEMA:
         raise ValueError(f"unsupported configuration schema: {config.get('schema')!r}")
-    if config["mode"] not in {"calibration", "indicator_sweep", "body_direct_sweep"}:
+    if config["mode"] not in {
+        "calibration",
+        "indicator_sweep",
+        "body_direct_sweep",
+        "end_to_end_power",
+    }:
         raise ValueError(f"unsupported mode: {config['mode']!r}")
     for ordering in config.get("indicator_orderings", []):
         if ordering not in INDICATOR_ORDERINGS:

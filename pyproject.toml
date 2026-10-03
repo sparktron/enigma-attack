@@ -43,6 +43,7 @@ py-modules = [
 "share/enigma-attack/experiments/phase1-stecker-calibration-v1" = ["experiments/phase1-stecker-calibration-v1/config.json"]
 "share/enigma-attack/experiments/phase1-indicator-sweep-v1" = ["experiments/phase1-indicator-sweep-v1/config.json"]
 "share/enigma-attack/experiments/phase1-body-direct-sweep-v1" = ["experiments/phase1-body-direct-sweep-v1/config.json"]
+"share/enigma-attack/experiments/phase1-end-to-end-power-v1" = ["experiments/phase1-end-to-end-power-v1/config.json"]
 "share/enigma-attack/experiments/phase4-joint-machine-smoke-v1" = ["experiments/phase4-joint-machine-smoke-v1/config.json"]
 "share/enigma-attack/experiments/phase4-joint-machine-smoke-v2" = ["experiments/phase4-joint-machine-smoke-v2/config.json"]
 "share/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v1" = ["experiments/phase6-qtxma-double-transposition-smoke-v1/config.json"]

@@ -12,6 +12,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 CALIBRATION_CONFIG = ROOT / "experiments/phase1-stecker-calibration-v1/config.json"
 INDICATOR_CONFIG = ROOT / "experiments/phase1-indicator-sweep-v1/config.json"
 BODY_CONFIG = ROOT / "experiments/phase1-body-direct-sweep-v1/config.json"
+POWER_CONFIG = ROOT / "experiments/phase1-end-to-end-power-v1/config.json"
 
 
 def scorer_for(config):
@@ -371,6 +372,233 @@ class GitStateTests(unittest.TestCase):
         self.assertIsNone(missing["git_dirty_entry_count"])
 
 
+WHEELS = ("I", "II", "III", "IV", "V")
+
+
+class RingRuleTests(unittest.TestCase):
+    """The sweep's parameterization decides which true keys it can reach."""
+
+    LENGTH = 167
+
+    def test_the_middle_phase_past_the_notch_keeps_the_notch_out_of_the_message(self):
+        notches = enigma_fast.rotor_tables("II").notches  # E
+        phases = stecker.middle_start_phases(notches, self.LENGTH, False)
+        self.assertEqual(phases, [(next(iter(notches)) + 1) % 26])
+        for phase in phases:
+            reached = {(phase + step) % 26 for step in range(-(-self.LENGTH // 26) + 1)}
+            self.assertFalse(reached & notches)
+
+    def test_the_complete_rule_adds_exactly_the_starts_that_reach_the_notch(self):
+        notches = enigma_fast.rotor_tables("II").notches
+        past = stecker.middle_start_phases(notches, self.LENGTH, False)
+        complete = stecker.middle_start_phases(notches, self.LENGTH, True)
+        self.assertEqual(complete[0], past[0])
+        self.assertEqual(len(set(complete)), len(complete))
+        advances = -(-self.LENGTH // 26)
+        self.assertEqual(len(complete), 1 + advances + 1)
+
+    def test_a_held_rule_with_the_old_arguments_reproduces_the_old_settings(self):
+        rule = stecker.RingRule("held", (0, 0, 0), (0,), self.LENGTH)
+        starts = [(0, 4, right) for right in range(3)]
+        self.assertEqual(
+            rule.settings(("I", "II", "III"), starts),
+            [((0, 0, 0), start) for start in starts],
+        )
+
+    def test_the_right_ring_axis_multiplies_the_settings(self):
+        rule = stecker.RingRule("held", (0, 0, 0), (0, 5, 9), self.LENGTH)
+        settings = rule.settings(("I", "II", "III"), [(1, 2, 3)])
+        self.assertEqual([rings[2] for rings, _ in settings], [0, 5, 9])
+        self.assertTrue(all(start == (1, 2, 3) for _, start in settings))
+
+    def test_the_middle_ring_is_derived_so_the_wiring_offset_is_the_searched_one(self):
+        rule = stecker.RingRule("middle_past_notch", (0, 0, 0), (7,), self.LENGTH)
+        (rings, positions), = rule.settings(("I", "II", "III"), [(3, 11, 20)])
+        self.assertEqual((positions[0] - rings[0]) % 26, 3)
+        self.assertEqual((positions[1] - rings[1]) % 26, 11)
+        self.assertEqual(positions[2], 20)
+        self.assertEqual(rings[2], 7)
+
+    def test_the_stepping_pattern_decides_whether_an_equivalent_decrypts_the_message(self):
+        order = ("II", "V", "III")
+        tables = [enigma_fast.rotor_tables(name) for name in order]
+        reflector = enigma_fast.reflector_table("B")
+        generator = __import__("random").Random(20261002)
+        for _ in range(40):
+            rings = tuple(generator.randrange(26) for _ in range(3))
+            start = tuple(generator.randrange(26) for _ in range(3))
+            truth = enigma_fast.position_permutations(
+                tables, rings, start, self.LENGTH, reflector
+            )
+            true_pattern = stecker.stepping_pattern(
+                tables[1].notches, tables[2].notches, start[1], start[2], self.LENGTH
+            )
+            offsets = tuple((start[i] - rings[i]) % 26 for i in range(3))
+            for name in ("held", "middle_past_notch", "middle_complete"):
+                rule = stecker.RingRule(name, (0, 0, 0), (rings[2],), self.LENGTH)
+                exact = False
+                predicted = False
+                for swept_rings, swept_start in rule.settings(order, [(*offsets[:2], start[2])]):
+                    swept = enigma_fast.position_permutations(
+                        tables, swept_rings, swept_start, self.LENGTH, reflector
+                    )
+                    exact = exact or swept == truth
+                    predicted = predicted or true_pattern == stecker.stepping_pattern(
+                        tables[1].notches, tables[2].notches,
+                        swept_start[1], swept_start[2], self.LENGTH,
+                    )
+                self.assertEqual(exact, predicted, (name, rings, start))
+                if name == "middle_complete":
+                    self.assertTrue(exact)
+
+    def test_coverage_is_the_fraction_of_keys_whose_left_wheel_does_not_step(self):
+        held = stecker.rule_key_coverage("held", self.LENGTH, WHEELS)
+        past = stecker.rule_key_coverage("middle_past_notch", self.LENGTH, WHEELS)
+        complete = stecker.rule_key_coverage("middle_complete", self.LENGTH, WHEELS)
+        # Independent of the equivalence search: count true keys whose left
+        # wheel never steps.
+        quiet = total = 0
+        for middle in WHEELS:
+            for right in WHEELS:
+                if middle == right:
+                    continue
+                for position_middle in range(26):
+                    for position_right in range(26):
+                        total += 1
+                        pattern = stecker.stepping_pattern(
+                            enigma_fast.rotor_tables(middle).notches,
+                            enigma_fast.rotor_tables(right).notches,
+                            position_middle, position_right, self.LENGTH,
+                        )
+                        quiet += all(value < 2 for value in pattern)
+        self.assertAlmostEqual(past, quiet / total, places=9)
+        self.assertEqual(complete, 1.0)
+        self.assertLess(held, past)
+        self.assertAlmostEqual(held, 0.524, places=2)
+
+    def test_complete_rule_multiplies_the_reducible_space_and_the_others_do_not(self):
+        self.assertEqual(
+            stecker.reducible_space_size("held", self.LENGTH, WHEELS), 60 * 26**4
+        )
+        self.assertEqual(
+            stecker.reducible_space_size("middle_past_notch", self.LENGTH, WHEELS), 60 * 26**4
+        )
+        self.assertEqual(
+            stecker.reducible_space_size("middle_complete", self.LENGTH, WHEELS), 60 * 26**4 * 9
+        )
+
+    def test_an_unknown_rule_is_rejected(self):
+        with self.assertRaises(ValueError):
+            stecker.RingRule("surprise", (0, 0, 0), (0,), 10)
+
+
+class BodyDirectRunnerRuleTests(unittest.TestCase):
+    def test_the_runner_declares_its_rule_its_axes_and_the_coverage_they_give(self):
+        config = stecker.load_config(BODY_CONFIG)
+        config["machine"]["rotor_orders"] = [["I", "II", "III"]]
+        config["body_direct_sweep"].update(
+            {"ring_rule": "middle_past_notch", "right_ring": "AB",
+             "start_left": "A", "start_middle": "AB", "start_right": "A", "keep": 2}
+        )
+        scorer = scorer_for(config)
+        traffic = stecker.traffic_from_corpus(
+            ROOT / "corpus.json", "1941-09-30", ["BYQMZ", "FKQLZ", "XFEDT"]
+        )
+        result = stecker.run_body_direct_sweep(
+            config, scorer, enigma_fast.reflector_table("B"), traffic, 1
+        )
+        self.assertEqual(result["ring_rule"], "middle_past_notch")
+        self.assertEqual(result["right_rings_searched"], 2)
+        self.assertEqual(result["start_positions"], 2)
+        self.assertEqual(result["evaluated_settings"], 4)
+        coverage = result["coverage"]
+        self.assertEqual(coverage["reducible_space_settings"], 60 * 26**4)
+        self.assertEqual(
+            coverage["exact_key_coverage_of_reducible_space"],
+            round(stecker.rule_key_coverage("middle_past_notch", 167, WHEELS), 6),
+        )
+        for candidate in result["top_candidates"]:
+            self.assertEqual(len(candidate["rings"]), 3)
+            self.assertIn("indicator_confirmation", candidate)
+
+
+class EndToEndPowerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.config = stecker.load_config(POWER_CONFIG)
+        cls.config["end_to_end_power"].update(
+            {"left_neighbours": 0, "middle_neighbours": 0, "right_neighbours": 0,
+             "null_trials": 1}
+        )
+        stecker._power_init(cls.config)
+
+    def test_a_draw_is_a_pure_function_of_its_coordinates(self):
+        self.assertEqual(stecker._power_draw((0, 3)), stecker._power_draw((0, 3)))
+        self.assertNotEqual(
+            stecker._power_draw((0, 3))["planted"], stecker._power_draw((0, 4))["planted"]
+        )
+
+    def test_the_complete_arm_always_contains_an_exact_equivalent_of_the_planted_key(self):
+        for draw in range(3):
+            result = stecker._power_draw((0, draw))
+            arm = result["arms"]["middle_complete"]
+            self.assertTrue(arm["exact_equivalent_exists"], draw)
+            self.assertEqual(arm["best_equivalent_fraction"], 1.0)
+            self.assertEqual(result["arms"]["rings_held_AAA"]["settings_evaluated"], 1)
+            self.assertEqual(
+                result["arms"]["middle_complete"]["settings_evaluated"], 9
+            )
+
+    def test_a_perturbed_draw_makes_no_equivalence_claim(self):
+        result = stecker._power_draw((1, 0))
+        self.assertIn(result["planted"]["perturbation"]["kind"], {"deletion", "insertion"})
+        for arm in result["arms"].values():
+            self.assertIsNone(arm["exact_equivalent_exists"])
+            self.assertIsNone(arm["best_equivalent_fraction"])
+
+    def test_an_indel_changes_the_length_by_one_and_none_changes_nothing(self):
+        generator = __import__("random").Random(1)
+        text = "ABCDEFGHIJKLMNOP"
+        self.assertEqual(stecker.perturb_ciphertext(text, "none", generator)[0], text)
+        lengths = {
+            len(stecker.perturb_ciphertext(text, "indel", __import__("random").Random(seed))[0])
+            for seed in range(20)
+        }
+        self.assertEqual(lengths, {len(text) - 1, len(text) + 1})
+        with self.assertRaises(ValueError):
+            stecker.perturb_ciphertext(text, "garble", generator)
+
+    def test_wilson_interval_is_sane(self):
+        self.assertEqual(stecker.wilson_interval(0, 0), [0.0, 1.0])
+        low, high = stecker.wilson_interval(5, 10)
+        self.assertAlmostEqual(low + high, 1.0, places=3)
+        self.assertLess(low, 0.5)
+        self.assertEqual(stecker.wilson_interval(10, 10)[1], 1.0)
+
+    def test_predictions_are_scored_from_the_measured_rates(self):
+        cells = [
+            {"arms": [{"arm": "a", "detection_rate": 0.7,
+                       "measured_exact_equivalent_rate": 0.7, "analytic_exact_key_coverage": 0.6},
+                      {"arm": "b", "detection_rate": 0.5}]},
+            {"arms": [{"arm": "a", "detection_rate": 0.2}]},
+        ]
+        def score(kind, **extra):
+            return stecker.evaluate_power_prediction(
+                {"id": "x", "statement": "s", "kind": kind, "cell": 0, "arm": "a", **extra}, cells
+            )
+        self.assertTrue(score("rate_at_least", value=0.7)["passed"])
+        self.assertFalse(score("rate_at_least", value=0.71)["passed"])
+        self.assertTrue(score("rate_at_most", value=0.7)["passed"])
+        self.assertTrue(score("rate_gain_at_least", over="b", value=0.19)["passed"])
+        self.assertTrue(score("measured_exact_within_analytic", value=0.11)["passed"])
+        self.assertFalse(score("measured_exact_within_analytic", value=0.05)["passed"])
+        ratio = score("rate_ratio_at_most", cell=1, over_cell=0, value=0.3)
+        self.assertTrue(ratio["passed"])
+        self.assertAlmostEqual(ratio["observed"], 0.285714, places=6)
+        with self.assertRaises(ValueError):
+            score("telepathy", value=1)
+
+
 class SweepTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -488,7 +716,7 @@ class RunnerTests(unittest.TestCase):
                 stecker.load_config(path)
 
     def test_every_preregistered_config_declares_hypothesis_and_refutation(self):
-        for path in (CALIBRATION_CONFIG, INDICATOR_CONFIG, BODY_CONFIG):
+        for path in (CALIBRATION_CONFIG, INDICATOR_CONFIG, BODY_CONFIG, POWER_CONFIG):
             with self.subTest(config=path.name):
                 config = stecker.load_config(path)
                 self.assertTrue(config["hypothesis"].strip())
@@ -502,7 +730,7 @@ class RunnerTests(unittest.TestCase):
                 ROOT / "experiments/phase7-qtxma-source-and-scorer-v2/config.json"
             ).read_text(encoding="utf-8")
         )
-        for path in (CALIBRATION_CONFIG, INDICATOR_CONFIG, BODY_CONFIG):
+        for path in (CALIBRATION_CONFIG, INDICATOR_CONFIG, BODY_CONFIG, POWER_CONFIG):
             with self.subTest(config=path.name):
                 self.assertEqual(
                     stecker.load_config(path)["scorer"], phase7_config["scorer"]
