@@ -1,8 +1,8 @@
 {
   "schema": "enigma-attack.phase1-body-direct-reconfirmation/v1",
   "experiment_id": "phase1-body-direct-sweep-v1-reconfirmation",
-  "started_at": "2026-10-03T05:56:36.194356+00:00",
-  "completed_at": "2026-10-03T05:56:38.420150+00:00",
+  "started_at": "2026-10-03T06:17:55.124647+00:00",
+  "completed_at": "2026-10-03T06:17:57.359259+00:00",
   "source_artifact": {
     "path": "artifacts/phase1-body-direct-sweep-v1.json",
     "sha256": "c7cc0aa93619635860b28c997e3c772ea3c7f3defe6a473231d5c02c1b09c411",
@@ -20,12 +20,11 @@
   },
   "code": {
     "source": "git_checkout",
-    "commit": "c9eea15c17a4e454a6238ef126e7579ead082fad",
+    "commit": "021b907f7a7c7576253bb39159309eec5ecf597b",
     "branch": "claude/phase1-review-p4-p5-p6",
     "dirty": true,
     "status": [
-      "?? artifacts/phase1-body-direct-sweep-v1-reconfirmation.json",
-      "?? scripts/reconfirm_body_direct.py"
+      " M artifacts/phase1-body-direct-sweep-v1-reconfirmation.json"
     ],
     "files_sha256": {
       "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
@@ -34,7 +33,7 @@
       "phase1_stecker.py": "dbe6cca45890a08e28c2d62a654f99d80c4669350ee79e1990bf47413a0d6d18",
       "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
       "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
-      "provenance.py": "2f5374809143d16cb0501b717c2cdf9892bd2aeb2453e1b5e44ef7a7cdc7a6cf",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
       "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
       "stecker_batch.py": "020247785edde8a8ef845c61260e398dc3bd7ede1b46bd0c4461a993b937a30d",
       "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
@@ -44,7 +43,8 @@
       "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
       "stecker_space.py": "d72c5b78b61818f5e407b14616205490c98e4082ba55dd2396a9eae7a95ac980",
       "stecker_sweeps.py": "5565a06b02eab4f18f9197d08d2ff4cc4f4f80aa5ffaf2978a55f2c2b0837f78",
-      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
+      "scripts/reconfirm_body_direct.py": "187d32c2035ae55f7b9b9be85a147484b8733c60f4ec16c82bfd3242d2d05b8b"
     }
   },
   "inputs": {
