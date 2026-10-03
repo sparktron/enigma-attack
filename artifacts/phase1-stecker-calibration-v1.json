@@ -6,9 +6,9 @@
   "accepted_break": false,
   "hypothesis": "The two-stage attack this repository cites - an unsteckered sweep scored by index of coincidence, then a stecker hill-climb - is usable on 1941-09-30 traffic of 97 to 167 letters carrying a ten-pair stecker. Concretely: the true rotor setting's unsteckered IC will stand at least three standard deviations above the wrong-setting null at the target length and stecker size; the stecker hill-climb will recover a known ten-pair plugboard and its plaintext exactly at those lengths; a truncated climb will separate the true setting well enough to serve as a cheap pre-filter; and the indicator-coupled formulation phase1.py implements will be hill-climbable.",
   "refuted_by": "Any of the four clauses failing at the target scale: an IC z-score below the declared usable threshold at 167 letters with ten pairs; failure to recover a known plugboard or plaintext exactly; no truncated climb separating the true setting; or the indicator-coupled climb failing to recover the true message keys when handed the true wheel order and ring setting.",
-  "started_at": "2026-09-26T18:58:45.590440+00:00",
-  "completed_at": "2026-09-26T19:00:42.442565+00:00",
-  "duration_seconds": 116.85212064901134,
+  "started_at": "2026-09-27T21:58:33.185012+00:00",
+  "completed_at": "2026-09-27T22:00:34.601324+00:00",
+  "duration_seconds": 121.41631153901108,
   "configuration": {
     "path": "experiments/phase1-stecker-calibration-v1/config.json",
     "sha256": "f4fe4c1e598944f1e3f3f2bca5649b86621ceea626ffa505da7d00b08feca3e3",
@@ -21,18 +21,18 @@
     "python": "3.10.12",
     "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
     "cpu_count": 20,
-    "git_commit": "ffa9fdb1a56f91253d7943e3323c99a595ac5999"
+    "git_commit": "9a88587cb1968310eafb68a4f10c1d49cc58ffdb"
   },
   "inputs": {
     "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
     "bigram_counts_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
     "trigram_counts_sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455",
     "code_sha256": {
-      "enigma.py": "595cbea30cc7a59ae9825396bafb462663bbb71dea4af1709a549bae309abb03",
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
       "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
-      "phase1.py": "883a7797591387a00e0da4ee09216c30282204f880f13f8bb13c9b294602aa8d",
-      "phase1_stecker.py": "6728e2e392f5d21753d23772db3b9988656f4a197fe245b0dc8224b98438962f",
-      "phase7.py": "9c94a41577d9f757647c6735ab44597b8326f01940d512b03c9956fc1829b889"
+      "phase1.py": "1ee02f6ac62b3334afe0c7b0031991b2c4760be01d1da988fb508a44ab2b9e82",
+      "phase1_stecker.py": "9c76e4ec1f4b5c854bb84e2a8881a2dfda09aefb4ab3da52535a733b79ff14b5",
+      "phase7.py": "f6beb63107d0b2b4a6f59cca581d988d4f729380cac94372755b44b3824ea89c"
     }
   },
   "preflight": {
@@ -1284,7 +1284,7 @@
               "z_score": 0.226863,
               "separates": false,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.019902
+              "seconds_per_setting": 0.020205
             },
             {
               "max_passes": 2,
@@ -1294,7 +1294,7 @@
               "z_score": 1.145359,
               "separates": false,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.039564
+              "seconds_per_setting": 0.041868
             },
             {
               "max_passes": 3,
@@ -1304,7 +1304,7 @@
               "z_score": 2.537471,
               "separates": true,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.058119
+              "seconds_per_setting": 0.060928
             },
             {
               "max_passes": 5,
@@ -1314,7 +1314,7 @@
               "z_score": 7.016811,
               "separates": true,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.098637
+              "seconds_per_setting": 0.107125
             },
             {
               "max_passes": 30,
@@ -1324,7 +1324,7 @@
               "z_score": 29.486474,
               "separates": true,
               "plaintext_recovered_exactly": true,
-              "seconds_per_setting": 0.12305
+              "seconds_per_setting": 0.125569
             }
           ],
           "cheapest_separating_max_passes": 3
@@ -1340,7 +1340,7 @@
               "z_score": 1.565335,
               "separates": false,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.043097
+              "seconds_per_setting": 0.046278
             },
             {
               "max_passes": 2,
@@ -1350,7 +1350,7 @@
               "z_score": 3.578678,
               "separates": true,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.086598
+              "seconds_per_setting": 0.094256
             },
             {
               "max_passes": 3,
@@ -1360,7 +1360,7 @@
               "z_score": 10.637823,
               "separates": true,
               "plaintext_recovered_exactly": false,
-              "seconds_per_setting": 0.129415
+              "seconds_per_setting": 0.136978
             },
             {
               "max_passes": 5,
@@ -1370,7 +1370,7 @@
               "z_score": 26.316278,
               "separates": true,
               "plaintext_recovered_exactly": true,
-              "seconds_per_setting": 0.21148
+              "seconds_per_setting": 0.230933
             },
             {
               "max_passes": 30,
@@ -1380,7 +1380,7 @@
               "z_score": 37.343502,
               "separates": true,
               "plaintext_recovered_exactly": true,
-              "seconds_per_setting": 0.216888
+              "seconds_per_setting": 0.205215
             }
           ],
           "cheapest_separating_max_passes": 2
