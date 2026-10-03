@@ -8,6 +8,7 @@ and can the indicator-coupled formulation be climbed at all.
 
 from __future__ import annotations
 
+import math
 import random
 import statistics
 import time
@@ -111,6 +112,191 @@ def calibrate_ic_stage(
             "the statistic itself carries no signal."
         ),
     }
+
+
+def uniform_ic_tail(ic: float, length: int) -> float:
+    """P(IC >= ic) for ``length`` uniformly random letters, Wilson–Hilferty.
+
+    A wrong rotor setting deciphers to letters that are uniform for this
+    purpose, and the IC is an affine function of the chi-square statistic
+    ``26/n * sum(c_i^2) - n`` with 25 degrees of freedom.  The cube-root
+    transform keeps the right tail, which is the one a ranking uses, accurate
+    far beyond where a normal approximation to the IC itself holds.
+    """
+
+    degrees = 25
+    statistic = 26 * (ic * (length - 1) + 1) - length
+    if statistic <= 0:
+        return 1.0
+    spread = 2 / (9 * degrees)
+    standard = ((statistic / degrees) ** (1 / 3) - (1 - spread)) / math.sqrt(spread)
+    return 0.5 * math.erfc(standard / math.sqrt(2))
+
+
+def poisson_below(limit: int, mean: float) -> float:
+    """P(Poisson(mean) < limit): the chance fewer than ``limit`` wrong keys outrank."""
+
+    if mean <= 0:
+        return 1.0
+    log_mean = math.log(mean)
+    return min(
+        1.0,
+        sum(math.exp(-mean + count * log_mean - math.lgamma(count + 1)) for count in range(limit)),
+    )
+
+
+def calibrate_ic_rank(config: Mapping[str, Any], reflector: Sequence[int]) -> dict[str, Any]:
+    """Expected rank of the true setting's unsteckered IC against a whole sweep.
+
+    ``calibrate_ic_stage`` drew one key per cell and called a cell usable at
+    z >= 3.  Neither is the question a ranking stage asks.  One draw cannot
+    locate a boundary, and what decides whether the true key survives is how
+    many of the sweep's wrong keys outscore it: at two million wrong keys a
+    z of 3 leaves thousands above it.  Here every cell averages many key draws,
+    each over a different stretch of the plaintext, and each draw's true IC is
+    turned into the expected number of wrong keys above it among the ranked
+    population and the probability that the true key is retained in the top
+    ``retained``.
+    """
+
+    settings = config["ic_rank_calibration"]
+    plaintext = normalize_plaintext(settings["plaintext"])
+    generator = random.Random(int(settings["seed"]))
+    population = int(settings["ranked_population"])
+    retained = int(settings["retained"])
+    draws = int(settings["draws"])
+    wheels = ["I", "II", "III", "IV", "V"]
+    cells: list[dict[str, Any]] = []
+    for length in settings["lengths"]:
+        if len(plaintext) < length:
+            raise ValueError("calibration plaintext is too short for the requested length")
+        for pairs in settings["stecker_pairs"]:
+            rows: list[dict[str, Any]] = []
+            null_pool: list[float] = []
+            for _ in range(draws):
+                offset = generator.randrange(len(plaintext) - length + 1)
+                rotors = tuple(generator.sample(wheels, 3))
+                rings = tuple(generator.randrange(26) for _ in range(3))
+                start = tuple(generator.randrange(26) for _ in range(3))
+                ciphertext = EnigmaI(
+                    rotors=rotors,
+                    rings="".join(chr(65 + value) for value in rings),
+                    positions="".join(chr(65 + value) for value in start),
+                    plugboard=random_plugboard(generator, pairs),
+                ).crypt(plaintext[offset : offset + length])
+                body = enigma_fast.text_to_indices(ciphertext)
+                order = [enigma_fast.rotor_tables(name) for name in rotors]
+                true_ic = index_of_coincidence(
+                    *letter_counts(enigma_fast.crypt_indices(order, rings, start, body))
+                )
+                null = [
+                    index_of_coincidence(
+                        *letter_counts(
+                            enigma_fast.crypt_indices(
+                                [enigma_fast.rotor_tables(name) for name in generator.sample(wheels, 3)],
+                                tuple(generator.randrange(26) for _ in range(3)),
+                                tuple(generator.randrange(26) for _ in range(3)),
+                                body,
+                            )
+                        )
+                    )
+                    for _ in range(int(settings["null_trials"]))
+                ]
+                null_pool.extend(null)
+                mean = statistics.fmean(null)
+                deviation = statistics.pstdev(null)
+                tail = uniform_ic_tail(true_ic, length)
+                above = population * tail
+                rows.append(
+                    {
+                        "z_score": (true_ic - mean) / deviation,
+                        "empirical_null_exceedance": sum(1 for value in null if value >= true_ic)
+                        / len(null),
+                        "expected_wrong_keys_above": above,
+                        "retention_probability": poisson_below(retained, above),
+                    }
+                )
+            z_scores = [row["z_score"] for row in rows]
+            above = sorted(row["expected_wrong_keys_above"] for row in rows)
+            # Checks the analytic null against this cell's empirical one: both
+            # are uniform-letter ICs, so their means and spreads should agree.
+            analytic_mean = 1 / 26
+            cells.append(
+                {
+                    "length": length,
+                    "stecker_pairs": pairs,
+                    "draws": draws,
+                    "z_median": round(statistics.median(z_scores), 3),
+                    "z_mean": round(statistics.fmean(z_scores), 3),
+                    "z_sd": round(statistics.stdev(z_scores), 3),
+                    "z_min": round(min(z_scores), 3),
+                    "z_max": round(max(z_scores), 3),
+                    "draws_at_or_above_z3": sum(1 for z in z_scores if z >= 3),
+                    "median_expected_rank": round(1 + statistics.median(above), 3),
+                    "median_log10_expected_rank": round(
+                        math.log10(1 + statistics.median(above)), 3
+                    ),
+                    "mean_retention_probability": round(
+                        statistics.fmean(row["retention_probability"] for row in rows), 6
+                    ),
+                    "mean_empirical_null_exceedance": round(
+                        statistics.fmean(row["empirical_null_exceedance"] for row in rows), 6
+                    ),
+                    "null_ic_mean": round(statistics.fmean(null_pool), 9),
+                    "analytic_null_ic_mean": round(analytic_mean, 9),
+                    "null_ic_sd": round(statistics.pstdev(null_pool), 9),
+                    "analytic_null_ic_sd": round(
+                        math.sqrt(2 * 25) / (26 * (length - 1)), 9
+                    ),
+                }
+            )
+    target = next(
+        cell
+        for cell in cells
+        if cell["length"] == int(settings["target_length"])
+        and cell["stecker_pairs"] == int(settings["target_stecker_pairs"])
+    )
+    return {
+        "method_reference": settings["method_reference"],
+        "draws_per_cell": draws,
+        "null_trials_per_draw": int(settings["null_trials"]),
+        "ranked_population": population,
+        "retained": retained,
+        "z_for_expected_rank_retained": round(
+            _z_for_tail(retained / population), 3
+        ),
+        "z_for_expected_rank_one": round(_z_for_tail(1 / population), 3),
+        "cells": cells,
+        "target_cell": {
+            "length": target["length"],
+            "stecker_pairs": target["stecker_pairs"],
+            "mean_retention_probability": target["mean_retention_probability"],
+            "median_expected_rank": target["median_expected_rank"],
+        },
+        "tail_model": (
+            "Each draw's true-setting IC is converted to a tail probability "
+            "under the uniform-letter null (chi-square with 25 degrees of "
+            "freedom, Wilson-Hilferty), multiplied by ranked_population to give "
+            "the expected number of wrong keys above it, and the chance that "
+            "fewer than `retained` of them outrank it is Poisson. The empirical "
+            "null mean and sd are recorded beside the analytic ones so the model "
+            "can be checked cell by cell; empirical exceedance has a resolution "
+            "of one null trial and cannot reach the tail the ranking uses."
+        ),
+    }
+
+
+def _z_for_tail(probability: float) -> float:
+    """Standard-normal z whose upper tail is ``probability`` (bisection)."""
+
+    low, high = 0.0, 40.0
+    for _ in range(200):
+        middle = (low + high) / 2
+        if 0.5 * math.erfc(middle / math.sqrt(2)) > probability:
+            low = middle
+        else:
+            high = middle
+    return (low + high) / 2
 
 
 def calibrate_climb_capability(
