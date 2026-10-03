@@ -1,0 +1,97 @@
+{
+  "schema": "enigma-attack.phase1-companion-calibration-config/v1",
+  "experiment_id": "phase1-companion-calibration-v1",
+  "output": "artifacts/phase1-companion-calibration-v1.json",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ]
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "hypothesis": "Deciphering each companion message at all 17,576 start positions under a body-direct candidate's wheel order, ring setting (as the middle-past-notch sweep parameterization presents it) and plugboard separates the daily key from wrong candidates: with the exact ten-pair plugboard every companion's best start stands at least 8 standard deviations above its own start distribution, with two of ten pairs wrong it still reaches 6, and no wrong candidate reaches 6.",
+  "refuted_by": "Any preregistered prediction below failing. A failed null prediction (a wrong candidate reaching z = 6) means the threshold must be raised and re-calibrated before any sweep relies on it.",
+  "calibration": {
+    "seed": 20261003,
+    "draws": 40,
+    "stecker_pairs": 10,
+    "swept_length": 167,
+    "companion_lengths": [
+      107,
+      97
+    ],
+    "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+    "ring_rule": "middle_past_notch",
+    "wrong_pair_arms": [
+      0,
+      2,
+      4
+    ],
+    "random_null_candidates": 200,
+    "threshold_z": 6.0,
+    "corpus_null": {
+      "source_artifact": "artifacts/phase1-body-direct-sweep-v1.json",
+      "date": "1941-09-30",
+      "companions": [
+        "FKQLZ",
+        "XFEDT"
+      ],
+      "rationale": "The 40 candidates the v1 slice retained on BYQMZ are climbed plugboards that fit noise as well as anything in 40,560 settings, so they are the realistic wrong candidates a full sweep will hand this check. Every one has its rings recovered from the artifact as recorded."
+    },
+    "rationale": "Review R4 (docs/code-review-2026-10-02.md). The indicator confirmation needs an exactly right plugboard and ring setting; this check needs neither the indicator nor an exact plugboard. Each draw plants a random daily key with random rings, enciphers a 167-letter swept message and two companions at the target companion lengths with enigma.EnigmaI, and presents the candidate a complete middle-past-notch sweep would return: the true wheel order and right ring, the left ring held at A and the middle ring chosen so the swept message's middle wheel starts just past its notch. Wrong-pair arms replace k of the ten true pairs by re-pairing their letters among themselves. Random nulls use a random wheel order, random rings and a random ten-pair plugboard against the planted companions."
+  },
+  "predictions": [
+    {
+      "id": "exact-plugboard-clears-8",
+      "statement": "With the exact plugboard, every companion's best start reaches z >= 8 in at least 95% of draws.",
+      "kind": "rate_at_least",
+      "arm": 0,
+      "z": 8.0,
+      "value": 0.95
+    },
+    {
+      "id": "two-wrong-pairs-clear-threshold",
+      "statement": "With two of ten pairs wrong, every companion's best start reaches the threshold z >= 6 in at least 80% of draws.",
+      "kind": "rate_at_least",
+      "arm": 2,
+      "z": 6.0,
+      "value": 0.8
+    },
+    {
+      "id": "random-nulls-stay-below-threshold",
+      "statement": "No random wrong candidate reaches the threshold on both companions.",
+      "kind": "null_rate_at_most",
+      "null": "random",
+      "z": 6.0,
+      "value": 0.0
+    },
+    {
+      "id": "corpus-nulls-stay-below-threshold",
+      "statement": "None of the 40 candidates the v1 slice retained on BYQMZ reaches the threshold on both of FKQLZ and XFEDT.",
+      "kind": "null_rate_at_most",
+      "null": "corpus",
+      "z": 6.0,
+      "value": 0.0
+    }
+  ],
+  "limitations": [
+    "The candidate's middle ring is the sweep's parameterization, so a companion whose true middle wheel steps the left wheel during the message is deciphered exactly only up to that letter. The draws include that case at its natural rate rather than excluding it.",
+    "Wrong-pair arms model a climb that ends on a near-miss plugboard by re-pairing letters among themselves; a climb's real errors may be distributed differently.",
+    "The planted plaintext is constructed Army-style text, not authentic held-out traffic.",
+    "The threshold applies to the minimum over companions, so a garbled companion can hide a true key; the artifact reports each companion's z so that case is visible."
+  ]
+}
