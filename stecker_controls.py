@@ -8,16 +8,20 @@ survive.
 
 from __future__ import annotations
 
+import random
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from enigma import EnigmaI
 import enigma_fast
 import phase1
 import phase7
 from provenance import sha256_text
+import stecker_batch
 from stecker_climb import body_direct_climb
 from stecker_scoring import FastNgramScorer
-from stecker_traffic import Traffic, encipher_control
+from stecker_sweeps import resolve_engine
+from stecker_traffic import Traffic, encipher_control, normalize_plaintext, random_plugboard
 
 
 def evaluate_positive_control(
@@ -242,6 +246,67 @@ def confirm_against_date(
     }
 
 
+def batched_climb_parity_report(
+    config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
+) -> dict[str, Any]:
+    """Check the batched climb against the reference on seeded random settings.
+
+    The reference climb is the definition; the batched one is an optimisation of
+    it, so the two have to end on the same plugboard after the same number of
+    evaluations.  Half the samples climb at a wrong setting, because a sweep is
+    almost entirely wrong settings, and some carry masked letters.
+    """
+
+    settings = config.get("batched_climb_parity", {})
+    seed = int(settings.get("seed", 20261003))
+    samples = int(settings.get("samples", 24))
+    generator = random.Random(seed)
+    wheels = list(config["machine"]["wheel_set"])
+    source = "".join(
+        normalize_plaintext(row["raw"]) for row in config["scorer_validation"]["plaintexts"]
+    )
+    climb = config["climb"]
+    identical = same_evaluations = 0
+    for case in range(samples):
+        length = generator.randrange(60, min(167, len(source)) + 1)
+        order = tuple(generator.sample(wheels, 3))
+        rings = tuple(generator.randrange(26) for _ in range(3))
+        start = tuple(generator.randrange(26) for _ in range(3))
+        ciphertext = EnigmaI(
+            rotors=order,
+            rings="".join(chr(65 + value) for value in rings),
+            positions="".join(chr(65 + value) for value in start),
+            plugboard=random_plugboard(generator, 10),
+        ).crypt(source[:length])
+        body = list(enigma_fast.text_to_indices(ciphertext))
+        for position in generator.sample(range(length), case % 4):
+            body[position] = -1
+        if case % 5 == 0:
+            body[0] = body[1] = -1
+        if case % 2:
+            order = tuple(generator.sample(wheels, 3))
+            start = tuple(generator.randrange(26) for _ in range(3))
+        table = enigma_fast.position_permutations(
+            [enigma_fast.rotor_tables(name) for name in order], rings, start, length, reflector
+        )
+        reference, _ = body_direct_climb(
+            [Traffic("PARITY", (0, 0, 0), (0, 0, 0), tuple(body))],
+            order, rings, [start], scorer, reflector, climb,
+        )
+        plugboard, evaluations = stecker_batch.BatchedClimber(
+            scorer.bigram, scorer.combined, body, climb
+        ).climb(table)
+        identical += list(reference.plugboard) == plugboard
+        same_evaluations += reference.evaluations == evaluations
+    return {
+        "seed": seed,
+        "samples": samples,
+        "identical_final_plugboards": identical,
+        "identical_evaluation_counts": same_evaluations,
+        "passed": identical == samples and same_evaluations == samples,
+    }
+
+
 def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[str, Any]:
     simulator = phase1.published_vector_results()
     kernel = enigma_fast.parity_report(
@@ -261,11 +326,18 @@ def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[st
         "fast_scorer_matches_phase7": scorer_parity["passed"],
         "scorer_discriminates_authentic_plaintext": discrimination["passed"],
     }
-    return {
+    report: dict[str, Any] = {
         "simulator_validation": simulator,
         "kernel_parity": kernel,
         "scorer_parity": scorer_parity,
         "scorer_discrimination": discrimination,
-        "checks": checks,
-        "passed": all(checks.values()),
     }
+    if resolve_engine(config["climb"]) == "batched":
+        parity = batched_climb_parity_report(
+            config, scorer, enigma_fast.reflector_table(config["machine"]["reflector"])
+        )
+        report["batched_climb_parity"] = parity
+        checks["batched_climb_matches_reference"] = parity["passed"]
+    report["checks"] = checks
+    report["passed"] = all(checks.values())
+    return report

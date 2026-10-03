@@ -137,6 +137,46 @@ class WheelInstallTests(unittest.TestCase):
         network = json.loads((working / "phase2.json").read_text(encoding="utf-8"))
         self.assert_installed_provenance(network["code"], "phase2.py")
 
+    def test_installed_phase1_stecker_reads_the_share_directory_and_writes_to_the_cwd(
+        self,
+    ) -> None:
+        """The command must not look for its inputs or outputs in site-packages.
+
+        A shipped config with no positive controls stops at the control gate
+        after the corpus, both n-gram tables and the code hashes have been read,
+        which is every input path the runner resolves, in a fraction of a second.
+        """
+
+        project = pathlib.Path(__file__).resolve().parents[1]
+        config = json.loads(
+            (project / "experiments/phase1-body-direct-sweep-v1/config.json")
+            .read_text(encoding="utf-8")
+        )
+        config["positive_controls"] = []
+        config["kernel_parity"]["samples"] = 1
+        config["scorer_parity"]["samples"] = 1
+        working = self.temp / "stecker-output"
+        working.mkdir()
+        config_path = working / "tiny-config.json"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+
+        completed = subprocess.run(
+            [str(self.binaries / "enigma-phase1-stecker"),
+             "--config", str(config_path), "--output", "artifacts/tiny.json"],
+            cwd=working, env=self.environment_variables,
+            capture_output=True, text=True,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        artifact = json.loads(
+            (working / "artifacts" / "tiny.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(artifact["status"], "blocked_by_positive_control")
+        self.assert_installed_provenance(
+            artifact["code"],
+            "enigma.py", "enigma_fast.py", "phase1.py", "phase1_stecker.py",
+            "phase7.py", "stecker_batch.py", "stecker_sweeps.py",
+        )
+
     def test_installed_default_outputs_resolve_under_the_cwd(self) -> None:
         """Inputs come from the installed share directory, outputs from the cwd."""
 

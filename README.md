@@ -411,9 +411,12 @@ A credible break should satisfy most of these simultaneously:
 - `stecker_scoring.py` — fast n-gram scorer checked against Phase 7, and the index of coincidence
 - `stecker_traffic.py` — corpus and known-key control traffic, indicator orderings
 - `stecker_climb.py` — body-direct and indicator-coupled stecker hill-climbs
-- `stecker_sweeps.py` — indicator-coupled IC sweep, parallel body-direct sweep, search spaces
+- `stecker_batch.py` — optional numpy batched climb, checked against the reference climb in preflight
+- `stecker_space.py` — wheel-order, ring and start-position spaces, ring rules, and exact key coverage
+- `stecker_sweeps.py` — indicator-coupled IC sweep and the chunked, checkpointed body-direct sweep
 - `stecker_calibration.py` — known-key calibrations of the IC stage, the climb, screening and the indicator gradient
 - `stecker_controls.py` — preflight checks, positive controls, and the indicator confirmation with ring recovery
+- `stecker_power.py` — end-to-end power of the body-direct sweep against planted random-ring keys
 - `provenance.py` — the shared `code` block: commit, uncommitted-change flag, and module hashes
 - `resources.py` — locates research inputs in a checkout or installed wheel, and default outputs
 - `phase2.py` — traffic graph, archive priorities, and provenance-aware crib ranker

@@ -55,14 +55,17 @@ from resources import resolve_output, resource_root
 from stecker_calibration import run_calibration
 from stecker_climb import indicator_coupled_climb
 from stecker_controls import confirm_against_date, evaluate_positive_control, run_preflight
+from stecker_power import run_end_to_end_power
 from stecker_scoring import FastNgramScorer
-from stecker_sweeps import (
-    body_direct_sweep,
-    indicator_ic_sweep,
+from stecker_space import (
+    RingRule,
+    reducible_space_size,
     resolve_axis,
     ring_space,
     rotor_order_space,
+    rule_key_coverage,
 )
+from stecker_sweeps import CLIMB_ENGINES, indicator_ic_sweep, sweep_slice
 from stecker_traffic import INDICATOR_ORDERINGS, Traffic, traffic_from_corpus
 
 ROOT = resource_root()
@@ -205,7 +208,7 @@ def run_body_direct_sweep(
     rotor_orders = rotor_order_space(
         config["machine"]["rotor_orders"], config["machine"]["wheel_set"]
     )
-    rings = tuple(ord(letter) - 65 for letter in settings["rings"].upper())
+    rule = RingRule.from_config(settings, len(message.body))
     start_space = [
         (left, middle, right)
         for left in resolve_axis(settings["start_left"])
@@ -213,18 +216,24 @@ def run_body_direct_sweep(
         for right in resolve_axis(settings["start_right"])
     ]
     started = time.monotonic()
-    ranked, evaluated, distribution = body_direct_sweep(
+    checkpoint = (
+        resolve_output(settings["checkpoint"]) if settings.get("checkpoint") else None
+    )
+    ranked, evaluated, distribution, execution = sweep_slice(
         message,
         rotor_orders,
-        rings,
+        rule,
         start_space,
         config["scorer"],
         reflector,
         config["climb"],
         int(settings["keep"]),
         jobs,
+        checkpoint,
     )
     elapsed = time.monotonic() - started
+    run_settings = execution["settings_run"]
+    per_setting = elapsed / run_settings if run_settings else None
 
     # Independent amplifier for the retained candidates.  The sweep climbs one
     # message; a candidate that is actually the daily key must also decipher the
@@ -245,7 +254,7 @@ def run_body_direct_sweep(
             traffic,
             candidate.pop("_plugboard"),
             candidate["rotor_order_left_to_right"],
-            rings,
+            tuple(ord(letter) - 65 for letter in candidate["rings"]),
             scorer,
             reflector,
             config["indicator_orderings"],
@@ -262,18 +271,31 @@ def run_body_direct_sweep(
     # Coverage is stated against the space that actually has to be searched,
     # not against the slice that was chosen, so the number cannot flatter the
     # run by redefining the denominator.
-    relevant = 60 * 26**4
+    wheel_set = tuple(config["machine"]["wheel_set"])
+    relevant = reducible_space_size(rule.name, len(message.body), wheel_set)
+    key_coverage = rule_key_coverage(rule.name, len(message.body), wheel_set)
     return {
         "formulation": "body_direct",
         "message": message.designator,
         "message_length": len(message.body),
         "rings_held_at": settings["rings"].upper(),
+        "ring_rule": rule.name,
+        "right_rings_searched": len(rule.right_rings),
         "rotor_orders": len(rotor_orders),
         "start_positions": len(start_space),
         "evaluated_settings": evaluated,
         "seconds": round(elapsed, 3),
-        "seconds_per_setting": round(elapsed / max(evaluated, 1), 6),
+        "seconds_per_setting": None if per_setting is None else round(per_setting, 6),
         "jobs": jobs,
+        "execution": {
+            **execution,
+            "checkpoint": None if checkpoint is None else describe_path(checkpoint),
+            "note": (
+                "seconds covers only the chunks run in this invocation; a resumed "
+                "sweep reports the time of the remainder, and the projections below "
+                "use the settings run in this invocation."
+            ),
+        },
         "score_distribution_over_slice": distribution,
         "indicator_confirmation": {
             "best_pooled_score_per_letter": max(confirmation_scores),
@@ -293,8 +315,8 @@ def run_body_direct_sweep(
                 "freedom, so for each candidate every left and middle ring "
                 "setting that reproduces the swept body through the indicator "
                 "is scored and the best is reported. The right-hand ring is "
-                "fixed because it moves the turnover inside the message, which "
-                "is what the declared slice holds."
+                "kept as the sweep used it, because it moves the turnover "
+                "inside the message and is an axis of the declared space."
             ),
             "method": (
                 "For each retained candidate the recovered plugboard and a "
@@ -307,29 +329,43 @@ def run_body_direct_sweep(
         "coverage": {
             "searched_settings": evaluated,
             "reducible_space_settings": relevant,
+            "ring_rule": rule.name,
             "reducible_space_definition": (
-                "60 wheel orders x 26^4, the parameters a message this short can "
-                "distinguish: the left and middle wheel offsets, and the right "
-                "wheel's offset and absolute position. It assumes the left wheel "
-                "does not step during the message, which holds for about "
-                "three quarters of start positions at this length."
+                "Every wheel order x 26^4: the left and middle wheel offsets, "
+                "the right wheel's offset and the right wheel's absolute "
+                "position (its ring), which fixes when the middle wheel steps. "
+                "The middle wheel's absolute position fixes when the left wheel "
+                "steps, so the rule that chooses the middle ring decides which "
+                "true keys have an exact equivalent in the space; under "
+                "middle_complete every middle start from which the middle notch "
+                "falls inside the message is searched too, which multiplies the "
+                "space."
+            ),
+            "exact_key_coverage_of_reducible_space": round(key_coverage, 6),
+            "exact_key_coverage_meaning": (
+                "Fraction of true daily keys for which some setting in the "
+                "reducible space deciphers this message exactly as the true key "
+                "does, by enumeration of the stepping patterns at this length. "
+                "A key outside it can still be found if a partly equivalent "
+                "neighbour survives the climb, which only some of the time it "
+                "does; the end-to-end power calibration measures how often."
             ),
             "fraction_searched": round(evaluated / relevant, 9),
-            "measured_wall_seconds_per_setting_at_this_parallelism": round(
-                elapsed / max(evaluated, 1), 6
+            "measured_wall_seconds_per_setting_at_this_parallelism": (
+                None if per_setting is None else round(per_setting, 6)
             ),
             "jobs_used": jobs,
-            "projected_wall_hours_for_reducible_space_at_this_parallelism": round(
-                relevant * (elapsed / max(evaluated, 1)) / 3600, 1
+            "projected_wall_hours_for_reducible_space_at_this_parallelism": (
+                None if per_setting is None else round(relevant * per_setting / 3600, 1)
             ),
-            "projected_core_hours_for_reducible_space": round(
+            "projected_core_hours_for_reducible_space": None if per_setting is None else round(
                 # Wall-clock-per-setting already reflects ``jobs`` workers
                 # sharing the run, so recovering true core-hours multiplies
                 # back by the worker count rather than dividing by it. An
                 # earlier version of this field named itself "core-hours"
                 # while actually reporting wall-clock hours at this
                 # parallelism, understating the true cost by the worker count.
-                relevant * (elapsed / max(evaluated, 1)) * max(jobs, 1) / 3600,
+                relevant * per_setting * max(jobs, 1) / 3600,
                 1,
             ),
         },
@@ -376,6 +412,8 @@ def run_experiment(
         status = "complete"
         if mode == "calibration":
             body = run_calibration(config, scorer, reflector)
+        elif mode == "end_to_end_power":
+            body = run_end_to_end_power(config, scorer, reflector, jobs)
         else:
             traffic = traffic_from_corpus(
                 corpus_path, config["target"]["date"], config["target"]["messages"]
@@ -437,8 +475,15 @@ def load_config(path: pathlib.Path) -> dict[str, Any]:
     config = json.loads(path.read_text(encoding="utf-8"))
     if config.get("schema") != CONFIG_SCHEMA:
         raise ValueError(f"unsupported configuration schema: {config.get('schema')!r}")
-    if config["mode"] not in {"calibration", "indicator_sweep", "body_direct_sweep"}:
+    if config["mode"] not in {
+        "calibration",
+        "indicator_sweep",
+        "body_direct_sweep",
+        "end_to_end_power",
+    }:
         raise ValueError(f"unsupported mode: {config['mode']!r}")
+    if config.get("climb", {}).get("engine", "reference") not in CLIMB_ENGINES:
+        raise ValueError(f"unknown climb engine: {config['climb']['engine']!r}")
     for ordering in config.get("indicator_orderings", []):
         if ordering not in INDICATOR_ORDERINGS:
             raise ValueError(f"unknown indicator ordering: {ordering!r}")

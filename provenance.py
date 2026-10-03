@@ -84,8 +84,9 @@ def loaded_code() -> dict[str, str]:
 
     Taken from ``sys.modules`` rather than a hand-kept list, so a module split
     out of a runner, or a helper it starts importing, is recorded without
-    anyone remembering to add it.  The project has no third-party
-    dependencies, so the modules found beside this one are its own.
+    anyone remembering to add it.  The project's one optional dependency,
+    numpy, is a package directory rather than a module file, so the modules
+    found beside this one are the project's own.
     """
 
     files: set[pathlib.Path] = set()
