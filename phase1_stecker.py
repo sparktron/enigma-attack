@@ -52,7 +52,7 @@ from typing import Any
 import enigma_fast
 from provenance import code_version, sha256_file
 from resources import resolve_output, resource_root
-from stecker_calibration import run_calibration
+from stecker_calibration import calibrate_ic_rank, run_calibration
 from stecker_climb import indicator_coupled_climb
 from stecker_controls import confirm_against_date, evaluate_positive_control, run_preflight
 from stecker_power import run_end_to_end_power
