@@ -398,6 +398,28 @@ The two sweeps bound the problem from both sides.
 > the repository supports (review finding P3), which this entry does not
 > address.
 
+> **Engine update, 2026-10-02.** The sweep engine was rebuilt (review R1 and R2)
+> and measured with `scripts/benchmark_sweep.py`, which is exploratory and
+> preregistered nowhere. On this host (i9-10900K, 10 cores, 20 threads) the
+> batched numpy climb takes 16.9 ms per setting in one process against 153 ms
+> for the pure-Python climb (676 settings, identical retained candidates), about
+> 9.1×. Parallel throughput peaks at 9 to 10 workers and falls with more:
+> 2.64 to 2.65 ms per setting at 9 and 10 workers, 3.56 at 12, 5.29 at 18, so
+> `--jobs` should be the physical core count, not the thread count. The
+> reference climb at 18 workers took 20.0 ms per setting. At 2.65 ms per
+> setting the 27.4 × 10⁶ settings of the past-notch space take about 20 hours,
+> against about 152 hours for the reference climb at 18 workers. The earlier
+> "3,472 core-hours" multiplied a wall-clock time measured with 18 workers
+> contending by 18; one uncontended reference climb is 153 ms, about 1,160
+> core-hours for the same space, and what a host can deliver is set by its
+> physical cores either way.
+>
+> The sweep now keeps each chunk's best settings and streaming score statistics
+> instead of every setting, splits each wheel order by its middle axis (1,560
+> chunks for the full space), appends each finished chunk to a JSONL
+> checkpoint, and resumes by skipping recorded chunks. The merge is in chunk
+> order, so the result does not depend on `--jobs`.
+
 The gap is therefore neither the scorer nor the stecker search. It is the
 enumeration of rotor settings, and the historically correct answer to exactly
 that problem is the one Bletchley Park built: a **crib-driven Bombe**, which

@@ -10,6 +10,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
+[project.optional-dependencies]
+# The batched stecker climb; without it the pure-Python climb runs unchanged.
+fast = ["numpy"]
+
 [project.scripts]
 enigma-phase1 = "phase1:main"
 enigma-phase2 = "phase2:main"
@@ -35,6 +39,7 @@ py-modules = [
     "phase7",
     "recon",
     "resources",
+    "stecker_batch",
 ]
 
 [tool.setuptools.data-files]

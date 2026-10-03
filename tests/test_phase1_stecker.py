@@ -6,6 +6,7 @@ from unittest import mock
 
 import enigma_fast
 import phase1_stecker as stecker
+import stecker_batch
 from enigma import EnigmaI
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -685,6 +686,244 @@ class SweepTests(unittest.TestCase):
         self.assertGreater(
             ranked[0]["score_per_letter"], distribution["mean_score_per_letter"]
         )
+
+
+def planted_message(plugboard="AN BY CF DR GJ HS IL KM PV QZ", positions="AEF", length=167):
+    plaintext = stecker.normalize_plaintext(
+        stecker.load_config(CALIBRATION_CONFIG)["climb_capability_calibration"]["plaintext"],
+        length,
+    )
+    ciphertext = EnigmaI(
+        rotors=("I", "II", "III"), rings="AAA", positions=positions, plugboard=plugboard
+    ).crypt(plaintext)
+    return stecker.Traffic(
+        designator="PLANT",
+        first_trigram=(0, 0, 0),
+        second_trigram=(0, 0, 0),
+        body=enigma_fast.text_to_indices(ciphertext),
+    )
+
+
+@unittest.skipUnless(stecker_batch.available(), "numpy is not installed")
+class BatchedClimbTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.config = stecker.load_config(BODY_CONFIG)
+        cls.scorer = scorer_for(cls.config)
+        cls.reflector = enigma_fast.reflector_table("B")
+
+    def test_the_batched_climb_ends_where_the_reference_climb_ends(self):
+        report = stecker.batched_climb_parity_report(
+            {**self.config, "batched_climb_parity": {"seed": 7, "samples": 10}},
+            self.scorer,
+            self.reflector,
+        )
+        self.assertEqual(report["identical_final_plugboards"], 10)
+        self.assertEqual(report["identical_evaluation_counts"], 10)
+        self.assertTrue(report["passed"])
+
+    def test_masked_letters_reset_the_ngram_chain_in_both_climbs(self):
+        message = planted_message()
+        body = list(message.body)
+        for position in (0, 1, 2, 40, 41, 120):
+            body[position] = -1
+        order = [enigma_fast.rotor_tables(name) for name in ("I", "II", "III")]
+        table = enigma_fast.position_permutations(
+            order, (0, 0, 0), (0, 4, 5), len(body), self.reflector
+        )
+        reference, _ = stecker.body_direct_climb(
+            [stecker.Traffic("M", (0, 0, 0), (0, 0, 0), tuple(body))],
+            ("I", "II", "III"), (0, 0, 0), [(0, 4, 5)], self.scorer, self.reflector,
+            self.config["climb"],
+        )
+        plugboard, evaluations = stecker_batch.BatchedClimber(
+            self.scorer.bigram, self.scorer.combined, body, self.config["climb"]
+        ).climb(table)
+        self.assertEqual(list(reference.plugboard), plugboard)
+        self.assertEqual(reference.evaluations, evaluations)
+
+    def test_a_batched_sweep_finds_the_planted_key_and_matches_the_reference_sweep(self):
+        message = planted_message()
+        arguments = (
+            message, [("I", "II", "III")], (0, 0, 0), [(0, 4, right) for right in range(6)],
+            self.config["scorer"], self.reflector,
+        )
+        reference = stecker.body_direct_sweep(
+            *arguments, {**self.config["climb"], "engine": "reference"}, 6, 1
+        )
+        batched = stecker.body_direct_sweep(
+            *arguments, {**self.config["climb"], "engine": "batched"}, 6, 1
+        )
+        self.assertEqual(batched[0], reference[0])
+        self.assertEqual(batched[1], reference[1])
+        self.assertEqual(batched[0][0]["start_position"], "AEF")
+        self.assertEqual(batched[0][0]["plugboard"], "AN BY CF DR GJ HS IL KM PV QZ")
+
+    def test_the_preflight_adds_the_parity_check_only_when_the_engine_is_batched(self):
+        config = {
+            **self.config,
+            "kernel_parity": {"seed": 1, "samples": 2},
+            "scorer_parity": {**self.config["scorer_parity"], "samples": 2},
+            "batched_climb_parity": {"seed": 3, "samples": 4},
+        }
+        batched = stecker.run_preflight(
+            {**config, "climb": {**config["climb"], "engine": "batched"}}, self.scorer
+        )
+        self.assertTrue(batched["checks"]["batched_climb_matches_reference"])
+        reference = stecker.run_preflight(config, self.scorer)
+        self.assertNotIn("batched_climb_matches_reference", reference["checks"])
+
+
+class EngineSelectionTests(unittest.TestCase):
+    def test_reference_is_the_default_and_unknown_engines_are_rejected(self):
+        self.assertEqual(stecker.resolve_engine({}), "reference")
+        with self.assertRaises(ValueError):
+            stecker.resolve_engine({"engine": "gpu"})
+
+    def test_without_numpy_auto_falls_back_and_batched_fails_loudly(self):
+        with mock.patch.object(stecker_batch, "np", None):
+            self.assertFalse(stecker_batch.available())
+            self.assertEqual(stecker.resolve_engine({"engine": "auto"}), "reference")
+            self.assertEqual(stecker.resolve_engine({"engine": "reference"}), "reference")
+            with self.assertRaises(RuntimeError):
+                stecker.resolve_engine({"engine": "batched"})
+            with self.assertRaises(RuntimeError):
+                stecker_batch.BatchedClimber([0.0] * 676, [0.0] * 17576, [0], {})
+
+    def test_a_configuration_with_an_unknown_engine_is_rejected_on_load(self):
+        config = json.loads(BODY_CONFIG.read_text(encoding="utf-8"))
+        config["climb"]["engine"] = "gpu"
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "config.json"
+            path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                stecker.load_config(path)
+
+    @unittest.skipUnless(stecker_batch.available(), "numpy is not installed")
+    def test_with_numpy_auto_is_batched(self):
+        self.assertEqual(stecker.resolve_engine({"engine": "auto"}), "batched")
+
+
+class SweepEngineTests(unittest.TestCase):
+    """What the rebuilt sweep promises: bounded memory, no scheduling dependence, resumability."""
+
+    ORDERS = [("I", "II", "III"), ("II", "IV", "V")]
+    STARTS = [(0, middle, right) for middle in (3, 4, 5) for right in range(3)]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.config = stecker.load_config(BODY_CONFIG)
+        cls.reflector = enigma_fast.reflector_table("B")
+        cls.message = planted_message()
+
+    def sweep(self, keep=5, jobs=1, checkpoint=None, orders=None):
+        return stecker.sweep_slice(
+            self.message, orders or self.ORDERS, (0, 0, 0), self.STARTS,
+            self.config["scorer"], self.reflector, self.config["climb"], keep, jobs, checkpoint,
+        )
+
+    def test_chunks_are_one_per_wheel_order_and_middle_start(self):
+        rule = stecker.RingRule("held", (0, 0, 0), (0,), 167)
+        chunks = stecker.sweep_chunks(rule, self.ORDERS, self.STARTS)
+        self.assertEqual(len(chunks), 6)
+        self.assertEqual(len({key for key, _, _ in chunks}), 6)
+        self.assertEqual(sum(len(settings) for _, _, settings in chunks), 18)
+        orders = stecker.rotor_order_space("all_permutations", ["I", "II", "III", "IV", "V"])
+        full = stecker.sweep_chunks(rule, orders, [(0, m, 0) for m in range(26)])
+        self.assertEqual(len(full), 60 * 26)
+
+    def test_result_does_not_depend_on_the_worker_count(self):
+        serial = self.sweep(jobs=1)
+        parallel = self.sweep(jobs=2)
+        self.assertEqual(serial[0], parallel[0])
+        self.assertEqual(serial[1:3], parallel[1:3])
+
+    def test_the_retained_candidates_do_not_depend_on_the_retention_limit(self):
+        small = self.sweep(keep=3)[0]
+        large = self.sweep(keep=12)[0]
+        self.assertEqual(small, large[:3])
+
+    def test_streaming_statistics_match_a_direct_computation(self):
+        import statistics
+
+        ranked, evaluated, distribution, _ = self.sweep(keep=100)
+        scores = [row["score_per_letter"] for row in ranked]
+        self.assertEqual(evaluated, 18)
+        self.assertEqual(len(scores), 18)
+        self.assertAlmostEqual(distribution["mean_score_per_letter"], statistics.fmean(scores), places=7)
+        self.assertAlmostEqual(distribution["sd_score_per_letter"], statistics.pstdev(scores), places=7)
+        self.assertEqual(distribution["max_score_per_letter"], max(scores))
+
+    def test_merging_summaries_equals_summarising_the_union(self):
+        import statistics
+
+        left, right = [1.0, 4.0, 9.0], [2.0, 2.5, 30.0, 7.0]
+
+        def summary(values):
+            mean = statistics.fmean(values)
+            return len(values), mean, sum((value - mean) ** 2 for value in values)
+
+        count, mean, m2 = stecker.merge_score_statistics(summary(left), summary(right))
+        self.assertEqual(count, 7)
+        self.assertAlmostEqual(mean, statistics.fmean(left + right))
+        self.assertAlmostEqual(m2, summary(left + right)[2])
+        self.assertEqual(stecker.merge_score_statistics((0, 0.0, 0.0), summary(left)), summary(left))
+
+    def test_a_checkpoint_records_every_chunk_and_a_rerun_skips_them_all(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "sweep.jsonl"
+            first = self.sweep(checkpoint=path)
+            self.assertEqual(len(path.read_text().splitlines()), 6)
+            self.assertEqual(first[3]["chunks_run"], 6)
+            second = self.sweep(checkpoint=path)
+            self.assertEqual(second[3]["chunks_run"], 0)
+            self.assertEqual(second[3]["chunks_resumed_from_checkpoint"], 6)
+            self.assertEqual(second[3]["settings_run"], 0)
+            self.assertEqual(first[:3], second[:3])
+
+    def test_a_crashed_run_resumes_from_what_was_recorded_and_ends_identically(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "sweep.jsonl"
+            whole = self.sweep(checkpoint=path)
+            lines = path.read_text().splitlines()
+            # Two chunks lost, and the last surviving record cut off mid-write.
+            path.write_text("\n".join(lines[:3]) + "\n" + lines[3][:25])
+            resumed = self.sweep(checkpoint=path, jobs=2)
+            self.assertEqual(resumed[3]["chunks_resumed_from_checkpoint"], 3)
+            self.assertEqual(resumed[3]["chunks_run"], 3)
+            self.assertEqual(resumed[:3], whole[:3])
+
+    def test_a_checkpoint_from_another_sweep_is_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "sweep.jsonl"
+            self.sweep(checkpoint=path)
+            with self.assertRaises(ValueError):
+                self.sweep(checkpoint=path, orders=[("I", "II", "III")], keep=4)
+            with self.assertRaises(ValueError):
+                stecker.sweep_slice(
+                    planted_message(positions="AAA"), self.ORDERS, (0, 0, 0), self.STARTS,
+                    self.config["scorer"], self.reflector, self.config["climb"], 5, 1, path,
+                )
+
+    def test_the_runner_resumes_through_its_declared_checkpoint(self):
+        config = stecker.load_config(BODY_CONFIG)
+        config["machine"]["rotor_orders"] = [["I", "II", "III"]]
+        with tempfile.TemporaryDirectory() as directory:
+            config["body_direct_sweep"].update(
+                {"start_left": "A", "start_middle": "AB", "start_right": "A", "keep": 2,
+                 "checkpoint": str(pathlib.Path(directory) / "run.jsonl")}
+            )
+            traffic = stecker.traffic_from_corpus(
+                ROOT / "corpus.json", "1941-09-30", ["BYQMZ", "FKQLZ", "XFEDT"]
+            )
+            scorer = scorer_for(config)
+            first = stecker.run_body_direct_sweep(config, scorer, self.reflector, traffic, 1)
+            second = stecker.run_body_direct_sweep(config, scorer, self.reflector, traffic, 1)
+        self.assertEqual(first["execution"]["chunks_run"], 2)
+        self.assertEqual(second["execution"]["chunks_resumed_from_checkpoint"], 2)
+        self.assertIsNone(second["seconds_per_setting"])
+        self.assertEqual(first["top_candidates"], second["top_candidates"])
+        self.assertEqual(second["execution"]["engine"], first["execution"]["engine"])
 
 
 class RunnerTests(unittest.TestCase):

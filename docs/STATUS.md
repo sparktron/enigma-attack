@@ -155,7 +155,10 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 143 tests passed locally on 2026-10-02.
+- `python3 -m unittest discover -q`: 160 tests passed locally on 2026-10-02,
+  with numpy installed. The batched-climb tests skip without it, and a test
+  checks that `engine: auto` falls back to the reference climb and
+  `engine: batched` fails loudly when numpy is missing.
 - `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built. A clean
   virtual environment outside the checkout resolves its inputs from the
   installed share directory and its default outputs under the current working
@@ -214,7 +217,16 @@ has already closed.
    exact key coverage, and the end-to-end power control is measured
    ([history](phase1-experiment-history.md#phase1-end-to-end-power-v1)). The
    coverage statements above are corrected to those figures.
-3. Open: batch-evaluate the climb and rebuild the sweep engine (R1, R2).
+3. Done: the optional batched numpy climb (`stecker_batch.py`, `climb.engine`
+   = `reference`, `batched` or `auto`, `pip install .[fast]`) ends on the same
+   plugboard after the same evaluation count as the reference climb on seeded
+   samples, which the preflight checks whenever the engine is batched. It is
+   9.1× faster in one process (16.9 against 153 ms per setting) and a full
+   past-notch sweep is projected at about 20 hours with 9 to 10 workers
+   ([measurements](phase1-experiment-history.md)). The sweep keeps a bounded
+   top-k and streaming statistics per chunk, runs 1,560 chunks for a full sweep,
+   and checkpoints to JSONL and resumes. Existing v1 configurations still run
+   the reference climb.
 4. Open: the preregistered full sweep. Its stated power is 0.83 [0.68, 0.91]
    without transcription faults and 0.15 with one indel, so a windowed-climb
    calibration should come first.
