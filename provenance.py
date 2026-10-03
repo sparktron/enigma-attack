@@ -97,7 +97,17 @@ def loaded_code() -> dict[str, str]:
         path = pathlib.Path(location).resolve()
         if path.suffix == ".py" and path.parent == CODE_ROOT:
             files.add(path)
-    return {path.name: sha256_file(path) for path in sorted(files)}
+    hashes = {path.name: sha256_file(path) for path in sorted(files)}
+    # A runner under ``scripts/`` runs as ``__main__`` from a subdirectory, so
+    # the filter above skips it, yet it is the code that assembled the result.
+    # It is keyed by its path relative to the project so it cannot collide with
+    # a top-level module.
+    main = getattr(sys.modules.get("__main__"), "__file__", None)
+    if main:
+        path = pathlib.Path(main).resolve()
+        if path.suffix == ".py" and path.parent != CODE_ROOT and CODE_ROOT in path.parents:
+            hashes[path.relative_to(CODE_ROOT).as_posix()] = sha256_file(path)
+    return hashes
 
 
 def code_version() -> dict[str, Any]:

@@ -120,6 +120,25 @@ class IsolatedCopyTests(unittest.TestCase):
             provenance.sha256_file(self.temp / "helper.py"),
         )
 
+    def test_a_runner_script_in_a_subdirectory_is_hashed_by_relative_path(self):
+        self.install(self.temp)
+        runner = self.temp / "scripts" / "runner.py"
+        runner.parent.mkdir()
+        runner.write_text(
+            "import json, pathlib, sys\n"
+            "sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))\n"
+            "import provenance\n"
+            "print(json.dumps(provenance.code_version()))\n",
+            encoding="utf-8",
+        )
+        completed = subprocess.run(
+            [sys.executable, str(runner)], cwd=self.temp, env=self.environment,
+            check=True, capture_output=True, text=True,
+        )
+        hashes = json.loads(completed.stdout)["files_sha256"]
+        self.assertEqual(sorted(hashes), ["provenance.py", "scripts/runner.py"])
+        self.assertEqual(hashes["scripts/runner.py"], provenance.sha256_file(runner))
+
 
 if __name__ == "__main__":
     unittest.main()

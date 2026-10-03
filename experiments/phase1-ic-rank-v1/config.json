@@ -186,13 +186,13 @@
     "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure.",
     "One plaintext supplies every draw; each draw takes a different random stretch of it, so draws within a cell are not independent of the text's own letter frequencies.",
     "Expected rank uses an analytic uniform-letter null (chi-square, 25 degrees of freedom, Wilson-Hilferty) because 500 empirical null trials cannot reach a one-in-two-million tail. The artifact records the empirical null mean and sd beside the analytic ones so the model can be checked.",
-    "The ranked population is the indicator sweep's 2,109,120 daily keys treated as independent wrong keys. Neighbouring settings share partial decryptions, so the true rank can differ; the figure is the rank against that many independent draws.",
+    "The ranked population is one indicator ordering's 1,054,560 daily keys treated as independent wrong keys. Neighbouring settings share partial decryptions, so the true rank can differ; the figure is the rank against that many independent draws.",
     "This calibrates a single message's IC. The indicator sweep pooled the three messages of the date (371 letters), which the 371-letter row stands in for; pooling across separately keyed messages is not identical to one 371-letter message."
   ],
   "experiment_id": "phase1-ic-rank-v1",
   "mode": "ic_rank_calibration",
   "output": "artifacts/phase1-ic-rank-v1.json",
-  "hypothesis": "Averaged over 32 key draws per cell, the true rotor setting's unsteckered index of coincidence under a ten-pair stecker would be retained in the top 200 of 2,109,120 ranked daily keys with mean probability below 5% at 167 letters and at 371 letters, while with no stecker it is retained with mean probability above 95% at 167 letters. This replaces the single-draw, z >= 3 criterion of phase1-stecker-calibration-v1 (review 2026-10-02, P5).",
+  "hypothesis": "Averaged over 32 key draws per cell, the true rotor setting's unsteckered index of coincidence under a ten-pair stecker would be retained in the top 200 of the 1,054,560 daily keys its own indicator ordering ranks with mean probability below 5% at 167 letters and at 371 letters, while with no stecker it is retained with mean probability above 95% at 167 letters. This replaces the single-draw, z >= 3 criterion of phase1-stecker-calibration-v1 (review 2026-10-02, P5).",
   "refuted_by": "A ten-pair mean retention probability of 5% or more at 167 or at 371 letters, or a zero-pair mean retention probability of 95% or less at 167 letters.",
   "ic_rank_calibration": {
     "method_reference": "https://cryptocellar.org/pubs/mcts.pdf",
@@ -213,10 +213,10 @@
     ],
     "draws": 32,
     "null_trials": 500,
-    "ranked_population": 2109120,
+    "ranked_population": 1054560,
     "retained": 200,
     "target_length": 371,
     "target_stecker_pairs": 10,
-    "rationale": "The indicator sweep ranked 2,109,120 daily keys (60 wheel orders x 17,576 ring settings x 2 indicator orderings) by pooled IC over the date's 371 letters and kept the top 200 per ordering. A ranking stage is usable only if the true key lands in that retained list, which is a statement about the extreme of two million wrong keys, not about z >= 3 against 400 of them."
+    "rationale": "The indicator sweep runs each indicator ordering separately: 60 wheel orders x 17,576 ring settings = 1,054,560 daily keys ranked by pooled IC over the date's 371 letters, top 200 kept, before the next ordering. The true key competes only within its own ordering's arm. A ranking stage is usable only if the true key lands in that retained list, which is a statement about the extreme of a million wrong keys, not about z >= 3 against 400 of them. Corrected after the first run from 2,109,120, which counted both orderings as one ranking (PR #10 review)."
   }
 }
