@@ -2,7 +2,9 @@ import json
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
+import phase1
 from phase1 import (
     ArmyGermanScorer,
     CorpusMessage,
@@ -77,6 +79,32 @@ class Phase1Tests(unittest.TestCase):
             self.assertEqual(certificate["counts"]["evaluated_message_decryptions"], 1)
             self.assertFalse(certificate["result"]["full_phase_1_negative_result"])
             self.assertEqual(certificate["search_space"]["messages"], ["SZAEJ"])
+
+    def test_code_provenance_is_captured_before_the_search_runs(self):
+        # A long search can outlast an edit to the checkout; the record must
+        # describe the code the search started from, not what is on disk at
+        # the end.
+        calls = []
+        real_search = phase1._search_date
+
+        def search(*args, **kwargs):
+            calls.append("search")
+            return real_search(*args, **kwargs)
+
+        def version():
+            calls.append("code_version")
+            return {"sentinel": True}
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            phase1, "_search_date", search
+        ), mock.patch.object(phase1, "code_version", version):
+            output = pathlib.Path(directory) / "certificate.json"
+            main(["search", "--message", "SZAEJ", "--rotor-order", "I-II-III",
+                  "--rings", "AAA", "--top", "1", "--output", str(output)])
+            certificate = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(calls[0], "code_version")
+        self.assertEqual(calls.count("code_version"), 1)
+        self.assertEqual(certificate["implementation"]["code"], {"sentinel": True})
 
 
 if __name__ == "__main__":

@@ -612,6 +612,8 @@ def run_experiment(
     config_path: pathlib.Path,
     arguments: Sequence[str],
 ) -> dict[str, Any]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     corpus_path = _resolve_path(config["corpus"])
     phase3_path = _resolve_path(config["phase3_baseline_artifact"])
     messages = load_corpus(corpus_path)
@@ -628,7 +630,6 @@ def run_experiment(
     baseline_held_out = score_state(baseline, held_out_messages, scorer)
     started_at = dt.datetime.now(dt.timezone.utc)
     started_clock = time.perf_counter()
-    version = code_version()
 
     seed_results = [
         run_seed(

@@ -770,6 +770,8 @@ def run_experiment(
     arguments: Sequence[str],
     scorer: TextScorer | None = None,
 ) -> dict[str, Any]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     corpus_path = _resolve_path(config["corpus"])
     phase5_path = _resolve_path(config["phase5_artifact"])
     target_name = config["target_designator"]
@@ -901,7 +903,7 @@ def run_experiment(
             "exact_arguments": list(arguments),
             "payload": config,
         },
-        "code": code_version(),
+        "code": version,
         "environment": {
             "python": sys.version,
             "platform": platform.platform(),

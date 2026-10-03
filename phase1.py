@@ -406,6 +406,8 @@ def _settings_summary(values: Sequence[str]) -> object:
 
 
 def build_certificate(args: argparse.Namespace) -> dict[str, object]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     vectors = published_vector_results()
     if not all(result["passed"] for result in vectors):
         raise RuntimeError("simulator validation failed; refusing to search")
@@ -470,7 +472,7 @@ def build_certificate(args: argparse.Namespace) -> dict[str, object]:
             "python": platform.python_version(),
             "platform": platform.platform(),
             "files_sha256": {"corpus": sha256_file(corpus_path)},
-            "code": code_version(),
+            "code": version,
         },
         "simulator_validation": vectors,
         "procedure": (

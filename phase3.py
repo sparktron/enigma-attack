@@ -248,6 +248,8 @@ def _select_profiles(
 
 
 def build_certificate(args: argparse.Namespace) -> dict[str, Any]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     catalog_payload, all_profiles = load_variant_catalog(args.catalog)
     selected = _select_profiles(
         all_profiles,
@@ -325,7 +327,7 @@ def build_certificate(args: argparse.Namespace) -> dict[str, Any]:
             "catalog": str(args.catalog),
             "catalog_sha256": sha256_file(args.catalog),
         },
-        "code": code_version(),
+        "code": version,
         "research_boundary": {
             "question": (
                 "Which documented three-wheel Enigma-family configurations are "

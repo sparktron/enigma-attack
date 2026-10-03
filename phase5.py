@@ -784,6 +784,8 @@ def _cohort_monogram(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
 
 def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     catalog = load_family_catalog(args.catalog)
     unigram_reference = load_army_unigrams(args.unigram_source)
     controls = load_conservation_controls(args.control_plaintexts)
@@ -873,7 +875,7 @@ def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
             "control_plaintexts": str(args.control_plaintexts),
             "control_plaintexts_sha256": sha256_file(args.control_plaintexts),
         },
-        "code": code_version(),
+        "code": version,
         "conservation_gate_calibration": calibration,
         "research_boundary": {
             "question": catalog["question"],

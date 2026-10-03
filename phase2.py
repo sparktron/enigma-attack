@@ -376,6 +376,8 @@ def build_artifact(
     top: int,
     include_disabled: bool,
 ) -> dict[str, object]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     messages = load_messages(corpus_path)
     catalog = load_crib_catalog(cribs_path)
     network = build_network(messages)
@@ -388,7 +390,7 @@ def build_artifact(
             "cribs": str(cribs_path),
             "cribs_sha256": sha256_file(cribs_path),
         },
-        "code": code_version(),
+        "code": version,
         "evidence_separation": {
             "facts": [
                 "The July 2026 challenge page presents five unknown messages with unusual operators, remarks, and low frequencies.",
