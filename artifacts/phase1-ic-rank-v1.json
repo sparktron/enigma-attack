@@ -1,0 +1,823 @@
+{
+  "schema": "enigma-attack.phase1-stecker-result/v1",
+  "experiment_id": "phase1-ic-rank-v1",
+  "mode": "ic_rank_calibration",
+  "status": "complete",
+  "accepted_break": false,
+  "hypothesis": "Averaged over 32 key draws per cell, the true rotor setting's unsteckered index of coincidence under a ten-pair stecker would be retained in the top 200 of the 1,054,560 daily keys its own indicator ordering ranks with mean probability below 5% at 167 letters and at 371 letters, while with no stecker it is retained with mean probability above 95% at 167 letters. This replaces the single-draw, z >= 3 criterion of phase1-stecker-calibration-v1 (review 2026-10-02, P5).",
+  "refuted_by": "A ten-pair mean retention probability of 5% or more at 167 or at 371 letters, or a zero-pair mean retention probability of 95% or less at 167 letters.",
+  "started_at": "2026-10-03T06:17:05.315891+00:00",
+  "completed_at": "2026-10-03T06:17:43.160782+00:00",
+  "duration_seconds": 37.844891546003055,
+  "configuration": {
+    "path": "experiments/phase1-ic-rank-v1/config.json",
+    "sha256": "122fdc68ed1144bd307623cbfd959904e69a791eb64f9cc33115ce0aed42deeb",
+    "arguments": [
+      "--config",
+      "experiments/phase1-ic-rank-v1/config.json",
+      "--output",
+      "artifacts/phase1-ic-rank-v1.json"
+    ]
+  },
+  "code": {
+    "source": "git_checkout",
+    "commit": "d7a8175eda78735d43def2a5b0d36413dd6023ba",
+    "branch": "claude/phase1-review-p4-p5-p6",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "dbe6cca45890a08e28c2d62a654f99d80c4669350ee79e1990bf47413a0d6d18",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "020247785edde8a8ef845c61260e398dc3bd7ede1b46bd0c4461a993b937a30d",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "e10cf52dc8a64792046ceb554f4c984fe395b38e9613f40ef1690cdaecd52972",
+      "stecker_controls.py": "b523246e19d01e8aa212cb4b7a132c1c6c2a598a851391bdc4676ea313921fa0",
+      "stecker_power.py": "b3a986f63d6bc6686563ee478b2b6b16a2c0d372e8c1d1d37b12591b5b790932",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "d72c5b78b61818f5e407b14616205490c98e4082ba55dd2396a9eae7a95ac980",
+      "stecker_sweeps.py": "5565a06b02eab4f18f9197d08d2ff4cc4f4f80aa5ffaf2978a55f2c2b0837f78",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cpu_count": 20
+  },
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "bigram_counts_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
+    "trigram_counts_sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+  },
+  "preflight": {
+    "simulator_validation": [
+      {
+        "name": "canonical_I_II_III_AAAAA",
+        "source": "widely published Enigma-I simulator check",
+        "expected": "BDZGO",
+        "actual": "BDZGO",
+        "passed": true
+      },
+      {
+        "name": "py_enigma_army_procedure_example",
+        "source": "https://py-enigma.readthedocs.io/en/latest/guide.html",
+        "expected_message_key": "BLA",
+        "actual_message_key": "BLA",
+        "expected_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "actual_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "passed": true
+      }
+    ],
+    "kernel_parity": {
+      "reference": "enigma.EnigmaI",
+      "seed": 20260923,
+      "samples": 60,
+      "checked_paths": [
+        "crypt_indices",
+        "position_permutations+decrypt_with_tables"
+      ],
+      "mismatches": [],
+      "passed": true
+    },
+    "scorer_parity": {
+      "reference": "phase7.PublishedNgramScorer",
+      "seed": 20260924,
+      "samples": 120,
+      "relative_tolerance": 1e-09,
+      "worst_absolute_difference_vs_phase7": 7.958078640513122e-12,
+      "worst_absolute_difference_fused_vs_split": 0.0,
+      "mismatches": [],
+      "passed": true,
+      "note": "The scorers sum the same n-gram terms in different orders, so they agree to floating-point association rather than bit for bit."
+    },
+    "scorer_discrimination": {
+      "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "shuffle_seeds": [
+        17,
+        29,
+        43,
+        71,
+        101,
+        137,
+        173,
+        211,
+        257,
+        307,
+        359,
+        401,
+        463,
+        509,
+        563,
+        617
+      ],
+      "messages": [
+        {
+          "id": "1941-09-02-15",
+          "length": 36,
+          "authentic_score_per_letter": -6.041605649,
+          "shuffled_scores_per_letter": [
+            -7.53381238,
+            -7.138965234,
+            -7.957878911,
+            -7.729892505,
+            -6.996928517,
+            -7.713943316,
+            -7.838237335,
+            -8.142174904,
+            -7.598699043,
+            -7.431054332,
+            -7.972140343,
+            -7.611678603,
+            -8.151700296,
+            -7.657444266,
+            -7.550083665,
+            -7.780321492
+          ],
+          "margin_over_best_shuffle": 0.955322868,
+          "passed": true
+        },
+        {
+          "id": "1941-08-22-30",
+          "length": 46,
+          "authentic_score_per_letter": -6.283889072,
+          "shuffled_scores_per_letter": [
+            -7.968581626,
+            -7.419135349,
+            -7.806293305,
+            -7.808875711,
+            -7.686267614,
+            -8.265622519,
+            -7.993060744,
+            -8.067796545,
+            -7.465451599,
+            -7.728003386,
+            -8.17733991,
+            -7.698991665,
+            -8.274964894,
+            -7.989477064,
+            -7.971299542,
+            -7.955495162
+          ],
+          "margin_over_best_shuffle": 1.135246277,
+          "passed": true
+        },
+        {
+          "id": "1941-09-06-36",
+          "length": 48,
+          "authentic_score_per_letter": -6.708148394,
+          "shuffled_scores_per_letter": [
+            -8.816263798,
+            -8.102734021,
+            -8.515933937,
+            -7.876037887,
+            -8.002299791,
+            -8.186431878,
+            -8.403116894,
+            -7.931246188,
+            -8.166665948,
+            -8.546867284,
+            -8.450565149,
+            -8.347104407,
+            -8.315764661,
+            -8.017910537,
+            -8.273352821,
+            -8.362505014
+          ],
+          "margin_over_best_shuffle": 1.167889493,
+          "passed": true
+        },
+        {
+          "id": "1941-09-14-46",
+          "length": 69,
+          "authentic_score_per_letter": -7.177161225,
+          "shuffled_scores_per_letter": [
+            -8.675908687,
+            -8.675470911,
+            -8.497716346,
+            -8.779147011,
+            -8.282465135,
+            -8.635697295,
+            -8.641996226,
+            -8.61997743,
+            -8.371093781,
+            -8.807484713,
+            -8.619025631,
+            -8.993581533,
+            -8.559283085,
+            -8.921036452,
+            -8.782698615,
+            -8.715187932
+          ],
+          "margin_over_best_shuffle": 1.10530391,
+          "passed": true
+        },
+        {
+          "id": "1941-09-24-94",
+          "length": 76,
+          "authentic_score_per_letter": -6.701798158,
+          "shuffled_scores_per_letter": [
+            -8.69004742,
+            -8.826037456,
+            -8.370787634,
+            -8.354428861,
+            -8.496953699,
+            -8.415178937,
+            -8.681825002,
+            -8.417311977,
+            -8.602547877,
+            -8.179790622,
+            -8.54097936,
+            -8.560020672,
+            -8.082113862,
+            -8.30474769,
+            -8.745480038,
+            -8.575674967
+          ],
+          "margin_over_best_shuffle": 1.380315704,
+          "passed": true
+        }
+      ],
+      "passing_messages": 5,
+      "required_messages": 4,
+      "passed": true
+    },
+    "checks": {
+      "published_simulator_vectors": true,
+      "fast_kernel_matches_reference": true,
+      "fast_scorer_matches_phase7": true,
+      "scorer_discriminates_authentic_plaintext": true
+    },
+    "passed": true
+  },
+  "positive_controls": {
+    "evaluated": [
+      {
+        "id": "authentic-solved-1941-army-plaintexts",
+        "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+        "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "rings": "KQL",
+          "plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-A1",
+              "length": 36,
+              "indicator": [
+                "QWE",
+                "YYY"
+              ],
+              "true_message_key": "BNM",
+              "plaintext_sha256": "204b1c2ca2701bfa70d7ec3f44ee84a726e4f1f0fe7808e6dbf37f50bcab7089"
+            },
+            {
+              "designator": "CTRL-A2",
+              "length": 46,
+              "indicator": [
+                "LDR",
+                "WLA"
+              ],
+              "true_message_key": "KPT",
+              "plaintext_sha256": "b0281f45ce7c98f5e7b29e37c94ed4753ce32d97eaaac83a26a8f9d47e405ba3"
+            },
+            {
+              "designator": "CTRL-A3",
+              "length": 48,
+              "indicator": [
+                "ZUI",
+                "QOY"
+              ],
+              "true_message_key": "VCX",
+              "plaintext_sha256": "7f835a4a909a11ae6e30f648e1790f74b696cd8cf08a4531e2a4884c6537dc7b"
+            },
+            {
+              "designator": "CTRL-A4",
+              "length": 69,
+              "indicator": [
+                "PMF",
+                "FUB"
+              ],
+              "true_message_key": "HGD",
+              "plaintext_sha256": "434d264305fc45d9bdee67bc0ec09d49d723e293dfa0409df6dbc6671879ed05"
+            },
+            {
+              "designator": "CTRL-A5",
+              "length": 76,
+              "indicator": [
+                "TRQ",
+                "WNE"
+              ],
+              "true_message_key": "YBN",
+              "plaintext_sha256": "33ba130f62471f63b74cc542a8d81962683d2741b5666585faeb210ba2319e40"
+            }
+          ]
+        },
+        "recovered_plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.665849484,
+        "unsteckered_score_per_letter": -9.32595912,
+        "climb_passes": 22,
+        "climb_evaluations": 7283,
+        "recovered_plaintext_prefixes": [
+          "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHAR",
+          "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTE"
+        ],
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true
+        },
+        "passed": true
+      },
+      {
+        "id": "constructed-army-style-plaintexts",
+        "source": "constructed for this experiment",
+        "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "V"
+          ],
+          "rings": "BUL",
+          "plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-B1",
+              "length": 167,
+              "indicator": [
+                "XYZ",
+                "RSN"
+              ],
+              "true_message_key": "TRE",
+              "plaintext_sha256": "3602f6597566c773714ecd5f599fd5c011a30f9ab87546a5df59b33a35556a4b"
+            },
+            {
+              "designator": "CTRL-B2",
+              "length": 107,
+              "indicator": [
+                "MNB",
+                "XSE"
+              ],
+              "true_message_key": "OIU",
+              "plaintext_sha256": "a1445ab268e0bfb3f479d0b8ed294ea36527535105879a05e6cf434ad34238bb"
+            },
+            {
+              "designator": "CTRL-B3",
+              "length": 97,
+              "indicator": [
+                "GHJ",
+                "VUR"
+              ],
+              "true_message_key": "WSX",
+              "plaintext_sha256": "a00a63d6cb5409dc3978d0fdbe0dfcbe1c10a70d12586107c697f705fcc3409e"
+            }
+          ]
+        },
+        "recovered_plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.697861007,
+        "unsteckered_score_per_letter": -9.380992204,
+        "climb_passes": 12,
+        "climb_evaluations": 3937,
+        "recovered_plaintext_prefixes": [
+          "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXE",
+          "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITO",
+          "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTS"
+        ],
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true
+        },
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "gate": "A failed control makes zero target-search calls, so a target number can never come from a pipeline that cannot recover a key it was handed."
+  },
+  "result": {
+    "ic_rank_calibration": {
+      "method_reference": "https://cryptocellar.org/pubs/mcts.pdf",
+      "draws_per_cell": 32,
+      "null_trials_per_draw": 500,
+      "ranked_population": 1054560,
+      "retained": 200,
+      "z_for_expected_rank_retained": 3.554,
+      "z_for_expected_rank_one": 4.764,
+      "cells": [
+        {
+          "length": 97,
+          "stecker_pairs": 0,
+          "draws": 32,
+          "z_median": 10.572,
+          "z_mean": 11.266,
+          "z_sd": 3.869,
+          "z_min": 6.119,
+          "z_max": 18.803,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038433191,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.002821479,
+          "analytic_null_ic_sd": 0.00283296
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 3,
+          "draws": 32,
+          "z_median": 6.672,
+          "z_mean": 6.511,
+          "z_sd": 2.509,
+          "z_min": 1.967,
+          "z_max": 11.648,
+          "draws_at_or_above_z3": 30,
+          "median_expected_rank": 5.566,
+          "median_log10_expected_rank": 0.746,
+          "mean_retention_probability": 0.655066,
+          "mean_empirical_null_exceedance": 0.002437,
+          "null_ic_mean": 0.038427513,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.002804074,
+          "analytic_null_ic_sd": 0.00283296
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 6,
+          "draws": 32,
+          "z_median": 1.804,
+          "z_mean": 2.294,
+          "z_sd": 2.197,
+          "z_min": -0.987,
+          "z_max": 10.832,
+          "draws_at_or_above_z3": 9,
+          "median_expected_rank": 64504.13,
+          "median_log10_expected_rank": 4.81,
+          "mean_retention_probability": 0.093802,
+          "mean_empirical_null_exceedance": 0.122125,
+          "null_ic_mean": 0.038434869,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.002810786,
+          "analytic_null_ic_sd": 0.00283296
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 8,
+          "draws": 32,
+          "z_median": 1.058,
+          "z_mean": 1.08,
+          "z_sd": 1.089,
+          "z_min": -0.595,
+          "z_max": 3.303,
+          "draws_at_or_above_z3": 2,
+          "median_expected_rank": 152613.964,
+          "median_log10_expected_rank": 5.184,
+          "mean_retention_probability": 0.0,
+          "mean_empirical_null_exceedance": 0.233063,
+          "null_ic_mean": 0.038465595,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.002808924,
+          "analytic_null_ic_sd": 0.00283296
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "z_median": 0.357,
+          "z_mean": 0.264,
+          "z_sd": 1.059,
+          "z_min": -2.077,
+          "z_max": 2.408,
+          "draws_at_or_above_z3": 0,
+          "median_expected_rank": 342224.325,
+          "median_log10_expected_rank": 5.534,
+          "mean_retention_probability": 0.0,
+          "mean_empirical_null_exceedance": 0.414625,
+          "null_ic_mean": 0.038469408,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.002824525,
+          "analytic_null_ic_sd": 0.00283296
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 0,
+          "draws": 32,
+          "z_median": 17.055,
+          "z_mean": 19.021,
+          "z_sd": 5.181,
+          "z_min": 12.49,
+          "z_max": 30.867,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.03846643,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.001633328,
+          "analytic_null_ic_sd": 0.001638338
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 3,
+          "draws": 32,
+          "z_median": 9.358,
+          "z_mean": 9.602,
+          "z_sd": 2.353,
+          "z_min": 6.24,
+          "z_max": 15.201,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.009,
+          "median_log10_expected_rank": 0.004,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038464595,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.001629589,
+          "analytic_null_ic_sd": 0.001638338
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 6,
+          "draws": 32,
+          "z_median": 4.98,
+          "z_mean": 5.016,
+          "z_sd": 2.439,
+          "z_min": 1.258,
+          "z_max": 11.374,
+          "draws_at_or_above_z3": 27,
+          "median_expected_rank": 104.548,
+          "median_log10_expected_rank": 2.019,
+          "mean_retention_probability": 0.53125,
+          "mean_empirical_null_exceedance": 0.010063,
+          "null_ic_mean": 0.038457056,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.001631198,
+          "analytic_null_ic_sd": 0.001638338
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 8,
+          "draws": 32,
+          "z_median": 2.682,
+          "z_mean": 2.97,
+          "z_sd": 2.086,
+          "z_min": -1.236,
+          "z_max": 7.919,
+          "draws_at_or_above_z3": 12,
+          "median_expected_rank": 13175.588,
+          "median_log10_expected_rank": 4.12,
+          "mean_retention_probability": 0.15625,
+          "mean_empirical_null_exceedance": 0.08825,
+          "null_ic_mean": 0.038430515,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.001624328,
+          "analytic_null_ic_sd": 0.001638338
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "z_median": 0.258,
+          "z_mean": 0.553,
+          "z_sd": 1.25,
+          "z_min": -1.404,
+          "z_max": 3.756,
+          "draws_at_or_above_z3": 2,
+          "median_expected_rank": 400864.001,
+          "median_log10_expected_rank": 5.603,
+          "mean_retention_probability": 0.0,
+          "mean_empirical_null_exceedance": 0.378188,
+          "null_ic_mean": 0.038440124,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.001638128,
+          "analytic_null_ic_sd": 0.001638338
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 0,
+          "draws": 32,
+          "z_median": 44.892,
+          "z_mean": 43.081,
+          "z_sd": 7.211,
+          "z_min": 30.845,
+          "z_max": 54.762,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038456549,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000735836,
+          "analytic_null_ic_sd": 0.000735038
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 3,
+          "draws": 32,
+          "z_median": 22.203,
+          "z_mean": 23.282,
+          "z_sd": 5.397,
+          "z_min": 14.013,
+          "z_max": 34.61,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038459161,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000728837,
+          "analytic_null_ic_sd": 0.000735038
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 6,
+          "draws": 32,
+          "z_median": 12.208,
+          "z_mean": 12.197,
+          "z_sd": 3.471,
+          "z_min": 6.52,
+          "z_max": 25.098,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038460975,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000725112,
+          "analytic_null_ic_sd": 0.000735038
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 8,
+          "draws": 32,
+          "z_median": 5.242,
+          "z_mean": 5.223,
+          "z_sd": 2.452,
+          "z_min": -0.024,
+          "z_max": 11.205,
+          "draws_at_or_above_z3": 26,
+          "median_expected_rank": 63.078,
+          "median_log10_expected_rank": 1.8,
+          "mean_retention_probability": 0.562651,
+          "mean_empirical_null_exceedance": 0.01875,
+          "null_ic_mean": 0.038467756,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000732348,
+          "analytic_null_ic_sd": 0.000735038
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "z_median": 2.01,
+          "z_mean": 1.989,
+          "z_sd": 1.585,
+          "z_min": -1.43,
+          "z_max": 5.766,
+          "draws_at_or_above_z3": 6,
+          "median_expected_rank": 37823.416,
+          "median_log10_expected_rank": 4.578,
+          "mean_retention_probability": 0.0625,
+          "mean_empirical_null_exceedance": 0.137563,
+          "null_ic_mean": 0.038461755,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000733472,
+          "analytic_null_ic_sd": 0.000735038
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 0,
+          "draws": 32,
+          "z_median": 88.514,
+          "z_mean": 89.464,
+          "z_sd": 3.892,
+          "z_min": 83.817,
+          "z_max": 99.931,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038460048,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000340752,
+          "analytic_null_ic_sd": 0.000340381
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 3,
+          "draws": 32,
+          "z_median": 48.462,
+          "z_mean": 50.764,
+          "z_sd": 7.731,
+          "z_min": 40.963,
+          "z_max": 79.379,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038462783,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.00034127,
+          "analytic_null_ic_sd": 0.000340381
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 6,
+          "draws": 32,
+          "z_median": 23.506,
+          "z_mean": 24.449,
+          "z_sd": 3.538,
+          "z_min": 18.549,
+          "z_max": 32.773,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038458358,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000337877,
+          "analytic_null_ic_sd": 0.000340381
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 8,
+          "draws": 32,
+          "z_median": 12.466,
+          "z_mean": 12.625,
+          "z_sd": 2.605,
+          "z_min": 7.374,
+          "z_max": 19.098,
+          "draws_at_or_above_z3": 32,
+          "median_expected_rank": 1.0,
+          "median_log10_expected_rank": 0.0,
+          "mean_retention_probability": 1.0,
+          "mean_empirical_null_exceedance": 0.0,
+          "null_ic_mean": 0.038457983,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000338776,
+          "analytic_null_ic_sd": 0.000340381
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "z_median": 3.101,
+          "z_mean": 3.666,
+          "z_sd": 2.221,
+          "z_min": 0.445,
+          "z_max": 10.454,
+          "draws_at_or_above_z3": 18,
+          "median_expected_rank": 4749.439,
+          "median_log10_expected_rank": 3.677,
+          "mean_retention_probability": 0.187509,
+          "mean_empirical_null_exceedance": 0.030687,
+          "null_ic_mean": 0.038460554,
+          "analytic_null_ic_mean": 0.038461538,
+          "null_ic_sd": 0.000340355,
+          "analytic_null_ic_sd": 0.000340381
+        }
+      ],
+      "target_cell": {
+        "length": 371,
+        "stecker_pairs": 10,
+        "mean_retention_probability": 0.0625,
+        "median_expected_rank": 37823.416
+      },
+      "tail_model": "Each draw's true-setting IC is converted to a tail probability under the uniform-letter null (chi-square with 25 degrees of freedom, Wilson-Hilferty), multiplied by ranked_population to give the expected number of wrong keys above it, and the chance that fewer than `retained` of them outrank it is Poisson. The empirical null mean and sd are recorded beside the analytic ones so the model can be checked cell by cell; empirical exceedance has a resolution of one null trial and cannot reach the tail the ranking uses."
+    }
+  },
+  "limitations": [
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure.",
+    "One plaintext supplies every draw; each draw takes a different random stretch of it, so draws within a cell are not independent of the text's own letter frequencies.",
+    "Expected rank uses an analytic uniform-letter null (chi-square, 25 degrees of freedom, Wilson-Hilferty) because 500 empirical null trials cannot reach a one-in-two-million tail. The artifact records the empirical null mean and sd beside the analytic ones so the model can be checked.",
+    "The ranked population is one indicator ordering's 1,054,560 daily keys treated as independent wrong keys. Neighbouring settings share partial decryptions, so the true rank can differ; the figure is the rank against that many independent draws.",
+    "This calibrates a single message's IC. The indicator sweep pooled the three messages of the date (371 letters), which the 371-letter row stands in for; pooling across separately keyed messages is not identical to one 371-letter message."
+  ]
+}

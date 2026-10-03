@@ -82,11 +82,15 @@ corpus at these message lengths and stecker sizes.
 python3 phase1_stecker.py --config experiments/phase1-stecker-calibration-v1/config.json
 python3 phase1_stecker.py --config experiments/phase1-indicator-sweep-v1/config.json
 python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v1/config.json --jobs 8
+python3 phase1_stecker.py --config experiments/phase1-ic-rank-v1/config.json
+python3 scripts/reconfirm_body_direct.py
 ```
 
 The calibration found that the index-of-coincidence stage the cited method
-uses has **no detection power at a ten-pair stecker**, at any length up to 800
-letters, and that the indicator-coupled formulation `phase1.py` implies
+uses has **almost no detection power at a ten-pair stecker**: averaged over 32
+key draws, the true setting reaches the top 200 of the 1,054,560 keys each
+indicator ordering ranks with probability 0% at 167 letters, 6% at 371 and 19%
+at 800 (`phase1-ic-rank-v1`). It also found that the indicator-coupled formulation `phase1.py` implies
 **cannot be hill-climbed** — the plugboard sits inside the indicator machine,
 so a wrong stecker gives a wrong message key and a body of noise. It also
 found that a body-direct stecker climb (start position searched directly
@@ -449,7 +453,9 @@ A credible break should satisfy most of these simultaneously:
 - `artifacts/phase1-smoke-certificate.json` — exact restricted baseline run record
 - `artifacts/phase1-stecker-calibration-v1.json` — measured limits of the cited two-stage attack on this corpus
 - `artifacts/phase1-indicator-sweep-v1.json` — complete indicator-coupled daily-key search (2,109,120 keys)
-- `artifacts/phase1-body-direct-sweep-v1.json` — declared-slice body-direct stecker sweep on BYQMZ
+- `artifacts/phase1-body-direct-sweep-v1.json` — declared-slice body-direct stecker sweep on BYQMZ; its indicator-confirmation fields predate ring recovery and are superseded
+- `artifacts/phase1-body-direct-sweep-v1-reconfirmation.json` — that sweep's 40 retained candidates re-confirmed with ring recovery (`scripts/reconfirm_body_direct.py`)
+- `artifacts/phase1-ic-rank-v1.json` — multi-draw IC-stage calibration: expected rank and top-200 retention against one indicator ordering's 1,054,560 keys
 - `artifacts/phase2-network-cribs.json` — generated network and crib ranking record
 - `artifacts/phase3-variant-smoke.json` — superseded bounded documented-variant comparison
 - `artifacts/phase3-variant-smoke-v2.json` — bounded documented-variant comparison

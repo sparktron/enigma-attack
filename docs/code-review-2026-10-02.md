@@ -111,6 +111,9 @@ efficiency fix makes the main alternative affordable.
 
 ### P4 — Medium: a long-running artifact is stale, and the docs cite its stale part
 
+> **Addressed 2026-10-03.** Every phase records a `dirty` flag; `scripts/reconfirm_body_direct.py` re-confirms the retained top 40 (best −9.102, mean −9.541, none above its sweep score); `check_artifacts.py` warns on recorded-code mismatch for long-running artifacts.
+
+
 - **Where:** `artifacts/phase1-body-direct-sweep-v1.json`;
   `artifact_claims.json` (`long_running`); `phase1_stecker.py:1955`.
 - **What:** The artifact records `phase1_stecker.py` sha256 `f608bc6e…`. The
@@ -133,6 +136,9 @@ efficiency fix makes the main alternative affordable.
 
 ### P5 — Medium: the IC-stage calibration contradicts its own artifact and uses the wrong threshold
 
+> **Addressed 2026-10-03.** `phase1-ic-rank-v1` averages 32 draws per cell and reports expected rank and top-200 retention against one indicator ordering's 1,054,560 keys: 0% at 167 letters, 6.25% at 371 (its preregistered < 5% clause refuted), 19% at 800. The history's wording is corrected.
+
+
 - **Where:** `phase1_stecker.py:938` (`calibrate_ic_stage`);
   `artifacts/phase1-stecker-calibration-v1.json`.
 - **What:** The history says the ten-pair column "never separates." The
@@ -147,6 +153,9 @@ efficiency fix makes the main alternative affordable.
   average over many draws and report expected rank against the sweep size.
 
 ### P6 — Medium (risk): a single dropped or inserted letter is not calibrated
+
+> **Calibrated 2026-10-02** in `phase1-end-to-end-power-v1`: one indel cuts detection to 15% (past-notch rule). The windowed-climb follow-up has not been run.
+
 
 The body-direct climb needs nearly all of the message aligned. The P1
 measurements show it usually fails below about 80% equivalence. Intercepted

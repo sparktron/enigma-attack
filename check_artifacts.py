@@ -26,6 +26,7 @@ would silently stop checking a conclusion.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pathlib
 import subprocess
@@ -125,6 +126,37 @@ def regenerate(runner: Sequence[str], destination: pathlib.Path) -> dict[str, An
     return json.loads(destination.read_text(encoding="utf-8"))
 
 
+def recorded_code(document: dict[str, Any]) -> dict[str, str]:
+    """Module hashes an artifact recorded, from either provenance layout.
+
+    Current artifacts carry the shared ``code.files_sha256`` block; artifacts
+    written before it existed carry ``inputs.code_sha256``.
+    """
+
+    code = document.get("code")
+    if isinstance(code, dict) and isinstance(code.get("files_sha256"), dict):
+        return code["files_sha256"]
+    inputs = document.get("inputs")
+    if isinstance(inputs, dict) and isinstance(inputs.get("code_sha256"), dict):
+        return inputs["code_sha256"]
+    return {}
+
+
+def code_drift(document: dict[str, Any], root: pathlib.Path = ROOT) -> list[str]:
+    """Describe every recorded module whose current file differs or is gone."""
+
+    changed: list[str] = []
+    for module, digest in sorted(recorded_code(document).items()):
+        path = root / module
+        if not path.is_file():
+            changed.append(f"{module}: recorded {digest[:12]}, no longer in the checkout")
+            continue
+        current = hashlib.sha256(path.read_bytes()).hexdigest()
+        if current != digest:
+            changed.append(f"{module}: recorded {digest[:12]}, checkout {current[:12]}")
+    return changed
+
+
 def check_drift(claims: dict[str, Any], workspace: pathlib.Path) -> int:
     failures = 0
     for name, entry in claims["artifacts"].items():
@@ -145,10 +177,25 @@ def check_drift(claims: dict[str, Any], workspace: pathlib.Path) -> int:
             continue
         if entry.get("long_running"):
             # Regenerating this artifact costs more than a CI job can spend.  It
-            # is checked for existence only, and the code paths it exercises are
-            # covered by the unit tests and by a cheap artifact that shares them,
-            # which the entry has to name.
+            # is not regenerated, and the code paths it exercises are covered by
+            # the unit tests and by a cheap artifact that shares them, which the
+            # entry has to name.  What can still be checked cheaply is whether
+            # the code it recorded is the code in the checkout: a mismatch does
+            # not mean the result is wrong, but it does mean nothing has shown
+            # the result still follows, so it is a warning rather than a skip.
             print(f"skip {name}: long-running - {entry['long_running']}")
+            committed = json.loads(committed_path.read_text(encoding="utf-8"))
+            changed = code_drift(committed)
+            if changed:
+                print(
+                    f"WARN {name}: recorded code differs from the checkout in "
+                    f"{len(changed)} module(s); the result is not shown to follow "
+                    "from the current code"
+                )
+                for line in changed[:10]:
+                    print(f"       {line}")
+                if entry.get("stale_fields"):
+                    print(f"       known: {entry['stale_fields']}")
             continue
         committed = json.loads(committed_path.read_text(encoding="utf-8"))
         fresh = regenerate(entry["runner"], workspace / pathlib.Path(name).name)

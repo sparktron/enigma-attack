@@ -52,7 +52,7 @@ from typing import Any
 import enigma_fast
 from provenance import code_version, sha256_file
 from resources import resolve_output, resource_root
-from stecker_calibration import run_calibration
+from stecker_calibration import calibrate_ic_rank, run_calibration
 from stecker_climb import indicator_coupled_climb
 from stecker_controls import confirm_against_date, evaluate_positive_control, run_preflight
 from stecker_power import run_end_to_end_power
@@ -414,6 +414,8 @@ def run_experiment(
             body = run_calibration(config, scorer, reflector)
         elif mode == "end_to_end_power":
             body = run_end_to_end_power(config, scorer, reflector, jobs)
+        elif mode == "ic_rank_calibration":
+            body = {"ic_rank_calibration": calibrate_ic_rank(config, reflector)}
         else:
             traffic = traffic_from_corpus(
                 corpus_path, config["target"]["date"], config["target"]["messages"]
@@ -480,6 +482,7 @@ def load_config(path: pathlib.Path) -> dict[str, Any]:
         "indicator_sweep",
         "body_direct_sweep",
         "end_to_end_power",
+        "ic_rank_calibration",
     }:
         raise ValueError(f"unsupported mode: {config['mode']!r}")
     if config.get("climb", {}).get("engine", "reference") not in CLIMB_ENGINES:

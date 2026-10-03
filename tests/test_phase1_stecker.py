@@ -9,6 +9,7 @@ import phase1_stecker as stecker
 import stecker_batch
 import stecker_power
 from enigma import EnigmaI
+from stecker_calibration import calibrate_ic_rank, poisson_below, uniform_ic_tail
 from stecker_climb import body_direct_climb, coincidence_of_decryption, run_climb_phases
 from stecker_controls import (
     batched_climb_parity_report,
@@ -968,6 +969,57 @@ class SweepEngineTests(unittest.TestCase):
         self.assertIsNone(second["seconds_per_setting"])
         self.assertEqual(first["top_candidates"], second["top_candidates"])
         self.assertEqual(second["execution"]["engine"], first["execution"]["engine"])
+
+
+class IcRankCalibrationTests(unittest.TestCase):
+    def test_uniform_tail_is_monotone_and_centred(self) -> None:
+        length = 371
+        self.assertAlmostEqual(uniform_ic_tail(1 / 26, length), 0.5, delta=0.05)
+        tails = [uniform_ic_tail(1 / 26 + step * 0.001, length) for step in range(8)]
+        self.assertEqual(tails, sorted(tails, reverse=True))
+        self.assertLess(tails[-1], 1e-7)
+
+    def test_uniform_tail_matches_random_text(self) -> None:
+        import random
+
+        generator = random.Random(5)
+        length = 167
+        values = sorted(
+            index_of_coincidence(*letter_counts([generator.randrange(26) for _ in range(length)]))
+            for _ in range(4000)
+        )
+        quantile = values[int(0.99 * len(values))]
+        self.assertAlmostEqual(uniform_ic_tail(quantile, length), 0.01, delta=0.006)
+
+    def test_poisson_below(self) -> None:
+        self.assertEqual(poisson_below(5, 0.0), 1.0)
+        self.assertAlmostEqual(poisson_below(1, 2.0), 0.1353352832, places=9)
+        self.assertLess(poisson_below(200, 10_000.0), 1e-12)
+        self.assertGreater(poisson_below(200, 10.0), 0.999999)
+
+    def test_unsteckered_long_text_is_retained_and_steckered_is_not_better(self) -> None:
+        config = stecker.load_config(stecker.DEFAULT_CONFIG)
+        config["ic_rank_calibration"] = {
+            "method_reference": "test",
+            "plaintext": config["ic_stage_calibration"]["plaintext"],
+            "seed": 11,
+            "lengths": [371],
+            "stecker_pairs": [0, 10],
+            "draws": 4,
+            "null_trials": 40,
+            "ranked_population": 2_109_120,
+            "retained": 200,
+            "target_length": 371,
+            "target_stecker_pairs": 10,
+        }
+        result = calibrate_ic_rank(config, enigma_fast.reflector_table("B"))
+        bare, steckered = result["cells"]
+        self.assertGreater(bare["mean_retention_probability"], 0.9)
+        self.assertLess(
+            steckered["mean_retention_probability"], bare["mean_retention_probability"]
+        )
+        self.assertEqual(result["target_cell"]["stecker_pairs"], 10)
+        self.assertGreater(result["z_for_expected_rank_one"], result["z_for_expected_rank_retained"])
 
 
 class RunnerTests(unittest.TestCase):
