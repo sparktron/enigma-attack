@@ -54,6 +54,7 @@ from provenance import code_version, sha256_file
 from resources import resolve_output, resource_root
 from stecker_calibration import calibrate_ic_rank, run_calibration
 from stecker_climb import indicator_coupled_climb
+from stecker_companion import confirm_candidates
 from stecker_controls import confirm_against_date, evaluate_positive_control, run_preflight
 from stecker_power import run_end_to_end_power
 from stecker_scoring import FastNgramScorer
@@ -268,6 +269,39 @@ def run_body_direct_sweep(
         for candidate in ranked
     ]
 
+    # Review R4: the indicator check above needs an exactly right plugboard and
+    # ring setting.  The companion check deciphers each other message of the
+    # date at every start under the candidate's plugboard, so a near-miss
+    # plugboard still lifts the right start clear of the rest.  Declared per
+    # configuration, so artifacts that predate it regenerate unchanged.
+    companion: dict[str, Any] | None = None
+    if settings.get("companion_confirmation"):
+        declared = settings["companion_confirmation"]
+        companions = [by_designator[name] for name in declared["companions"]]
+        threshold = float(declared["threshold_z"])
+        started_companion = time.monotonic()
+        outcomes = confirm_candidates(ranked, companions, scorer, reflector, threshold)
+        for candidate, outcome in zip(ranked, outcomes):
+            candidate["companion_confirmation"] = outcome
+        confirmed = [c["rank"] for c in ranked if c["companion_confirmation"]["confirmed"]]
+        companion = {
+            "companions": list(declared["companions"]),
+            "threshold_z": threshold,
+            "calibration": declared.get("calibration"),
+            "confirmed_candidate_ranks": confirmed,
+            "best_min_best_z": max(
+                (c["companion_confirmation"]["min_best_z"] for c in ranked), default=None
+            ),
+            "seconds": round(time.monotonic() - started_companion, 3),
+            "method": (
+                "Each companion is deciphered at all 17,576 start positions under "
+                "the candidate's wheel order, reported rings and plugboard, without "
+                "the indicator. A candidate is confirmed when every companion's best "
+                "start is at least threshold_z standard deviations above that "
+                "companion's own start distribution."
+            ),
+        }
+
     # Coverage is stated against the space that actually has to be searched,
     # not against the slice that was chosen, so the number cannot flatter the
     # run by redefining the denominator.
@@ -297,6 +331,7 @@ def run_body_direct_sweep(
             ),
         },
         "score_distribution_over_slice": distribution,
+        **({} if companion is None else {"companion_confirmation": companion}),
         "indicator_confirmation": {
             "best_pooled_score_per_letter": max(confirmation_scores),
             "mean_pooled_score_per_letter": round(
