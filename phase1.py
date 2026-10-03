@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from typing import Iterable, Sequence
 
 from enigma import A, EnigmaI, ROTOR_WIRINGS
+from provenance import code_version, sha256_file
 from resources import output_path, resource_root
 
 
@@ -392,10 +393,6 @@ def _finalize_candidate(
     }
 
 
-def _sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def _settings_summary(values: Sequence[str]) -> object:
     if len(values) <= 100:
         return list(values)
@@ -472,11 +469,8 @@ def build_certificate(args: argparse.Namespace) -> dict[str, object]:
         "implementation": {
             "python": platform.python_version(),
             "platform": platform.platform(),
-            "files_sha256": {
-                "corpus": _sha256(corpus_path),
-                "enigma.py": _sha256(ROOT / "enigma.py"),
-                "phase1.py": _sha256(ROOT / "phase1.py"),
-            },
+            "files_sha256": {"corpus": sha256_file(corpus_path)},
+            "code": code_version(),
         },
         "simulator_validation": vectors,
         "procedure": (

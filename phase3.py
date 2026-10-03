@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import itertools
 import json
 import pathlib
@@ -15,6 +14,7 @@ from typing import Any
 
 from enigma import EnigmaMachine
 from phase1 import ArmyGermanScorer, CorpusMessage, DEFAULT_CORPUS, load_corpus
+from provenance import code_version, sha256_file
 from resources import output_path, resource_root
 
 ROOT = resource_root()
@@ -38,10 +38,6 @@ class VariantProfile:
     historical_prior: str
     historical_note: str
     source_ids: tuple[str, ...]
-
-
-def _sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _validate_trigram(value: str, label: str) -> str:
@@ -325,11 +321,11 @@ def build_certificate(args: argparse.Namespace) -> dict[str, Any]:
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "inputs": {
             "corpus": str(args.corpus),
-            "corpus_sha256": _sha256(args.corpus),
+            "corpus_sha256": sha256_file(args.corpus),
             "catalog": str(args.catalog),
-            "catalog_sha256": _sha256(args.catalog),
-            "runner_sha256": _sha256(pathlib.Path(__file__)),
+            "catalog_sha256": sha256_file(args.catalog),
         },
+        "code": code_version(),
         "research_boundary": {
             "question": (
                 "Which documented three-wheel Enigma-family configurations are "

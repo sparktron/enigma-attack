@@ -117,6 +117,26 @@ class WheelInstallTests(unittest.TestCase):
             artifact["code"], "phase1_stecker.py", "stecker_climb.py", "stecker_controls.py"
         )
 
+    def test_installed_phase1_and_phase2_record_code_without_a_checkout(self) -> None:
+        """Code is hashed where it is installed, not under the share directory."""
+
+        working = self.temp / "phase1-phase2"
+        working.mkdir()
+        phase1 = self.run_installed(
+            "enigma-phase1", "search", "--rings", "AAA", "--output", "phase1.json",
+            cwd=working,
+        )
+        self.assertEqual(phase1.returncode, 0, phase1.stderr)
+        certificate = json.loads((working / "phase1.json").read_text(encoding="utf-8"))
+        self.assert_installed_provenance(
+            certificate["implementation"]["code"], "enigma.py", "phase1.py"
+        )
+
+        phase2 = self.run_installed("enigma-phase2", "--output", "phase2.json", cwd=working)
+        self.assertEqual(phase2.returncode, 0, phase2.stderr)
+        network = json.loads((working / "phase2.json").read_text(encoding="utf-8"))
+        self.assert_installed_provenance(network["code"], "phase2.py")
+
     def test_installed_default_outputs_resolve_under_the_cwd(self) -> None:
         """Inputs come from the installed share directory, outputs from the cwd."""
 

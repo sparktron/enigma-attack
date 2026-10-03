@@ -20,13 +20,13 @@ import os
 import pathlib
 import platform
 import random
-import subprocess
 import sys
 import time
 from collections.abc import Mapping, Sequence
 from typing import Any, Protocol
 
 from phase1 import NGRAM_WEIGHTS, load_corpus
+from provenance import code_version, sha256_file
 from resources import output_path, resolve_output, resource_root
 
 
@@ -76,34 +76,9 @@ class SearchCandidate:
     evaluations: int
 
 
-def _sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def _resolve_path(path: str | pathlib.Path) -> pathlib.Path:
     candidate = pathlib.Path(path)
     return candidate if candidate.is_absolute() else ROOT / candidate
-
-
-def _git_value(*arguments: str) -> str | None:
-    result = subprocess.run(
-        ["git", *arguments],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    return result.stdout.strip() or None if result.returncode == 0 else None
-
-
-def code_version() -> dict[str, Any]:
-    status = _git_value("status", "--short")
-    return {
-        "commit": _git_value("rev-parse", "HEAD"),
-        "dirty": bool(status),
-        "status": status.splitlines() if status else [],
-        "runner_sha256": _sha256(pathlib.Path(__file__)),
-    }
 
 
 def _validate_order(order: Sequence[int]) -> tuple[int, ...]:
@@ -745,7 +720,7 @@ def _phase5_evidence(
     path: pathlib.Path, designator: str, corpus_path: pathlib.Path,
 ) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    if payload.get("inputs", {}).get("corpus_sha256") != _sha256(corpus_path):
+    if payload.get("inputs", {}).get("corpus_sha256") != sha256_file(corpus_path):
         raise ValueError("Phase 5 artifact corpus hash does not match search corpus")
     supported_schemas = {
         "enigma-attack.phase5-model-triage/v1",
@@ -782,7 +757,7 @@ def _phase5_evidence(
         )
     return {
         "path": str(path),
-        "sha256": _sha256(path),
+        "sha256": sha256_file(path),
         "route": message["route"],
         "signals": signals,
         "conservation": message["analysis"].get("plaintext_conservation", {}).get("gate"),
@@ -922,7 +897,7 @@ def run_experiment(
         "accepted_break": False,
         "configuration": {
             "path": str(config_path),
-            "sha256": _sha256(config_path),
+            "sha256": sha256_file(config_path),
             "exact_arguments": list(arguments),
             "payload": config,
         },
@@ -945,7 +920,7 @@ def run_experiment(
         },
         "inputs": {
             "corpus": str(corpus_path),
-            "corpus_sha256": _sha256(corpus_path),
+            "corpus_sha256": sha256_file(corpus_path),
             "phase5_evidence": phase5,
         },
         "method": {

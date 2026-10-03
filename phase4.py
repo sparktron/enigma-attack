@@ -14,7 +14,6 @@ import pathlib
 import platform
 import random
 import statistics
-import subprocess
 import sys
 import time
 from collections.abc import Mapping, Sequence
@@ -24,6 +23,7 @@ from typing import Any
 from enigma import A, EnigmaMachine, REFLECTOR_WIRINGS, ROTOR_WIRINGS
 from phase1 import ArmyGermanScorer, CorpusMessage, load_corpus
 import phase3
+from provenance import code_version, sha256_file
 from resources import resolve_output, resource_root
 
 ROOT = resource_root()
@@ -61,35 +61,9 @@ class ScoreResult:
     messages: tuple[dict[str, Any], ...]
 
 
-def _sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
 def _resolve_path(path: str | pathlib.Path) -> pathlib.Path:
     result = pathlib.Path(path)
     return result if result.is_absolute() else ROOT / result
-
-
-def _git_value(arguments: Sequence[str]) -> str:
-    process = subprocess.run(
-        ["git", *arguments],
-        cwd=ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    return process.stdout.strip() if process.returncode == 0 else "unavailable"
-
-
-def code_version() -> dict[str, Any]:
-    status = _git_value(["status", "--porcelain"])
-    return {
-        "commit": _git_value(["rev-parse", "--short", "HEAD"]),
-        "branch": _git_value(["branch", "--show-current"]),
-        "dirty": bool(status),
-        "dirty_entry_count": len(status.splitlines()) if status else 0,
-        "runner_sha256": _sha256(pathlib.Path(__file__)),
-    }
 
 
 def load_config(path: pathlib.Path = DEFAULT_CONFIG) -> dict[str, Any]:
@@ -628,7 +602,7 @@ def _training_only_baseline(
         })
     return baseline, {
         "selection": "training_only",
-        "catalog_sha256": _sha256(phase3.DEFAULT_CATALOG),
+        "catalog_sha256": sha256_file(phase3.DEFAULT_CATALOG),
         "dates": selections,
     }
 
@@ -647,7 +621,7 @@ def run_experiment(
         config, train_messages, scorer
     )
     phase3_comparison = {
-        "artifact": str(phase3_path), "sha256": _sha256(phase3_path),
+        "artifact": str(phase3_path), "sha256": sha256_file(phase3_path),
         "role": "historical_reference_only_selection_contaminated",
     }
     baseline_train = score_state(baseline, train_messages, scorer)
@@ -728,7 +702,7 @@ def run_experiment(
         "hypothesis_supported": hypothesis_supported,
         "configuration": {
             "path": str(config_path),
-            "sha256": _sha256(config_path),
+            "sha256": sha256_file(config_path),
             "exact_arguments": list(arguments),
             "payload": config,
         },
@@ -750,7 +724,7 @@ def run_experiment(
         },
         "inputs": {
             "corpus": str(corpus_path),
-            "corpus_sha256": _sha256(corpus_path),
+            "corpus_sha256": sha256_file(corpus_path),
             "phase3_baseline": phase3_comparison,
             "baseline_selection": baseline_selection,
         },
