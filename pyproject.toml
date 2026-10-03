@@ -33,6 +33,7 @@ py-modules = [
     "phase5",
     "phase6",
     "phase7",
+    "provenance",
     "recon",
     "resources",
 ]
