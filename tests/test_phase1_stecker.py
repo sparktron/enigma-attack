@@ -2,6 +2,7 @@ import json
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
 import enigma_fast
 import phase1_stecker as stecker
@@ -343,6 +344,31 @@ class ConfigPathTests(unittest.TestCase):
             outside = pathlib.Path(directory) / "config.json"
             outside.write_text("{}", encoding="utf-8")
             self.assertEqual(stecker.describe_path(outside), str(outside))
+
+
+class GitStateTests(unittest.TestCase):
+    def test_a_dirty_tree_is_recorded_and_distinct_from_no_git(self):
+        def fake(*arguments):
+            return {"rev-parse": "abc123\n", "status": " M phase1_stecker.py\n?? new.py\n"}[
+                arguments[0]
+            ]
+
+        with mock.patch.object(stecker, "_git_output", side_effect=fake):
+            state = stecker.git_state()
+        self.assertEqual(state["git_commit"], "abc123")
+        self.assertIs(state["git_dirty"], True)
+        self.assertEqual(state["git_dirty_entry_count"], 2)
+
+        with mock.patch.object(stecker, "_git_output", return_value=""):
+            clean = stecker.git_state()
+        self.assertIs(clean["git_dirty"], False)
+        self.assertEqual(clean["git_dirty_entry_count"], 0)
+
+        with mock.patch.object(stecker, "_git_output", return_value=None):
+            missing = stecker.git_state()
+        self.assertEqual(missing["git_commit"], "unavailable")
+        self.assertIsNone(missing["git_dirty"])
+        self.assertIsNone(missing["git_dirty_entry_count"])
 
 
 class SweepTests(unittest.TestCase):

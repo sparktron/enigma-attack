@@ -59,8 +59,14 @@ import enigma_fast
 import phase1
 import phase7
 from enigma import A, EnigmaI
+from resources import resolve_output, resource_root
 
-ROOT = pathlib.Path(__file__).resolve().parent
+# Inputs (configs, corpus, n-gram counts) live in the checkout or, once
+# installed, in the share directory.  The code hashes and the git record
+# describe the modules actually running, which sit beside this file in either
+# case.
+ROOT = resource_root()
+CODE_ROOT = pathlib.Path(__file__).resolve().parent
 DEFAULT_CONFIG = ROOT / "experiments/phase1-stecker-calibration-v1/config.json"
 CONFIG_SCHEMA = "enigma-attack.phase1-stecker-config/v1"
 RESULT_SCHEMA = "enigma-attack.phase1-stecker-result/v1"
@@ -1916,7 +1922,7 @@ def run_experiment(
             "python": platform.python_version(),
             "platform": platform.platform(),
             "cpu_count": os.cpu_count(),
-            "git_commit": git_commit(),
+            **git_state(),
         },
         "inputs": {
             "corpus_sha256": sha256_file(corpus_path),
@@ -1927,7 +1933,7 @@ def run_experiment(
                 resolve_path(config["scorer"]["trigram_counts"])
             ),
             "code_sha256": {
-                name: sha256_file(ROOT / name)
+                name: sha256_file(CODE_ROOT / name)
                 for name in (
                     "enigma.py",
                     "enigma_fast.py",
@@ -1952,18 +1958,40 @@ def run_experiment(
     }
 
 
-def git_commit() -> str:
+def _git_output(*arguments: str) -> str | None:
     try:
         completed = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=ROOT,
+            ["git", *arguments],
+            cwd=CODE_ROOT,
             capture_output=True,
             text=True,
             check=True,
         )
     except (OSError, subprocess.CalledProcessError):
-        return "unavailable"
-    return completed.stdout.strip()
+        return None
+    return completed.stdout
+
+
+def git_state() -> dict[str, Any]:
+    """The commit and whether the tree differs from it.
+
+    ``git rev-parse HEAD`` alone names the last commit, not the code that ran: an
+    artifact produced from uncommitted changes (or from a module that was not yet
+    tracked) records a commit that never contained that code.  ``git status
+    --porcelain`` lists modified and untracked entries, so ``git_dirty`` marks
+    exactly the runs whose commit cannot be trusted to reproduce them.  Both are
+    ``None`` when git is unavailable, which is distinct from a clean tree.
+    """
+
+    commit = _git_output("rev-parse", "HEAD")
+    status = _git_output("status", "--porcelain")
+    return {
+        "git_commit": commit.strip() if commit is not None else "unavailable",
+        "git_dirty": bool(status.strip()) if status is not None else None,
+        "git_dirty_entry_count": (
+            len(status.splitlines()) if status is not None else None
+        ),
+    }
 
 
 def load_config(path: pathlib.Path) -> dict[str, Any]:
@@ -1999,7 +2027,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     result = run_experiment(
         config, config_path, sys.argv[1:] if argv is None else argv, max(1, arguments.jobs)
     )
-    output = resolve_path(arguments.output or config["output"])
+    output = resolve_output(arguments.output or config["output"])
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {output} mode={result['mode']} status={result['status']}")
