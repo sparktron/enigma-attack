@@ -34,7 +34,12 @@ exactly as the calibration predicted; the body-direct slice's retained
 candidates were re-confirmed on 2026-10-03 with the ring-recovering
 confirmation and still score below their own sweep scores. One dropped or
 inserted letter is calibrated (15% detection); the windowed-climb cell the
-history's decision calls for has not been run. See
+history's decision calls for has not been run. A companion-body confirmation (review R4) is
+calibrated in `phase1-companion-calibration-v1`: at z ≥ 6 it accepts 39/40
+exact-plugboard keys and none of 240 wrong candidates. The complete
+middle-past-notch sweep of BYQMZ (27,418,560 settings) is preregistered as
+`phase1-body-direct-sweep-v2` with a stated detection probability of about
+0.80, and is running. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
