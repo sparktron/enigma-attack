@@ -71,7 +71,8 @@ validation vector and procedure example come from the
 ### Phase 1 stecker calibration and sweeps
 
 `phase1_stecker.py` (with the table-driven kernel in `enigma_fast.py`,
-checked against `enigma.py` on every run) implements the two-stage attack
+checked against `enigma.py` on every run, and the `stecker_*.py` modules it
+drives) implements the two-stage attack
 this project cites — Weierud and Sullivan,
 [*Breaking German Army Ciphers*](https://cryptocellar.org/pubs/mcts.pdf) — and
 measures, before trusting it, whether that attack actually works on this
@@ -375,7 +376,16 @@ checkout, an installed command reads those inputs from the installed share
 directory and writes its default artifact under the current working directory.
 Supply `--output` to choose another path. `enigma-phase7` loads every one of
 those inputs and then stops at the conservation gate, which is what the
-installed-wheel test checks.
+installed-wheel test checks. `enigma-phase1-stecker --config` takes a
+configuration in the working directory or, failing that, one of the shipped
+`experiments/*/config.json` paths.
+
+Every artifact records the code that produced it under a `code` block written
+by `provenance.py`: the commit, branch and `git status` lines of the checkout,
+a `dirty` flag for uncommitted changes, and a SHA-256 of every project module
+the run imported. An installed command is not a checkout, so it records
+`"source": "not_a_checkout"` and `"dirty": null` — unknown rather than clean —
+and the module hashes alone identify the code.
 
 
 ## Acceptance criteria
@@ -397,7 +407,18 @@ A credible break should satisfy most of these simultaneously:
 - `enigma.py` — transparent configurable three-wheel simulator and Enigma I wrapper
 - `phase1.py` — reproducible Phase 1 reference search and certificate generator
 - `enigma_fast.py` — table-driven Enigma kernel for large sweeps, checked against `enigma.py`
-- `phase1_stecker.py` — Phase 1 stecker calibration, indicator-coupled sweep, and body-direct sweep
+- `phase1_stecker.py` — Phase 1 stecker runner: preflight and control gates, the two sweep modes, and the artifact record
+- `stecker_scoring.py` — fast n-gram scorer checked against Phase 7, and the index of coincidence
+- `stecker_traffic.py` — corpus and known-key control traffic, indicator orderings
+- `stecker_climb.py` — body-direct and indicator-coupled stecker hill-climbs
+- `stecker_batch.py` — optional numpy batched climb, checked against the reference climb in preflight
+- `stecker_space.py` — wheel-order, ring and start-position spaces, ring rules, and exact key coverage
+- `stecker_sweeps.py` — indicator-coupled IC sweep and the chunked, checkpointed body-direct sweep
+- `stecker_calibration.py` — known-key calibrations of the IC stage, the climb, screening and the indicator gradient
+- `stecker_controls.py` — preflight checks, positive controls, and the indicator confirmation with ring recovery
+- `stecker_power.py` — end-to-end power of the body-direct sweep against planted random-ring keys
+- `provenance.py` — the shared `code` block: commit, uncommitted-change flag, and module hashes
+- `resources.py` — locates research inputs in a checkout or installed wheel, and default outputs
 - `phase2.py` — traffic graph, archive priorities, and provenance-aware crib ranker
 - `phase3.py` — documented-variant comparison and certificate generator
 - `phase4.py` — seeded joint machine/daily-key optimizer with held-out evaluation

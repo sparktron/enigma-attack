@@ -58,6 +58,85 @@ class WheelInstallTests(unittest.TestCase):
         self.assertIn("letter conservation", completed.stderr)
         self.assertIn("QTXMA", completed.stderr)
 
+    def run_installed(self, *command: str, cwd: pathlib.Path) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [str(self.binaries / command[0]), *command[1:]],
+            cwd=cwd, env=self.environment_variables,
+            capture_output=True, text=True,
+        )
+
+    def assert_installed_provenance(self, code: dict, *modules: str) -> None:
+        """An installed copy is not a checkout, and must not pretend otherwise."""
+
+        self.assertEqual(code["source"], "not_a_checkout")
+        self.assertIsNone(code["commit"])
+        self.assertIsNone(code["dirty"])
+        for module in modules:
+            self.assertIn(module, code["files_sha256"])
+
+    def test_installed_phase1_stecker_reads_shipped_inputs_and_writes_under_the_cwd(self) -> None:
+        """The default configuration ships, and a run lands in the cwd.
+
+        The default calibration takes minutes, so the run uses the shipped
+        indicator-sweep configuration with a wrong control key.  The positive
+        control then fails after preflight has read the corpus and both
+        frequency tables, and the gate stops the run before any target search.
+        """
+
+        working = self.temp / "stecker"
+        working.mkdir()
+        located = subprocess.run(
+            [str(self.binaries / "python"), "-c",
+             "import phase1_stecker; print(phase1_stecker.DEFAULT_CONFIG)"],
+            cwd=working, env=self.environment_variables,
+            check=True, capture_output=True, text=True,
+        )
+        self.assertTrue(pathlib.Path(located.stdout.strip()).is_file())
+
+        share = pathlib.Path(located.stdout.strip()).parents[2]
+        config = json.loads(
+            (share / "experiments/phase1-indicator-sweep-v1/config.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        config["positive_controls"][0]["key"]["rings"] = "AAA"
+        (working / "wrong-control.json").write_text(json.dumps(config), encoding="utf-8")
+
+        completed = self.run_installed(
+            "enigma-phase1-stecker", "--config", "wrong-control.json", cwd=working
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        artifact = json.loads(
+            (working / "artifacts/phase1-indicator-sweep-v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(artifact["status"], "blocked_by_positive_control")
+        self.assertIsNone(artifact["result"])
+        self.assert_installed_provenance(
+            artifact["code"], "phase1_stecker.py", "stecker_climb.py", "stecker_controls.py"
+        )
+
+    def test_installed_phase1_and_phase2_record_code_without_a_checkout(self) -> None:
+        """Code is hashed where it is installed, not under the share directory."""
+
+        working = self.temp / "phase1-phase2"
+        working.mkdir()
+        phase1 = self.run_installed(
+            "enigma-phase1", "search", "--rings", "AAA", "--output", "phase1.json",
+            cwd=working,
+        )
+        self.assertEqual(phase1.returncode, 0, phase1.stderr)
+        certificate = json.loads((working / "phase1.json").read_text(encoding="utf-8"))
+        self.assert_installed_provenance(
+            certificate["implementation"]["code"], "enigma.py", "phase1.py"
+        )
+
+        phase2 = self.run_installed("enigma-phase2", "--output", "phase2.json", cwd=working)
+        self.assertEqual(phase2.returncode, 0, phase2.stderr)
+        network = json.loads((working / "phase2.json").read_text(encoding="utf-8"))
+        self.assert_installed_provenance(network["code"], "phase2.py")
+
     def test_installed_phase1_stecker_reads_the_share_directory_and_writes_to_the_cwd(
         self,
     ) -> None:
@@ -76,7 +155,7 @@ class WheelInstallTests(unittest.TestCase):
         config["positive_controls"] = []
         config["kernel_parity"]["samples"] = 1
         config["scorer_parity"]["samples"] = 1
-        working = self.temp / "stecker"
+        working = self.temp / "stecker-output"
         working.mkdir()
         config_path = working / "tiny-config.json"
         config_path.write_text(json.dumps(config), encoding="utf-8")
@@ -92,14 +171,11 @@ class WheelInstallTests(unittest.TestCase):
             (working / "artifacts" / "tiny.json").read_text(encoding="utf-8")
         )
         self.assertEqual(artifact["status"], "blocked_by_positive_control")
-        self.assertEqual(
-            sorted(artifact["inputs"]["code_sha256"]),
-            [
-                "enigma.py", "enigma_fast.py", "phase1.py", "phase1_stecker.py",
-                "phase7.py", "stecker_batch.py",
-            ],
+        self.assert_installed_provenance(
+            artifact["code"],
+            "enigma.py", "enigma_fast.py", "phase1.py", "phase1_stecker.py",
+            "phase7.py", "stecker_batch.py", "stecker_sweeps.py",
         )
-        self.assertIn("git_dirty", artifact["environment"])
 
     def test_installed_default_outputs_resolve_under_the_cwd(self) -> None:
         """Inputs come from the installed share directory, outputs from the cwd."""

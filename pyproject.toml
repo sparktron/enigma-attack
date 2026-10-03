@@ -37,9 +37,18 @@ py-modules = [
     "phase5",
     "phase6",
     "phase7",
+    "provenance",
     "recon",
     "resources",
     "stecker_batch",
+    "stecker_calibration",
+    "stecker_climb",
+    "stecker_controls",
+    "stecker_power",
+    "stecker_scoring",
+    "stecker_space",
+    "stecker_sweeps",
+    "stecker_traffic",
 ]
 
 [tool.setuptools.data-files]

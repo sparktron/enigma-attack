@@ -7,7 +7,43 @@ from unittest import mock
 import enigma_fast
 import phase1_stecker as stecker
 import stecker_batch
+import stecker_power
 from enigma import EnigmaI
+from stecker_climb import body_direct_climb, coincidence_of_decryption, run_climb_phases
+from stecker_controls import (
+    batched_climb_parity_report,
+    compatible_ring_settings,
+    confirm_against_date,
+    evaluate_positive_control,
+    run_preflight,
+)
+from stecker_power import evaluate_power_prediction, perturb_ciphertext, wilson_interval
+from stecker_scoring import FastNgramScorer, index_of_coincidence, letter_counts
+from stecker_space import (
+    RingRule,
+    middle_start_phases,
+    reducible_space_size,
+    resolve_axis,
+    ring_space,
+    rotor_order_space,
+    rule_key_coverage,
+    stepping_pattern,
+)
+from stecker_sweeps import (
+    body_direct_sweep,
+    indicator_ic_sweep,
+    merge_score_statistics,
+    resolve_engine,
+    sweep_chunks,
+    sweep_fingerprint,
+    sweep_slice,
+)
+from stecker_traffic import (
+    Traffic,
+    encipher_control,
+    normalize_plaintext,
+    traffic_from_corpus,
+)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CALIBRATION_CONFIG = ROOT / "experiments/phase1-stecker-calibration-v1/config.json"
@@ -17,7 +53,7 @@ POWER_CONFIG = ROOT / "experiments/phase1-end-to-end-power-v1/config.json"
 
 
 def scorer_for(config):
-    return stecker.FastNgramScorer(config["scorer"])
+    return FastNgramScorer(config["scorer"])
 
 
 class ScorerTests(unittest.TestCase):
@@ -58,20 +94,20 @@ class ClimbTests(unittest.TestCase):
         cls.reflector = enigma_fast.reflector_table("B")
 
     def test_body_direct_climb_recovers_a_ten_pair_plugboard_exactly(self):
-        plaintext = stecker.normalize_plaintext(
+        plaintext = normalize_plaintext(
             self.config["climb_capability_calibration"]["plaintext"], 167
         )
         plugboard = "AV BS CG DL FU HZ IN KM OW RX"
         ciphertext = EnigmaI(
             rotors=("II", "V", "III"), rings="KQL", positions="BNM", plugboard=plugboard
         ).crypt(plaintext)
-        message = stecker.Traffic(
+        message = Traffic(
             designator="T",
             first_trigram=(0, 0, 0),
             second_trigram=(0, 0, 0),
             body=enigma_fast.text_to_indices(ciphertext),
         )
-        outcome, plaintexts = stecker.body_direct_climb(
+        outcome, plaintexts = body_direct_climb(
             [message],
             ("II", "V", "III"),
             (10, 16, 11),
@@ -93,7 +129,7 @@ class ClimbTests(unittest.TestCase):
 
             return objective
 
-        plugboard, records, evaluations = stecker.run_climb_phases(
+        plugboard, records, evaluations = run_climb_phases(
             ["index_of_coincidence", "ngram"],
             {"index_of_coincidence": make("ic"), "ngram": make("ngram")},
             100,
@@ -107,19 +143,19 @@ class ClimbTests(unittest.TestCase):
 
     def test_unknown_objective_is_rejected(self):
         with self.assertRaises(ValueError):
-            stecker.run_climb_phases(
+            run_climb_phases(
                 ["chi_square"], {}, 10, {"max_pairs": 1, "max_passes": 1, "minimum_gain": 0.0}
             )
 
     def test_climb_never_exceeds_the_configured_pair_budget(self):
-        plaintext = stecker.normalize_plaintext(
+        plaintext = normalize_plaintext(
             self.config["climb_capability_calibration"]["plaintext"], 167
         )
         ciphertext = EnigmaI(
             rotors=("I", "II", "III"), rings="AAA", positions="AAA",
             plugboard="AB CD EF GH IJ KL MN OP QR ST",
         ).crypt(plaintext)
-        message = stecker.Traffic(
+        message = Traffic(
             designator="T",
             first_trigram=(0, 0, 0),
             second_trigram=(0, 0, 0),
@@ -127,7 +163,7 @@ class ClimbTests(unittest.TestCase):
         )
         settings = dict(self.config["climb"])
         settings["max_pairs"] = 3
-        outcome, _ = stecker.body_direct_climb(
+        outcome, _ = body_direct_climb(
             [message], ("I", "II", "III"), (0, 0, 0),
             [enigma_fast.text_to_indices("AAA")], self.scorer, self.reflector, settings,
         )
@@ -138,12 +174,12 @@ class ClimbTests(unittest.TestCase):
         body = enigma_fast.text_to_indices("QWERTZUIOPASDFGHJKLYXCVBNM" * 4)
         plugboard = enigma_fast.plugboard_table("AN BY CF DR GJ")
         table = enigma_fast.position_permutations(order, (1, 20, 11), (5, 5, 5), len(body))
-        counts, total = stecker.letter_counts(
+        counts, total = letter_counts(
             enigma_fast.decrypt_with_tables(table, body, plugboard)
         )
         self.assertAlmostEqual(
-            stecker.coincidence_of_decryption(table, body, plugboard),
-            stecker.index_of_coincidence(counts, total),
+            coincidence_of_decryption(table, body, plugboard),
+            index_of_coincidence(counts, total),
             places=12,
         )
 
@@ -157,7 +193,7 @@ class ControlAndTrafficTests(unittest.TestCase):
 
     def test_control_ciphertext_comes_from_the_reference_machine(self):
         spec = self.config["positive_controls"][0]
-        traffic, truth = stecker.encipher_control(spec)
+        traffic, truth = encipher_control(spec)
         key = spec["key"]
         for message, record, plaintext in zip(
             traffic, truth["truth"]["messages"], truth["plaintexts"]
@@ -173,14 +209,14 @@ class ControlAndTrafficTests(unittest.TestCase):
     def test_both_preregistered_controls_recover_their_keys_exactly(self):
         for spec in self.config["positive_controls"]:
             with self.subTest(control=spec["id"]):
-                result = stecker.evaluate_positive_control(
+                result = evaluate_positive_control(
                     spec, self.config, self.scorer, self.reflector
                 )
                 self.assertTrue(result["passed"], result["checks"])
                 self.assertTrue(result["checks"]["indicator_confirms_message_keys"])
 
     def test_indicator_orderings_swap_the_two_trigrams(self):
-        message = stecker.Traffic(
+        message = Traffic(
             designator="T",
             first_trigram=(0, 1, 2),
             second_trigram=(3, 4, 5),
@@ -192,7 +228,7 @@ class ControlAndTrafficTests(unittest.TestCase):
         self.assertEqual((second[0], second[1]), ((3, 4, 5), (0, 1, 2)))
 
     def test_corpus_traffic_preserves_the_uncertainty_mask(self):
-        traffic = stecker.traffic_from_corpus(
+        traffic = traffic_from_corpus(
             ROOT / "corpus.json", "1941-09-30", ["BYQMZ", "FKQLZ", "XFEDT"]
         )
         byqmz = traffic[0]
@@ -203,7 +239,7 @@ class ControlAndTrafficTests(unittest.TestCase):
 
     def test_traffic_rejects_a_message_from_another_date(self):
         with self.assertRaises(ValueError):
-            stecker.traffic_from_corpus(ROOT / "corpus.json", "1941-09-30", ["QTXMA"])
+            traffic_from_corpus(ROOT / "corpus.json", "1941-09-30", ["QTXMA"])
 
 
 class IndicatorConfirmationRingTests(unittest.TestCase):
@@ -254,7 +290,7 @@ class IndicatorConfirmationRingTests(unittest.TestCase):
         cls.config = stecker.load_config(CALIBRATION_CONFIG)
         cls.scorer = scorer_for(cls.config)
         cls.reflector = enigma_fast.reflector_table("B")
-        cls.traffic, cls.truth = stecker.encipher_control(cls.SPEC)
+        cls.traffic, cls.truth = encipher_control(cls.SPEC)
         cls.plugboard = enigma_fast.plugboard_table(cls.PLUGBOARD)
         cls.order = [
             enigma_fast.rotor_tables(name)
@@ -286,7 +322,7 @@ class IndicatorConfirmationRingTests(unittest.TestCase):
         self.assertEqual(under_truth, under_held)
 
     def test_compatible_ring_settings_recovers_the_true_rings(self):
-        compatible = stecker.compatible_ring_settings(
+        compatible = compatible_ring_settings(
             self.traffic[0], self.held, self.swept_start, self.plugboard,
             self.order, self.reflector, "grundstellung_first",
         )
@@ -296,7 +332,7 @@ class IndicatorConfirmationRingTests(unittest.TestCase):
         expected = [
             record["true_message_key"] for record in self.truth["truth"]["messages"]
         ]
-        recovered = stecker.confirm_against_date(
+        recovered = confirm_against_date(
             self.traffic, self.plugboard,
             self.SPEC["key"]["rotor_order"], self.held, self.scorer,
             self.reflector, ["grundstellung_first"],
@@ -308,7 +344,7 @@ class IndicatorConfirmationRingTests(unittest.TestCase):
 
         # Reusing the held rings is the defect: the keys are wrong and the
         # pooled score is noise, so a genuine hit would be dismissed.
-        held = stecker.confirm_against_date(
+        held = confirm_against_date(
             self.traffic, self.plugboard,
             self.SPEC["key"]["rotor_order"], self.held, self.scorer,
             self.reflector, ["grundstellung_first"],
@@ -323,7 +359,7 @@ class IndicatorConfirmationRingTests(unittest.TestCase):
         # A start position the indicator cannot produce under any ring setting
         # in the slice: the check still yields a score, marked unrecovered.
         wrong_start = tuple((value + 5) % 26 for value in self.swept_start)
-        result = stecker.confirm_against_date(
+        result = confirm_against_date(
             self.traffic, self.plugboard,
             self.SPEC["key"]["rotor_order"], self.held, self.scorer,
             self.reflector, ["grundstellung_first"],
@@ -348,31 +384,6 @@ class ConfigPathTests(unittest.TestCase):
             self.assertEqual(stecker.describe_path(outside), str(outside))
 
 
-class GitStateTests(unittest.TestCase):
-    def test_a_dirty_tree_is_recorded_and_distinct_from_no_git(self):
-        def fake(*arguments):
-            return {"rev-parse": "abc123\n", "status": " M phase1_stecker.py\n?? new.py\n"}[
-                arguments[0]
-            ]
-
-        with mock.patch.object(stecker, "_git_output", side_effect=fake):
-            state = stecker.git_state()
-        self.assertEqual(state["git_commit"], "abc123")
-        self.assertIs(state["git_dirty"], True)
-        self.assertEqual(state["git_dirty_entry_count"], 2)
-
-        with mock.patch.object(stecker, "_git_output", return_value=""):
-            clean = stecker.git_state()
-        self.assertIs(clean["git_dirty"], False)
-        self.assertEqual(clean["git_dirty_entry_count"], 0)
-
-        with mock.patch.object(stecker, "_git_output", return_value=None):
-            missing = stecker.git_state()
-        self.assertEqual(missing["git_commit"], "unavailable")
-        self.assertIsNone(missing["git_dirty"])
-        self.assertIsNone(missing["git_dirty_entry_count"])
-
-
 WHEELS = ("I", "II", "III", "IV", "V")
 
 
@@ -383,7 +394,7 @@ class RingRuleTests(unittest.TestCase):
 
     def test_the_middle_phase_past_the_notch_keeps_the_notch_out_of_the_message(self):
         notches = enigma_fast.rotor_tables("II").notches  # E
-        phases = stecker.middle_start_phases(notches, self.LENGTH, False)
+        phases = middle_start_phases(notches, self.LENGTH, False)
         self.assertEqual(phases, [(next(iter(notches)) + 1) % 26])
         for phase in phases:
             reached = {(phase + step) % 26 for step in range(-(-self.LENGTH // 26) + 1)}
@@ -391,15 +402,15 @@ class RingRuleTests(unittest.TestCase):
 
     def test_the_complete_rule_adds_exactly_the_starts_that_reach_the_notch(self):
         notches = enigma_fast.rotor_tables("II").notches
-        past = stecker.middle_start_phases(notches, self.LENGTH, False)
-        complete = stecker.middle_start_phases(notches, self.LENGTH, True)
+        past = middle_start_phases(notches, self.LENGTH, False)
+        complete = middle_start_phases(notches, self.LENGTH, True)
         self.assertEqual(complete[0], past[0])
         self.assertEqual(len(set(complete)), len(complete))
         advances = -(-self.LENGTH // 26)
         self.assertEqual(len(complete), 1 + advances + 1)
 
     def test_a_held_rule_with_the_old_arguments_reproduces_the_old_settings(self):
-        rule = stecker.RingRule("held", (0, 0, 0), (0,), self.LENGTH)
+        rule = RingRule("held", (0, 0, 0), (0,), self.LENGTH)
         starts = [(0, 4, right) for right in range(3)]
         self.assertEqual(
             rule.settings(("I", "II", "III"), starts),
@@ -407,13 +418,13 @@ class RingRuleTests(unittest.TestCase):
         )
 
     def test_the_right_ring_axis_multiplies_the_settings(self):
-        rule = stecker.RingRule("held", (0, 0, 0), (0, 5, 9), self.LENGTH)
+        rule = RingRule("held", (0, 0, 0), (0, 5, 9), self.LENGTH)
         settings = rule.settings(("I", "II", "III"), [(1, 2, 3)])
         self.assertEqual([rings[2] for rings, _ in settings], [0, 5, 9])
         self.assertTrue(all(start == (1, 2, 3) for _, start in settings))
 
     def test_the_middle_ring_is_derived_so_the_wiring_offset_is_the_searched_one(self):
-        rule = stecker.RingRule("middle_past_notch", (0, 0, 0), (7,), self.LENGTH)
+        rule = RingRule("middle_past_notch", (0, 0, 0), (7,), self.LENGTH)
         (rings, positions), = rule.settings(("I", "II", "III"), [(3, 11, 20)])
         self.assertEqual((positions[0] - rings[0]) % 26, 3)
         self.assertEqual((positions[1] - rings[1]) % 26, 11)
@@ -431,12 +442,12 @@ class RingRuleTests(unittest.TestCase):
             truth = enigma_fast.position_permutations(
                 tables, rings, start, self.LENGTH, reflector
             )
-            true_pattern = stecker.stepping_pattern(
+            true_pattern = stepping_pattern(
                 tables[1].notches, tables[2].notches, start[1], start[2], self.LENGTH
             )
             offsets = tuple((start[i] - rings[i]) % 26 for i in range(3))
             for name in ("held", "middle_past_notch", "middle_complete"):
-                rule = stecker.RingRule(name, (0, 0, 0), (rings[2],), self.LENGTH)
+                rule = RingRule(name, (0, 0, 0), (rings[2],), self.LENGTH)
                 exact = False
                 predicted = False
                 for swept_rings, swept_start in rule.settings(order, [(*offsets[:2], start[2])]):
@@ -444,7 +455,7 @@ class RingRuleTests(unittest.TestCase):
                         tables, swept_rings, swept_start, self.LENGTH, reflector
                     )
                     exact = exact or swept == truth
-                    predicted = predicted or true_pattern == stecker.stepping_pattern(
+                    predicted = predicted or true_pattern == stepping_pattern(
                         tables[1].notches, tables[2].notches,
                         swept_start[1], swept_start[2], self.LENGTH,
                     )
@@ -453,9 +464,9 @@ class RingRuleTests(unittest.TestCase):
                     self.assertTrue(exact)
 
     def test_coverage_is_the_fraction_of_keys_whose_left_wheel_does_not_step(self):
-        held = stecker.rule_key_coverage("held", self.LENGTH, WHEELS)
-        past = stecker.rule_key_coverage("middle_past_notch", self.LENGTH, WHEELS)
-        complete = stecker.rule_key_coverage("middle_complete", self.LENGTH, WHEELS)
+        held = rule_key_coverage("held", self.LENGTH, WHEELS)
+        past = rule_key_coverage("middle_past_notch", self.LENGTH, WHEELS)
+        complete = rule_key_coverage("middle_complete", self.LENGTH, WHEELS)
         # Independent of the equivalence search: count true keys whose left
         # wheel never steps.
         quiet = total = 0
@@ -466,7 +477,7 @@ class RingRuleTests(unittest.TestCase):
                 for position_middle in range(26):
                     for position_right in range(26):
                         total += 1
-                        pattern = stecker.stepping_pattern(
+                        pattern = stepping_pattern(
                             enigma_fast.rotor_tables(middle).notches,
                             enigma_fast.rotor_tables(right).notches,
                             position_middle, position_right, self.LENGTH,
@@ -479,18 +490,18 @@ class RingRuleTests(unittest.TestCase):
 
     def test_complete_rule_multiplies_the_reducible_space_and_the_others_do_not(self):
         self.assertEqual(
-            stecker.reducible_space_size("held", self.LENGTH, WHEELS), 60 * 26**4
+            reducible_space_size("held", self.LENGTH, WHEELS), 60 * 26**4
         )
         self.assertEqual(
-            stecker.reducible_space_size("middle_past_notch", self.LENGTH, WHEELS), 60 * 26**4
+            reducible_space_size("middle_past_notch", self.LENGTH, WHEELS), 60 * 26**4
         )
         self.assertEqual(
-            stecker.reducible_space_size("middle_complete", self.LENGTH, WHEELS), 60 * 26**4 * 9
+            reducible_space_size("middle_complete", self.LENGTH, WHEELS), 60 * 26**4 * 9
         )
 
     def test_an_unknown_rule_is_rejected(self):
         with self.assertRaises(ValueError):
-            stecker.RingRule("surprise", (0, 0, 0), (0,), 10)
+            RingRule("surprise", (0, 0, 0), (0,), 10)
 
 
 class BodyDirectRunnerRuleTests(unittest.TestCase):
@@ -502,7 +513,7 @@ class BodyDirectRunnerRuleTests(unittest.TestCase):
              "start_left": "A", "start_middle": "AB", "start_right": "A", "keep": 2}
         )
         scorer = scorer_for(config)
-        traffic = stecker.traffic_from_corpus(
+        traffic = traffic_from_corpus(
             ROOT / "corpus.json", "1941-09-30", ["BYQMZ", "FKQLZ", "XFEDT"]
         )
         result = stecker.run_body_direct_sweep(
@@ -516,7 +527,7 @@ class BodyDirectRunnerRuleTests(unittest.TestCase):
         self.assertEqual(coverage["reducible_space_settings"], 60 * 26**4)
         self.assertEqual(
             coverage["exact_key_coverage_of_reducible_space"],
-            round(stecker.rule_key_coverage("middle_past_notch", 167, WHEELS), 6),
+            round(rule_key_coverage("middle_past_notch", 167, WHEELS), 6),
         )
         for candidate in result["top_candidates"]:
             self.assertEqual(len(candidate["rings"]), 3)
@@ -531,17 +542,17 @@ class EndToEndPowerTests(unittest.TestCase):
             {"left_neighbours": 0, "middle_neighbours": 0, "right_neighbours": 0,
              "null_trials": 1}
         )
-        stecker._power_init(cls.config)
+        stecker_power._power_init(cls.config)
 
     def test_a_draw_is_a_pure_function_of_its_coordinates(self):
-        self.assertEqual(stecker._power_draw((0, 3)), stecker._power_draw((0, 3)))
+        self.assertEqual(stecker_power._power_draw((0, 3)), stecker_power._power_draw((0, 3)))
         self.assertNotEqual(
-            stecker._power_draw((0, 3))["planted"], stecker._power_draw((0, 4))["planted"]
+            stecker_power._power_draw((0, 3))["planted"], stecker_power._power_draw((0, 4))["planted"]
         )
 
     def test_the_complete_arm_always_contains_an_exact_equivalent_of_the_planted_key(self):
         for draw in range(3):
-            result = stecker._power_draw((0, draw))
+            result = stecker_power._power_draw((0, draw))
             arm = result["arms"]["middle_complete"]
             self.assertTrue(arm["exact_equivalent_exists"], draw)
             self.assertEqual(arm["best_equivalent_fraction"], 1.0)
@@ -551,7 +562,7 @@ class EndToEndPowerTests(unittest.TestCase):
             )
 
     def test_a_perturbed_draw_makes_no_equivalence_claim(self):
-        result = stecker._power_draw((1, 0))
+        result = stecker_power._power_draw((1, 0))
         self.assertIn(result["planted"]["perturbation"]["kind"], {"deletion", "insertion"})
         for arm in result["arms"].values():
             self.assertIsNone(arm["exact_equivalent_exists"])
@@ -560,21 +571,21 @@ class EndToEndPowerTests(unittest.TestCase):
     def test_an_indel_changes_the_length_by_one_and_none_changes_nothing(self):
         generator = __import__("random").Random(1)
         text = "ABCDEFGHIJKLMNOP"
-        self.assertEqual(stecker.perturb_ciphertext(text, "none", generator)[0], text)
+        self.assertEqual(perturb_ciphertext(text, "none", generator)[0], text)
         lengths = {
-            len(stecker.perturb_ciphertext(text, "indel", __import__("random").Random(seed))[0])
+            len(perturb_ciphertext(text, "indel", __import__("random").Random(seed))[0])
             for seed in range(20)
         }
         self.assertEqual(lengths, {len(text) - 1, len(text) + 1})
         with self.assertRaises(ValueError):
-            stecker.perturb_ciphertext(text, "garble", generator)
+            perturb_ciphertext(text, "garble", generator)
 
     def test_wilson_interval_is_sane(self):
-        self.assertEqual(stecker.wilson_interval(0, 0), [0.0, 1.0])
-        low, high = stecker.wilson_interval(5, 10)
+        self.assertEqual(wilson_interval(0, 0), [0.0, 1.0])
+        low, high = wilson_interval(5, 10)
         self.assertAlmostEqual(low + high, 1.0, places=3)
         self.assertLess(low, 0.5)
-        self.assertEqual(stecker.wilson_interval(10, 10)[1], 1.0)
+        self.assertEqual(wilson_interval(10, 10)[1], 1.0)
 
     def test_predictions_are_scored_from_the_measured_rates(self):
         cells = [
@@ -584,7 +595,7 @@ class EndToEndPowerTests(unittest.TestCase):
             {"arms": [{"arm": "a", "detection_rate": 0.2}]},
         ]
         def score(kind, **extra):
-            return stecker.evaluate_power_prediction(
+            return evaluate_power_prediction(
                 {"id": "x", "statement": "s", "kind": kind, "cell": 0, "arm": "a", **extra}, cells
             )
         self.assertTrue(score("rate_at_least", value=0.7)["passed"])
@@ -605,13 +616,13 @@ class SweepTests(unittest.TestCase):
     def setUpClass(cls):
         cls.config = stecker.load_config(INDICATOR_CONFIG)
         cls.reflector = enigma_fast.reflector_table("B")
-        cls.traffic = stecker.traffic_from_corpus(
+        cls.traffic = traffic_from_corpus(
             ROOT / "corpus.json", "1941-09-30", ["BYQMZ", "FKQLZ", "XFEDT"]
         )
 
     def test_sweep_retains_the_highest_scoring_candidates_in_order(self):
         rings = ring = [(a, b, 0) for a in range(4) for b in range(4)]
-        survivors, evaluated = stecker.indicator_ic_sweep(
+        survivors, evaluated = indicator_ic_sweep(
             self.traffic,
             "grundstellung_first",
             [("I", "II", "III"), ("II", "IV", "V")],
@@ -627,10 +638,10 @@ class SweepTests(unittest.TestCase):
     def test_sweep_survivors_do_not_depend_on_the_retention_limit(self):
         rings = [(a, b, 0) for a in range(6) for b in range(6)]
         orders = [("I", "II", "III"), ("II", "IV", "V"), ("V", "I", "III")]
-        small, _ = stecker.indicator_ic_sweep(
+        small, _ = indicator_ic_sweep(
             self.traffic, "grundstellung_first", orders, rings, self.reflector, 3
         )
-        large, _ = stecker.indicator_ic_sweep(
+        large, _ = indicator_ic_sweep(
             self.traffic, "grundstellung_first", orders, rings, self.reflector, 25
         )
         self.assertEqual(
@@ -639,20 +650,20 @@ class SweepTests(unittest.TestCase):
         )
 
     def test_declared_ring_and_rotor_spaces_have_the_documented_sizes(self):
-        self.assertEqual(len(stecker.ring_space("all")), 17576)
+        self.assertEqual(len(ring_space("all")), 17576)
         self.assertEqual(
             len(
-                stecker.rotor_order_space(
+                rotor_order_space(
                     "all_permutations", ["I", "II", "III", "IV", "V"]
                 )
             ),
             60,
         )
-        self.assertEqual(stecker.resolve_axis("A"), [0])
-        self.assertEqual(len(stecker.resolve_axis("all")), 26)
+        self.assertEqual(resolve_axis("A"), [0])
+        self.assertEqual(len(resolve_axis("all")), 26)
 
     def test_body_direct_sweep_finds_a_planted_key_inside_its_slice(self):
-        plaintext = stecker.normalize_plaintext(
+        plaintext = normalize_plaintext(
             stecker.load_config(CALIBRATION_CONFIG)["climb_capability_calibration"][
                 "plaintext"
             ],
@@ -662,14 +673,14 @@ class SweepTests(unittest.TestCase):
         ciphertext = EnigmaI(
             rotors=("I", "II", "III"), rings="AAA", positions="AEF", plugboard=plugboard
         ).crypt(plaintext)
-        message = stecker.Traffic(
+        message = Traffic(
             designator="PLANT",
             first_trigram=(0, 0, 0),
             second_trigram=(0, 0, 0),
             body=enigma_fast.text_to_indices(ciphertext),
         )
         config = stecker.load_config(BODY_CONFIG)
-        ranked, evaluated, distribution = stecker.body_direct_sweep(
+        ranked, evaluated, distribution = body_direct_sweep(
             message,
             [("I", "II", "III")],
             (0, 0, 0),
@@ -689,14 +700,14 @@ class SweepTests(unittest.TestCase):
 
 
 def planted_message(plugboard="AN BY CF DR GJ HS IL KM PV QZ", positions="AEF", length=167):
-    plaintext = stecker.normalize_plaintext(
+    plaintext = normalize_plaintext(
         stecker.load_config(CALIBRATION_CONFIG)["climb_capability_calibration"]["plaintext"],
         length,
     )
     ciphertext = EnigmaI(
         rotors=("I", "II", "III"), rings="AAA", positions=positions, plugboard=plugboard
     ).crypt(plaintext)
-    return stecker.Traffic(
+    return Traffic(
         designator="PLANT",
         first_trigram=(0, 0, 0),
         second_trigram=(0, 0, 0),
@@ -713,7 +724,7 @@ class BatchedClimbTests(unittest.TestCase):
         cls.reflector = enigma_fast.reflector_table("B")
 
     def test_the_batched_climb_ends_where_the_reference_climb_ends(self):
-        report = stecker.batched_climb_parity_report(
+        report = batched_climb_parity_report(
             {**self.config, "batched_climb_parity": {"seed": 7, "samples": 10}},
             self.scorer,
             self.reflector,
@@ -731,8 +742,8 @@ class BatchedClimbTests(unittest.TestCase):
         table = enigma_fast.position_permutations(
             order, (0, 0, 0), (0, 4, 5), len(body), self.reflector
         )
-        reference, _ = stecker.body_direct_climb(
-            [stecker.Traffic("M", (0, 0, 0), (0, 0, 0), tuple(body))],
+        reference, _ = body_direct_climb(
+            [Traffic("M", (0, 0, 0), (0, 0, 0), tuple(body))],
             ("I", "II", "III"), (0, 0, 0), [(0, 4, 5)], self.scorer, self.reflector,
             self.config["climb"],
         )
@@ -748,10 +759,10 @@ class BatchedClimbTests(unittest.TestCase):
             message, [("I", "II", "III")], (0, 0, 0), [(0, 4, right) for right in range(6)],
             self.config["scorer"], self.reflector,
         )
-        reference = stecker.body_direct_sweep(
+        reference = body_direct_sweep(
             *arguments, {**self.config["climb"], "engine": "reference"}, 6, 1
         )
-        batched = stecker.body_direct_sweep(
+        batched = body_direct_sweep(
             *arguments, {**self.config["climb"], "engine": "batched"}, 6, 1
         )
         self.assertEqual(batched[0], reference[0])
@@ -766,27 +777,27 @@ class BatchedClimbTests(unittest.TestCase):
             "scorer_parity": {**self.config["scorer_parity"], "samples": 2},
             "batched_climb_parity": {"seed": 3, "samples": 4},
         }
-        batched = stecker.run_preflight(
+        batched = run_preflight(
             {**config, "climb": {**config["climb"], "engine": "batched"}}, self.scorer
         )
         self.assertTrue(batched["checks"]["batched_climb_matches_reference"])
-        reference = stecker.run_preflight(config, self.scorer)
+        reference = run_preflight(config, self.scorer)
         self.assertNotIn("batched_climb_matches_reference", reference["checks"])
 
 
 class EngineSelectionTests(unittest.TestCase):
     def test_reference_is_the_default_and_unknown_engines_are_rejected(self):
-        self.assertEqual(stecker.resolve_engine({}), "reference")
+        self.assertEqual(resolve_engine({}), "reference")
         with self.assertRaises(ValueError):
-            stecker.resolve_engine({"engine": "gpu"})
+            resolve_engine({"engine": "gpu"})
 
     def test_without_numpy_auto_falls_back_and_batched_fails_loudly(self):
         with mock.patch.object(stecker_batch, "np", None):
             self.assertFalse(stecker_batch.available())
-            self.assertEqual(stecker.resolve_engine({"engine": "auto"}), "reference")
-            self.assertEqual(stecker.resolve_engine({"engine": "reference"}), "reference")
+            self.assertEqual(resolve_engine({"engine": "auto"}), "reference")
+            self.assertEqual(resolve_engine({"engine": "reference"}), "reference")
             with self.assertRaises(RuntimeError):
-                stecker.resolve_engine({"engine": "batched"})
+                resolve_engine({"engine": "batched"})
             with self.assertRaises(RuntimeError):
                 stecker_batch.BatchedClimber([0.0] * 676, [0.0] * 17576, [0], {})
 
@@ -801,7 +812,7 @@ class EngineSelectionTests(unittest.TestCase):
 
     @unittest.skipUnless(stecker_batch.available(), "numpy is not installed")
     def test_with_numpy_auto_is_batched(self):
-        self.assertEqual(stecker.resolve_engine({"engine": "auto"}), "batched")
+        self.assertEqual(resolve_engine({"engine": "auto"}), "batched")
 
 
 class SweepEngineTests(unittest.TestCase):
@@ -817,19 +828,19 @@ class SweepEngineTests(unittest.TestCase):
         cls.message = planted_message()
 
     def sweep(self, keep=5, jobs=1, checkpoint=None, orders=None):
-        return stecker.sweep_slice(
+        return sweep_slice(
             self.message, orders or self.ORDERS, (0, 0, 0), self.STARTS,
             self.config["scorer"], self.reflector, self.config["climb"], keep, jobs, checkpoint,
         )
 
     def test_chunks_are_one_per_wheel_order_and_middle_start(self):
-        rule = stecker.RingRule("held", (0, 0, 0), (0,), 167)
-        chunks = stecker.sweep_chunks(rule, self.ORDERS, self.STARTS)
+        rule = RingRule("held", (0, 0, 0), (0,), 167)
+        chunks = sweep_chunks(rule, self.ORDERS, self.STARTS)
         self.assertEqual(len(chunks), 6)
         self.assertEqual(len({key for key, _, _ in chunks}), 6)
         self.assertEqual(sum(len(settings) for _, _, settings in chunks), 18)
-        orders = stecker.rotor_order_space("all_permutations", ["I", "II", "III", "IV", "V"])
-        full = stecker.sweep_chunks(rule, orders, [(0, m, 0) for m in range(26)])
+        orders = rotor_order_space("all_permutations", ["I", "II", "III", "IV", "V"])
+        full = sweep_chunks(rule, orders, [(0, m, 0) for m in range(26)])
         self.assertEqual(len(full), 60 * 26)
 
     def test_result_does_not_depend_on_the_worker_count(self):
@@ -863,11 +874,11 @@ class SweepEngineTests(unittest.TestCase):
             mean = statistics.fmean(values)
             return len(values), mean, sum((value - mean) ** 2 for value in values)
 
-        count, mean, m2 = stecker.merge_score_statistics(summary(left), summary(right))
+        count, mean, m2 = merge_score_statistics(summary(left), summary(right))
         self.assertEqual(count, 7)
         self.assertAlmostEqual(mean, statistics.fmean(left + right))
         self.assertAlmostEqual(m2, summary(left + right)[2])
-        self.assertEqual(stecker.merge_score_statistics((0, 0.0, 0.0), summary(left)), summary(left))
+        self.assertEqual(merge_score_statistics((0, 0.0, 0.0), summary(left)), summary(left))
 
     def test_a_checkpoint_records_every_chunk_and_a_rerun_skips_them_all(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -901,15 +912,15 @@ class SweepEngineTests(unittest.TestCase):
 
     def test_the_fingerprint_covers_the_reflector_and_the_scorer_table_contents(self):
         message = self.message
-        rule = stecker.RingRule("held", (0, 0, 0), (0,), len(message.body))
+        rule = RingRule("held", (0, 0, 0), (0,), len(message.body))
         arguments = (
             message.body, self.config["scorer"], self.config["climb"], rule, self.STARTS,
             5, "reference",
         )
-        base = stecker.sweep_fingerprint(*arguments, self.reflector)
-        self.assertEqual(base, stecker.sweep_fingerprint(*arguments, self.reflector))
+        base = sweep_fingerprint(*arguments, self.reflector)
+        self.assertEqual(base, sweep_fingerprint(*arguments, self.reflector))
         self.assertNotEqual(
-            base, stecker.sweep_fingerprint(*arguments, enigma_fast.reflector_table("C"))
+            base, sweep_fingerprint(*arguments, enigma_fast.reflector_table("C"))
         )
         with tempfile.TemporaryDirectory() as directory:
             bigram = pathlib.Path(directory) / "bigram.txt"
@@ -920,7 +931,7 @@ class SweepEngineTests(unittest.TestCase):
             changed = {**self.config["scorer"], "bigram_counts": str(bigram)}
             self.assertNotEqual(
                 base,
-                stecker.sweep_fingerprint(
+                sweep_fingerprint(
                     message.body, changed, self.config["climb"], rule, self.STARTS, 5,
                     "reference", self.reflector,
                 ),
@@ -933,7 +944,7 @@ class SweepEngineTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.sweep(checkpoint=path, orders=[("I", "II", "III")], keep=4)
             with self.assertRaises(ValueError):
-                stecker.sweep_slice(
+                sweep_slice(
                     planted_message(positions="AAA"), self.ORDERS, (0, 0, 0), self.STARTS,
                     self.config["scorer"], self.reflector, self.config["climb"], 5, 1, path,
                 )
@@ -946,7 +957,7 @@ class SweepEngineTests(unittest.TestCase):
                 {"start_left": "A", "start_middle": "AB", "start_right": "A", "keep": 2,
                  "checkpoint": str(pathlib.Path(directory) / "run.jsonl")}
             )
-            traffic = stecker.traffic_from_corpus(
+            traffic = traffic_from_corpus(
                 ROOT / "corpus.json", "1941-09-30", ["BYQMZ", "FKQLZ", "XFEDT"]
             )
             scorer = scorer_for(config)
@@ -1028,6 +1039,30 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(result["status"], "blocked_by_positive_control")
         self.assertIsNone(result["result"])
         self.assertFalse(result["positive_controls"]["passed"])
+
+    def test_the_record_says_whether_the_code_was_committed(self):
+        # A commit alone does not identify code that ran with uncommitted
+        # edits, so the record has to carry the flag and the hashes of every
+        # module the split runner actually used.
+        config = json.loads(INDICATOR_CONFIG.read_text(encoding="utf-8"))
+        config["positive_controls"][0]["key"]["rings"] = "AAA"
+        code = stecker.run_experiment(config, INDICATOR_CONFIG, [], 1)["code"]
+        self.assertIn("dirty", code)
+        self.assertIn("status", code)
+        for module in (
+            "phase1_stecker.py",
+            "stecker_calibration.py",
+            "stecker_climb.py",
+            "stecker_controls.py",
+            "stecker_power.py",
+            "stecker_scoring.py",
+            "stecker_space.py",
+            "stecker_sweeps.py",
+            "stecker_traffic.py",
+            "enigma_fast.py",
+            "phase7.py",
+        ):
+            self.assertIn(module, code["files_sha256"])
 
     def test_calibration_artifact_records_every_declared_finding(self):
         artifact = json.loads(

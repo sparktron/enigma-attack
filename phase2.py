@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import itertools
 import json
 import pathlib
@@ -20,6 +19,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from enigma import A
+from provenance import code_version, sha256_file
 from resources import output_path, resource_root
 
 
@@ -56,10 +56,6 @@ class MessageMetadata:
     @property
     def timestamp(self) -> dt.datetime:
         return dt.datetime.fromisoformat(f"{self.date}T{self.header_time}:00")
-
-
-def _sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _normalize_identity(value: str | None) -> str | None:
@@ -380,6 +376,8 @@ def build_artifact(
     top: int,
     include_disabled: bool,
 ) -> dict[str, object]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     messages = load_messages(corpus_path)
     catalog = load_crib_catalog(cribs_path)
     network = build_network(messages)
@@ -388,11 +386,11 @@ def build_artifact(
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "inputs": {
             "corpus": str(corpus_path),
-            "corpus_sha256": _sha256(corpus_path),
+            "corpus_sha256": sha256_file(corpus_path),
             "cribs": str(cribs_path),
-            "cribs_sha256": _sha256(cribs_path),
-            "phase2_sha256": _sha256(ROOT / "phase2.py"),
+            "cribs_sha256": sha256_file(cribs_path),
         },
+        "code": version,
         "evidence_separation": {
             "facts": [
                 "The July 2026 challenge page presents five unknown messages with unusual operators, remarks, and low frequencies.",

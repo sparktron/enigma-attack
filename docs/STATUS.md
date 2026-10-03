@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-02
+Updated: 2026-10-03
 
 ## Current state
 
@@ -102,7 +102,26 @@ has already closed.
 - The wheel includes every phase command and the corpus, catalog,
   configuration, artifact, n-gram and Army-plaintext-control inputs they read.
   Installed commands read those from the installed share directory and write
-  default outputs under the current working directory.
+  default outputs under the current working directory. `enigma-phase1 search`
+  and `enigma-phase2` had hashed their own source under the share directory
+  and failed when installed; they now run from a clean wheel, as
+  `enigma-phase1-stecker` does since `edfa918`. A relative
+  `enigma-phase1-stecker --config` is read from the working directory when the
+  file is there, and from the shipped experiments otherwise.
+- Every phase records one shared `code` block (`provenance.py`): commit,
+  branch, `git status` lines, a `dirty` flag, and hashes of every project
+  module the run imported, taken before the run starts. It replaces the stecker
+  runner's `environment.git_dirty` (`edfa918`) and its fixed list of hashed
+  files, and Phases 1, 2, 3 and 5, which recorded no checkout state at all, now
+  record it too. Without a checkout `dirty` is `null`,
+  not `false`, and a copy installed inside an unrelated repository does not
+  report that repository's commit. Artifacts committed before this change keep
+  their original provenance fields.
+- `phase1_stecker.py` is now the runner only; scoring, traffic, the climbs,
+  the search spaces and ring rules, the sweeps, the calibrations, the controls
+  and the end-to-end power control are separate `stecker_*.py` modules. The
+  split moved code without changing it: the regenerated calibration artifact
+  matches every declared claim.
 - Phase 6 selects on the full plaintext, reports top candidates, exact
   recovery, key rank, edit distance, and boundary displacement on its
   exhaustive control, and treats the candidate suffix as descriptive. The
@@ -155,15 +174,18 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 160 tests passed locally on 2026-10-02,
-  with numpy installed. The batched-climb tests skip without it, and a test
+- `python3 -m unittest discover -q`: 169 tests passed locally on 2026-10-03,
+  with numpy installed; without it the five batched-climb tests skip. A test
   checks that `engine: auto` falls back to the reference climb and
   `engine: batched` fails loudly when numpy is missing.
 - `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built. A clean
   virtual environment outside the checkout resolves its inputs from the
   installed share directory and its default outputs under the current working
   directory; `enigma-phase7` loads the corpus, both frequency tables and the
-  Phase 6 and Phase 7 configurations before stopping at the conservation gate.
+  Phase 6 and Phase 7 configurations before stopping at the conservation gate,
+  `enigma-phase1-stecker` finds its shipped configurations and stops at its
+  positive-control gate, and `enigma-phase1` and `enigma-phase2` complete. Each
+  records `"source": "not_a_checkout"` with `"dirty": null`.
 - Phase 1 stecker calibration, the complete indicator-coupled sweep, and the
   body-direct sweep are recorded in `artifacts/phase1-stecker-calibration-v1.json`,
   `artifacts/phase1-indicator-sweep-v1.json`, and
@@ -211,8 +233,8 @@ has already closed.
 
 1. Done: `enigma-phase1-stecker` reads its inputs from the share directory and
    writes to the working directory, with an installed smoke test, and Phase 1
-   stecker artifacts record `git_dirty` (`edfa918`). Other phases already
-   record their own dirty flag; phases 1 to 3 and 5 do not.
+   stecker artifacts record `git_dirty` (`edfa918`). Since superseded by the
+   shared `code` block every phase now writes, phases 1 to 3 and 5 included.
 2. Done: the sweep takes a ring rule and a right-ring axis, the runner reports
    exact key coverage, and the end-to-end power control is measured
    ([history](phase1-experiment-history.md#phase1-end-to-end-power-v1)). The

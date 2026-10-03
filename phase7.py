@@ -17,6 +17,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 import phase6
+from provenance import code_version, sha256_file as sha256
 from resources import resolve_output, resource_root
 
 ROOT = resource_root()
@@ -27,10 +28,6 @@ ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 def resolve_path(value: str) -> pathlib.Path:
     path = pathlib.Path(value)
     return path if path.is_absolute() else ROOT / path
-
-
-def sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def load_counts(path: pathlib.Path, width: int) -> dict[str, int]:
@@ -153,6 +150,8 @@ def validate_scorer(config: Mapping[str, Any], scorer: PublishedNgramScorer) -> 
 
 
 def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, arguments: Sequence[str]) -> dict[str, Any]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     started = dt.datetime.now(dt.timezone.utc)
     corpus_path = resolve_path(config["corpus"])
     form = audit_grouping(config, corpus_path)
@@ -224,7 +223,7 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
         "hypothesis_supported": bool(search_result and search_result["hypothesis_supported"]),
         "accepted_break": False,
         "configuration": {"path": str(config_path), "sha256": sha256(config_path), "payload": config, "exact_arguments": list(arguments)},
-        "code": {**phase6.code_version(), "branch": phase6._git_value("branch", "--show-current"), "phase7_runner_sha256": sha256(pathlib.Path(__file__))},
+        "code": version,
         "environment": {"python": sys.version, "platform": platform.platform(), "cpu_count": os.cpu_count(), "parallel_workers": 1, "determinism_note": "Each control shuffle uses its own fixed random.Random seed; the transposition search runs serially."},
         "inputs": {"corpus_sha256": sha256(corpus_path), "phase6_config_sha256": sha256(phase6_config_path), "phase6_baseline_sha256": sha256(baseline_path), "frequency_tables": counts},
         "source_audit": form,

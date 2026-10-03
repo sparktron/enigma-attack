@@ -19,6 +19,7 @@ import random
 from typing import Any, Mapping, Sequence
 
 from phase1 import load_corpus
+from provenance import code_version, sha256_file
 from resources import output_path, resource_root
 
 
@@ -43,10 +44,6 @@ ABSENCE_REPORT_THRESHOLD = 0.05
 # deliberately reluctant to exclude.  The consequence is asymmetric and
 # intended: an exclusion means something, a non-exclusion means very little.
 UNIGRAM_NULL_CONCENTRATION = 200.0
-
-
-def _sha256(path: pathlib.Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _validated_text(text: str) -> str:
@@ -126,7 +123,7 @@ def load_army_unigrams(
         )
     return {
         "source": str(path),
-        "source_sha256": _sha256(path),
+        "source_sha256": sha256_file(path),
         "bigram_count_total": total,
         "derivation": (
             "mean of first-position and second-position marginals of the "
@@ -787,6 +784,8 @@ def _cohort_monogram(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
 
 def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
+    # Before any work: the record describes the code the run started from.
+    version = code_version()
     catalog = load_family_catalog(args.catalog)
     unigram_reference = load_army_unigrams(args.unigram_source)
     controls = load_conservation_controls(args.control_plaintexts)
@@ -868,15 +867,15 @@ def build_artifact(args: argparse.Namespace) -> dict[str, Any]:
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "inputs": {
             "corpus": str(args.corpus),
-            "corpus_sha256": _sha256(args.corpus),
+            "corpus_sha256": sha256_file(args.corpus),
             "catalog": str(args.catalog),
-            "catalog_sha256": _sha256(args.catalog),
+            "catalog_sha256": sha256_file(args.catalog),
             "unigram_reference": str(args.unigram_source),
-            "unigram_reference_sha256": _sha256(args.unigram_source),
+            "unigram_reference_sha256": sha256_file(args.unigram_source),
             "control_plaintexts": str(args.control_plaintexts),
-            "control_plaintexts_sha256": _sha256(args.control_plaintexts),
-            "runner_sha256": _sha256(pathlib.Path(__file__)),
+            "control_plaintexts_sha256": sha256_file(args.control_plaintexts),
         },
+        "code": version,
         "conservation_gate_calibration": calibration,
         "research_boundary": {
             "question": catalog["question"],

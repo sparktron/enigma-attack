@@ -1,4 +1,4 @@
-"""Batched numpy stecker climb, a drop-in for ``phase1_stecker.climb_stecker``.
+"""Batched numpy stecker climb, a drop-in for ``stecker_climb.climb_stecker``.
 
 Each pass of the reference climb scores about 350 candidate plugboards one at a
 time in pure Python.  Here every candidate of a pass is built as one ``(K, 26)``
@@ -6,7 +6,7 @@ array, then decrypted and scored at once through the precomputed ``(n, 26)``
 position table.  The move set, the move order, the pair limit and the
 minimum-gain rule are the reference's, and the candidate chosen at the end of a
 pass is found by the same running-best scan, so the climb ends on the same
-plugboard.  ``phase1_stecker.run_preflight`` checks that on seeded samples
+plugboard.  ``stecker_controls.run_preflight`` checks that on seeded samples
 before any search, the way it checks the fast kernel and the fast scorer, and
 the pure-Python climb stays the reference: this module is an optimisation of it,
 not a second definition.

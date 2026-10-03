@@ -30,6 +30,9 @@ sys.path.insert(0, str(ROOT))
 import enigma_fast  # noqa: E402
 import phase1_stecker as stecker  # noqa: E402
 from enigma import EnigmaI  # noqa: E402
+from stecker_space import rotor_order_space  # noqa: E402
+from stecker_sweeps import sweep_slice  # noqa: E402
+from stecker_traffic import Traffic, normalize_plaintext  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -41,11 +44,11 @@ def main(argv: list[str] | None = None) -> int:
 
     config = stecker.load_config(ROOT / "experiments/phase1-body-direct-sweep-v1/config.json")
     calibration = stecker.load_config(ROOT / "experiments/phase1-stecker-calibration-v1/config.json")
-    plaintext = stecker.normalize_plaintext(
+    plaintext = normalize_plaintext(
         calibration["climb_capability_calibration"]["plaintext"], 167
     )
     plugboard = "AN BY CF DR GJ HS IL KM PV QZ"
-    message = stecker.Traffic(
+    message = Traffic(
         "BENCH", (0, 0, 0), (0, 0, 0),
         enigma_fast.text_to_indices(
             EnigmaI(rotors=("I", "II", "III"), rings="AAA", positions="AEF", plugboard=plugboard).crypt(plaintext)
@@ -55,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     # wheel orders as it takes to reach the requested count, so the slice splits
     # into one chunk per (order, middle) as a full sweep does.
     starts = [(0, middle, right) for middle in range(26) for right in range(26)]
-    orders = stecker.rotor_order_space("all_permutations", ["I", "II", "III", "IV", "V"])
+    orders = rotor_order_space("all_permutations", ["I", "II", "III", "IV", "V"])
     orders = orders[: max(1, -(-arguments.settings // len(starts)))]
     reflector = enigma_fast.reflector_table("B")
 
@@ -63,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
     for engine in arguments.engines:
         settings = {**config["climb"], "engine": engine}
         began = time.monotonic()
-        ranked, evaluated, _, execution = stecker.sweep_slice(
+        ranked, evaluated, _, execution = sweep_slice(
             message, orders, (0, 0, 0), starts, config["scorer"], reflector,
             settings, 5, arguments.jobs,
         )
