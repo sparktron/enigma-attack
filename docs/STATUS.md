@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-09-27
+Updated: 2026-10-02
 
 ## Current state
 
@@ -20,8 +20,11 @@ at any length up to 800 letters, and that the indicator-coupled formulation
 inside the indicator machine as well as the body. It also found that a
 body-direct stecker climb (start position searched directly, indicator used
 only as an independent check) recovers a known ten-pair plugboard and its exact
-plaintext on every trial at 167 letters, once an index-of-coincidence phase
-runs ahead of the n-gram phase. The complete indicator-coupled search
+plaintext on every trial at 167 letters when handed the true setting, once an
+index-of-coincidence phase runs ahead of the n-gram phase. That is the stecker
+stage alone: end to end, through the parameterization a sweep can actually
+reach, a planted-key control detects 82.5% (95% interval 68–91%) at best, and
+15% when one letter of the message is dropped or inserted. The complete indicator-coupled search
 (2,109,120 daily keys, both indicator orderings) and a declared 0.15% slice of
 the body-direct space on BYQMZ were both run to completion and found nothing,
 exactly as the calibration predicted. See
@@ -135,18 +138,24 @@ has already closed.
   formulation works but its space is about 2.74 x 10^7 settings per message at
   a measured ~456 ms of CPU time per converged climb, a projected 3,472
   core-hours (about 8 days of wall-clock time on 18 cores) for one message in
-  pure Python; only 0.15% of it has been searched. Pure-Python speed is now the
-  binding constraint, and the historically correct answer to exactly this
+  pure Python; only 0.15% of it has been searched, and that slice held every
+  ring at A, so it could reach an exact equivalent of a true key for about 2.5%
+  of keys. Under the right-ring-searched, middle-past-notch rule a complete
+  sweep of that space reaches an exact equivalent for 71.6% of keys at 167
+  letters and detects 82.5%; holding the middle ring at A gives 52.4% and
+  67.5%. Pure-Python speed is now the binding constraint, and the historically correct answer to exactly this
   problem — eliminating the plugboard algebraically instead of searching it —
   is a crib-driven Bombe, which Phase 2's crib network was assembled to feed.
 - BYQMZ (167 letters) is the only message long enough for the body-direct
-  climb to reliably find a 10-pair stecker on its own (8/8 known-key trials).
+  climb to reliably find a 10-pair stecker on its own (8/8 known-key trials
+  when handed the true setting; 33/40 planted keys through the sweep's own
+  parameterization).
   XFEDT (97 letters) is below that threshold (1/8) and should not be attacked
   alone. FKQLZ (107 letters) was not measured directly.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 125 tests passed locally on 2026-09-27.
+- `python3 -m unittest discover -q`: 143 tests passed locally on 2026-10-02.
 - `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built. A clean
   virtual environment outside the checkout resolves its inputs from the
   installed share directory and its default outputs under the current working
@@ -161,6 +170,11 @@ has already closed.
   `PublishedNgramScorer` the same way. Both preflight checks and two
   preregistered known-key positive controls must pass before any target search
   runs; a failed check or control makes zero target-search calls.
+- `artifacts/phase1-end-to-end-power-v1.json` records the end-to-end power
+  control (80 planted keys, 303 s on 18 workers). It is `long_running` in
+  `artifact_claims.json` and its claim paths were checked against the
+  artifact by hand. The tree was dirty when it ran (two untracked paths that
+  the run does not import), which the artifact records.
 - The two sweep artifacts are declared `long_running` in `artifact_claims.json`
   and checked for existence only in CI: the indicator sweep costs about 4
   minutes single-core and the body-direct sweep about 17 minutes wall-clock on
@@ -187,6 +201,26 @@ has already closed.
   one environment and requires the declared paths to agree.
 - Every artifact that the current code can regenerate passes both checks; the
   two superseded and two long-running ones are checked for existence.
+
+## Review of 2026-10-02: what is done
+
+[The review](code-review-2026-10-02.md) lists five recommended steps.
+
+1. Done: `enigma-phase1-stecker` reads its inputs from the share directory and
+   writes to the working directory, with an installed smoke test, and Phase 1
+   stecker artifacts record `git_dirty` (`edfa918`). Other phases already
+   record their own dirty flag; phases 1 to 3 and 5 do not.
+2. Done: the sweep takes a ring rule and a right-ring axis, the runner reports
+   exact key coverage, and the end-to-end power control is measured
+   ([history](phase1-experiment-history.md#phase1-end-to-end-power-v1)). The
+   coverage statements above are corrected to those figures.
+3. Open: batch-evaluate the climb and rebuild the sweep engine (R1, R2).
+4. Open: the preregistered full sweep. Its stated power is 0.83 [0.68, 0.91]
+   without transcription faults and 0.15 with one indel, so a windowed-climb
+   calibration should come first.
+5. Open: the Bombe still rests on cribs nothing in the repository places in
+   these three messages (P3), so the "highest-value move" below is not yet
+   supported.
 
 ## Next
 
