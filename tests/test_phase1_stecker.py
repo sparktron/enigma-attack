@@ -892,6 +892,39 @@ class SweepEngineTests(unittest.TestCase):
             self.assertEqual(resumed[3]["chunks_resumed_from_checkpoint"], 3)
             self.assertEqual(resumed[3]["chunks_run"], 3)
             self.assertEqual(resumed[:3], whole[:3])
+            # The cut-off fragment was removed before appending, so every line is
+            # a whole record and a further resume has nothing left to run.
+            for line in path.read_text().splitlines():
+                json.loads(line)
+            self.assertEqual(len(path.read_text().splitlines()), 6)
+            self.assertEqual(self.sweep(checkpoint=path)[3]["chunks_run"], 0)
+
+    def test_the_fingerprint_covers_the_reflector_and_the_scorer_table_contents(self):
+        message = self.message
+        rule = stecker.RingRule("held", (0, 0, 0), (0,), len(message.body))
+        arguments = (
+            message.body, self.config["scorer"], self.config["climb"], rule, self.STARTS,
+            5, "reference",
+        )
+        base = stecker.sweep_fingerprint(*arguments, self.reflector)
+        self.assertEqual(base, stecker.sweep_fingerprint(*arguments, self.reflector))
+        self.assertNotEqual(
+            base, stecker.sweep_fingerprint(*arguments, enigma_fast.reflector_table("C"))
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            bigram = pathlib.Path(directory) / "bigram.txt"
+            bigram.write_text(
+                stecker.resolve_path(self.config["scorer"]["bigram_counts"]).read_text() + "\n",
+                encoding="utf-8",
+            )
+            changed = {**self.config["scorer"], "bigram_counts": str(bigram)}
+            self.assertNotEqual(
+                base,
+                stecker.sweep_fingerprint(
+                    message.body, changed, self.config["climb"], rule, self.STARTS, 5,
+                    "reference", self.reflector,
+                ),
+            )
 
     def test_a_checkpoint_from_another_sweep_is_refused(self):
         with tempfile.TemporaryDirectory() as directory:

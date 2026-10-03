@@ -94,7 +94,10 @@ class WheelInstallTests(unittest.TestCase):
         self.assertEqual(artifact["status"], "blocked_by_positive_control")
         self.assertEqual(
             sorted(artifact["inputs"]["code_sha256"]),
-            ["enigma.py", "enigma_fast.py", "phase1.py", "phase1_stecker.py", "phase7.py"],
+            [
+                "enigma.py", "enigma_fast.py", "phase1.py", "phase1_stecker.py",
+                "phase7.py", "stecker_batch.py",
+            ],
         )
         self.assertIn("git_dirty", artifact["environment"])
 

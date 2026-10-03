@@ -1171,13 +1171,25 @@ def sweep_fingerprint(
     starts: Sequence[tuple[int, int, int]],
     keep: int,
     engine: str,
+    reflector: Sequence[int],
 ) -> str:
-    """Identity of a declared sweep, so a checkpoint is never reused for another."""
+    """Identity of a declared sweep, so a checkpoint is never reused for another.
+
+    It covers everything that decides a chunk's result: the ciphertext, the
+    reflector, the scorer's configuration *and the contents of the count tables
+    it names* (a path alone does not change when the file does), the climb, the
+    ring rule, the searched starts, the retention limit and the engine.
+    """
 
     return sha256_text(
         json.dumps(
             {
                 "body": list(body),
+                "reflector": list(reflector),
+                "scorer_tables": [
+                    sha256_file(resolve_path(scorer_config[name]))
+                    for name in ("bigram_counts", "trigram_counts")
+                ],
                 "scorer": scorer_config,
                 "climb": settings,
                 "rule": [rule.name, list(rule.held), list(rule.right_rings), rule.length],
@@ -1215,6 +1227,20 @@ def read_checkpoint(path: pathlib.Path, fingerprint: str) -> dict[str, dict[str,
             )
         done[record["key"]] = record
     return done
+
+
+def trim_partial_record(path: pathlib.Path) -> None:
+    """Drop a final record that a crash cut off before its newline.
+
+    Appending after such a fragment would glue the next complete record onto it,
+    and a later resume would discard both as one unreadable line.
+    """
+
+    if not path.exists():
+        return
+    data = path.read_bytes()
+    if data and not data.endswith(b"\n"):
+        path.write_bytes(data[: data.rfind(b"\n") + 1])
 
 
 def body_direct_sweep(
@@ -1277,7 +1303,7 @@ def sweep_slice(
     keep = max(1, int(keep))
     chunks = sweep_chunks(rule, rotor_orders, starts)
     fingerprint = sweep_fingerprint(
-        message.body, scorer_config, settings, rule, starts, keep, engine
+        message.body, scorer_config, settings, rule, starts, keep, engine, reflector
     )
     results: dict[str, dict[str, Any]] = {}
     if checkpoint is not None:
@@ -1292,6 +1318,7 @@ def sweep_slice(
     sink = None
     if checkpoint is not None:
         checkpoint.parent.mkdir(parents=True, exist_ok=True)
+        trim_partial_record(checkpoint)
         sink = checkpoint.open("a", encoding="utf-8")
 
     def record(result: dict[str, Any]) -> None:
@@ -2896,6 +2923,7 @@ def run_experiment(
                     "phase1.py",
                     "phase1_stecker.py",
                     "phase7.py",
+                    "stecker_batch.py",
                 )
             },
         },
