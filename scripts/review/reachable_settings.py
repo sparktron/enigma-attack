@@ -43,25 +43,27 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 import enigma_fast  # noqa: E402
-import phase1_stecker  # noqa: E402
+import stecker_climb  # noqa: E402
+import stecker_scoring  # noqa: E402
+import stecker_traffic  # noqa: E402
 from enigma import EnigmaI  # noqa: E402
 
 CONFIG_PATH = ROOT / "experiments/phase1-stecker-calibration-v1/config.json"
 CONFIG = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-PLAINTEXT = phase1_stecker.normalize_plaintext(
+PLAINTEXT = stecker_traffic.normalize_plaintext(
     CONFIG["climb_capability_calibration"]["plaintext"]
 )
 REFLECTOR = enigma_fast.reflector_table("B")
 WHEELS = ["I", "II", "III", "IV", "V"]
 MODES = ("exact", "rings-aaa", "reducible", "per-offset-middle")
 
-_SCORER: phase1_stecker.FastNgramScorer | None = None
+_SCORER: stecker_scoring.FastNgramScorer | None = None
 
 
-def scorer() -> phase1_stecker.FastNgramScorer:
+def scorer() -> stecker_scoring.FastNgramScorer:
     global _SCORER
     if _SCORER is None:
-        _SCORER = phase1_stecker.FastNgramScorer(CONFIG["scorer"])
+        _SCORER = stecker_scoring.FastNgramScorer(CONFIG["scorer"])
     return _SCORER
 
 
@@ -72,7 +74,7 @@ def draw_key(draw: int, seed_base: int, pairs: int):
     rotors = tuple(generator.sample(WHEELS, 3))
     rings = tuple(generator.randrange(26) for _ in range(3))
     start = tuple(generator.randrange(26) for _ in range(3))
-    plugboard = phase1_stecker.random_plugboard(generator, pairs)
+    plugboard = stecker_traffic.random_plugboard(generator, pairs)
     return rotors, rings, start, plugboard
 
 
@@ -119,7 +121,7 @@ def run(task: tuple[str, int, int, int, int, int]) -> dict:
         positions="".join(chr(65 + v) for v in start),
         plugboard=plugboard,
     ).crypt(text)
-    message = phase1_stecker.Traffic(
+    message = stecker_traffic.Traffic(
         f"DRAW-{draw}", (0, 0, 0), (0, 0, 0), enigma_fast.text_to_indices(ciphertext)
     )
     order = [enigma_fast.rotor_tables(name) for name in rotors]
@@ -137,7 +139,7 @@ def run(task: tuple[str, int, int, int, int, int]) -> dict:
         )
     best = None
     for fraction, r, s in candidates[:climbs]:
-        outcome, plaintexts = phase1_stecker.body_direct_climb(
+        outcome, plaintexts = stecker_climb.body_direct_climb(
             [message], rotors, r, [s], scorer(), REFLECTOR, CONFIG["climb"]
         )
         found = enigma_fast.plugboard_pairs(outcome.plugboard)

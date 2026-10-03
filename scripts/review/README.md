@@ -33,7 +33,7 @@ Add `--length`, `--pairs`, `--jobs` or `--output file.json` as needed.
 ## `batched_climb.py` (review R1, requires numpy)
 
 A numpy reimplementation of the two-phase body-direct stecker climb. It is
-benchmarked against `phase1_stecker.body_direct_climb` on true and wrong
+benchmarked against `stecker_climb.body_direct_climb` on true and wrong
 settings, and it requires identical final plugboards: it exits non-zero on any
 divergence.
 

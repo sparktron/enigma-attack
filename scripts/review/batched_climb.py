@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Prototype numpy stecker climb, checked against ``phase1_stecker``.
+"""Prototype numpy stecker climb, checked against ``stecker_climb``.
 
 Exploratory measurement from docs/code-review-2026-10-02.md (R1). It is not
 wired into the pipeline and needs numpy, which the project does not depend on.
 
-Each pass of ``phase1_stecker.climb_stecker`` scores about 350 candidate
+Each pass of ``stecker_climb.climb_stecker`` scores about 350 candidate
 plugboards one at a time in pure Python.  Here every candidate of a pass is
 built as one ``(K, 26)`` array and decrypted and scored at once through the
 precomputed ``(n, 26)`` position table.  The move set, move order, pair limit,
@@ -35,7 +35,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 import enigma_fast  # noqa: E402
-import phase1_stecker  # noqa: E402
+import stecker_climb  # noqa: E402
+import stecker_scoring  # noqa: E402
+import stecker_traffic  # noqa: E402
 from enigma import EnigmaI  # noqa: E402
 
 CONFIG_PATH = ROOT / "experiments/phase1-stecker-calibration-v1/config.json"
@@ -48,7 +50,7 @@ LETTERS = np.arange(26)
 class BatchedObjectives:
     """Both climb objectives for one message at one rotor setting, batched."""
 
-    def __init__(self, scorer: phase1_stecker.FastNgramScorer, table: Sequence[int], body: Sequence[int]):
+    def __init__(self, scorer: stecker_scoring.FastNgramScorer, table: Sequence[int], body: Sequence[int]):
         n = len(body)
         self.bigram = np.asarray(scorer.bigram)
         self.combined = np.asarray(scorer.combined)
@@ -87,7 +89,7 @@ class BatchedObjectives:
         ).reshape(k, 26)
         n = self.letters
         ic = (counts * (counts - 1)).sum(axis=1) / (n * (n - 1))
-        # Same pooling weight as phase1_stecker.body_direct_climb.coincidence.
+        # Same pooling weight as stecker_climb.body_direct_climb.coincidence.
         return ic * self.length / self.letters
 
 
@@ -151,8 +153,8 @@ def main(argv=None) -> int:
 
     config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     settings = config["climb"]
-    scorer = phase1_stecker.FastNgramScorer(config["scorer"])
-    text = phase1_stecker.normalize_plaintext(config["climb_capability_calibration"]["plaintext"])[: args.length]
+    scorer = stecker_scoring.FastNgramScorer(config["scorer"])
+    text = stecker_traffic.normalize_plaintext(config["climb_capability_calibration"]["plaintext"])[: args.length]
     reflector = enigma_fast.reflector_table("B")
     generator = random.Random(args.seed)
     wheels = ["I", "II", "III", "IV", "V"]
@@ -167,7 +169,7 @@ def main(argv=None) -> int:
             rotors=rotors,
             rings="".join(chr(65 + v) for v in rings),
             positions="".join(chr(65 + v) for v in start),
-            plugboard=phase1_stecker.random_plugboard(generator, args.pairs),
+            plugboard=stecker_traffic.random_plugboard(generator, args.pairs),
         ).crypt(text)
         body = list(enigma_fast.text_to_indices(ciphertext))
         if case % 3 == 0 and len(body) > 28:
@@ -180,8 +182,8 @@ def main(argv=None) -> int:
         table = enigma_fast.position_permutations(order, rings, start, len(body))
 
         began = time.perf_counter()
-        reference, _ = phase1_stecker.body_direct_climb(
-            [phase1_stecker.Traffic("CASE", (0, 0, 0), (0, 0, 0), tuple(body))],
+        reference, _ = stecker_climb.body_direct_climb(
+            [stecker_traffic.Traffic("CASE", (0, 0, 0), (0, 0, 0), tuple(body))],
             rotors, rings, [start], scorer, reflector, settings,
         )
         middle = time.perf_counter()
