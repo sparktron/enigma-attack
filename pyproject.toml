@@ -36,6 +36,12 @@ py-modules = [
     "provenance",
     "recon",
     "resources",
+    "stecker_calibration",
+    "stecker_climb",
+    "stecker_controls",
+    "stecker_scoring",
+    "stecker_sweeps",
+    "stecker_traffic",
 ]
 
 [tool.setuptools.data-files]
