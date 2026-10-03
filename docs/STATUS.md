@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-09-27
+Updated: 2026-10-03
 
 ## Current state
 
@@ -99,7 +99,23 @@ has already closed.
 - The wheel includes every phase command and the corpus, catalog,
   configuration, artifact, n-gram and Army-plaintext-control inputs they read.
   Installed commands read those from the installed share directory and write
-  default outputs under the current working directory.
+  default outputs under the current working directory. `enigma-phase1-stecker`
+  had been left out of that: it looked for its configuration beside the
+  installed module and wrote into site-packages, and `enigma-phase1 search`
+  and `enigma-phase2` hashed their own source under the share directory, so
+  all three failed when installed. All three now run from a clean wheel.
+- Every phase records one shared `code` block (`provenance.py`): commit,
+  branch, `git status` lines, a `dirty` flag, and hashes of every project
+  module the run imported. Phase 1's stecker runner previously recorded a
+  commit with no indication of uncommitted edits, and Phases 1, 2, 3 and 5
+  recorded no checkout state at all. Without a checkout `dirty` is `null`,
+  not `false`, and a copy installed inside an unrelated repository does not
+  report that repository's commit. Artifacts committed before this change keep
+  their original provenance fields.
+- `phase1_stecker.py` is now the runner only; scoring, traffic, the climbs,
+  the sweeps, the calibrations and the controls are separate `stecker_*.py`
+  modules. The split moved code without changing it: the regenerated
+  calibration artifact matches every declared claim.
 - Phase 6 selects on the full plaintext, reports top candidates, exact
   recovery, key rank, edit distance, and boundary displacement on its
   exhaustive control, and treats the candidate suffix as descriptive. The
@@ -146,12 +162,15 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 125 tests passed locally on 2026-09-27.
+- `python3 -m unittest discover -q`: 133 tests passed locally on 2026-10-03.
 - `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built. A clean
   virtual environment outside the checkout resolves its inputs from the
   installed share directory and its default outputs under the current working
   directory; `enigma-phase7` loads the corpus, both frequency tables and the
-  Phase 6 and Phase 7 configurations before stopping at the conservation gate.
+  Phase 6 and Phase 7 configurations before stopping at the conservation gate,
+  `enigma-phase1-stecker` finds its shipped configurations and stops at its
+  positive-control gate, and `enigma-phase1` and `enigma-phase2` complete. Each
+  records `"source": "not_a_checkout"` with `"dirty": null`.
 - Phase 1 stecker calibration, the complete indicator-coupled sweep, and the
   body-direct sweep are recorded in `artifacts/phase1-stecker-calibration-v1.json`,
   `artifacts/phase1-indicator-sweep-v1.json`, and
