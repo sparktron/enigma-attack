@@ -789,6 +789,22 @@ calibration's 39/40 predicted.
   rates as its power.
 - The v2 entry's stated indel power is corrected below; the v1 decision's
   "0.15 with one indel" is superseded by 0.40.
+- Gate added after review (PR #12), while v3 was running: the positive
+  controls called `body_direct_climb`, which ignores `climb.window`, so they
+  certified only the whole-message climb. With a window configured each control
+  message at least ten letters longer than the window now also runs the windowed
+  climb, exactly as a sweep does, on 12 seeded planted plugboards at the
+  control's setting (clean, a deletion at letter W, and a deletion before the
+  tail read one keystroke later), and must recover at least 3 exactly. A single
+  fixed key would be a coin-flip gate: at the true setting neither 117-letter
+  window recovers control B1's own key, while 134 letters and more do, and on
+  the planted keys 7 of 12 were recovered. A broken slicing or window choice
+  recovers none (unit-tested). v3's chunks were computed at `6b6ad2f`, whose
+  sweep path this change does not touch; once they finish the runner is
+  rerun at the commit carrying the gate, which re-runs the preflight and every
+  control, resumes all 1,560 chunks from the checkpoint (its fingerprint is
+  unchanged) and confirms the candidates. A failed windowed control there
+  withholds the v3 result.
 - Benchmark, exploratory (`scripts/benchmark_sweep.py --window`, 13,520
   settings, 10 workers): 3.41 ms per setting windowed against 2.97 ms whole
   message in the same run, 1.15×. Scaled from v2's measured 2.15 ms the

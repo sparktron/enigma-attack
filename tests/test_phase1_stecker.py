@@ -813,6 +813,40 @@ class WindowedClimbTests(unittest.TestCase):
         self.assertEqual(evaluations, reference.evaluations)
         self.assertAlmostEqual(score, reference.score_per_letter, places=12)
 
+    def test_the_control_gate_runs_the_windowed_climb_and_fails_when_it_is_broken(self):
+        config = {
+            **self.config,
+            "climb": {**self.config["climb"], "window": {"kind": "head_tail", "letters": 117}},
+            "windowed_control": {"seed": 5, "draws": 3, "minimum_recovered": 1},
+        }
+        spec = next(
+            spec for spec in self.config["positive_controls"]
+            if any(len(normalize_plaintext(m["plaintext"], m.get("length"))) >= 127
+                   for m in spec["messages"])
+        )
+        sound = evaluate_positive_control(spec, config, self.scorer, self.reflector)
+        windowed = sound["windowed_climb"]
+        self.assertEqual(windowed["attempted"], 3)
+        self.assertEqual(
+            [row["form"] for row in windowed["draws"]],
+            ["clean", "deletion_at_window", "deletion_before_tail"],
+        )
+        self.assertIn("windowed_climb_recovers_known_key", sound["checks"])
+        broken = mock.patch(
+            "stecker_controls.windowed_climb",
+            lambda table, body, scorer, settings, climbers=None: (
+                list(range(26)), 1, -9.0, "head"
+            ),
+        )
+        with broken:
+            failed = evaluate_positive_control(spec, config, self.scorer, self.reflector)
+        self.assertEqual(failed["windowed_climb"]["recovered"], 0)
+        self.assertFalse(failed["checks"]["windowed_climb_recovers_known_key"])
+        self.assertFalse(failed["passed"])
+        unwindowed = evaluate_positive_control(spec, self.config, self.scorer, self.reflector)
+        self.assertNotIn("windowed_climb", unwindowed)
+        self.assertNotIn("windowed_climb_recovers_known_key", unwindowed["checks"])
+
     def test_a_windowed_sweep_records_the_winning_window(self):
         message = planted_message()
         ranked, evaluated, _ = body_direct_sweep(
