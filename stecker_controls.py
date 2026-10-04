@@ -18,7 +18,7 @@ import phase1
 import phase7
 from provenance import sha256_text
 import stecker_batch
-from stecker_climb import body_direct_climb
+from stecker_climb import body_direct_climb, climb_windows, windowed_climb
 from stecker_scoring import FastNgramScorer
 from stecker_sweeps import resolve_engine
 from stecker_traffic import Traffic, encipher_control, normalize_plaintext, random_plugboard
@@ -246,6 +246,19 @@ def confirm_against_date(
     }
 
 
+def configured_windows(config: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Every climb window a configuration can run, in first-mention order."""
+
+    windows: list[dict[str, Any]] = []
+    candidates = [config["climb"].get("window")] + [
+        arm.get("window") for arm in config.get("end_to_end_power", {}).get("arms", [])
+    ]
+    for window in candidates:
+        if window is not None and dict(window) not in windows:
+            windows.append(dict(window))
+    return windows
+
+
 def batched_climb_parity_report(
     config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
 ) -> dict[str, Any]:
@@ -266,7 +279,9 @@ def batched_climb_parity_report(
         normalize_plaintext(row["raw"]) for row in config["scorer_validation"]["plaintexts"]
     )
     climb = config["climb"]
+    windows = configured_windows(config)
     identical = same_evaluations = 0
+    windowed_identical = 0
     for case in range(samples):
         length = generator.randrange(60, min(167, len(source)) + 1)
         order = tuple(generator.sample(wheels, 3))
@@ -298,13 +313,31 @@ def batched_climb_parity_report(
         ).climb(table)
         identical += list(reference.plugboard) == plugboard
         same_evaluations += reference.evaluations == evaluations
-    return {
+        # The windowed climb runs the same batched climber on each window's
+        # letters; it has to pick the same window and end on the same
+        # plugboard, after the same count, as the reference windowed climb.
+        for window in windows:
+            windowed = {**climb, "window": window}
+            expected = windowed_climb(table, body, scorer, windowed)
+            climbers = [
+                stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body[first:stop], windowed)
+                for _, first, stop in climb_windows(len(body), window)
+            ]
+            windowed_identical += windowed_climb(table, body, scorer, windowed, climbers) == expected
+    report: dict[str, Any] = {
         "seed": seed,
         "samples": samples,
         "identical_final_plugboards": identical,
         "identical_evaluation_counts": same_evaluations,
-        "passed": identical == samples and same_evaluations == samples,
     }
+    passed = identical == samples and same_evaluations == samples
+    if windows:
+        report["windows"] = windows
+        report["windowed_climbs_compared"] = samples * len(windows)
+        report["windowed_climbs_identical"] = windowed_identical
+        passed = passed and windowed_identical == samples * len(windows)
+    report["passed"] = passed
+    return report
 
 
 def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[str, Any]:

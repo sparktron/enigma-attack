@@ -161,6 +161,91 @@ def run_climb_phases(
     return plugboard, records, evaluations
 
 
+WINDOW_KINDS = ("head_tail",)
+
+
+def climb_windows(length: int, window: Mapping[str, Any] | None) -> list[tuple[str, int, int]]:
+    """The stretches of a ``length``-letter body a windowed climb scores.
+
+    With no window the whole body is one stretch, which is the ordinary climb.
+    ``head_tail`` scores the first and the last ``letters`` letters separately.
+    One dropped or inserted letter at position p leaves [0, p) aligned with the
+    swept setting and everything after it aligned with the setting one
+    keystroke away, which the sweep visits as a neighbouring right position, so
+    the two clean stretches are always a prefix and a suffix.  Any window that
+    fits inside one of them fits inside the head or the tail window of the same
+    size, so a window sliding over interior positions adds nothing for a single
+    indel; the head and the tail are the only two worth climbing.
+    """
+
+    if window is None:
+        return [("whole", 0, length)]
+    kind = window.get("kind")
+    if kind not in WINDOW_KINDS:
+        raise ValueError(f"unknown climb window: {kind!r}")
+    size = int(window["letters"])
+    if size < 2:
+        raise ValueError(f"a climb window needs at least two letters, not {size}")
+    if size >= length:
+        return [("whole", 0, length)]
+    return [("head", 0, size), ("tail", length - size, length)]
+
+
+def windowed_climb(
+    table: Sequence[int],
+    body: Sequence[int],
+    scorer: FastNgramScorer,
+    settings: Mapping[str, Any],
+    climbers: Sequence[Any] | None = None,
+) -> tuple[list[int], int, float, str]:
+    """Climb each window of ``settings['window']`` and keep the best one.
+
+    Each window is climbed on its own, from the identity plugboard, with the
+    configured phases, and scored per letter of that window; the window with the
+    higher score wins and an exact tie keeps the earlier window.  ``climbers``,
+    one :class:`stecker_batch.BatchedClimber` per window built on that window's
+    letters, replaces the reference climb; the preflight checks the two agree.
+    Returns the plugboard, the plugboards evaluated over every window, the
+    winning score per letter and the winning window's name.
+    """
+
+    windows = climb_windows(len(body), settings.get("window"))
+    best: tuple[float, list[int], str] | None = None
+    evaluations = 0
+    for index, (label, first, stop) in enumerate(windows):
+        sub_table = table[26 * first : 26 * stop]
+        sub_body = body[first:stop]
+        letters = sum(1 for value in sub_body if value >= 0)
+        if letters < 2:
+            continue
+        if climbers is not None:
+            plugboard, used = climbers[index].climb(sub_table)
+        else:
+            length = len(sub_body)
+
+            def coincidence(pb: Sequence[int]) -> float:
+                # Weighted as ``body_direct_climb`` weights one message, which
+                # is also what the batched climber computes.
+                return coincidence_of_decryption(sub_table, sub_body, pb) * length / letters
+
+            plugboard, _, used = run_climb_phases(
+                settings["phases"],
+                {
+                    "index_of_coincidence": coincidence,
+                    "ngram": lambda pb: scorer.score_decryption(sub_table, sub_body, pb),
+                },
+                letters,
+                settings,
+            )
+        evaluations += used
+        score = scorer.score_decryption(sub_table, sub_body, plugboard) / letters
+        if best is None or score > best[0]:
+            best = (score, list(plugboard), label)
+    if best is None:
+        raise ValueError("no climb window holds two scorable letters")
+    return best[1], evaluations, best[0], best[2]
+
+
 def body_direct_climb(
     traffic: Sequence[Traffic],
     rotor_order: Sequence[str],

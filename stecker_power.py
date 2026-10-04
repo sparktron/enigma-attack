@@ -12,10 +12,11 @@ from typing import Any
 
 from enigma import EnigmaI
 import enigma_fast
-from stecker_climb import body_direct_climb
+import stecker_batch
+from stecker_climb import body_direct_climb, climb_windows, windowed_climb
 from stecker_scoring import FastNgramScorer
 from stecker_space import RING_RULES, RingRule, reducible_space_size, rule_key_coverage
-from stecker_sweeps import body_direct_sweep
+from stecker_sweeps import body_direct_sweep, resolve_engine
 from stecker_traffic import Traffic, normalize_plaintext, random_plugboard
 
 
@@ -70,6 +71,18 @@ def table_agreement(left: Sequence[int], right: Sequence[int], length: int) -> f
         sum(1 for t in range(length) if left[26 * t : 26 * t + 26] == right[26 * t : 26 * t + 26])
         / length
     )
+
+
+def arm_climb(config: Mapping[str, Any], arm: Mapping[str, Any]) -> Mapping[str, Any]:
+    """The climb settings an arm sweeps with: the configured climb, windowed if the arm says so.
+
+    An arm without a ``window`` gets ``config['climb']`` itself, so a
+    configuration written before windows existed runs exactly as it did.
+    """
+
+    if arm.get("window") is None:
+        return config["climb"]
+    return {**config["climb"], "window": dict(arm["window"])}
 
 
 def _power_init(config: Mapping[str, Any], scorer: FastNgramScorer | None = None) -> None:
@@ -137,7 +150,8 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
         rule = RingRule(arm["ring_rule"], (0, 0, 0), right_rings, len(message.body))
         swept = len(rule.settings(order, starts))
         ranked, evaluated, _ = body_direct_sweep(
-            message, [order], rule, starts, config["scorer"], reflector, config["climb"], swept, 1
+            message, [order], rule, starts, config["scorer"], reflector, arm_climb(config, arm),
+            swept, 1,
         )
         fractions: list[float | None] = []
         for row in ranked:
@@ -155,6 +169,7 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
         top = ranked[0]
         best = max((value for value in fractions if value is not None), default=None)
         arms[arm["id"]] = {
+            **({"top_window": top["window"]} if "window" in top else {}),
             "settings_evaluated": evaluated,
             "best_equivalent_fraction": None if best is None else round(best, 6),
             "exact_equivalent_exists": None if best is None else best == 1.0,
@@ -174,7 +189,25 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
     # Wrong settings drawn the same way the existing capability calibration
     # draws them, so the climb's score on a key it cannot recover has a
     # reference distribution to be separated from.
+    # A windowed arm is compared with its own null: the same windowed climb at
+    # the same wrong settings, since its score is the better of two shorter
+    # windows and is distributed differently from a whole-message score.
+    windowed_arms = [arm for arm in settings["arms"] if arm.get("window") is not None]
+    window_climbers: dict[str, Any] = {}
+    for arm in windowed_arms:
+        climb = arm_climb(config, arm)
+        window_climbers[arm["id"]] = (
+            [
+                stecker_batch.BatchedClimber(
+                    scorer.bigram, scorer.combined, message.body[first:stop], climb
+                )
+                for _, first, stop in climb_windows(len(message.body), climb["window"])
+            ]
+            if resolve_engine(climb) == "batched"
+            else None
+        )
     null_scores: list[float] = []
+    arm_null_scores: dict[str, list[float]] = {arm["id"]: [] for arm in windowed_arms}
     for _ in range(int(settings["null_trials"])):
         wrong_order = tuple(generator.sample(wheels, 3))
         while wrong_order == order:
@@ -187,6 +220,20 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
                 config["climb"],
             )[0].score_per_letter
         )
+        if windowed_arms:
+            wrong_table = enigma_fast.position_permutations(
+                [enigma_fast.rotor_tables(name) for name in wrong_order],
+                wrong_rings, wrong_start, len(message.body), reflector,
+            )
+            for arm in windowed_arms:
+                arm_null_scores[arm["id"]].append(
+                    windowed_climb(
+                        wrong_table, message.body, scorer, arm_climb(config, arm),
+                        window_climbers[arm["id"]],
+                    )[2]
+                )
+    for arm in windowed_arms:
+        arms[arm["id"]]["null_scores"] = [round(value, 9) for value in arm_null_scores[arm["id"]]]
     return {
         "cell": cell_index,
         "draw": draw,
@@ -276,10 +323,29 @@ def run_end_to_end_power(
         arm_rows: list[dict[str, Any]] = []
         for arm in settings["arms"]:
             per = [row["arms"][arm["id"]] for row in mine]
+            arm_null: dict[str, Any] = {}
+            arm_mean, arm_sd, arm_threshold = null_mean, null_sd, threshold
+            if arm.get("window") is not None:
+                own = [value for item in per for value in item["null_scores"]]
+                arm_mean, arm_sd = statistics.fmean(own), statistics.pstdev(own)
+                arm_threshold = arm_mean + z_detect * arm_sd
+                arm_null = {
+                    "window": dict(arm["window"]),
+                    "null": {
+                        "samples": len(own),
+                        "mean_score_per_letter": round(arm_mean, 9),
+                        "sd_score_per_letter": round(arm_sd, 9),
+                        "detection_threshold_score_per_letter": round(arm_threshold, 9),
+                    },
+                    "top_window_counts": {
+                        name: sum(1 for item in per if item.get("top_window") == name)
+                        for name in ("head", "tail", "whole")
+                    },
+                }
             recovered = [item["top"]["plugboard_recovered_exactly"] for item in per]
             detected = [
                 item["top"]["plugboard_recovered_exactly"]
-                and item["top"]["score_per_letter"] >= threshold
+                and item["top"]["score_per_letter"] >= arm_threshold
                 for item in per
             ]
             exact = [item["exact_equivalent_exists"] for item in per]
@@ -335,10 +401,11 @@ def run_end_to_end_power(
                     **split,
                     "median_top_score_z_over_null": round(
                         statistics.median(
-                            (item["top"]["score_per_letter"] - null_mean) / null_sd for item in per
+                            (item["top"]["score_per_letter"] - arm_mean) / arm_sd for item in per
                         ),
                         3,
                     ),
+                    **arm_null,
                 }
             )
         summary.append(
