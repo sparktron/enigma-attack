@@ -90,6 +90,39 @@ class ClaimsFileTests(unittest.TestCase):
     # behaviour the drift check deliberately reports as a warning instead.
 
 
+class CodeDriftTests(unittest.TestCase):
+    def test_reads_both_provenance_layouts(self) -> None:
+        current = {"code": {"files_sha256": {"a.py": "1"}}}
+        legacy = {"inputs": {"code_sha256": {"b.py": "2"}}}
+        self.assertEqual(check_artifacts.recorded_code(current), {"a.py": "1"})
+        self.assertEqual(check_artifacts.recorded_code(legacy), {"b.py": "2"})
+        self.assertEqual(check_artifacts.recorded_code({}), {})
+
+    def test_reports_changed_and_missing_modules_only(self) -> None:
+        import hashlib
+        import pathlib
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "same.py").write_text("x = 1\n")
+            (root / "edited.py").write_text("x = 2\n")
+            digest = hashlib.sha256(b"x = 1\n").hexdigest()
+            document = {
+                "code": {
+                    "files_sha256": {
+                        "same.py": digest,
+                        "edited.py": digest,
+                        "gone.py": digest,
+                    }
+                }
+            }
+            changed = check_artifacts.code_drift(document, root)
+        self.assertEqual(len(changed), 2)
+        self.assertTrue(changed[0].startswith("edited.py: recorded"))
+        self.assertIn("no longer in the checkout", changed[1])
+
+
 def compare_both(a, b, paths):
     return check_artifacts.compare(a, b, paths)
 

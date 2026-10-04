@@ -14,8 +14,11 @@ Phase 1 has now been run at scale for the first time. The method the
 repository cites — Weierud and Sullivan's *Breaking German Army Ciphers* — was
 implemented, calibrated against known keys, and then run to completion. The
 calibration found that the cited method's first stage, an unsteckered
-index-of-coincidence sweep, **has no detection power at a ten-pair stecker**,
-at any length up to 800 letters, and that the indicator-coupled formulation
+index-of-coincidence sweep, **has almost no detection power at a ten-pair
+stecker**: averaged over 32 key draws, the true key reaches the top 200 of the
+1,054,560 keys each indicator ordering ranks with probability 0% at 167
+letters, 6% at 371 and 19% at 800 (`phase1-ic-rank-v1`, which replaces a single-draw z ≥ 3 table).
+It also found that the indicator-coupled formulation
 `phase1.py` implies **cannot be hill-climbed** because the plugboard sits
 inside the indicator machine as well as the body. It also found that a
 body-direct stecker climb (start position searched directly, indicator used
@@ -27,7 +30,11 @@ reach, a planted-key control detects 82.5% (95% interval 68–91%) at best, and
 15% when one letter of the message is dropped or inserted. The complete indicator-coupled search
 (2,109,120 daily keys, both indicator orderings) and a declared 0.15% slice of
 the body-direct space on BYQMZ were both run to completion and found nothing,
-exactly as the calibration predicted. See
+exactly as the calibration predicted; the body-direct slice's retained
+candidates were re-confirmed on 2026-10-03 with the ring-recovering
+confirmation and still score below their own sweep scores. One dropped or
+inserted letter is calibrated (15% detection); the windowed-climb cell the
+history's decision calls for has not been run. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
