@@ -1,0 +1,264 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "batched",
+    "window": {
+      "kind": "head_tail",
+      "letters": 117
+    },
+    "window_rationale": "Fixed at W = 117 by the sweep rule preregistered in phase1-windowed-climb-power-v1 before that run, whose three deciding predictions held. W = 134 measured slightly higher on indel draws there; the rule forbids choosing it on that evidence."
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The controls are constructed or independently solved plaintexts, not authentic held-out Army traffic with an authentic daily key.",
+    "The messages behind the published 1941 n-gram counts are not enumerated, so overlap between the authentic control plaintexts and the scorer's training data cannot be ruled out. The constructed control exists to bound that risk, not to remove it.",
+    "The positive controls are body-direct and are handed the true wheel order, ring setting and start positions. They certify the stecker stage at the target lengths and say nothing about the rotor enumeration, which the sweeps and calibrations cover separately.",
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure. A different reflector, a Naval wheel or a different indicator convention is outside every space searched here.",
+    "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
+    "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
+    "The middle-past-notch space has an exact equivalent for 71.6% of daily keys at 167 letters; the rest can be found only through a near equivalent, which the end-to-end power figure already includes.",
+    "The companion check presents the sweep's ring parameterization, so a companion whose true middle wheel steps its left wheel mid-message is deciphered exactly only up to that letter; the calibration includes that case at its natural rate.",
+    "No result here is an accepted break: a confirmed candidate's plaintext still has to be read and reviewed before accepted_break could change.",
+    "The stated power is measured on planted single-indel and clean 167-letter draws through the sweep's parameterization (phase1-windowed-climb-power-v1); the joint companion figures were measured post hoc on those draws and preregistered nowhere.",
+    "The sweep scores each setting by the better of two 117-letter windows, so its scores are not on the scale of v2's whole-message scores; the indicator confirmation, which compares a pooled date score with the candidate's own sweep score, is reported but is even less informative here than in v2. The companion check alone decides.",
+    "A candidate found through the tail window is reported at the setting that deciphers the tail, which for a garbled message is one keystroke away from the setting of the head."
+  ],
+  "experiment_id": "phase1-body-direct-sweep-v3",
+  "mode": "body_direct_sweep",
+  "output": "artifacts/phase1-body-direct-sweep-v3.json",
+  "hypothesis": "BYQMZ, FKQLZ and XFEDT of 1941-09-30 are Enigma I traffic (UKW-B, wheels I-V, ten stecker pairs) under one daily key with an exact or near equivalent in the middle-past-notch body-direct space, and BYQMZ's key is one the whole-message sweep v2 could miss, most plausibly because one letter of BYQMZ was dropped or inserted. A complete sweep of the same 27,418,560 settings on BYQMZ with the head-and-tail windowed climb (W = 117: the first and last 117 letters climbed separately, the better window kept) then retains at least one candidate that the companion-body confirmation accepts: FKQLZ and XFEDT each deciphered at all 17,576 starts under the candidate's wheel order, rings and plugboard, both best starts at z >= 6.",
+  "refuted_by": "No retained candidate companion-confirmed. Stated in advance from phase1-windowed-climb-power-v1 and the exploratory joint check on its draws (artifacts/phase1-joint-power-v2-head-tail-117.json): under the hypothesis this procedure detects and confirms the key with probability about 0.54 [0.43, 0.64] when BYQMZ carries one dropped or inserted letter and 0.78 [0.67, 0.85] when it does not. Because v2 has already returned null, the relevant figure is the conditional one: among planted draws the whole-message climb missed, the windowed climb confirmed 14 of 48 with one indel (0.29 [0.18, 0.43]) and 3 of 10 without. A null therefore multiplies the remaining odds of a once-garbled standard Enigma I reading by about 0.71; it is a modest test, not a decisive one. A middle-third indel (letters 50-117) is largely invisible to both climbs, and nothing here tests two faults, other reflectors, Naval wheels, other indicator procedures or non-Enigma systems.",
+  "target": {
+    "date": "1941-09-30",
+    "messages": [
+      "BYQMZ",
+      "FKQLZ",
+      "XFEDT"
+    ]
+  },
+  "body_direct_sweep": {
+    "message": "BYQMZ",
+    "rings": "AAA",
+    "start_left": "all",
+    "start_middle": "all",
+    "start_right": "all",
+    "keep": 100,
+    "rationale": "The cheapest next step in the v2 decision list. v2 swept the complete middle-past-notch space with the whole-message climb and was null; phase1-windowed-climb-power-v1 measured that a W = 117 head-and-tail climb finds about 29% of single-indel keys that the whole-message climb misses. Same space, rule, retention, engine and companion threshold as v2; only the climb changes. Projected cost 19 to 26 hours at 10 workers (scripts/benchmark_sweep.py --window 117: 1.15x the whole-message climb per setting).",
+    "ring_rule": "middle_past_notch",
+    "right_ring": "all",
+    "checkpoint": "build/phase1-body-direct-sweep-v3.checkpoint.jsonl",
+    "companion_confirmation": {
+      "companions": [
+        "FKQLZ",
+        "XFEDT"
+      ],
+      "threshold_z": 6.0,
+      "calibration": "artifacts/phase1-companion-calibration-v1.json"
+    }
+  },
+  "predictions": [
+    {
+      "id": "companion-confirmed-candidate",
+      "statement": "At least one of the 100 retained candidates is companion-confirmed (min over FKQLZ and XFEDT of best-start z >= 6).",
+      "decides_hypothesis": true
+    },
+    {
+      "id": "confirmed-candidate-is-rank-one",
+      "statement": "If a candidate is confirmed, it is also the sweep's rank-1 candidate on BYQMZ alone.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "confirmed-candidate-not-in-v2",
+      "statement": "If a candidate is confirmed, its plugboard is not the plugboard of any candidate v2 retained, since v2's retained candidates were all unconfirmed.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "null-top-near-expected-maximum",
+      "statement": "If no candidate is confirmed, the sweep's top score lies between z = 5.0 and z = 7.0 over the distribution of all 27,418,560 settings' scores (v2: 6.03), i.e. at the noise maximum.",
+      "decides_hypothesis": false
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261005,
+    "samples": 24
+  }
+}
