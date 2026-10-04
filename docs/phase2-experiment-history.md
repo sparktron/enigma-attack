@@ -62,21 +62,27 @@ The held-out split is chronological, and it excludes the five messages above,
 which were read while this was written. It trains on solved messages dated up
 to 1941-09-15 and evaluates on messages dated 16 September to 31 October. The
 prior gives each message a list of (crib, offset, p), and a placement that
-fails no-self-encipherment gets zero. The Bombe is preferred only if all four
-gates pass:
+fails no-self-encipherment gets zero. The probability the gates use is
+measured directly on the held-out messages, as the fraction in which at least
+one listed crib sits at a listed offset, rather than summed from per-crib
+rates. The three target messages are combined with a bound that holds however
+they are correlated: the best single message, never 1 − Π(1 − D_m). Address
+blocks are annotated from each source's layout before counting, never guessed
+from spelling. The Bombe is preferred only if all four gates pass:
 
 - G1: the evaluate split holds at least 20 messages.
 - G2: a cited source links that network to Batch C.
-- G3: the campaign lower bound D_L ≥ 0.29, so that a Bombe null is at least
-  as informative as v3's (likelihood ratio 0.71).
+- G3: the campaign lower bound D_L = max over messages of D_m,L is at least
+  0.29, so that a Bombe null is at least as informative as v3's (likelihood
+  ratio 0.71).
 - G4: detection per host-hour is at least the body-direct reference (0.013 per
   host-hour, v3 conditional on v2's null; v2 was 0.825 in 16.4 h).
 
 ### Verdict today
 
 **No crib prior can be estimated yet, so the Bombe is not preferred.** On the
-development set G1 and G2 fail. G3 clears 0.29 (0.43) only by assuming, against
-G2, that the three messages share the solved set's sign-off names. The next
+development set G1 and G2 fail, and G3 fails too even if G2 is waived and the
+Bombe is assumed perfect: D_L = 0.169 against 0.29. The next
 step is to read the held-out sources from a host that can reach them and run
 the frozen procedure. Until then the crib-free route stays first, as in the
 review's order.
