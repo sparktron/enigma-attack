@@ -11,7 +11,7 @@ candidates the v1 slice retained on BYQMZ against the real FKQLZ and XFEDT.
 
     python3 scripts/calibrate_companion.py
 
-It takes about a minute, so the artifact check regenerates it.
+It takes under three minutes with numpy, so the artifact check regenerates it.
 """
 
 from __future__ import annotations
@@ -61,6 +61,10 @@ def wrong_pairs(plugboard: str, wrong: int, generator: random.Random) -> str:
     pairs = plugboard.split()
     if wrong == 0:
         return plugboard
+    if wrong == 1 or wrong > len(pairs):
+        # One pair's two letters can only re-pair into the same pair, so the
+        # shuffle below would never terminate.
+        raise ValueError(f"cannot re-pair {wrong} of {len(pairs)} pairs among themselves")
     chosen = generator.sample(range(len(pairs)), wrong)
     loose = [letter for index in chosen for letter in pairs[index]]
     while True:
@@ -116,6 +120,9 @@ def run(config: dict[str, Any]) -> dict[str, Any]:
     reflector = enigma_fast.reflector_table(config["machine"]["reflector"])
     threshold = float(settings["threshold_z"])
     generator = random.Random(int(settings["seed"]))
+    for wrong in settings["wrong_pair_arms"]:
+        if int(wrong) == 1 or not 0 <= int(wrong) <= int(settings["stecker_pairs"]):
+            raise ValueError(f"wrong_pair_arms entry {wrong!r} cannot be built by re-pairing")
 
     arms: dict[int, list[dict[str, Any]]] = {k: [] for k in settings["wrong_pair_arms"]}
     random_null: list[dict[str, Any]] = []

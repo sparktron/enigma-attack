@@ -43,6 +43,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      # The companion calibration and joint-power runners scan 17,576 starts
+      # per message; without numpy they fall back to the pure-Python scan and
+      # three regenerations would take most of an hour.
+      - name: Install numpy
+        run: python -m pip install numpy
 
       # Hard failure when a declared claim value changes: the committed result
       # no longer follows from the code. A shape change is reported as a

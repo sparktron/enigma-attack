@@ -39,7 +39,8 @@ calibrated in `phase1-companion-calibration-v1`: at z ≥ 6 it accepts 39/40
 exact-plugboard keys and none of 240 wrong candidates. The complete
 middle-past-notch sweep of BYQMZ (27,418,560 settings, 16.4 hours) ran as the
 preregistered `phase1-body-direct-sweep-v2`, with a stated detection probability
-of about 0.80 for an ungarbled message. It is **null**: no retained candidate is
+of about 0.80 for an ungarbled message; measured jointly on the same planted
+draws afterwards (`phase1-joint-power-v1`) it is 0.825. It is **null**: no retained candidate is
 companion-confirmed (best z 4.47 against a threshold of 6), and the sweep's top
 score is the expected noise maximum. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.

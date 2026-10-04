@@ -577,6 +577,24 @@ Refuted by: no retained candidate companion-confirmed. The power was stated in
 advance: about 0.80 for an ungarbled BYQMZ, which is 82.5% end-to-end power
 times 39/40 confirmation, and about 0.15 with one dropped or inserted letter.
 
+Correction after the run (PR review): that product assumed the sweep and the
+companion check fail independently, which neither experiment measured, and
+both depend on the planted ring geometry. `scripts/joint_power.py` measures
+the conjunction instead. It is exploratory, written after the run and
+preregistered nowhere. For each end-to-end power draw it enciphers two
+companions (107 and 97 letters) under the planted key and runs the companion
+check on the candidate the middle-past-notch sweep actually ranked first.
+Result
+([artifacts/phase1-joint-power-v1.json](../artifacts/phase1-joint-power-v1.json)):
+the top candidate is companion-confirmed in exactly the draws the sweep
+detected, 33/40 unperturbed (82.5%, 95% interval 68–91%) and 6/40 with one
+indel (15%). Confirmation given detection is 1.0 in both cells. Every
+confirmed winner also scores above the lowest score v2 retained on BYQMZ
+(−8.085), so it would have been checked. The events are positively
+correlated, not independent: the draws the check misses with an exact
+plugboard are not draws the sweep detects. The joint power is therefore
+0.825 rather than 0.80.
+
 Configuration:
 [experiments/phase1-body-direct-sweep-v2/config.json](../experiments/phase1-body-direct-sweep-v2/config.json),
 committed in `57f679c` before the run. Raw result:
@@ -610,8 +628,10 @@ indicator check) do not apply.
 
 ### Interpretation (inference)
 
-- Under the stated power, a null multiplies the odds of the hypothesis by about
-  0.2 for an ungarbled BYQMZ. It multiplies them by about 0.85 if BYQMZ carries
+- Under the measured joint power (0.825; lower 95% bound 0.68), a null
+  multiplies the odds of the hypothesis by about 0.18 for an ungarbled BYQMZ,
+  and by no less favourable than 0.32 at the interval's lower bound. It
+  multiplies them by about 0.85 if BYQMZ carries
   one dropped or inserted letter, so most of the remaining standard-Enigma
   probability now sits in a garbled BYQMZ, a key outside the past-notch space's
   reach, or a machine or procedure outside the declared assumptions.
