@@ -877,6 +877,13 @@ and the no-self-encipherment property makes crib placement nearly free.
 > `phase1-body-direct-sweep-v2` below. The Bombe is reconsidered only if that
 > sweep is null at its stated power, or once a crib prior exists.
 
+> **Crib prior, 2026-10-04.** The preregistered
+> [phase2-crib-prior-v1](phase2-experiment-history.md#phase2-crib-prior-v1-preregistered)
+> finds that 15 of the 16 catalogued cribs occur in none of the five solved
+> 1941 plaintexts in the repository. The one exception is HARTJENSTEIN, which
+> ends 2 of the 5. Nothing links those five to Batch C, so no prior can be
+> estimated yet and the Bombe stays deferred.
+
 Second, and cheaply: XFEDT at 97 letters is below the recovery threshold on its
 own (1 of 8 draws) and should not be attacked alone. FKQLZ at 107 letters was
 not measured directly and sits between the 97-letter and 167-letter cells.
