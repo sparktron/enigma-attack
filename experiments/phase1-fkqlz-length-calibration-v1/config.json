@@ -1,0 +1,358 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "experiment_id": "phase1-fkqlz-length-calibration-v1",
+  "status": "preregistered 2026-10-04; not run",
+  "mode": "calibration",
+  "output": "artifacts/phase1-fkqlz-length-calibration-v1.json",
+  "hypothesis": "FKQLZ, at 107 letters, is below the length at which the body-direct stecker climb reliably recovers a ten-pair plugboard. Handed the true wheel order, rings and start position, with the same two-phase climb and the same constructed plaintext prefix as phase1-stecker-calibration-v1 (which recovered 1 of 8 at 97 letters and 8 of 8 at 167), the climb recovers the exact plaintext in fewer than 24 of 32 draws (75%) at 107 letters.",
+  "refuted_by": "24 or more of 32 draws recovered exactly at 107 letters with ten pairs. This measures the stecker stage only: the climb is handed the true setting, so a recovery rate here is an upper bound on what a sweep of FKQLZ could detect end to end, not that figure.",
+  "predictions": [
+    {
+      "id": "fkqlz-below-reliable",
+      "statement": "At 107 letters with ten pairs, fewer than 24 of 32 draws recover the exact plaintext.",
+      "decides_hypothesis": true
+    },
+    {
+      "id": "fkqlz-above-xfedt",
+      "statement": "At 107 letters at least 4 of 32 draws recover exactly, so the ten extra letters over 97 help measurably.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "fkqlz-interval",
+      "statement": "The 107-letter cell recovers between 4 and 20 of 32 exactly.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "anchor-97",
+      "statement": "At 97 letters at most 8 of 32 draws recover exactly (v1: 1 of 8).",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "anchor-167",
+      "statement": "At 167 letters at least 30 of 32 draws recover exactly (v1: 8 of 8).",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "plugboard-matches-plaintext",
+      "statement": "In every cell the number of exact plugboards equals the number of exact plaintexts, as in v1.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "other-stages-reproduce",
+      "statement": "ic_stage_calibration, screening_calibration and indicator_gradient_control reproduce phase1-stecker-calibration-v1's artifact values exactly.",
+      "decides_hypothesis": false
+    }
+  ],
+  "decision_rule": {
+    "at_least_24_of_32": "FKQLZ is long enough to carry a body-direct search of its own. Next, preregister an end-to-end power control at 107 letters through the middle-past-notch parameterization before any FKQLZ sweep, because the handed-setting rate is only an upper bound.",
+    "8_to_23_of_32": "FKQLZ is a companion only, as now: it confirms BYQMZ candidates but is not swept alone. The STATUS line 'FKQLZ (107 letters) was not measured directly' is replaced by the measured rate.",
+    "under_8_of_32": "FKQLZ is treated like XFEDT: below threshold and not attacked alone. Its role as a companion is unchanged, since the companion calibration already measured it at 107 letters.",
+    "both": "The result also enters phase2-crib-prior-v1's comparison only as context: a Bombe's recovery does not depend on message length the way the climb's does."
+  },
+  "run_command": "python3 phase1_stecker.py --config experiments/phase1-fkqlz-length-calibration-v1/config.json",
+  "run_constraint": "Queued, not run. Run only when the host is not running phase1-body-direct-sweep-v3, and record the commit and git status the runner writes.",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work."
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The controls are constructed or independently solved plaintexts, not authentic held-out Army traffic with an authentic daily key.",
+    "The messages behind the published 1941 n-gram counts are not enumerated, so overlap between the authentic control plaintexts and the scorer's training data cannot be ruled out. The constructed control exists to bound that risk, not to remove it.",
+    "The positive controls are body-direct and are handed the true wheel order, ring setting and start positions. They certify the stecker stage at the target lengths and say nothing about the rotor enumeration, which the sweeps and calibrations cover separately.",
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure. A different reflector, a Naval wheel or a different indicator convention is outside every space searched here.",
+    "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
+    "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
+    "One constructed plaintext, cut to each length as a prefix, so the 97-, 107- and 167-letter cells share their first 97 letters. The rate at 107 letters depends on what text occupies those letters, which a single plaintext does not average over.",
+    "The climb is handed the true setting. The rate is an upper bound on end-to-end detection at this length, as phase1-end-to-end-power-v1 showed at 167 (8 of 8 handed, 82.5% end to end)."
+  ],
+  "ic_stage_calibration": {
+    "method_reference": "https://cryptocellar.org/pubs/mcts.pdf",
+    "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+    "seed": 20260925,
+    "lengths": [
+      97,
+      167,
+      371,
+      800
+    ],
+    "stecker_pairs": [
+      0,
+      3,
+      6,
+      8,
+      10
+    ],
+    "null_trials": 400,
+    "usable_z": 3.0,
+    "target_length": 167,
+    "target_stecker_pairs": 10
+  },
+  "climb_capability_calibration": {
+    "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+    "seed": 20261006,
+    "lengths": [
+      97,
+      107,
+      167
+    ],
+    "stecker_pairs": [
+      10
+    ],
+    "null_trials": 8,
+    "target_length": 107,
+    "target_stecker_pairs": 10,
+    "draws": 32,
+    "rationale": "The procedure of phase1-stecker-calibration-v1's climb_capability_calibration, unchanged (stecker_calibration.calibrate_climb_capability, same plaintext, same climb, same 8 wrong-setting nulls per draw), with three changes declared before the run: the 107-letter cell is added, draws rise from 8 to 32 per cell so that the 107 cell's rate is known to about +/-15 points rather than +/-30, and the 6-pair column is dropped because 1941 Army practice was ten pairs. 97 and 167 are re-measured with fresh keys under a new seed as anchors. The derived flag recovers_at_target_scale requires every draw at 107 and 167, which is stricter than the decision rule below; the decision uses the counts."
+  },
+  "screening_calibration": {
+    "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+    "seed": 20260927,
+    "stecker_pairs": 10,
+    "max_passes": [
+      1,
+      2,
+      3,
+      5,
+      30
+    ],
+    "cheap_passes": 3,
+    "null_trials": 20,
+    "rationale": "Asked at the target message length of 167 and at the 371 letters a whole date pools to. A separating truncated climb at 167 is what decides whether a body-direct sweep over BYQMZ can cover the full 60 x 26^3 start-position space or only a declared slice of it.",
+    "lengths": [
+      167,
+      371
+    ],
+    "target_length": 167
+  },
+  "indicator_gradient_control": {
+    "id": "indicator-coupled-gradient",
+    "source": "constructed for this experiment",
+    "key": {
+      "rotor_order": [
+        "II",
+        "V",
+        "III"
+      ],
+      "rings": "KQL",
+      "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+    },
+    "indicator_ordering": "grundstellung_first",
+    "messages": [
+      {
+        "designator": "GRAD-1",
+        "grundstellung": "QWE",
+        "message_key": "BNM",
+        "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+        "solved_message_id": "1941-09-02-15"
+      },
+      {
+        "designator": "GRAD-2",
+        "grundstellung": "LDR",
+        "message_key": "KPT",
+        "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+        "solved_message_id": "1941-08-22-30"
+      },
+      {
+        "designator": "GRAD-3",
+        "grundstellung": "ZUI",
+        "message_key": "VCX",
+        "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+        "solved_message_id": "1941-09-06-36"
+      },
+      {
+        "designator": "GRAD-4",
+        "grundstellung": "PMF",
+        "message_key": "HGD",
+        "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+        "solved_message_id": "1941-09-14-46"
+      },
+      {
+        "designator": "GRAD-5",
+        "grundstellung": "TRQ",
+        "message_key": "YBN",
+        "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+        "solved_message_id": "1941-09-24-94"
+      }
+    ],
+    "rationale": "The same traffic as the authentic positive control, so the only difference between the two arms is whether the start positions are given or derived from the indicator through the plugboard being searched."
+  },
+  "other_stages": "The runner's calibration mode always runs all four calibration stages. ic_stage_calibration, screening_calibration and indicator_gradient_control are copied unchanged from phase1-stecker-calibration-v1, seeds included, and are not part of this hypothesis. Their values must reproduce that artifact; a difference is recorded as code drift, not as a finding. Projected cost: about 2 minutes for those stages (v1 took 121 s in all) plus about 864 climbs (3 lengths x 32 draws x 9) at 0.1 to 0.15 s each, single process, so under 5 minutes in all."
+}

@@ -887,3 +887,7 @@ and the no-self-encipherment property makes crib placement nearly free.
 Second, and cheaply: XFEDT at 97 letters is below the recovery threshold on its
 own (1 of 8 draws) and should not be attacked alone. FKQLZ at 107 letters was
 not measured directly and sits between the 97-letter and 167-letter cells.
+Its measurement is preregistered and queued, not run:
+[phase1-fkqlz-length-calibration-v1](../experiments/phase1-fkqlz-length-calibration-v1/config.json)
+(32 draws at 97, 107 and 167 letters, predicting fewer than 24 of 32 recovered
+at 107).
