@@ -37,9 +37,11 @@ inserted letter is calibrated (15% detection); the windowed-climb cell the
 history's decision calls for has not been run. A companion-body confirmation (review R4) is
 calibrated in `phase1-companion-calibration-v1`: at z ≥ 6 it accepts 39/40
 exact-plugboard keys and none of 240 wrong candidates. The complete
-middle-past-notch sweep of BYQMZ (27,418,560 settings) is preregistered as
-`phase1-body-direct-sweep-v2` with a stated detection probability of about
-0.80, and is running. See
+middle-past-notch sweep of BYQMZ (27,418,560 settings, 16.4 hours) ran as the
+preregistered `phase1-body-direct-sweep-v2`, with a stated detection probability
+of about 0.80 for an ungarbled message. It is **null**: no retained candidate is
+companion-confirmed (best z 4.47 against a threshold of 6), and the sweep's top
+score is the expected noise maximum. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
