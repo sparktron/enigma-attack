@@ -1,0 +1,3433 @@
+{
+  "schema": "enigma-attack.phase1-companion-calibration-result/v1",
+  "experiment_id": "phase1-companion-calibration-v1",
+  "hypothesis": "Deciphering each companion message at all 17,576 start positions under a body-direct candidate's wheel order, ring setting (as the middle-past-notch sweep parameterization presents it) and plugboard separates the daily key from wrong candidates: with the exact ten-pair plugboard every companion's best start stands at least 8 standard deviations above its own start distribution, with two of ten pairs wrong it still reaches 6, and no wrong candidate reaches 6.",
+  "refuted_by": "Any preregistered prediction below failing. A failed null prediction (a wrong candidate reaching z = 6) means the threshold must be raised and re-calibrated before any sweep relies on it.",
+  "started_at": "2026-10-03T06:34:33.815621+00:00",
+  "completed_at": "2026-10-03T06:37:09.254854+00:00",
+  "configuration": {
+    "path": "experiments/phase1-companion-calibration-v1/config.json",
+    "sha256": "efc9f8afe75eac436ffa99d1b460b9c6c84b75ef0a1dcfa614fbea7a5fbafba7"
+  },
+  "code": {
+    "source": "git_checkout",
+    "commit": "9bcb6976d97aa3eda914f066b6d5a44ff8f4bcd9",
+    "branch": "claude/phase1-full-sweep",
+    "dirty": true,
+    "status": [
+      "?? scripts/calibrate_companion.py"
+    ],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "dbe6cca45890a08e28c2d62a654f99d80c4669350ee79e1990bf47413a0d6d18",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "020247785edde8a8ef845c61260e398dc3bd7ede1b46bd0c4461a993b937a30d",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "e10cf52dc8a64792046ceb554f4c984fe395b38e9613f40ef1690cdaecd52972",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "b523246e19d01e8aa212cb4b7a132c1c6c2a598a851391bdc4676ea313921fa0",
+      "stecker_power.py": "b3a986f63d6bc6686563ee478b2b6b16a2c0d372e8c1d1d37b12591b5b790932",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "d72c5b78b61818f5e407b14616205490c98e4082ba55dd2396a9eae7a95ac980",
+      "stecker_sweeps.py": "5565a06b02eab4f18f9197d08d2ff4cc4f4f80aa5ffaf2978a55f2c2b0837f78",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
+      "scripts/calibrate_companion.py": "f07dd22ba9bc161a8819fc52f02594eda4ad215604bacb8cb92a654813a9557f"
+    }
+  },
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670"
+  },
+  "result": {
+    "threshold_z": 6.0,
+    "arms": [
+      {
+        "wrong_pairs": 0,
+        "trials": 40,
+        "min_best_z_median": 13.31525,
+        "min_best_z_min": 5.828968,
+        "min_best_z_max": 14.547114,
+        "confirmed": 39,
+        "confirmed_rate": 0.975
+      },
+      {
+        "wrong_pairs": 2,
+        "trials": 40,
+        "min_best_z_median": 6.755767,
+        "min_best_z_min": 3.771562,
+        "min_best_z_max": 10.698274,
+        "confirmed": 26,
+        "confirmed_rate": 0.65
+      },
+      {
+        "wrong_pairs": 4,
+        "trials": 40,
+        "min_best_z_median": 4.184037,
+        "min_best_z_min": 3.789494,
+        "min_best_z_max": 5.975612,
+        "confirmed": 0,
+        "confirmed_rate": 0.0
+      }
+    ],
+    "random_null": {
+      "trials": 200,
+      "min_best_z_median": 3.976707,
+      "min_best_z_min": 3.582258,
+      "min_best_z_max": 4.598148,
+      "confirmed": 0,
+      "confirmed_rate": 0.0
+    },
+    "corpus_null": {
+      "trials": 40,
+      "min_best_z_median": 4.008665,
+      "min_best_z_min": 3.705234,
+      "min_best_z_max": 4.535477,
+      "confirmed": 0,
+      "confirmed_rate": 0.0,
+      "source_artifact_sha256": "c7cc0aa93619635860b28c997e3c772ea3c7f3defe6a473231d5c02c1b09c411"
+    },
+    "predictions": [
+      {
+        "id": "exact-plugboard-clears-8",
+        "statement": "With the exact plugboard, every companion's best start reaches z >= 8 in at least 95% of draws.",
+        "kind": "rate_at_least",
+        "arm": 0,
+        "z": 8.0,
+        "value": 0.95,
+        "observed": 0.875,
+        "held": false
+      },
+      {
+        "id": "two-wrong-pairs-clear-threshold",
+        "statement": "With two of ten pairs wrong, every companion's best start reaches the threshold z >= 6 in at least 80% of draws.",
+        "kind": "rate_at_least",
+        "arm": 2,
+        "z": 6.0,
+        "value": 0.8,
+        "observed": 0.65,
+        "held": false
+      },
+      {
+        "id": "random-nulls-stay-below-threshold",
+        "statement": "No random wrong candidate reaches the threshold on both companions.",
+        "kind": "null_rate_at_most",
+        "null": "random",
+        "z": 6.0,
+        "value": 0.0,
+        "observed": 0.0,
+        "held": true
+      },
+      {
+        "id": "corpus-nulls-stay-below-threshold",
+        "statement": "None of the 40 candidates the v1 slice retained on BYQMZ reaches the threshold on both of FKQLZ and XFEDT.",
+        "kind": "null_rate_at_most",
+        "null": "corpus",
+        "z": 6.0,
+        "value": 0.0,
+        "observed": 0.0,
+        "held": true
+      }
+    ],
+    "all_predictions_held": false,
+    "draws": {
+      "0": [
+        {
+          "draw": 0,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "II"
+          ],
+          "planted_rings": "EPJ",
+          "presented_rings": "AOJ",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.427962,
+            13.803075
+          ],
+          "min_best_z": 13.427962,
+          "confirmed": true
+        },
+        {
+          "draw": 1,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "III"
+          ],
+          "planted_rings": "CQX",
+          "presented_rings": "AQX",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            15.113945,
+            14.288347
+          ],
+          "min_best_z": 14.288347,
+          "confirmed": true
+        },
+        {
+          "draw": 2,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "I"
+          ],
+          "planted_rings": "KJE",
+          "presented_rings": "AJE",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.540145,
+            12.311654
+          ],
+          "min_best_z": 12.311654,
+          "confirmed": true
+        },
+        {
+          "draw": 3,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "III"
+          ],
+          "planted_rings": "BDB",
+          "presented_rings": "AVB",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.491526,
+            10.451799
+          ],
+          "min_best_z": 10.451799,
+          "confirmed": true
+        },
+        {
+          "draw": 4,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "I"
+          ],
+          "planted_rings": "UBG",
+          "presented_rings": "ANG",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            15.156628,
+            13.880797
+          ],
+          "min_best_z": 13.880797,
+          "confirmed": true
+        },
+        {
+          "draw": 5,
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "V"
+          ],
+          "planted_rings": "LSY",
+          "presented_rings": "AAY",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.292817,
+            6.065928
+          ],
+          "min_best_z": 6.065928,
+          "confirmed": true
+        },
+        {
+          "draw": 6,
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "II"
+          ],
+          "planted_rings": "CYJ",
+          "presented_rings": "AYJ",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.869485,
+            13.797616
+          ],
+          "min_best_z": 13.797616,
+          "confirmed": true
+        },
+        {
+          "draw": 7,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "IV"
+          ],
+          "planted_rings": "KJX",
+          "presented_rings": "ANX",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.182607,
+            14.679792
+          ],
+          "min_best_z": 14.182607,
+          "confirmed": true
+        },
+        {
+          "draw": 8,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "I"
+          ],
+          "planted_rings": "MIP",
+          "presented_rings": "AZP",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.866307,
+            10.628043
+          ],
+          "min_best_z": 10.628043,
+          "confirmed": true
+        },
+        {
+          "draw": 9,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "V"
+          ],
+          "planted_rings": "SSK",
+          "presented_rings": "AMK",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            7.505318,
+            7.006051
+          ],
+          "min_best_z": 7.006051,
+          "confirmed": true
+        },
+        {
+          "draw": 10,
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "II"
+          ],
+          "planted_rings": "BES",
+          "presented_rings": "AGS",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.127946,
+            13.734277
+          ],
+          "min_best_z": 13.127946,
+          "confirmed": true
+        },
+        {
+          "draw": 11,
+          "rotor_order_left_to_right": [
+            "III",
+            "V",
+            "I"
+          ],
+          "planted_rings": "PGQ",
+          "presented_rings": "AFQ",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            15.360316,
+            13.866288
+          ],
+          "min_best_z": 13.866288,
+          "confirmed": true
+        },
+        {
+          "draw": 12,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "IV"
+          ],
+          "planted_rings": "FRC",
+          "presented_rings": "AXC",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.64323,
+            13.865025
+          ],
+          "min_best_z": 13.865025,
+          "confirmed": true
+        },
+        {
+          "draw": 13,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "III"
+          ],
+          "planted_rings": "HUU",
+          "presented_rings": "AJU",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.842462,
+            12.470336
+          ],
+          "min_best_z": 12.470336,
+          "confirmed": true
+        },
+        {
+          "draw": 14,
+          "rotor_order_left_to_right": [
+            "I",
+            "IV",
+            "II"
+          ],
+          "planted_rings": "PPE",
+          "presented_rings": "ACE",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.238071,
+            14.726477
+          ],
+          "min_best_z": 14.238071,
+          "confirmed": true
+        },
+        {
+          "draw": 15,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "planted_rings": "REV",
+          "presented_rings": "AZV",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.833698,
+            14.258207
+          ],
+          "min_best_z": 14.258207,
+          "confirmed": true
+        },
+        {
+          "draw": 16,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "planted_rings": "UPM",
+          "presented_rings": "ASM",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.442275,
+            13.116058
+          ],
+          "min_best_z": 13.116058,
+          "confirmed": true
+        },
+        {
+          "draw": 17,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "I"
+          ],
+          "planted_rings": "CTB",
+          "presented_rings": "ALB",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.55019,
+            10.553135
+          ],
+          "min_best_z": 10.553135,
+          "confirmed": true
+        },
+        {
+          "draw": 18,
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "III"
+          ],
+          "planted_rings": "VXZ",
+          "presented_rings": "AOZ",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            12.343489,
+            13.782668
+          ],
+          "min_best_z": 12.343489,
+          "confirmed": true
+        },
+        {
+          "draw": 19,
+          "rotor_order_left_to_right": [
+            "IV",
+            "III",
+            "II"
+          ],
+          "planted_rings": "OJU",
+          "presented_rings": "AGU",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.491319,
+            13.306018
+          ],
+          "min_best_z": 13.306018,
+          "confirmed": true
+        },
+        {
+          "draw": 20,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "III"
+          ],
+          "planted_rings": "SDM",
+          "presented_rings": "AWM",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            15.17504,
+            14.028568
+          ],
+          "min_best_z": 14.028568,
+          "confirmed": true
+        },
+        {
+          "draw": 21,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "planted_rings": "XXT",
+          "presented_rings": "ATT",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.373668,
+            6.555167
+          ],
+          "min_best_z": 6.555167,
+          "confirmed": true
+        },
+        {
+          "draw": 22,
+          "rotor_order_left_to_right": [
+            "II",
+            "IV",
+            "I"
+          ],
+          "planted_rings": "FQR",
+          "presented_rings": "AQR",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.936551,
+            14.109566
+          ],
+          "min_best_z": 13.936551,
+          "confirmed": true
+        },
+        {
+          "draw": 23,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "HEZ",
+          "presented_rings": "AMZ",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.388299,
+            5.828968
+          ],
+          "min_best_z": 5.828968,
+          "confirmed": false
+        },
+        {
+          "draw": 24,
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "IV"
+          ],
+          "planted_rings": "KLC",
+          "presented_rings": "AHC",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.97391,
+            12.805185
+          ],
+          "min_best_z": 12.805185,
+          "confirmed": true
+        },
+        {
+          "draw": 25,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "IKF",
+          "presented_rings": "AVF",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.250518,
+            13.61109
+          ],
+          "min_best_z": 13.61109,
+          "confirmed": true
+        },
+        {
+          "draw": 26,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "I"
+          ],
+          "planted_rings": "JCU",
+          "presented_rings": "ACU",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.293557,
+            13.475554
+          ],
+          "min_best_z": 13.475554,
+          "confirmed": true
+        },
+        {
+          "draw": 27,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "I"
+          ],
+          "planted_rings": "CCO",
+          "presented_rings": "ADO",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.470692,
+            13.93508
+          ],
+          "min_best_z": 13.93508,
+          "confirmed": true
+        },
+        {
+          "draw": 28,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "IV"
+          ],
+          "planted_rings": "POP",
+          "presented_rings": "APP",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.686603,
+            14.408677
+          ],
+          "min_best_z": 13.686603,
+          "confirmed": true
+        },
+        {
+          "draw": 29,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "III"
+          ],
+          "planted_rings": "PIK",
+          "presented_rings": "AIK",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.436803,
+            14.772019
+          ],
+          "min_best_z": 14.436803,
+          "confirmed": true
+        },
+        {
+          "draw": 30,
+          "rotor_order_left_to_right": [
+            "II",
+            "I",
+            "III"
+          ],
+          "planted_rings": "OQI",
+          "presented_rings": "AMI",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.925668,
+            13.256519
+          ],
+          "min_best_z": 13.256519,
+          "confirmed": true
+        },
+        {
+          "draw": 31,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "II"
+          ],
+          "planted_rings": "LAY",
+          "presented_rings": "ACY",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.8877,
+            13.291901
+          ],
+          "min_best_z": 13.291901,
+          "confirmed": true
+        },
+        {
+          "draw": 32,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "planted_rings": "SUB",
+          "presented_rings": "AHB",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            15.505865,
+            9.216674
+          ],
+          "min_best_z": 9.216674,
+          "confirmed": true
+        },
+        {
+          "draw": 33,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "XAH",
+          "presented_rings": "AZH",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.185546,
+            13.66279
+          ],
+          "min_best_z": 13.66279,
+          "confirmed": true
+        },
+        {
+          "draw": 34,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "planted_rings": "MDI",
+          "presented_rings": "AVI",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            13.166346,
+            13.66128
+          ],
+          "min_best_z": 13.166346,
+          "confirmed": true
+        },
+        {
+          "draw": 35,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "II"
+          ],
+          "planted_rings": "XRF",
+          "presented_rings": "AVF",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.054896,
+            13.324481
+          ],
+          "min_best_z": 13.324481,
+          "confirmed": true
+        },
+        {
+          "draw": 36,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "I"
+          ],
+          "planted_rings": "EWW",
+          "presented_rings": "AHW",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            15.154766,
+            13.749834
+          ],
+          "min_best_z": 13.749834,
+          "confirmed": true
+        },
+        {
+          "draw": 37,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "planted_rings": "ZIX",
+          "presented_rings": "ABX",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.418759,
+            6.707828
+          ],
+          "min_best_z": 6.707828,
+          "confirmed": true
+        },
+        {
+          "draw": 38,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "planted_rings": "QXN",
+          "presented_rings": "AZN",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            14.547114,
+            14.758213
+          ],
+          "min_best_z": 14.547114,
+          "confirmed": true
+        },
+        {
+          "draw": 39,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "IV"
+          ],
+          "planted_rings": "ANH",
+          "presented_rings": "APH",
+          "wrong_pairs": 0,
+          "companion_best_z": [
+            12.337281,
+            13.524023
+          ],
+          "min_best_z": 12.337281,
+          "confirmed": true
+        }
+      ],
+      "2": [
+        {
+          "draw": 0,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "II"
+          ],
+          "planted_rings": "EPJ",
+          "presented_rings": "AOJ",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            11.192787,
+            10.698274
+          ],
+          "min_best_z": 10.698274,
+          "confirmed": true
+        },
+        {
+          "draw": 1,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "III"
+          ],
+          "planted_rings": "CQX",
+          "presented_rings": "AQX",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.178668,
+            4.303333
+          ],
+          "min_best_z": 4.303333,
+          "confirmed": false
+        },
+        {
+          "draw": 2,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "I"
+          ],
+          "planted_rings": "KJE",
+          "presented_rings": "AJE",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            5.664555,
+            4.201473
+          ],
+          "min_best_z": 4.201473,
+          "confirmed": false
+        },
+        {
+          "draw": 3,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "III"
+          ],
+          "planted_rings": "BDB",
+          "presented_rings": "AVB",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.448791,
+            7.008084
+          ],
+          "min_best_z": 7.008084,
+          "confirmed": true
+        },
+        {
+          "draw": 4,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "I"
+          ],
+          "planted_rings": "UBG",
+          "presented_rings": "ANG",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            10.611381,
+            9.176165
+          ],
+          "min_best_z": 9.176165,
+          "confirmed": true
+        },
+        {
+          "draw": 5,
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "V"
+          ],
+          "planted_rings": "LSY",
+          "presented_rings": "AAY",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            7.72823,
+            4.264884
+          ],
+          "min_best_z": 4.264884,
+          "confirmed": false
+        },
+        {
+          "draw": 6,
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "II"
+          ],
+          "planted_rings": "CYJ",
+          "presented_rings": "AYJ",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.641893,
+            9.038166
+          ],
+          "min_best_z": 6.641893,
+          "confirmed": true
+        },
+        {
+          "draw": 7,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "IV"
+          ],
+          "planted_rings": "KJX",
+          "presented_rings": "ANX",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.946852,
+            10.020276
+          ],
+          "min_best_z": 9.946852,
+          "confirmed": true
+        },
+        {
+          "draw": 8,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "I"
+          ],
+          "planted_rings": "MIP",
+          "presented_rings": "AZP",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.941629,
+            4.354412
+          ],
+          "min_best_z": 4.354412,
+          "confirmed": false
+        },
+        {
+          "draw": 9,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "V"
+          ],
+          "planted_rings": "SSK",
+          "presented_rings": "AMK",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            5.087078,
+            4.85394
+          ],
+          "min_best_z": 4.85394,
+          "confirmed": false
+        },
+        {
+          "draw": 10,
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "II"
+          ],
+          "planted_rings": "BES",
+          "presented_rings": "AGS",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.880599,
+            6.098906
+          ],
+          "min_best_z": 6.098906,
+          "confirmed": true
+        },
+        {
+          "draw": 11,
+          "rotor_order_left_to_right": [
+            "III",
+            "V",
+            "I"
+          ],
+          "planted_rings": "PGQ",
+          "presented_rings": "AFQ",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.201131,
+            10.031156
+          ],
+          "min_best_z": 9.201131,
+          "confirmed": true
+        },
+        {
+          "draw": 12,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "IV"
+          ],
+          "planted_rings": "FRC",
+          "presented_rings": "AXC",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.284117,
+            4.711805
+          ],
+          "min_best_z": 4.711805,
+          "confirmed": false
+        },
+        {
+          "draw": 13,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "III"
+          ],
+          "planted_rings": "HUU",
+          "presented_rings": "AJU",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.454155,
+            6.466581
+          ],
+          "min_best_z": 6.466581,
+          "confirmed": true
+        },
+        {
+          "draw": 14,
+          "rotor_order_left_to_right": [
+            "I",
+            "IV",
+            "II"
+          ],
+          "planted_rings": "PPE",
+          "presented_rings": "ACE",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            7.064339,
+            6.869642
+          ],
+          "min_best_z": 6.869642,
+          "confirmed": true
+        },
+        {
+          "draw": 15,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "planted_rings": "REV",
+          "presented_rings": "AZV",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.5393,
+            8.314215
+          ],
+          "min_best_z": 8.314215,
+          "confirmed": true
+        },
+        {
+          "draw": 16,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "planted_rings": "UPM",
+          "presented_rings": "ASM",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.218106,
+            4.654859
+          ],
+          "min_best_z": 4.654859,
+          "confirmed": false
+        },
+        {
+          "draw": 17,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "I"
+          ],
+          "planted_rings": "CTB",
+          "presented_rings": "ALB",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.34701,
+            5.913497
+          ],
+          "min_best_z": 5.913497,
+          "confirmed": false
+        },
+        {
+          "draw": 18,
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "III"
+          ],
+          "planted_rings": "VXZ",
+          "presented_rings": "AOZ",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            7.219188,
+            8.033507
+          ],
+          "min_best_z": 7.219188,
+          "confirmed": true
+        },
+        {
+          "draw": 19,
+          "rotor_order_left_to_right": [
+            "IV",
+            "III",
+            "II"
+          ],
+          "planted_rings": "OJU",
+          "presented_rings": "AGU",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.765696,
+            9.273983
+          ],
+          "min_best_z": 9.273983,
+          "confirmed": true
+        },
+        {
+          "draw": 20,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "III"
+          ],
+          "planted_rings": "SDM",
+          "presented_rings": "AWM",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.378026,
+            8.868742
+          ],
+          "min_best_z": 8.868742,
+          "confirmed": true
+        },
+        {
+          "draw": 21,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "planted_rings": "XXT",
+          "presented_rings": "ATT",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            5.265243,
+            4.462073
+          ],
+          "min_best_z": 4.462073,
+          "confirmed": false
+        },
+        {
+          "draw": 22,
+          "rotor_order_left_to_right": [
+            "II",
+            "IV",
+            "I"
+          ],
+          "planted_rings": "FQR",
+          "presented_rings": "AQR",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.90075,
+            6.284729
+          ],
+          "min_best_z": 6.284729,
+          "confirmed": true
+        },
+        {
+          "draw": 23,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "HEZ",
+          "presented_rings": "AMZ",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.976924,
+            3.771562
+          ],
+          "min_best_z": 3.771562,
+          "confirmed": false
+        },
+        {
+          "draw": 24,
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "IV"
+          ],
+          "planted_rings": "KLC",
+          "presented_rings": "AHC",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.340026,
+            6.750762
+          ],
+          "min_best_z": 6.340026,
+          "confirmed": true
+        },
+        {
+          "draw": 25,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "IKF",
+          "presented_rings": "AVF",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.151446,
+            7.817586
+          ],
+          "min_best_z": 7.817586,
+          "confirmed": true
+        },
+        {
+          "draw": 26,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "I"
+          ],
+          "planted_rings": "JCU",
+          "presented_rings": "ACU",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.331799,
+            8.773607
+          ],
+          "min_best_z": 8.773607,
+          "confirmed": true
+        },
+        {
+          "draw": 27,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "I"
+          ],
+          "planted_rings": "CCO",
+          "presented_rings": "ADO",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            5.798158,
+            4.286316
+          ],
+          "min_best_z": 4.286316,
+          "confirmed": false
+        },
+        {
+          "draw": 28,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "IV"
+          ],
+          "planted_rings": "POP",
+          "presented_rings": "APP",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.79,
+            10.390757
+          ],
+          "min_best_z": 9.79,
+          "confirmed": true
+        },
+        {
+          "draw": 29,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "III"
+          ],
+          "planted_rings": "PIK",
+          "presented_rings": "AIK",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            7.995761,
+            9.756711
+          ],
+          "min_best_z": 7.995761,
+          "confirmed": true
+        },
+        {
+          "draw": 30,
+          "rotor_order_left_to_right": [
+            "II",
+            "I",
+            "III"
+          ],
+          "planted_rings": "OQI",
+          "presented_rings": "AMI",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.736886,
+            6.194905
+          ],
+          "min_best_z": 6.194905,
+          "confirmed": true
+        },
+        {
+          "draw": 31,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "II"
+          ],
+          "planted_rings": "LAY",
+          "presented_rings": "ACY",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.86397,
+            7.749328
+          ],
+          "min_best_z": 7.749328,
+          "confirmed": true
+        },
+        {
+          "draw": 32,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "planted_rings": "SUB",
+          "presented_rings": "AHB",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            7.676966,
+            4.086605
+          ],
+          "min_best_z": 4.086605,
+          "confirmed": false
+        },
+        {
+          "draw": 33,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "XAH",
+          "presented_rings": "AZH",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            8.711275,
+            7.52401
+          ],
+          "min_best_z": 7.52401,
+          "confirmed": true
+        },
+        {
+          "draw": 34,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "planted_rings": "MDI",
+          "presented_rings": "AVI",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            7.366808,
+            9.113213
+          ],
+          "min_best_z": 7.366808,
+          "confirmed": true
+        },
+        {
+          "draw": 35,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "II"
+          ],
+          "planted_rings": "XRF",
+          "presented_rings": "AVF",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            6.964829,
+            7.129853
+          ],
+          "min_best_z": 6.964829,
+          "confirmed": true
+        },
+        {
+          "draw": 36,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "I"
+          ],
+          "planted_rings": "EWW",
+          "presented_rings": "AHW",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.969367,
+            7.889372
+          ],
+          "min_best_z": 7.889372,
+          "confirmed": true
+        },
+        {
+          "draw": 37,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "planted_rings": "ZIX",
+          "presented_rings": "ABX",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            10.031971,
+            4.105962
+          ],
+          "min_best_z": 4.105962,
+          "confirmed": false
+        },
+        {
+          "draw": 38,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "planted_rings": "QXN",
+          "presented_rings": "AZN",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            9.608012,
+            8.994988
+          ],
+          "min_best_z": 8.994988,
+          "confirmed": true
+        },
+        {
+          "draw": 39,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "IV"
+          ],
+          "planted_rings": "ANH",
+          "presented_rings": "APH",
+          "wrong_pairs": 2,
+          "companion_best_z": [
+            4.70439,
+            4.350837
+          ],
+          "min_best_z": 4.350837,
+          "confirmed": false
+        }
+      ],
+      "4": [
+        {
+          "draw": 0,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "II"
+          ],
+          "planted_rings": "EPJ",
+          "presented_rings": "AOJ",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.01149,
+            4.543334
+          ],
+          "min_best_z": 4.543334,
+          "confirmed": false
+        },
+        {
+          "draw": 1,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "III"
+          ],
+          "planted_rings": "CQX",
+          "presented_rings": "AQX",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.94823,
+            3.898367
+          ],
+          "min_best_z": 3.898367,
+          "confirmed": false
+        },
+        {
+          "draw": 2,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "I"
+          ],
+          "planted_rings": "KJE",
+          "presented_rings": "AJE",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.345336,
+            4.384027
+          ],
+          "min_best_z": 4.384027,
+          "confirmed": false
+        },
+        {
+          "draw": 3,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "III"
+          ],
+          "planted_rings": "BDB",
+          "presented_rings": "AVB",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.486747,
+            4.367358
+          ],
+          "min_best_z": 4.367358,
+          "confirmed": false
+        },
+        {
+          "draw": 4,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "I"
+          ],
+          "planted_rings": "UBG",
+          "presented_rings": "ANG",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.536557,
+            4.186817
+          ],
+          "min_best_z": 4.186817,
+          "confirmed": false
+        },
+        {
+          "draw": 5,
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "V"
+          ],
+          "planted_rings": "LSY",
+          "presented_rings": "AAY",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.896948,
+            4.433832
+          ],
+          "min_best_z": 4.433832,
+          "confirmed": false
+        },
+        {
+          "draw": 6,
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "II"
+          ],
+          "planted_rings": "CYJ",
+          "presented_rings": "AYJ",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            3.92122,
+            4.255182
+          ],
+          "min_best_z": 3.92122,
+          "confirmed": false
+        },
+        {
+          "draw": 7,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "IV"
+          ],
+          "planted_rings": "KJX",
+          "presented_rings": "ANX",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            3.910521,
+            6.553153
+          ],
+          "min_best_z": 3.910521,
+          "confirmed": false
+        },
+        {
+          "draw": 8,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "I"
+          ],
+          "planted_rings": "MIP",
+          "presented_rings": "AZP",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            3.928274,
+            3.872471
+          ],
+          "min_best_z": 3.872471,
+          "confirmed": false
+        },
+        {
+          "draw": 9,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "V"
+          ],
+          "planted_rings": "SSK",
+          "presented_rings": "AMK",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.513364,
+            4.019839
+          ],
+          "min_best_z": 4.019839,
+          "confirmed": false
+        },
+        {
+          "draw": 10,
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "II"
+          ],
+          "planted_rings": "BES",
+          "presented_rings": "AGS",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.428465,
+            4.436529
+          ],
+          "min_best_z": 4.428465,
+          "confirmed": false
+        },
+        {
+          "draw": 11,
+          "rotor_order_left_to_right": [
+            "III",
+            "V",
+            "I"
+          ],
+          "planted_rings": "PGQ",
+          "presented_rings": "AFQ",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.093653,
+            5.152148
+          ],
+          "min_best_z": 5.093653,
+          "confirmed": false
+        },
+        {
+          "draw": 12,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "IV"
+          ],
+          "planted_rings": "FRC",
+          "presented_rings": "AXC",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            7.625195,
+            4.286261
+          ],
+          "min_best_z": 4.286261,
+          "confirmed": false
+        },
+        {
+          "draw": 13,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "III"
+          ],
+          "planted_rings": "HUU",
+          "presented_rings": "AJU",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.224915,
+            4.894995
+          ],
+          "min_best_z": 4.224915,
+          "confirmed": false
+        },
+        {
+          "draw": 14,
+          "rotor_order_left_to_right": [
+            "I",
+            "IV",
+            "II"
+          ],
+          "planted_rings": "PPE",
+          "presented_rings": "ACE",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.082811,
+            4.307044
+          ],
+          "min_best_z": 4.082811,
+          "confirmed": false
+        },
+        {
+          "draw": 15,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "planted_rings": "REV",
+          "presented_rings": "AZV",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.181257,
+            4.601522
+          ],
+          "min_best_z": 4.181257,
+          "confirmed": false
+        },
+        {
+          "draw": 16,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "planted_rings": "UPM",
+          "presented_rings": "ASM",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            3.796244,
+            5.594148
+          ],
+          "min_best_z": 3.796244,
+          "confirmed": false
+        },
+        {
+          "draw": 17,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "I"
+          ],
+          "planted_rings": "CTB",
+          "presented_rings": "ALB",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.468305,
+            4.578892
+          ],
+          "min_best_z": 4.468305,
+          "confirmed": false
+        },
+        {
+          "draw": 18,
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "III"
+          ],
+          "planted_rings": "VXZ",
+          "presented_rings": "AOZ",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.061374,
+            4.629879
+          ],
+          "min_best_z": 4.061374,
+          "confirmed": false
+        },
+        {
+          "draw": 19,
+          "rotor_order_left_to_right": [
+            "IV",
+            "III",
+            "II"
+          ],
+          "planted_rings": "OJU",
+          "presented_rings": "AGU",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.238021,
+            4.024905
+          ],
+          "min_best_z": 4.024905,
+          "confirmed": false
+        },
+        {
+          "draw": 20,
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "III"
+          ],
+          "planted_rings": "SDM",
+          "presented_rings": "AWM",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.962706,
+            4.735538
+          ],
+          "min_best_z": 4.735538,
+          "confirmed": false
+        },
+        {
+          "draw": 21,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "planted_rings": "XXT",
+          "presented_rings": "ATT",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.015437,
+            4.376025
+          ],
+          "min_best_z": 4.015437,
+          "confirmed": false
+        },
+        {
+          "draw": 22,
+          "rotor_order_left_to_right": [
+            "II",
+            "IV",
+            "I"
+          ],
+          "planted_rings": "FQR",
+          "presented_rings": "AQR",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.025902,
+            4.780419
+          ],
+          "min_best_z": 4.025902,
+          "confirmed": false
+        },
+        {
+          "draw": 23,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "HEZ",
+          "presented_rings": "AMZ",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.408517,
+            3.922822
+          ],
+          "min_best_z": 3.922822,
+          "confirmed": false
+        },
+        {
+          "draw": 24,
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "IV"
+          ],
+          "planted_rings": "KLC",
+          "presented_rings": "AHC",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.836578,
+            3.857507
+          ],
+          "min_best_z": 3.857507,
+          "confirmed": false
+        },
+        {
+          "draw": 25,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "IKF",
+          "presented_rings": "AVF",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.75063,
+            6.319488
+          ],
+          "min_best_z": 4.75063,
+          "confirmed": false
+        },
+        {
+          "draw": 26,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "I"
+          ],
+          "planted_rings": "JCU",
+          "presented_rings": "ACU",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.35343,
+            4.607246
+          ],
+          "min_best_z": 4.607246,
+          "confirmed": false
+        },
+        {
+          "draw": 27,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "I"
+          ],
+          "planted_rings": "CCO",
+          "presented_rings": "ADO",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            6.269999,
+            5.975612
+          ],
+          "min_best_z": 5.975612,
+          "confirmed": false
+        },
+        {
+          "draw": 28,
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "IV"
+          ],
+          "planted_rings": "POP",
+          "presented_rings": "APP",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            3.929185,
+            3.789494
+          ],
+          "min_best_z": 3.789494,
+          "confirmed": false
+        },
+        {
+          "draw": 29,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "III"
+          ],
+          "planted_rings": "PIK",
+          "presented_rings": "AIK",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.355988,
+            3.878424
+          ],
+          "min_best_z": 3.878424,
+          "confirmed": false
+        },
+        {
+          "draw": 30,
+          "rotor_order_left_to_right": [
+            "II",
+            "I",
+            "III"
+          ],
+          "planted_rings": "OQI",
+          "presented_rings": "AMI",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            3.979799,
+            4.022222
+          ],
+          "min_best_z": 3.979799,
+          "confirmed": false
+        },
+        {
+          "draw": 31,
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "II"
+          ],
+          "planted_rings": "LAY",
+          "presented_rings": "ACY",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.200741,
+            4.3529
+          ],
+          "min_best_z": 4.3529,
+          "confirmed": false
+        },
+        {
+          "draw": 32,
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "planted_rings": "SUB",
+          "presented_rings": "AHB",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.095813,
+            4.832816
+          ],
+          "min_best_z": 4.095813,
+          "confirmed": false
+        },
+        {
+          "draw": 33,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "planted_rings": "XAH",
+          "presented_rings": "AZH",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.355439,
+            4.443325
+          ],
+          "min_best_z": 4.355439,
+          "confirmed": false
+        },
+        {
+          "draw": 34,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "planted_rings": "MDI",
+          "presented_rings": "AVI",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.067282,
+            4.899187
+          ],
+          "min_best_z": 4.067282,
+          "confirmed": false
+        },
+        {
+          "draw": 35,
+          "rotor_order_left_to_right": [
+            "I",
+            "V",
+            "II"
+          ],
+          "planted_rings": "XRF",
+          "presented_rings": "AVF",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.899258,
+            4.323672
+          ],
+          "min_best_z": 4.323672,
+          "confirmed": false
+        },
+        {
+          "draw": 36,
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "I"
+          ],
+          "planted_rings": "EWW",
+          "presented_rings": "AHW",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.588884,
+            4.003416
+          ],
+          "min_best_z": 4.003416,
+          "confirmed": false
+        },
+        {
+          "draw": 37,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "planted_rings": "ZIX",
+          "presented_rings": "ABX",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.571702,
+            4.254488
+          ],
+          "min_best_z": 4.254488,
+          "confirmed": false
+        },
+        {
+          "draw": 38,
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "planted_rings": "QXN",
+          "presented_rings": "AZN",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            4.531091,
+            6.910275
+          ],
+          "min_best_z": 4.531091,
+          "confirmed": false
+        },
+        {
+          "draw": 39,
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "IV"
+          ],
+          "planted_rings": "ANH",
+          "presented_rings": "APH",
+          "wrong_pairs": 4,
+          "companion_best_z": [
+            5.889301,
+            6.176423
+          ],
+          "min_best_z": 5.889301,
+          "confirmed": false
+        }
+      ]
+    },
+    "corpus_null_candidates": [
+      {
+        "rank": 1,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ONU",
+            "best_score_per_letter": -8.745119795,
+            "mean_score_per_letter": -9.622873408,
+            "sd_score_per_letter": 0.19711947,
+            "best_z": 4.452902,
+            "runner_up_z": 4.02675,
+            "best_plaintext_prefix": "QIQDKYNILMQSTBIEMEUSEOQGEZXUSKDZDJPTSPOSSMETRMAQTJNPOBCKZYKO"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "XVQ",
+            "best_score_per_letter": -8.800952282,
+            "mean_score_per_letter": -9.610708035,
+            "sd_score_per_letter": 0.208249687,
+            "best_z": 3.888389,
+            "runner_up_z": 3.645276,
+            "best_plaintext_prefix": "PJXLBLNRZVGRABSFCPASNDXDAKWDLXENFCSSGTZVIORWAREYOQVIIGAWOUYG"
+          }
+        ],
+        "min_best_z": 3.888389,
+        "confirmed": false
+      },
+      {
+        "rank": 2,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "BEV",
+            "best_score_per_letter": -8.895314105,
+            "mean_score_per_letter": -9.624994213,
+            "sd_score_per_letter": 0.196932266,
+            "best_z": 3.705234,
+            "runner_up_z": 3.643234,
+            "best_plaintext_prefix": "WRFXEMNBJXZRRBUIXEDTONEXIAINLGRLDREHSIZMGNZPDBFINDEOGDOSTTEI"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "VUK",
+            "best_score_per_letter": -8.664613105,
+            "mean_score_per_letter": -9.612277547,
+            "sd_score_per_letter": 0.20767727,
+            "best_z": 4.563159,
+            "runner_up_z": 4.124571,
+            "best_plaintext_prefix": "KTTARUNGBAKUENXCKOKQEENNWYXZUYUEZLVHXURYCKIAZBXGADEMOXPWYTJV"
+          }
+        ],
+        "min_best_z": 3.705234,
+        "confirmed": false
+      },
+      {
+        "rank": 3,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "QPW",
+            "best_score_per_letter": -8.841086045,
+            "mean_score_per_letter": -9.621864667,
+            "sd_score_per_letter": 0.196529997,
+            "best_z": 3.972822,
+            "runner_up_z": 3.84776,
+            "best_plaintext_prefix": "IUAELJYKKORVRFUOODDHLMHISCHBXPXAVXSSXEUQTRMETRLLPDEVZFIREIZR"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "YWC",
+            "best_score_per_letter": -8.720354824,
+            "mean_score_per_letter": -9.608379822,
+            "sd_score_per_letter": 0.207619609,
+            "best_z": 4.277173,
+            "runner_up_z": 3.79414,
+            "best_plaintext_prefix": "OFDBERFULXGIPPKQWJAXUGBOZAETSIMOZGGSPSAAHNVJOBBFXVUSAGNONIZI"
+          }
+        ],
+        "min_best_z": 3.972822,
+        "confirmed": false
+      },
+      {
+        "rank": 4,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ZDB",
+            "best_score_per_letter": -8.79902684,
+            "mean_score_per_letter": -9.625812352,
+            "sd_score_per_letter": 0.196594071,
+            "best_z": 4.205547,
+            "runner_up_z": 3.754537,
+            "best_plaintext_prefix": "WOEVBDUHRGURGXXVLOLOSKGAXMWGYUVIONVJEFEPIGOZEXFHOQNIDOIAYJSK"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "KIR",
+            "best_score_per_letter": -8.829085164,
+            "mean_score_per_letter": -9.608526912,
+            "sd_score_per_letter": 0.204054389,
+            "best_z": 3.819774,
+            "runner_up_z": 3.697033,
+            "best_plaintext_prefix": "EIGMILAJHKOUSDKGPXDDLXHSTRUJMLARFSEGXCGGGZPUNHCSFUNFLCUNAGGB"
+          }
+        ],
+        "min_best_z": 3.819774,
+        "confirmed": false
+      },
+      {
+        "rank": 5,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ZEF",
+            "best_score_per_letter": -8.763426937,
+            "mean_score_per_letter": -9.624293996,
+            "sd_score_per_letter": 0.198817553,
+            "best_z": 4.329935,
+            "runner_up_z": 3.694726,
+            "best_plaintext_prefix": "OEDKCTEBESQSGRAUDTTYDLWITSJNTAVWOTDPBSQTPRARZNMUKOYAONMORKIN"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "IJJ",
+            "best_score_per_letter": -8.77879578,
+            "mean_score_per_letter": -9.611993556,
+            "sd_score_per_letter": 0.205359879,
+            "best_z": 4.057257,
+            "runner_up_z": 4.00667,
+            "best_plaintext_prefix": "ERKOBGVTIIXMARGEHFAKGWBITREXSILTEMFRQKGYNJZNFOLYBNUUOGETDRJY"
+          }
+        ],
+        "min_best_z": 4.057257,
+        "confirmed": false
+      },
+      {
+        "rank": 6,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "IUT",
+            "best_score_per_letter": -8.769352352,
+            "mean_score_per_letter": -9.623324166,
+            "sd_score_per_letter": 0.199118984,
+            "best_z": 4.288751,
+            "runner_up_z": 4.251598,
+            "best_plaintext_prefix": "ALGCAELQTYXFYRMQDOBEWLXOUJWNXKFHINSECASEGLTKKABRRSLRDYNGNYBZ"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "UUA",
+            "best_score_per_letter": -8.801841253,
+            "mean_score_per_letter": -9.612506422,
+            "sd_score_per_letter": 0.206479682,
+            "best_z": 3.926126,
+            "runner_up_z": 3.855226,
+            "best_plaintext_prefix": "LNSKUCARSOBABEKAZMTRVIQFKRXTLICLHXUIYOOSDXFCWSENHVXXXRIZPKTD"
+          }
+        ],
+        "min_best_z": 3.926126,
+        "confirmed": false
+      },
+      {
+        "rank": 7,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "OKB",
+            "best_score_per_letter": -8.571010581,
+            "mean_score_per_letter": -9.623614363,
+            "sd_score_per_letter": 0.200449953,
+            "best_z": 5.251205,
+            "runner_up_z": 4.527179,
+            "best_plaintext_prefix": "LLZOPFDETKXLFRCKICGNDTUBNOEIZYXKUQDETCMEUSRNEOLLXGCOIEDINRLH"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "ECS",
+            "best_score_per_letter": -8.720013556,
+            "mean_score_per_letter": -9.611278247,
+            "sd_score_per_letter": 0.20748638,
+            "best_z": 4.295533,
+            "runner_up_z": 4.159333,
+            "best_plaintext_prefix": "JMTUXXYFBJNBFREGQZTANNEPYBULDEMZWSTNGELQEETXMSRSWFEDNMQOOASX"
+          }
+        ],
+        "min_best_z": 4.295533,
+        "confirmed": false
+      },
+      {
+        "rank": 8,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "DNT",
+            "best_score_per_letter": -8.818444019,
+            "mean_score_per_letter": -9.624094128,
+            "sd_score_per_letter": 0.198647825,
+            "best_z": 4.05567,
+            "runner_up_z": 3.714412,
+            "best_plaintext_prefix": "NQNGUQFUWUEDXRZTNOKIQKFGAHTFOZEBSJBBDKAUXZWPHTGENHXLGMFEMDWA"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "FRL",
+            "best_score_per_letter": -8.781464109,
+            "mean_score_per_letter": -9.61149127,
+            "sd_score_per_letter": 0.206126904,
+            "best_z": 4.026777,
+            "runner_up_z": 3.758621,
+            "best_plaintext_prefix": "SKENDBOLIMHANBGXMLFDSOXQLRXNEXTOSWBXNTMIEMFWVPLVBHGNJIEXSMWX"
+          }
+        ],
+        "min_best_z": 4.026777,
+        "confirmed": false
+      },
+      {
+        "rank": 9,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ELX",
+            "best_score_per_letter": -8.774918971,
+            "mean_score_per_letter": -9.623165459,
+            "sd_score_per_letter": 0.198884555,
+            "best_z": 4.265019,
+            "runner_up_z": 3.952665,
+            "best_plaintext_prefix": "EMZSGRICEYXSCEWALZQRETIOSAODCSRUDKQIAYYRNXLEGFJPHEJOQXRPPMTV"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "HTL",
+            "best_score_per_letter": -8.519627128,
+            "mean_score_per_letter": -9.610289527,
+            "sd_score_per_letter": 0.209120379,
+            "best_z": 5.215476,
+            "runner_up_z": 5.01272,
+            "best_plaintext_prefix": "MFKZUSRXPABXSFLSVNAZSISENJVRAXELBGKDGSISTSTLIIQHKTTOHORUTAQM"
+          }
+        ],
+        "min_best_z": 4.265019,
+        "confirmed": false
+      },
+      {
+        "rank": 10,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "EQS",
+            "best_score_per_letter": -8.784202641,
+            "mean_score_per_letter": -9.624281661,
+            "sd_score_per_letter": 0.196421837,
+            "best_z": 4.276913,
+            "runner_up_z": 4.276913,
+            "best_plaintext_prefix": "ATLKMLXRUKVHPJEUSOATHLUFMKIEWUYIOQGPALEGXDNOHVWIDBISTOHARZXP"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "XMC",
+            "best_score_per_letter": -8.776511923,
+            "mean_score_per_letter": -9.611338859,
+            "sd_score_per_letter": 0.206686124,
+            "best_z": 4.039105,
+            "runner_up_z": 3.984241,
+            "best_plaintext_prefix": "OBMSESQDALITVOVXZOMPYRODCJELRQRIBPUPQTXVJVXETDOONIPLUHBELFOT"
+          }
+        ],
+        "min_best_z": 4.039105,
+        "confirmed": false
+      },
+      {
+        "rank": 11,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "TGO",
+            "best_score_per_letter": -8.78312959,
+            "mean_score_per_letter": -9.62590499,
+            "sd_score_per_letter": 0.199076692,
+            "best_z": 4.233421,
+            "runner_up_z": 3.98608,
+            "best_plaintext_prefix": "LGOSAOJZUESASTQRSXSXDNUVWLAPZOUKWNXHUEXFOLLMZFUFQNGLVZMPGGED"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "SRL",
+            "best_score_per_letter": -8.727009827,
+            "mean_score_per_letter": -9.6132474,
+            "sd_score_per_letter": 0.205924855,
+            "best_z": 4.303694,
+            "runner_up_z": 4.073475,
+            "best_plaintext_prefix": "JBHLKVVJQNAUNFAPDRMABWEDOTTUHYYYSPAKANTDCMAGJTRFWUNMUEPTLISK"
+          }
+        ],
+        "min_best_z": 4.233421,
+        "confirmed": false
+      },
+      {
+        "rank": 12,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "AMF",
+            "best_score_per_letter": -8.823548558,
+            "mean_score_per_letter": -9.621087882,
+            "sd_score_per_letter": 0.196219356,
+            "best_z": 4.064529,
+            "runner_up_z": 3.81022,
+            "best_plaintext_prefix": "KDUEYSHUBPIMRXTIGVZSTEXTDUNKYARXNKTLEKWNDXTXMAHFKENPIEWXRNTY"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "NKB",
+            "best_score_per_letter": -8.786247143,
+            "mean_score_per_letter": -9.612523773,
+            "sd_score_per_letter": 0.207058239,
+            "best_z": 3.990552,
+            "runner_up_z": 3.742349,
+            "best_plaintext_prefix": "WHEALQANDUSCPNXBOLSBXGMZYCKEECSZKZHKAJUEILXOTHKVRLLBXHRSLALX"
+          }
+        ],
+        "min_best_z": 3.990552,
+        "confirmed": false
+      },
+      {
+        "rank": 13,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "EZY",
+            "best_score_per_letter": -8.803357428,
+            "mean_score_per_letter": -9.629301875,
+            "sd_score_per_letter": 0.196256711,
+            "best_z": 4.20849,
+            "runner_up_z": 4.20849,
+            "best_plaintext_prefix": "BTENUVINSFRWGBERKFLRWUFFRYALUUTDNNRKASXRGEBRUEFUITENXYCATFLJ"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "EHD",
+            "best_score_per_letter": -8.788775826,
+            "mean_score_per_letter": -9.611976742,
+            "sd_score_per_letter": 0.209364579,
+            "best_z": 3.931902,
+            "runner_up_z": 3.685421,
+            "best_plaintext_prefix": "DPBECRPTHUCHBRYQZIPMPAUZAKMYRTWSTIKNEGREXLADISGXEZXGEBDPGLLF"
+          }
+        ],
+        "min_best_z": 3.931902,
+        "confirmed": false
+      },
+      {
+        "rank": 14,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "WAB",
+            "best_score_per_letter": -8.765239027,
+            "mean_score_per_letter": -9.622454079,
+            "sd_score_per_letter": 0.197300727,
+            "best_z": 4.344713,
+            "runner_up_z": 3.983416,
+            "best_plaintext_prefix": "IDSEFDAJAJJOFUEBDYANGZYUNAIKAHXXDOKPXDWUKIRHZJXSALNPELHHALTX"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "REB",
+            "best_score_per_letter": -8.662419687,
+            "mean_score_per_letter": -9.611462948,
+            "sd_score_per_letter": 0.20710598,
+            "best_z": 4.582404,
+            "runner_up_z": 4.368481,
+            "best_plaintext_prefix": "PSFSEGFGHEZYGGLAUIORGXFFHXKKLDHTFBLOQYUKDZXDZCPRMKDTEDLWXSTK"
+          }
+        ],
+        "min_best_z": 4.344713,
+        "confirmed": false
+      },
+      {
+        "rank": 15,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "RYA",
+            "best_score_per_letter": -8.838232561,
+            "mean_score_per_letter": -9.620765798,
+            "sd_score_per_letter": 0.198533819,
+            "best_z": 3.941561,
+            "runner_up_z": 3.924651,
+            "best_plaintext_prefix": "GEUWOKAESFZEIRAUSBEECZDSTKLUTNIMCQXKRKWCAUZNHTNSTNGRFXFPAKZZ"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "ABL",
+            "best_score_per_letter": -8.712412097,
+            "mean_score_per_letter": -9.608066729,
+            "sd_score_per_letter": 0.210499528,
+            "best_z": 4.254901,
+            "runner_up_z": 3.748481,
+            "best_plaintext_prefix": "UBDWEREGUVFVRDONATZHTFORSRRMWERZXMXZENNFVJAGVIIFSEFRPTSKFZUI"
+          }
+        ],
+        "min_best_z": 3.941561,
+        "confirmed": false
+      },
+      {
+        "rank": 16,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "XQH",
+            "best_score_per_letter": -8.847518091,
+            "mean_score_per_letter": -9.623590715,
+            "sd_score_per_letter": 0.196741306,
+            "best_z": 3.944635,
+            "runner_up_z": 3.868048,
+            "best_plaintext_prefix": "BDQQVVSORKNBIFYXTLNWYIBYYXVLRWAQTXUENLNDBERFDTXVHPOQLYSOTAPH"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "XTV",
+            "best_score_per_letter": -8.688804947,
+            "mean_score_per_letter": -9.609938216,
+            "sd_score_per_letter": 0.203993932,
+            "best_z": 4.515493,
+            "runner_up_z": 4.355147,
+            "best_plaintext_prefix": "DCBNAZTCCYHLVORCBWKZHAOOLEXLNBLLAGYSTAIEFFJVTXROSAACZULJUJUN"
+          }
+        ],
+        "min_best_z": 3.944635,
+        "confirmed": false
+      },
+      {
+        "rank": 17,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "DDK",
+            "best_score_per_letter": -8.809650795,
+            "mean_score_per_letter": -9.624140646,
+            "sd_score_per_letter": 0.198972187,
+            "best_z": 4.093486,
+            "runner_up_z": 3.961565,
+            "best_plaintext_prefix": "GKZBZXDIGAVCROUFDRPRZHYOTARZOXAOCRZTXGDHNXKWCOXMFKNIZWHXSEVG"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "XBO",
+            "best_score_per_letter": -8.72791435,
+            "mean_score_per_letter": -9.610249399,
+            "sd_score_per_letter": 0.207767373,
+            "best_z": 4.246745,
+            "runner_up_z": 4.086872,
+            "best_plaintext_prefix": "OTLREBEBBWAASQFELEMANHLRDKUEHTMXFASRXKTMOSCYTLVUPONSKIFNKMOS"
+          }
+        ],
+        "min_best_z": 4.093486,
+        "confirmed": false
+      },
+      {
+        "rank": 18,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ALJ",
+            "best_score_per_letter": -8.828355518,
+            "mean_score_per_letter": -9.62343187,
+            "sd_score_per_letter": 0.200007839,
+            "best_z": 3.975226,
+            "runner_up_z": 3.946356,
+            "best_plaintext_prefix": "XGTGPZIYLTIIATVORPSEVNLXMQPOGGJIKEHIKGDYSEIBWKUTTEXJUPQRBYGT"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "GNL",
+            "best_score_per_letter": -8.784992495,
+            "mean_score_per_letter": -9.611264485,
+            "sd_score_per_letter": 0.208136932,
+            "best_z": 3.969848,
+            "runner_up_z": 3.802343,
+            "best_plaintext_prefix": "YKXYSADOKOYDVSWOZENZXIXKDVESMXZUUPRETSZJMWPFFGGTZAXRXPEXEIPK"
+          }
+        ],
+        "min_best_z": 3.969848,
+        "confirmed": false
+      },
+      {
+        "rank": 19,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "DON",
+            "best_score_per_letter": -8.63778867,
+            "mean_score_per_letter": -9.622700226,
+            "sd_score_per_letter": 0.195856766,
+            "best_z": 5.028734,
+            "runner_up_z": 4.0781,
+            "best_plaintext_prefix": "CASSAINXWBTOEILFGKXSUEDFUNSGRIEBEHEHEXATZFCSLRZHHRCULXSEOLGF"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "JZF",
+            "best_score_per_letter": -8.735589187,
+            "mean_score_per_letter": -9.607925951,
+            "sd_score_per_letter": 0.207496865,
+            "best_z": 4.204096,
+            "runner_up_z": 4.204096,
+            "best_plaintext_prefix": "KONZTFYDHVALBESSHQPDUGIPIIEOEDINFKNEOTNOGLYTERGTEIBTENFATENX"
+          }
+        ],
+        "min_best_z": 4.204096,
+        "confirmed": false
+      },
+      {
+        "rank": 20,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "NPB",
+            "best_score_per_letter": -8.76752616,
+            "mean_score_per_letter": -9.624860264,
+            "sd_score_per_letter": 0.198084762,
+            "best_z": 4.328117,
+            "runner_up_z": 4.180537,
+            "best_plaintext_prefix": "MZPJNINAXAMNXRUZOUREZUNVIFSNVUDIERBERKFZAWNRXQUFXGRTXUQFYNGM"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "PSK",
+            "best_score_per_letter": -8.714003457,
+            "mean_score_per_letter": -9.609435814,
+            "sd_score_per_letter": 0.207675552,
+            "best_z": 4.311689,
+            "runner_up_z": 4.017271,
+            "best_plaintext_prefix": "EKFLXOFXOXBKKWGCAKSXDDMYLETMUTOYQSSKXUPNMGYUAUSBFRASSJDXDAMT"
+          }
+        ],
+        "min_best_z": 4.311689,
+        "confirmed": false
+      },
+      {
+        "rank": 21,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "FIV",
+            "best_score_per_letter": -8.726263235,
+            "mean_score_per_letter": -9.627563398,
+            "sd_score_per_letter": 0.197670163,
+            "best_z": 4.559617,
+            "runner_up_z": 4.099146,
+            "best_plaintext_prefix": "LBRXCCVDOEDNXNESHOHKYVXSTCJLEVAFKNQSVIIPHXEZWSAFRASVKWMQVOXF"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "RGI",
+            "best_score_per_letter": -8.748738768,
+            "mean_score_per_letter": -9.609960328,
+            "sd_score_per_letter": 0.208575186,
+            "best_z": 4.12907,
+            "runner_up_z": 3.954942,
+            "best_plaintext_prefix": "URNYXOTXSHXRRNFGDFVGNTFMEAMJSITHEAMTEQXAVHEOWPJREHXDWEHTOBEX"
+          }
+        ],
+        "min_best_z": 4.12907,
+        "confirmed": false
+      },
+      {
+        "rank": 22,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "BTL",
+            "best_score_per_letter": -8.76738067,
+            "mean_score_per_letter": -9.62187927,
+            "sd_score_per_letter": 0.196571915,
+            "best_z": 4.347002,
+            "runner_up_z": 4.180049,
+            "best_plaintext_prefix": "YDEPJPKLZXULLSXXDOATUKDNFXZBINOJCHXZUTLYKFYXPXPETETOSXNTELEI"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "FDW",
+            "best_score_per_letter": -8.7988079,
+            "mean_score_per_letter": -9.610020749,
+            "sd_score_per_letter": 0.205372693,
+            "best_z": 3.949955,
+            "runner_up_z": 3.690855,
+            "best_plaintext_prefix": "UOJFTGEMOLKGNNOREILGRGQEVWXROSSFKGFENUXMKUNOYUMRJEDNBTUHYPNA"
+          }
+        ],
+        "min_best_z": 3.949955,
+        "confirmed": false
+      },
+      {
+        "rank": 23,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ZLU",
+            "best_score_per_letter": -8.760859138,
+            "mean_score_per_letter": -9.624822309,
+            "sd_score_per_letter": 0.200520016,
+            "best_z": 4.308613,
+            "runner_up_z": 4.297651,
+            "best_plaintext_prefix": "KSTBERQQKHOVPEBTTDCXSDPOELSNQVQCVEDEWSXSIHWPQVIEWRDEERPXKHQO"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "NQK",
+            "best_score_per_letter": -8.764699468,
+            "mean_score_per_letter": -9.610325015,
+            "sd_score_per_letter": 0.207695944,
+            "best_z": 4.071459,
+            "runner_up_z": 3.804354,
+            "best_plaintext_prefix": "RFNSSMDDUYNIXFHVGNDINPGVXFXGLORMASJKURXAQPTBQSBQTEVIAMTFSYRL"
+          }
+        ],
+        "min_best_z": 4.071459,
+        "confirmed": false
+      },
+      {
+        "rank": 24,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "IYB",
+            "best_score_per_letter": -8.717758793,
+            "mean_score_per_letter": -9.620326993,
+            "sd_score_per_letter": 0.199001838,
+            "best_z": 4.535477,
+            "runner_up_z": 4.305057,
+            "best_plaintext_prefix": "QGLIQDNPZHASLEVEERRRQTVNGROZKSAJEPPIOIDABSXBMUEKDSOOVOONKYWW"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "QFI",
+            "best_score_per_letter": -8.618965092,
+            "mean_score_per_letter": -9.610560945,
+            "sd_score_per_letter": 0.208200723,
+            "best_z": 4.762692,
+            "runner_up_z": 4.320621,
+            "best_plaintext_prefix": "XEUNREGFRNYIKOELDWCNPASEDAAFZABNARNTRFXPQNKXBFJZUNOBVDEBHZSO"
+          }
+        ],
+        "min_best_z": 4.535477,
+        "confirmed": false
+      },
+      {
+        "rank": 25,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ZVN",
+            "best_score_per_letter": -8.772575662,
+            "mean_score_per_letter": -9.624189997,
+            "sd_score_per_letter": 0.19782639,
+            "best_z": 4.304857,
+            "runner_up_z": 3.836231,
+            "best_plaintext_prefix": "XBKMDRESTAQXEKTOIKFPWLPSARYAEFTAEXPGCKETMUERSSBOEPAOKMFUVKSP"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "GEQ",
+            "best_score_per_letter": -8.802536602,
+            "mean_score_per_letter": -9.612105943,
+            "sd_score_per_letter": 0.204930537,
+            "best_z": 3.950457,
+            "runner_up_z": 3.673119,
+            "best_plaintext_prefix": "DRRRPEFZITISUYGSKYCWEXWGNLIRDFWXQRMIERMONNTWNMITRIFSIVMIERMP"
+          }
+        ],
+        "min_best_z": 3.950457,
+        "confirmed": false
+      },
+      {
+        "rank": 26,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ZCJ",
+            "best_score_per_letter": -8.871349964,
+            "mean_score_per_letter": -9.62739285,
+            "sd_score_per_letter": 0.197037384,
+            "best_z": 3.837053,
+            "runner_up_z": 3.710128,
+            "best_plaintext_prefix": "VYOCPQELTLIGNNFHNPXENDKOHZMQRDBRLHVAFGEBNMEXFFOULDSCYGAHELSY"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "TUV",
+            "best_score_per_letter": -8.713772737,
+            "mean_score_per_letter": -9.613014085,
+            "sd_score_per_letter": 0.207369604,
+            "best_z": 4.336418,
+            "runner_up_z": 4.041612,
+            "best_plaintext_prefix": "QNDRRUXPPNXNERSENEQUTNBPAPKYZORNBTNFGWISGUQHXTBRBEKIRQLNSPHL"
+          }
+        ],
+        "min_best_z": 3.837053,
+        "confirmed": false
+      },
+      {
+        "rank": 27,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "FVH",
+            "best_score_per_letter": -8.724455631,
+            "mean_score_per_letter": -9.62148435,
+            "sd_score_per_letter": 0.195147024,
+            "best_z": 4.596682,
+            "runner_up_z": 4.596682,
+            "best_plaintext_prefix": "ILNMERIKRJLFIODSILKWNFXOIESRVMMLVRPSRFENDOKQLENJXLTTXMGREUAL"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "SVG",
+            "best_score_per_letter": -8.81371282,
+            "mean_score_per_letter": -9.612063929,
+            "sd_score_per_letter": 0.20735673,
+            "best_z": 3.850134,
+            "runner_up_z": 3.850134,
+            "best_plaintext_prefix": "ARFOGRPKXSDXSIHEIVAUGGBLCZAXBNGGSAONBEALXVVIQYYZEWHZUUXEGOWJ"
+          }
+        ],
+        "min_best_z": 3.850134,
+        "confirmed": false
+      },
+      {
+        "rank": 28,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "SVO",
+            "best_score_per_letter": -8.762498328,
+            "mean_score_per_letter": -9.623637841,
+            "sd_score_per_letter": 0.1993952,
+            "best_z": 4.318757,
+            "runner_up_z": 4.318757,
+            "best_plaintext_prefix": "IFHKOEVARDXDNATZTPBRQRMUCKETALPSXEOGOKZXUNUTDRKSKBWIRXHXYFFE"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "BPK",
+            "best_score_per_letter": -8.750591696,
+            "mean_score_per_letter": -9.609301175,
+            "sd_score_per_letter": 0.207633223,
+            "best_z": 4.135704,
+            "runner_up_z": 3.970192,
+            "best_plaintext_prefix": "EIEOPRAUAINYGXNKUTXSAXKJENDQMPHDGFJAWEKTOKEDKXIZPYAFFIJADUKO"
+          }
+        ],
+        "min_best_z": 4.135704,
+        "confirmed": false
+      },
+      {
+        "rank": 29,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ODB",
+            "best_score_per_letter": -8.655364843,
+            "mean_score_per_letter": -9.621848493,
+            "sd_score_per_letter": 0.198160061,
+            "best_z": 4.877288,
+            "runner_up_z": 4.45618,
+            "best_plaintext_prefix": "TQFROXNUFCTCNISIRKVXNWSXHTMEGFUNKIFVXRBOSNXESBORLZAVAQEWYHRO"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "VSI",
+            "best_score_per_letter": -8.795254984,
+            "mean_score_per_letter": -9.607603792,
+            "sd_score_per_letter": 0.206778584,
+            "best_z": 3.928593,
+            "runner_up_z": 3.690179,
+            "best_plaintext_prefix": "ILHEXKGSJSEPBFRIQTBQPQMERNDODARUHWYVIGXSSKXRNZTHUMMLXDNESZDV"
+          }
+        ],
+        "min_best_z": 3.928593,
+        "confirmed": false
+      },
+      {
+        "rank": 30,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "NMB",
+            "best_score_per_letter": -8.822568672,
+            "mean_score_per_letter": -9.62567608,
+            "sd_score_per_letter": 0.196781803,
+            "best_z": 4.081208,
+            "runner_up_z": 3.642864,
+            "best_plaintext_prefix": "GAHHAQRISUFAMALLUNBTTWCMPFENZPGULTVONGJPNRGMXNSQIZECTRIVCIVS"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "OHS",
+            "best_score_per_letter": -8.758583838,
+            "mean_score_per_letter": -9.610648525,
+            "sd_score_per_letter": 0.208527148,
+            "best_z": 4.086109,
+            "runner_up_z": 4.014661,
+            "best_plaintext_prefix": "OTWFVWMIVUTBRNBGPGETJWEMEXXOEWINSFJSSGXATAITNSULINVZZELNVINT"
+          }
+        ],
+        "min_best_z": 4.081208,
+        "confirmed": false
+      },
+      {
+        "rank": 31,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "MLE",
+            "best_score_per_letter": -8.799669971,
+            "mean_score_per_letter": -9.624592392,
+            "sd_score_per_letter": 0.20068004,
+            "best_z": 4.110635,
+            "runner_up_z": 4.066161,
+            "best_plaintext_prefix": "NXEXDBWGEKMRVONNMLKAUPLMOBAMDJHXLNGHEABDWASAINDOTUFSJDZEFTLA"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "UCJ",
+            "best_score_per_letter": -8.797355707,
+            "mean_score_per_letter": -9.61331743,
+            "sd_score_per_letter": 0.204564028,
+            "best_z": 3.988784,
+            "runner_up_z": 3.906059,
+            "best_plaintext_prefix": "QGBLENLXAEHTWZDIWWITTNOOWHEFRJIDNGTOUSGAFJQTIDWOAEGTXNSTLLHI"
+          }
+        ],
+        "min_best_z": 3.988784,
+        "confirmed": false
+      },
+      {
+        "rank": 32,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "SCC",
+            "best_score_per_letter": -8.794595776,
+            "mean_score_per_letter": -9.621897582,
+            "sd_score_per_letter": 0.198843515,
+            "best_z": 4.160567,
+            "runner_up_z": 4.004016,
+            "best_plaintext_prefix": "ICVOKFUSGXLIEHIOPBFGULRXUWPNEUAQTXVEOLDRGAOKECDKZODAFYVEMVGT"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "LHJ",
+            "best_score_per_letter": -8.757806472,
+            "mean_score_per_letter": -9.611932841,
+            "sd_score_per_letter": 0.206636191,
+            "best_z": 4.133479,
+            "runner_up_z": 3.727637,
+            "best_plaintext_prefix": "NFLPSIJHMVNHROXAEPDWHATGXPZLKXWXNNREXEADPMBAFLOGULTTRNSDABSQ"
+          }
+        ],
+        "min_best_z": 4.133479,
+        "confirmed": false
+      },
+      {
+        "rank": 33,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "DRB",
+            "best_score_per_letter": -8.767080197,
+            "mean_score_per_letter": -9.623171438,
+            "sd_score_per_letter": 0.196771,
+            "best_z": 4.350698,
+            "runner_up_z": 4.158663,
+            "best_plaintext_prefix": "MKUNFEFAEJONGXDELFRZIPCPFNNNNEBXVPXLLROQGWOQLXEITCKNAYKTENLE"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "LHT",
+            "best_score_per_letter": -8.73725608,
+            "mean_score_per_letter": -9.611290487,
+            "sd_score_per_letter": 0.208548021,
+            "best_z": 4.191046,
+            "runner_up_z": 3.698221,
+            "best_plaintext_prefix": "MSQLNBFBJUYIGENIPZISVICQRISJAKPWYUPFLZMRINUETZVXJILXXETAGOPZ"
+          }
+        ],
+        "min_best_z": 4.191046,
+        "confirmed": false
+      },
+      {
+        "rank": 34,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "TFT",
+            "best_score_per_letter": -8.857178714,
+            "mean_score_per_letter": -9.618227474,
+            "sd_score_per_letter": 0.199099565,
+            "best_z": 3.822453,
+            "runner_up_z": 3.746998,
+            "best_plaintext_prefix": "WTRDWODTDEIQEAQIJVGTXRSLDZAQTTUBIEQOENOPQEUBOZEXUXHAWXOAMOZG"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "XFG",
+            "best_score_per_letter": -8.732255527,
+            "mean_score_per_letter": -9.610866381,
+            "sd_score_per_letter": 0.207860545,
+            "best_z": 4.226925,
+            "runner_up_z": 3.615065,
+            "best_plaintext_prefix": "FDVGRDISCWETNNGEZBNNFRTPEKEXSICGTJMBAVSEYBINWLPPGEHXQSSSHQDS"
+          }
+        ],
+        "min_best_z": 3.822453,
+        "confirmed": false
+      },
+      {
+        "rank": 35,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "JUE",
+            "best_score_per_letter": -8.800960933,
+            "mean_score_per_letter": -9.626055675,
+            "sd_score_per_letter": 0.198829575,
+            "best_z": 4.149759,
+            "runner_up_z": 4.133667,
+            "best_plaintext_prefix": "EKVGGTYWURXTELNZWTZENFHOROFIODRAGSGBVYBSAUSGSQQXNZZEXKZPKIRY"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "VTB",
+            "best_score_per_letter": -8.709419997,
+            "mean_score_per_letter": -9.609869399,
+            "sd_score_per_letter": 0.203917684,
+            "best_z": 4.415749,
+            "runner_up_z": 4.147219,
+            "best_plaintext_prefix": "AGXTSSGJTNKRVOFXKERWSWNFOXHSKAGVFRINHAGUPHTBLLIGFOGLESTIAOHL"
+          }
+        ],
+        "min_best_z": 4.149759,
+        "confirmed": false
+      },
+      {
+        "rank": 36,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "HGO",
+            "best_score_per_letter": -8.766349376,
+            "mean_score_per_letter": -9.624068214,
+            "sd_score_per_letter": 0.197617817,
+            "best_z": 4.340291,
+            "runner_up_z": 3.740692,
+            "best_plaintext_prefix": "VGTDVMQTNERQOTOXJSQQXZSTEKHWFESJZVFFHTHEMIEDLLXIAPRSAXHINFXF"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "QOO",
+            "best_score_per_letter": -8.821643042,
+            "mean_score_per_letter": -9.610306682,
+            "sd_score_per_letter": 0.207138209,
+            "best_z": 3.807427,
+            "runner_up_z": 3.738914,
+            "best_plaintext_prefix": "LVEHWFUTOESOPUKTJWXIZKNDCCIXKEHRUKPHSDDEDFVNEQQAUDRMIJEAKHZX"
+          }
+        ],
+        "min_best_z": 3.807427,
+        "confirmed": false
+      },
+      {
+        "rank": 37,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "DNN",
+            "best_score_per_letter": -8.628505859,
+            "mean_score_per_letter": -9.62502764,
+            "sd_score_per_letter": 0.197875071,
+            "best_z": 5.036116,
+            "runner_up_z": 4.22884,
+            "best_plaintext_prefix": "MSOFNPTHNNHSJGRUBUIAIIDJCWBOJMALNMTVONATSETZUXTXRUKKWXMEIVZU"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "QUM",
+            "best_score_per_letter": -8.771359306,
+            "mean_score_per_letter": -9.611896589,
+            "sd_score_per_letter": 0.207171901,
+            "best_z": 4.057197,
+            "runner_up_z": 3.820898,
+            "best_plaintext_prefix": "QFZAZEWPANNIELNELEIUNECHBVETMRRQWNSCHJNYSFXNPVEYMNOFODRNFJIG"
+          }
+        ],
+        "min_best_z": 4.057197,
+        "confirmed": false
+      },
+      {
+        "rank": 38,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "ORH",
+            "best_score_per_letter": -8.807344823,
+            "mean_score_per_letter": -9.624653967,
+            "sd_score_per_letter": 0.198372529,
+            "best_z": 4.120072,
+            "runner_up_z": 3.848986,
+            "best_plaintext_prefix": "RDZYLHXKLITJCEDRLEZUCTXBEMZTXNOVXDGFFOPNPRNJJRJDGXWAMKSKNOLE"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "PGC",
+            "best_score_per_letter": -8.790493727,
+            "mean_score_per_letter": -9.613295381,
+            "sd_score_per_letter": 0.207954763,
+            "best_z": 3.956638,
+            "runner_up_z": 3.764533,
+            "best_plaintext_prefix": "AKQJTAYWTKDUVISYLDJASDESXQSDPEEGDRQFRUZYXKGOFANDZHUWTRQEXGOD"
+          }
+        ],
+        "min_best_z": 3.956638,
+        "confirmed": false
+      },
+      {
+        "rank": 39,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "YVI",
+            "best_score_per_letter": -8.824688875,
+            "mean_score_per_letter": -9.625160989,
+            "sd_score_per_letter": 0.198140741,
+            "best_z": 4.039917,
+            "runner_up_z": 3.987476,
+            "best_plaintext_prefix": "XANIQGTQSHNMEFNTXXQULINUCMJNWXSNYJEVEBCHXFSWQAIRQHYWJYZUDEHM"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "DIL",
+            "best_score_per_letter": -8.596629335,
+            "mean_score_per_letter": -9.61180413,
+            "sd_score_per_letter": 0.205930951,
+            "best_z": 4.929685,
+            "runner_up_z": 3.866123,
+            "best_plaintext_prefix": "VPTSGPUTLATNUEMEXMVALKNYEIGERAXXHIWOERRMXUTLTAJSSKEINDSZBHPN"
+          }
+        ],
+        "min_best_z": 4.039917,
+        "confirmed": false
+      },
+      {
+        "rank": 40,
+        "companions": [
+          {
+            "designator": "FKQLZ",
+            "letters": 107,
+            "starts_scanned": 17576,
+            "best_start": "HDC",
+            "best_score_per_letter": -8.837433259,
+            "mean_score_per_letter": -9.624921627,
+            "sd_score_per_letter": 0.198783585,
+            "best_z": 3.961536,
+            "runner_up_z": 3.784682,
+            "best_plaintext_prefix": "YUPTXEIXXLNOIVXLIJNGLKNXWYAGLMBOZELDHLGQKKVVMRXBLVCHXFFEMRYF"
+          },
+          {
+            "designator": "XFEDT",
+            "letters": 97,
+            "starts_scanned": 17576,
+            "best_start": "ZVI",
+            "best_score_per_letter": -8.658909762,
+            "mean_score_per_letter": -9.607230485,
+            "sd_score_per_letter": 0.208458471,
+            "best_z": 4.549207,
+            "runner_up_z": 4.485145,
+            "best_plaintext_prefix": "AIMARSTEUCRVXNXNYVDJLOTESUXXKOMGDEHLQSBZXRGGXAQTOVFSMHHTSZIQ"
+          }
+        ],
+        "min_best_z": 3.961536,
+        "confirmed": false
+      }
+    ]
+  },
+  "limitations": [
+    "The candidate's middle ring is the sweep's parameterization, so a companion whose true middle wheel steps the left wheel during the message is deciphered exactly only up to that letter. The draws include that case at its natural rate rather than excluding it.",
+    "Wrong-pair arms model a climb that ends on a near-miss plugboard by re-pairing letters among themselves; a climb's real errors may be distributed differently.",
+    "The planted plaintext is constructed Army-style text, not authentic held-out traffic.",
+    "The threshold applies to the minimum over companions, so a garbled companion can hide a true key; the artifact reports each companion's z so that case is visible."
+  ]
+}
