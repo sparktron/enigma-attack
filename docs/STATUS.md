@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-03
+Updated: 2026-10-04
 
 ## Current state
 
@@ -41,8 +41,13 @@ separately, the better kept) was calibrated in the preregistered
 `phase1-windowed-climb-power-v1`: on one-indel draws it detects 56% against 41%
 for the whole-message climb on the same draws, and 15 of 80 that the whole
 message misses, at a cost of 10 points on clean draws (78.8% against 88.8%).
-All three of its deciding predictions held, so the preregistered rule calls for
-a windowed sweep, `phase1-body-direct-sweep-v3`. A companion-body confirmation (review R4) is
+All three of its deciding predictions held, so the preregistered rule called
+for a windowed sweep. `phase1-body-direct-sweep-v3` ran it over the same 27.4
+million settings (16.95 h) and is also **null**: no retained candidate is
+companion-confirmed (best z 4.64 against 6), and its top score is the noise
+maximum (z 6.22). On planted draws v2 and v3 together confirm 73/80 clean keys
+and 46/80 with one indel, so the two nulls multiply the odds of a standard
+reading in this space by about 0.09 ungarbled and 0.43 with one indel. A companion-body confirmation (review R4) is
 calibrated in `phase1-companion-calibration-v1`: at z ≥ 6 it accepts 39/40
 exact-plugboard keys and none of 240 wrong candidates. The complete
 middle-past-notch sweep of BYQMZ (27,418,560 settings, 16.4 hours) ran as the
@@ -199,7 +204,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 189 tests passed locally on 2026-10-03,
+- `python3 -m unittest discover -q`: 190 tests passed locally on 2026-10-04,
   with numpy installed; without it the five batched-climb tests skip. A test
   checks that `engine: auto` falls back to the reference climb and
   `engine: batched` fails loudly when numpy is missing.
@@ -277,7 +282,7 @@ has already closed.
 4. Done: the preregistered full sweep (`phase1-body-direct-sweep-v2`) ran and
    is null; its power is now put at about 0.875 clean and 0.40 with one indel.
    The windowed-climb calibration followed (`phase1-windowed-climb-power-v1`)
-   and its windowed sweep (`phase1-body-direct-sweep-v3`) is preregistered.
+   and its windowed sweep (`phase1-body-direct-sweep-v3`) ran and is null.
 5. Open: the Bombe still rests on cribs nothing in the repository places in
    these three messages (P3), so it stays deferred.
 
@@ -292,13 +297,12 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-Phase 1 next: the windowed sweep `phase1-body-direct-sweep-v3`, preregistered
-before it runs. Given v2's null it is a modest test: on planted draws it finds
-about 29% of single-indel keys the whole-message sweep missed, so a null
-multiplies the remaining odds of a once-garbled standard Enigma reading by about
-0.71. After it: the middle-complete rule (nine times the cost) for the keys with
-no exact equivalent, and an indel in the middle third of BYQMZ, which neither
-climb sees well (8 of 32 windowed, 2 of 32 whole).
+Phase 1 next, in order of cost: the middle-complete rule (nine times v2's
+cost) for the keys with no exact equivalent in the past-notch space; a split
+climb that reads the head at one setting and the tail at the shifted one, for
+an indel in the middle third of BYQMZ, which neither climb sees well (8 of 32
+windowed, 2 of 32 whole). The body-direct route at the past-notch rule is
+otherwise exhausted for BYQMZ.
 
 A **crib-driven Bombe** would eliminate the plugboard algebraically through
 crib-derived menus instead of searching it, the historically correct answer to
