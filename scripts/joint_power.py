@@ -19,6 +19,17 @@ Exploratory and post hoc: written after v2 ran, in answer to review, and
 preregistered nowhere.  It costs about a minute.
 
     python3 scripts/joint_power.py
+
+The defaults reproduce ``phase1-joint-power-v1``.  ``--power``, ``--power-config``,
+``--arm`` and ``--experiment-id`` point it at another end-to-end power artifact and
+arm; a windowed arm is judged against its own null, as its power run judged it.
+The companions are drawn from the same seed in draw order, so two arms of one
+power artifact are checked against the same companion messages.
+
+    python3 scripts/joint_power.py --power artifacts/phase1-windowed-climb-power-v1.json \
+        --power-config experiments/phase1-windowed-climb-power-v1/config.json \
+        --arm head_tail_117 --experiment-id phase1-joint-power-v2-head-tail-117 \
+        --output artifacts/phase1-joint-power-v2-head-tail-117.json
 """
 
 from __future__ import annotations
@@ -66,9 +77,9 @@ def companions_for(planted: dict[str, Any], source: str, generator: random.Rando
     return messages
 
 
-def run() -> dict[str, Any]:
-    power = json.loads(stecker.resolve_path(POWER).read_text(encoding="utf-8"))
-    power_config = stecker.load_config(stecker.resolve_path(POWER_CONFIG))
+def run(power_path: str = POWER, power_config_path: str = POWER_CONFIG, arm: str = ARM) -> dict[str, Any]:
+    power = json.loads(stecker.resolve_path(power_path).read_text(encoding="utf-8"))
+    power_config = stecker.load_config(stecker.resolve_path(power_config_path))
     sweep = json.loads(stecker.resolve_path(SWEEP).read_text(encoding="utf-8"))
     sweep_config = stecker.load_config(stecker.resolve_path(SWEEP_CONFIG))
     threshold = float(sweep_config["body_direct_sweep"]["companion_confirmation"]["threshold_z"])
@@ -77,14 +88,16 @@ def run() -> dict[str, Any]:
     reflector = enigma_fast.reflector_table(sweep_config["machine"]["reflector"])
     source = normalize_plaintext(power_config["end_to_end_power"]["plaintext"])
     detection_threshold = {
-        index: cell["null"]["detection_threshold_score_per_letter"]
+        index: (
+            next(row for row in cell["arms"] if row["arm"] == arm).get("null") or cell["null"]
+        )["detection_threshold_score_per_letter"]
         for index, cell in enumerate(power["result"]["cells"])
     }
     generator = random.Random(SEED)
 
     rows: list[dict[str, Any]] = []
     for draw in power["result"]["draws"]:
-        top = draw["arms"][ARM]["top"]
+        top = draw["arms"][arm]["top"]
         outcome = confirm_through_companions(
             companions_for(draw["planted"], source, generator),
             draw["planted"]["rotor_order_left_to_right"],
@@ -144,7 +157,7 @@ def run() -> dict[str, Any]:
             }
         )
     return {
-        "arm": ARM,
+        "arm": arm,
         "threshold_z": threshold,
         "v2_retention_cutoff_score_per_letter": cutoff,
         "companion_lengths": list(COMPANION_LENGTHS),
@@ -157,13 +170,17 @@ def run() -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", default=DEFAULT_OUTPUT)
+    parser.add_argument("--power", default=POWER)
+    parser.add_argument("--power-config", default=POWER_CONFIG)
+    parser.add_argument("--arm", default=ARM)
+    parser.add_argument("--experiment-id", default="phase1-joint-power-v1")
     arguments = parser.parse_args(argv)
     version = code_version()
     started_at = dt.datetime.now(dt.timezone.utc)
-    result = run()
+    result = run(arguments.power, arguments.power_config, arguments.arm)
     payload = {
         "schema": SCHEMA,
-        "experiment_id": "phase1-joint-power-v1",
+        "experiment_id": arguments.experiment_id,
         "preregistered": False,
         "started_at": started_at.isoformat(),
         "completed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -171,7 +188,8 @@ def main(argv: list[str] | None = None) -> int:
         "inputs": {
             name: sha256_file(stecker.resolve_path(path))
             for name, path in (
-                ("power_artifact_sha256", POWER), ("power_config_sha256", POWER_CONFIG),
+                ("power_artifact_sha256", arguments.power),
+                ("power_config_sha256", arguments.power_config),
                 ("sweep_artifact_sha256", SWEEP), ("sweep_config_sha256", SWEEP_CONFIG),
             )
         },

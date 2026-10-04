@@ -8,6 +8,7 @@ per setting, and checks that the engines return the same retained candidates.
 
     python3 scripts/benchmark_sweep.py --settings 676 --jobs 1
     python3 scripts/benchmark_sweep.py --settings 20280 --jobs 18 --engines batched
+    python3 scripts/benchmark_sweep.py --settings 6760 --jobs 10 --engines batched --window 117
 
 ``--settings`` is rounded up to a whole number of wheel orders (676 settings each).
 
@@ -40,6 +41,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--settings", type=int, default=2000)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--engines", nargs="+", default=["reference", "batched"])
+    parser.add_argument(
+        "--window", type=int, default=None,
+        help="climb the head and tail windows of this many letters instead of the whole message",
+    )
     arguments = parser.parse_args(argv)
 
     config = stecker.load_config(ROOT / "experiments/phase1-body-direct-sweep-v1/config.json")
@@ -65,6 +70,8 @@ def main(argv: list[str] | None = None) -> int:
     outcomes = {}
     for engine in arguments.engines:
         settings = {**config["climb"], "engine": engine}
+        if arguments.window is not None:
+            settings["window"] = {"kind": "head_tail", "letters": arguments.window}
         began = time.monotonic()
         ranked, evaluated, _, execution = sweep_slice(
             message, orders, (0, 0, 0), starts, config["scorer"], reflector,
