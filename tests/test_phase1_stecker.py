@@ -10,7 +10,13 @@ import stecker_batch
 import stecker_power
 from enigma import EnigmaI
 from stecker_calibration import calibrate_ic_rank, poisson_below, uniform_ic_tail
-from stecker_climb import body_direct_climb, coincidence_of_decryption, run_climb_phases
+from stecker_climb import (
+    body_direct_climb,
+    climb_windows,
+    coincidence_of_decryption,
+    run_climb_phases,
+    windowed_climb,
+)
 from stecker_controls import (
     batched_climb_parity_report,
     compatible_ring_settings,
@@ -562,6 +568,29 @@ class EndToEndPowerTests(unittest.TestCase):
                 result["arms"]["middle_complete"]["settings_evaluated"], 9
             )
 
+    def test_a_windowed_arm_gets_its_own_null_and_an_unwindowed_config_is_unchanged(self):
+        plain = stecker_power._power_draw((0, 1))
+        for arm in plain["arms"].values():
+            self.assertNotIn("null_scores", arm)
+            self.assertNotIn("top_window", arm)
+        config = json.loads(json.dumps(self.config))
+        config["end_to_end_power"]["arms"] = [
+            {"id": "whole", "ring_rule": "middle_past_notch", "right_ring": "planted"},
+            {"id": "windowed", "ring_rule": "middle_past_notch", "right_ring": "planted",
+             "window": {"kind": "head_tail", "letters": 120}},
+        ]
+        stecker_power._power_init(config)
+        try:
+            result = stecker_power._power_draw((0, 1))
+        finally:
+            stecker_power._power_init(self.config)
+        self.assertEqual(result["planted"], plain["planted"])
+        self.assertEqual(result["null_scores"], plain["null_scores"])
+        self.assertEqual(result["arms"]["whole"], plain["arms"]["middle_past_notch"])
+        windowed = result["arms"]["windowed"]
+        self.assertEqual(len(windowed["null_scores"]), 1)
+        self.assertIn(windowed["top_window"], {"head", "tail"})
+
     def test_a_perturbed_draw_makes_no_equivalence_claim(self):
         result = stecker_power._power_draw((1, 0))
         self.assertIn(result["planted"]["perturbation"]["kind"], {"deletion", "insertion"})
@@ -716,6 +745,125 @@ def planted_message(plugboard="AN BY CF DR GJ HS IL KM PV QZ", positions="AEF", 
     )
 
 
+class WindowedClimbTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.config = stecker.load_config(BODY_CONFIG)
+        cls.scorer = scorer_for(cls.config)
+        cls.reflector = enigma_fast.reflector_table("B")
+        cls.order = [enigma_fast.rotor_tables(name) for name in ("I", "II", "III")]
+
+    def test_windows_are_the_head_and_the_tail_or_the_whole_body(self):
+        self.assertEqual(climb_windows(167, None), [("whole", 0, 167)])
+        self.assertEqual(
+            climb_windows(167, {"kind": "head_tail", "letters": 100}),
+            [("head", 0, 100), ("tail", 67, 167)],
+        )
+        self.assertEqual(
+            climb_windows(90, {"kind": "head_tail", "letters": 100}), [("whole", 0, 90)]
+        )
+        with self.assertRaises(ValueError):
+            climb_windows(167, {"kind": "sliding", "letters": 100})
+        with self.assertRaises(ValueError):
+            climb_windows(167, {"kind": "head_tail", "letters": 1})
+
+    def _garbled(self, position):
+        body = list(planted_message().body)
+        del body[position]
+        return body
+
+    def test_a_late_deletion_leaves_the_head_window_to_recover_the_plugboard(self):
+        body = self._garbled(150)
+        table = enigma_fast.position_permutations(
+            self.order, (0, 0, 0), (0, 4, 5), len(body), self.reflector
+        )
+        settings = {**self.config["climb"], "window": {"kind": "head_tail", "letters": 140}}
+        plugboard, evaluations, score, window = windowed_climb(table, body, self.scorer, settings)
+        self.assertEqual(window, "head")
+        self.assertEqual(enigma_fast.plugboard_pairs(plugboard), "AN BY CF DR GJ HS IL KM PV QZ")
+        self.assertGreater(evaluations, 0)
+        self.assertGreater(score, -7.5)
+
+    def test_an_early_deletion_is_recovered_by_the_tail_one_keystroke_later(self):
+        # Everything after a deletion is enciphered one keystroke later than its
+        # new index says, which is the setting with the right wheel one further.
+        body = self._garbled(10)
+        table = enigma_fast.position_permutations(
+            self.order, (0, 0, 0), (0, 4, 6), len(body), self.reflector
+        )
+        settings = {**self.config["climb"], "window": {"kind": "head_tail", "letters": 140}}
+        plugboard, _, _, window = windowed_climb(table, body, self.scorer, settings)
+        self.assertEqual(window, "tail")
+        self.assertEqual(enigma_fast.plugboard_pairs(plugboard), "AN BY CF DR GJ HS IL KM PV QZ")
+
+    def test_a_window_as_long_as_the_body_is_the_ordinary_climb(self):
+        message = planted_message()
+        body = list(message.body)
+        table = enigma_fast.position_permutations(
+            self.order, (0, 0, 0), (0, 4, 5), len(body), self.reflector
+        )
+        settings = {**self.config["climb"], "window": {"kind": "head_tail", "letters": 400}}
+        plugboard, evaluations, score, window = windowed_climb(table, body, self.scorer, settings)
+        reference, _ = body_direct_climb(
+            [message], ("I", "II", "III"), (0, 0, 0), [(0, 4, 5)], self.scorer, self.reflector,
+            self.config["climb"],
+        )
+        self.assertEqual(window, "whole")
+        self.assertEqual(plugboard, list(reference.plugboard))
+        self.assertEqual(evaluations, reference.evaluations)
+        self.assertAlmostEqual(score, reference.score_per_letter, places=12)
+
+    def test_the_control_gate_runs_the_windowed_climb_and_fails_when_it_is_broken(self):
+        config = {
+            **self.config,
+            "climb": {**self.config["climb"], "window": {"kind": "head_tail", "letters": 117}},
+            "windowed_control": {"seed": 5, "draws": 3, "minimum_recovered": 1},
+        }
+        spec = next(
+            spec for spec in self.config["positive_controls"]
+            if any(len(normalize_plaintext(m["plaintext"], m.get("length"))) >= 127
+                   for m in spec["messages"])
+        )
+        sound = evaluate_positive_control(spec, config, self.scorer, self.reflector)
+        windowed = sound["windowed_climb"]
+        self.assertEqual(windowed["attempted"], 3)
+        self.assertEqual(
+            [row["form"] for row in windowed["draws"]],
+            ["clean", "deletion_at_window", "deletion_before_tail"],
+        )
+        self.assertIn("windowed_climb_recovers_known_key", sound["checks"])
+        broken = mock.patch(
+            "stecker_controls.windowed_climb",
+            lambda table, body, scorer, settings, climbers=None: (
+                list(range(26)), 1, -9.0, "head"
+            ),
+        )
+        with broken:
+            failed = evaluate_positive_control(spec, config, self.scorer, self.reflector)
+        self.assertEqual(failed["windowed_climb"]["recovered"], 0)
+        self.assertFalse(failed["checks"]["windowed_climb_recovers_known_key"])
+        self.assertFalse(failed["passed"])
+        unwindowed = evaluate_positive_control(spec, self.config, self.scorer, self.reflector)
+        self.assertNotIn("windowed_climb", unwindowed)
+        self.assertNotIn("windowed_climb_recovers_known_key", unwindowed["checks"])
+
+    def test_a_windowed_sweep_records_the_winning_window(self):
+        message = planted_message()
+        ranked, evaluated, _ = body_direct_sweep(
+            message, [("I", "II", "III")], (0, 0, 0), [(0, 4, 5), (0, 4, 6)],
+            self.config["scorer"], self.reflector,
+            {**self.config["climb"], "window": {"kind": "head_tail", "letters": 140}}, 2, 1,
+        )
+        self.assertEqual(evaluated, 2)
+        self.assertEqual(ranked[0]["start_position"], "AEF")
+        self.assertIn(ranked[0]["window"], {"head", "tail"})
+        unwindowed, _, _ = body_direct_sweep(
+            message, [("I", "II", "III")], (0, 0, 0), [(0, 4, 5)],
+            self.config["scorer"], self.reflector, self.config["climb"], 1, 1,
+        )
+        self.assertNotIn("window", unwindowed[0])
+
+
 @unittest.skipUnless(stecker_batch.available(), "numpy is not installed")
 class BatchedClimbTests(unittest.TestCase):
     @classmethod
@@ -733,6 +881,38 @@ class BatchedClimbTests(unittest.TestCase):
         self.assertEqual(report["identical_final_plugboards"], 10)
         self.assertEqual(report["identical_evaluation_counts"], 10)
         self.assertTrue(report["passed"])
+
+    def test_the_batched_windowed_climb_ends_where_the_reference_windowed_climb_ends(self):
+        windows = [{"kind": "head_tail", "letters": 84}, {"kind": "head_tail", "letters": 120}]
+        report = batched_climb_parity_report(
+            {
+                **self.config,
+                "climb": {**self.config["climb"], "window": windows[0]},
+                "end_to_end_power": {"arms": [{"id": "w", "window": windows[1]}, {"id": "x"}]},
+                "batched_climb_parity": {"seed": 11, "samples": 6},
+            },
+            self.scorer,
+            self.reflector,
+        )
+        self.assertEqual(report["windows"], windows)
+        self.assertEqual(report["windowed_climbs_compared"], 12)
+        self.assertEqual(report["windowed_climbs_identical"], 12)
+        self.assertTrue(report["passed"])
+
+    def test_a_batched_windowed_sweep_matches_the_reference_windowed_sweep(self):
+        message = Traffic("W", (0, 0, 0), (0, 0, 0), tuple(
+            value for index, value in enumerate(planted_message().body) if index != 30
+        ))
+        climb = {**self.config["climb"], "window": {"kind": "head_tail", "letters": 120}}
+        arguments = (
+            message, [("I", "II", "III")], (0, 0, 0), [(0, 4, right) for right in range(4, 8)],
+            self.config["scorer"], self.reflector,
+        )
+        reference = body_direct_sweep(*arguments, {**climb, "engine": "reference"}, 4, 1)
+        batched = body_direct_sweep(*arguments, {**climb, "engine": "batched"}, 4, 1)
+        self.assertEqual(batched[0], reference[0])
+        self.assertEqual(batched[0][0]["start_position"], "AEG")
+        self.assertEqual(batched[0][0]["window"], "tail")
 
     def test_masked_letters_reset_the_ngram_chain_in_both_climbs(self):
         message = planted_message()

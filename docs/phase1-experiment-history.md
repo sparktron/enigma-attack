@@ -650,6 +650,266 @@ indicator check) do not apply.
   review's order, a Bombe only once a crib prior (P3) is quantified.
 - `accepted_break` stays false.
 
+> **Correction, 2026-10-03 ([phase1-windowed-climb-power-v1](#phase1-windowed-climb-power-v1)).**
+> The 0.15 indel power above came from a slice that held the planted right
+> position, and this sweep visited every right position, including the one a
+> keystroke away at which everything after an early indel decrypts. Measured with
+> the neighbouring positions in the slice, the whole-message climb detects and
+> companion-confirms 40% of single-indel draws (32/80) and 87.5% of clean ones
+> (70/80). The null therefore multiplies the odds of a standard Enigma I reading
+> with a once-garbled BYQMZ by about 0.60, not 0.85, and of an ungarbled one by
+> about 0.13. The sweep itself is unchanged.
+
+---
+
+## phase1-windowed-climb-power-v1
+
+Status: completed 2026-10-03; hypothesis **supported** — its three clauses
+held. Six of eight predictions held and two were refuted.
+
+Hypothesis: through the middle-past-notch sweep parameterization, on
+167-letter messages with a ten-pair stecker, a head-and-tail windowed climb
+with W = 117 detects at least 30% of messages carrying one dropped or inserted
+letter, at least 10 points more than the whole-message climb on the same draws,
+and still detects at least 60% of unperturbed messages.
+
+Refuted by: the W = 117 arm below 30% on the 80 indel draws, or under 10 points
+above the whole-message arm on them, or below 60% on the 80 unperturbed draws.
+
+Configuration:
+[experiments/phase1-windowed-climb-power-v1/config.json](../experiments/phase1-windowed-climb-power-v1/config.json),
+committed in `ebdc233` with the code before the run, together with a rule for
+whether a windowed sweep follows. Raw result:
+[artifacts/phase1-windowed-climb-power-v1.json](../artifacts/phase1-windowed-climb-power-v1.json).
+
+Run record: seed 20261004, each draw seeded from its (cell, draw) coordinates;
+Python 3.10.12, Linux 6.8, i9-10900K, `--jobs 10`, batched engine, 147 s for the
+draws and 169 s in all. Code `ebdc233`, clean tree. Preflight passed, including
+96 of 96 batched-against-reference windowed climbs (24 samples × 4 window
+sizes), and both positive controls passed.
+
+What it measures. The windowed climb (`climb.window`, `stecker_climb.windowed_climb`)
+climbs the first and the last W letters separately, each from the identity
+plugboard with the usual two phases, and keeps the window with the better score
+per letter. One indel at position p leaves the prefix clean under the swept
+setting and the suffix clean under the setting one keystroke away, which a
+complete sweep visits as the neighbouring right position. Any window inside
+either clean stretch fits inside the head or the tail of the same size, so for a
+single indel a sliding window adds nothing over these two. The draws are those
+of `phase1-end-to-end-power-v1` with three changes: 80 draws per cell, a new
+seed, and the right position swept over the planted value and both neighbours,
+for every arm, because the tail window needs the shifted setting. Each windowed
+arm is judged against its own null (the same windowed climb at the same wrong
+settings) at 6 null sd; the whole-message arm against the whole-message null.
+
+### Observed
+
+| arm | unperturbed, 80 draws | one indel, 80 draws | windowed null threshold |
+|---|---:|---:|---:|
+| whole message (middle past notch) | 71 (88.8%) [80.0, 94.0] | 33 (41.3%) [31.1, 52.2] | −8.04 (whole) |
+| head and tail, W = 84 | 32 (40.0%) | 22 (27.5%) | −7.26 |
+| W = 100 | 38 (47.5%) | 30 (37.5%) | −7.52 |
+| **W = 117 (headline)** | **63 (78.8%) [68.6, 86.3]** | **45 (56.3%) [45.3, 66.6]** | −7.72 |
+| W = 134 | 72 (90.0%) | 48 (60.0%) | −7.84 |
+
+Every detection is also the top candidate's exact plugboard, and no arm
+recovered an exact plugboard that it then failed to detect.
+
+Paired on the indel draws, whole message against W = 117: both 30, whole only
+3, windowed only 15, neither 32. On unperturbed draws: both 60, whole only 11,
+windowed only 3, neither 6.
+
+Predictions: W = 117 indel at least 30% (56.3%, held); W = 117 at least 10
+points above the whole message on indel draws (+15.0, held); W = 117 clean at
+least 60% (78.8%, held); W = 117 loses at most 25 points on clean draws (−10.0,
+held); whole-message clean at least 68% (88.8%, held); whole-message indel at
+most 30% (**41.3%, refuted**); W = 84 indel at most 15% (**27.5%, refuted**);
+W = 134 clean at least 70% (90.0%, held).
+
+Exploratory, not preregistered, by indel position (25, 32 and 23 draws):
+before letter 50 the whole message detects 14 and W = 117 18; between 50 and
+117, 2 and 8; from 117 on, 17 and 19. W = 134 detects 19, 6 and 23.
+
+Exploratory, not preregistered: `scripts/joint_power.py`, now parameterized by
+power artifact and arm, ran the companion check on the top candidate of every
+draw, with companions drawn from one seed so the two arms see the same ones
+([whole](../artifacts/phase1-joint-power-v2-middle-past-notch.json),
+[W = 117](../artifacts/phase1-joint-power-v2-head-tail-117.json)). Detected and
+companion-confirmed:
+
+| | unperturbed | one indel |
+|---|---:|---:|
+| whole message | 70/80, 87.5% [78.5, 93.1] | 32/80, 40.0% [30.0, 51.0] |
+| W = 117 | 62/80, 77.5% [67.2, 85.3] | 43/80, 53.8% [42.9, 64.3] |
+| W = 117 confirmed where the whole message was not | 3 of 10 | 14 of 48, 29% [18, 43] |
+
+Confirmation given detection is 0.96 to 0.99 in every cell: one or two detected
+draws per cell fall short of z = 6 at a companion, as the companion
+calibration's 39/40 predicted.
+
+### Interpretation (inference)
+
+- The windowed climb works for one indel. At W = 117 it finds the key in
+  about 54% of garbled messages against 40% for the whole message, and in 29% of
+  the garbled messages the whole message misses. It costs about 10 points on
+  clean messages, most of which the whole-message sweep has already covered.
+- **The v1 indel figure was a slice artifact, and v2's stated indel power was
+  too low.** v1 swept the planted right position only; a complete sweep visits
+  every right position, including the one a keystroke away at which everything
+  after an early indel decrypts. With the neighbours in the slice the
+  whole-message climb detects 41% of indel draws, not 15%, and 40% jointly with
+  the companion check. Most of the gain is for indels before letter 50, where
+  the shifted setting decrypts more than two thirds of the message. The v2
+  sweep visited those settings, so 0.40 is the better estimate of its power for
+  one indel, and its null multiplies the odds of a once-garbled standard
+  Enigma reading by about 0.60, not 0.85.
+- The same widening raised the clean whole-message rate from 82.5% to 88.8%
+  (87.5% jointly), within v1's interval, so v2's clean power is better put at
+  about 0.85 to 0.875 than 0.825.
+- An indel in the middle third is the remaining hole: 2 of 32 for the whole
+  message and 8 of 32 at W = 117, because neither clean stretch is long enough
+  for ten pairs.
+- W = 84 did better than predicted (27.5%) and W = 134 did best of all on indel
+  draws (60.0%). The preregistered rule fixes W = 117 for a sweep, so W = 134's
+  lead is a hypothesis for a future calibration with a fresh seed, not a
+  choice made here; W = 117 and W = 134 are within each other's intervals.
+- The windowed null threshold is higher per letter than the whole-message one
+  (−7.72 against −8.04 at W = 117), as expected from scoring fewer letters and
+  taking the better of two windows.
+- Limits: one planted plaintext, single indels only, 80 draws per cell. The
+  joint figures are post hoc. The 6σ threshold stands in for the extreme of a
+  full sweep, which for a windowed sweep is the extreme of twice as many window
+  scores.
+
+### Decision
+
+- The preregistered sweep rule is met (all three of its predictions held), so
+  `phase1-body-direct-sweep-v3`, a complete middle-past-notch sweep of BYQMZ
+  with the W = 117 windowed climb, is preregistered next with this run's W = 117
+  rates as its power.
+- The v2 entry's stated indel power is corrected below; the v1 decision's
+  "0.15 with one indel" is superseded by 0.40.
+- Gate added after review (PR #12), while v3 was running: the positive
+  controls called `body_direct_climb`, which ignores `climb.window`, so they
+  certified only the whole-message climb. With a window configured each control
+  message at least ten letters longer than the window now also runs the windowed
+  climb, exactly as a sweep does, on 12 seeded planted plugboards at the
+  control's setting (clean, a deletion at letter W, and a deletion before the
+  tail read one keystroke later), and must recover at least 3 exactly. A single
+  fixed key would be a coin-flip gate: at the true setting neither 117-letter
+  window recovers control B1's own key, while 134 letters and more do, and on
+  the planted keys 7 of 12 were recovered. A broken slicing or window choice
+  recovers none (unit-tested). v3's chunks were computed at `6b6ad2f`, whose
+  sweep path this change does not touch; once they finish the runner is
+  rerun at the commit carrying the gate, which re-runs the preflight and every
+  control, resumes all 1,560 chunks from the checkpoint (its fingerprint is
+  unchanged) and confirms the candidates. A failed windowed control there
+  withholds the v3 result.
+- Benchmark, exploratory (`scripts/benchmark_sweep.py --window`, 13,520
+  settings, 10 workers): 3.41 ms per setting windowed against 2.97 ms whole
+  message in the same run, 1.15×. Scaled from v2's measured 2.15 ms the
+  windowed sweep takes about 19 hours; at the benchmark's own rate, 26 hours.
+
+---
+
+## phase1-body-direct-sweep-v3
+
+Status: completed 2026-10-04; hypothesis **not supported** — no retained
+candidate is companion-confirmed.
+
+Hypothesis: the 1941-09-30 messages are Enigma I traffic (UKW-B, wheels I–V,
+ten pairs) under one daily key with an exact or near equivalent in the
+middle-past-notch space, and BYQMZ's key is one the whole-message sweep v2
+could miss, most plausibly because one letter of BYQMZ was dropped or
+inserted. A complete sweep of the same space with the W = 117 head-and-tail
+windowed climb then retains a candidate that FKQLZ and XFEDT both confirm at
+best-start z ≥ 6.
+
+Refuted by: no retained candidate companion-confirmed. Stated power, from
+[phase1-windowed-climb-power-v1](#phase1-windowed-climb-power-v1) and its
+post hoc joint check: 0.54 with one indel and 0.78 clean; conditional on v2's
+null, about 0.29 with one indel and 3 of 10 clean.
+
+Configuration:
+[experiments/phase1-body-direct-sweep-v3/config.json](../experiments/phase1-body-direct-sweep-v3/config.json),
+committed in `6b6ad2f` before the run. Raw result:
+[artifacts/phase1-body-direct-sweep-v3.json](../artifacts/phase1-body-direct-sweep-v3.json),
+long-running and not regenerated by the drift check.
+
+Run record: the sweep ran from a clean checkout at `6b6ad2f`, batched engine,
+10 workers on the i9-10900K, from 02:13 to 19:10 UTC on 2026-10-04: 16.95 h for
+27,418,560 settings (2.22 ms per setting, 1.03 times v2's rate; the benchmark
+had projected 1.15). 1,560 chunks, none resumed. Preflight (96 windowed parity
+climbs) and both whole-message positive controls passed.
+
+Deviation from the preregistration: during the run a PR review pointed out
+that the positive controls never exercised the windowed climb, and a windowed
+known-key gate was added in `7ae72f8` (see the decision list of
+[phase1-windowed-climb-power-v1](#phase1-windowed-climb-power-v1)). After the
+sweep finished, the runner was rerun at `7ae72f8` from a clean tree. It re-ran
+the preflight and every control, and the windowed control recovered 7 of 12
+planted keys against a floor of 3. It resumed all 1,560 chunks from the
+checkpoint with the same fingerprint, ran none, and repeated both
+confirmations. Its retained candidates and score distribution are identical to
+the first run's; the committed artifact is the re-gated one, so its timing
+fields describe the 226-second resume, not the sweep. The first run's
+artifact is kept outside the repository and differs only in the controls and
+the timing.
+
+### Observed
+
+- Coverage: 100% of the middle-past-notch reducible space, as in v2.
+- Sweep score distribution over every setting (better of two windows): mean
+  −8.287, sd 0.1147 per letter. The maximum is −7.573 (z = 6.22), rank 2 is
+  −7.586 (z = 6.11), and the scores below fall off smoothly. Planted true keys
+  scored about −6.5 per letter in the calibration.
+- All 100 retained candidates won on the head window. BYQMZ's single masked
+  letter is at position 28, inside the head window only; it breaks the n-gram
+  chain, so the head scores fewer and therefore fewer negative terms per letter
+  and sits slightly higher on noise. Planted calibration draws had no masked
+  letters. A true key scoring near −6.6 in either window would still be
+  retained, since the lowest retained score is −7.699.
+- None of the 100 retained plugboards is one v2 retained.
+- Companion confirmation: none confirmed. The best minimum over FKQLZ and XFEDT
+  is z = 4.64 (rank 27; FKQLZ 4.79, XFEDT 4.64), against a threshold of 6 and a
+  calibration null maximum of 4.60.
+- Indicator confirmation: 7 of 100 candidates have a compatible ring setting;
+  the best pooled date score is −8.94 per letter.
+
+Predictions: the deciding prediction failed (no confirmed candidate). The two
+conditional ones (a confirmed candidate is rank 1; its plugboard is new to v2)
+do not apply. The top score lies between z = 5 and z = 7 (6.22, held).
+
+### Interpretation (inference)
+
+- The three checks agree again: the sweep's top is the noise maximum, the
+  companions see nothing, and the indicator sees nothing. Rank 27's 4.64 is a
+  hair above the calibration's 240-null maximum of 4.60, which 100 more draws
+  would be expected to reach; it is 1.4 sd short of the threshold.
+- On the planted draws, a key was confirmed by v2's climb or v3's in 73 of 80
+  clean messages and 46 of 80 with one indel. Taken together the two nulls
+  multiply the odds of a standard Enigma I reading in this space by about 0.09
+  for an ungarbled BYQMZ and about 0.43 for one with a single dropped or inserted
+  letter. Both figures reuse post hoc joint measurements and one planted
+  plaintext.
+- What is left for a standard reading is mostly a BYQMZ indel in its middle
+  third (8 of 32 windowed, 2 of 32 whole on planted draws), two or more faults,
+  a key with no exact equivalent in the past-notch space, or a machine or
+  procedure outside the declared assumptions.
+- The masked letter's head-window bias is a property of this message, not of
+  the method. It did not cost power here, but a windowed score compared across
+  windows should correct for scored n-grams, not only letters, if it is reused.
+
+### Decision
+
+- The windowed body-direct route on BYQMZ is done at this rule. Remaining
+  candidates, in order of cost: the middle-complete rule (nine times v2's cost)
+  for keys with no exact equivalent; a climb that can see a middle-third indel,
+  which would have to use both the head setting and the shifted tail setting
+  at once (two tables per candidate, a split point searched); and, per the
+  review, a Bombe only once a crib prior (P3) is quantified.
+- `accepted_break` stays false.
+
 ---
 
 ## What Phase 1 now needs

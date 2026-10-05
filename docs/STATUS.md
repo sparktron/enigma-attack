@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-03
+Updated: 2026-10-04
 
 ## Current state
 
@@ -26,21 +26,36 @@ only as an independent check) recovers a known ten-pair plugboard and its exact
 plaintext on every trial at 167 letters when handed the true setting, once an
 index-of-coincidence phase runs ahead of the n-gram phase. That is the stecker
 stage alone: end to end, through the parameterization a sweep can actually
-reach, a planted-key control detects 82.5% (95% interval 68–91%) at best, and
-15% when one letter of the message is dropped or inserted. The complete indicator-coupled search
+reach, a planted-key control detects 82.5% (95% interval 68–91%) at best.
+With the neighbouring right positions a complete sweep also visits, that is
+88.8% clean and 41% when one letter of the message is dropped or inserted
+(`phase1-windowed-climb-power-v1`; the earlier 15% came from a slice that
+held the planted right position). The complete indicator-coupled search
 (2,109,120 daily keys, both indicator orderings) and a declared 0.15% slice of
 the body-direct space on BYQMZ were both run to completion and found nothing,
 exactly as the calibration predicted; the body-direct slice's retained
 candidates were re-confirmed on 2026-10-03 with the ring-recovering
-confirmation and still score below their own sweep scores. One dropped or
-inserted letter is calibrated (15% detection); the windowed-climb cell the
-history's decision calls for has not been run. A companion-body confirmation (review R4) is
+confirmation and still score below their own sweep scores. A head-and-tail
+**windowed climb** (W = 117: the first and last 117 letters climbed
+separately, the better kept) was calibrated in the preregistered
+`phase1-windowed-climb-power-v1`: on one-indel draws it detects 56% against 41%
+for the whole-message climb on the same draws, and 15 of 80 that the whole
+message misses, at a cost of 10 points on clean draws (78.8% against 88.8%).
+All three of its deciding predictions held, so the preregistered rule called
+for a windowed sweep. `phase1-body-direct-sweep-v3` ran it over the same 27.4
+million settings (16.95 h) and is also **null**: no retained candidate is
+companion-confirmed (best z 4.64 against 6), and its top score is the noise
+maximum (z 6.22). On planted draws v2 and v3 together confirm 73/80 clean keys
+and 46/80 with one indel, so the two nulls multiply the odds of a standard
+reading in this space by about 0.09 ungarbled and 0.43 with one indel. A companion-body confirmation (review R4) is
 calibrated in `phase1-companion-calibration-v1`: at z ≥ 6 it accepts 39/40
 exact-plugboard keys and none of 240 wrong candidates. The complete
 middle-past-notch sweep of BYQMZ (27,418,560 settings, 16.4 hours) ran as the
 preregistered `phase1-body-direct-sweep-v2`, with a stated detection probability
 of about 0.80 for an ungarbled message; measured jointly on the same planted
-draws afterwards (`phase1-joint-power-v1`) it is 0.825. It is **null**: no retained candidate is
+draws afterwards (`phase1-joint-power-v1`) it is 0.825, and 0.875 clean and
+0.40 with one indel once the neighbouring right positions are in the slice
+(`phase1-joint-power-v2-middle-past-notch`). It is **null**: no retained candidate is
 companion-confirmed (best z 4.47 against a threshold of 6), and the sweep's top
 score is the expected noise maximum. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
@@ -189,7 +204,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 169 tests passed locally on 2026-10-03,
+- `python3 -m unittest discover -q`: 190 tests passed locally on 2026-10-04,
   with numpy installed; without it the five batched-climb tests skip. A test
   checks that `engine: auto` falls back to the reference climb and
   `engine: batched` fails loudly when numpy is missing.
@@ -264,12 +279,12 @@ has already closed.
    top-k and streaming statistics per chunk, runs 1,560 chunks for a full sweep,
    and checkpoints to JSONL and resumes. Existing v1 configurations still run
    the reference climb.
-4. Open: the preregistered full sweep. Its stated power is 0.83 [0.68, 0.91]
-   without transcription faults and 0.15 with one indel, so a windowed-climb
-   calibration should come first.
+4. Done: the preregistered full sweep (`phase1-body-direct-sweep-v2`) ran and
+   is null; its power is now put at about 0.875 clean and 0.40 with one indel.
+   The windowed-climb calibration followed (`phase1-windowed-climb-power-v1`)
+   and its windowed sweep (`phase1-body-direct-sweep-v3`) ran and is null.
 5. Open: the Bombe still rests on cribs nothing in the repository places in
-   these three messages (P3), so the "highest-value move" below is not yet
-   supported.
+   these three messages (P3), so it stays deferred.
 
 ## Next
 
@@ -282,11 +297,18 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-The highest-value move is now a **crib-driven Bombe** for Phase 1: eliminate
-the plugboard algebraically through crib-derived menus instead of searching it,
-which is the historically correct answer to exactly the bottleneck this phase
-measured (rotor-setting enumeration, not stecker recovery). Phase 2's crib
-network (`artifacts/phase2-network-cribs.json`) exists to feed it.
+Phase 1 next, in order of cost: the middle-complete rule (nine times v2's
+cost) for the keys with no exact equivalent in the past-notch space; a split
+climb that reads the head at one setting and the tail at the shifted one, for
+an indel in the middle third of BYQMZ, which neither climb sees well (8 of 32
+windowed, 2 of 32 whole). The body-direct route at the past-notch rule is
+otherwise exhausted for BYQMZ.
+
+A **crib-driven Bombe** would eliminate the plugboard algebraically through
+crib-derived menus instead of searching it, the historically correct answer to
+the rotor-setting enumeration this phase measured. It stays deferred until a
+crib prior for these messages is quantified (review finding P3); Phase 2's
+crib network (`artifacts/phase2-network-cribs.json`) exists to feed it.
 
 Second: identify what produces QTXMA's restricted alphabet, starting with cheap
 discriminators. Its length of 155 is odd, which argues against a pure bigram

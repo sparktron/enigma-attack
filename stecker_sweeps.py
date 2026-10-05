@@ -24,7 +24,12 @@ import enigma_fast
 from phase7 import resolve_path
 from provenance import sha256_file, sha256_text
 import stecker_batch
-from stecker_climb import coincidence_of_decryption, run_climb_phases
+from stecker_climb import (
+    climb_windows,
+    coincidence_of_decryption,
+    run_climb_phases,
+    windowed_climb,
+)
 from stecker_scoring import FastNgramScorer, index_of_coincidence
 from stecker_space import RingRule, Setting
 from stecker_traffic import Traffic
@@ -149,9 +154,21 @@ def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[
     _WORKER["settings"] = settings
     _WORKER["reflector"] = reflector
     scorer = _WORKER["scorer"]
+    batched = resolve_engine(settings) == "batched"
+    window = settings.get("window")
     _WORKER["climber"] = (
         stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body, settings)
-        if resolve_engine(settings) == "batched"
+        if batched and window is None
+        else None
+    )
+    # A windowed climb needs one batched climber per window, each built on that
+    # window's letters; ``None`` there means the reference windowed climb.
+    _WORKER["window_climbers"] = (
+        [
+            stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body[first:stop], settings)
+            for _, first, stop in climb_windows(len(body), window)
+        ]
+        if batched and window is not None
         else None
     )
 
@@ -170,6 +187,8 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
     settings = _WORKER["settings"]
     reflector = _WORKER["reflector"]
     climber = _WORKER["climber"]
+    window_climbers = _WORKER["window_climbers"]
+    windowed = settings.get("window") is not None
     order = [enigma_fast.rotor_tables(name) for name in names]
     letters = sum(1 for value in body if value >= 0)
     phases = list(settings["phases"])
@@ -177,7 +196,12 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
     count, mean, m2, best = 0, 0.0, 0.0, -math.inf
     for local, (rings, start) in enumerate(swept):
         table = enigma_fast.position_permutations(order, rings, start, len(body), reflector)
-        if climber is not None:
+        window_name = None
+        if windowed:
+            plugboard, evaluations, score, window_name = windowed_climb(
+                table, body, scorer, settings, window_climbers
+            )
+        elif climber is not None:
             plugboard, evaluations = climber.climb(table)
         else:
             plugboard, _, evaluations = run_climb_phases(
@@ -189,7 +213,8 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
                 letters,
                 settings,
             )
-        score = scorer.score_decryption(table, body, plugboard) / letters
+        if not windowed:
+            score = scorer.score_decryption(table, body, plugboard) / letters
         count += 1
         delta = score - mean
         mean += delta / count
@@ -207,6 +232,7 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
                 "plugboard": list(plugboard),
                 "plugboard_pairs": sum(1 for x in range(26) if plugboard[x] > x),
                 "evaluations": evaluations,
+                **({"window": window_name} if windowed else {}),
             },
         )
         # Ordered by (score, earlier first); ``-local`` is unique, so the row
@@ -476,6 +502,7 @@ def sweep_slice(
             "start_position": "".join(chr(65 + value) for value in row["start"]),
             "plugboard": enigma_fast.plugboard_pairs(row["plugboard"]),
             "plugboard_pairs": row["plugboard_pairs"],
+            **({"window": row["window"]} if "window" in row else {}),
             "_plugboard": row["plugboard"],
         }
         for position, (_, _, _, row) in enumerate(candidates[:keep])

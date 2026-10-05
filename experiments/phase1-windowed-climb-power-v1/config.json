@@ -1,0 +1,346 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "batched"
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261004,
+    "samples": 24
+  },
+  "experiment_id": "phase1-windowed-climb-power-v1",
+  "mode": "end_to_end_power",
+  "output": "artifacts/phase1-windowed-climb-power-v1.json",
+  "hypothesis": "Through the middle-past-notch sweep parameterization, on 167-letter messages with a ten-pair stecker, a head-and-tail windowed climb with W = 117 detects at least 30% of messages carrying one dropped or inserted letter, at least 10 points more than the whole-message climb on the same draws, and still detects at least 60% of unperturbed messages.",
+  "refuted_by": "The W = 117 arm detecting fewer than 30% of the 80 single-indel draws, or fewer than 10 points more than the whole-message arm on them, or fewer than 60% of the 80 unperturbed draws. Every prediction in end_to_end_power.predictions is scored by the runner, and a failed one refutes that prediction alone.",
+  "end_to_end_power": {
+    "rationale": "phase1-end-to-end-power-v1 measured the middle-past-notch sweep at 82.5% on clean 167-letter draws and 15% when one letter is dropped or inserted: after the indel every letter is enciphered one keystroke away from where its index puts it, so a whole-message climb sees a decryption that is clean only up to the indel. A head-and-tail windowed climb climbs the first and the last W letters separately and keeps the better window. One indel at position p leaves the prefix clean under the swept setting and the suffix clean under the setting one keystroke away, which a complete sweep visits as the neighbouring right position; a window that fits in either clean stretch fits in the head or the tail of the same size, so sliding a window over interior offsets adds nothing for a single indel. A window shorter than the message gives up letters, and the stecker-stage calibration recovers 1/8 ten-pair plugboards at 97 letters against 8/8 at 167, so W trades the chance that a clean window exists (about 2(n - W)/n for W >= n/2) against recovery at W letters. Four window sizes are measured on the same draws as the whole-message climb, so every comparison is paired. The whole-message sweep of BYQMZ (phase1-body-direct-sweep-v2) has already run, so a windowed sweep would be complementary to it: its value is the indel cell, and the clean cell is measured to say what it costs.",
+    "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+    "seed": 20261004,
+    "draws": 80,
+    "stecker_pairs": 10,
+    "cells": [
+      {
+        "length": 167,
+        "perturbation": "none"
+      },
+      {
+        "length": 167,
+        "perturbation": "indel"
+      }
+    ],
+    "left_neighbours": 1,
+    "middle_neighbours": 2,
+    "right_neighbours": 1,
+    "null_trials": 8,
+    "detection_z": 6.0,
+    "target_length": 167,
+    "headline_arm": "head_tail_117",
+    "arms": [
+      {
+        "id": "middle_past_notch",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted"
+      },
+      {
+        "id": "head_tail_84",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 84
+        }
+      },
+      {
+        "id": "head_tail_100",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 100
+        }
+      },
+      {
+        "id": "head_tail_117",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      },
+      {
+        "id": "head_tail_134",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 134
+        }
+      }
+    ],
+    "predictions": [
+      {
+        "id": "windowed-117-indel-at-least-30pct",
+        "statement": "The head-and-tail climb with W = 117 detects at least 30% of single-indel 167-letter draws.",
+        "kind": "rate_at_least",
+        "cell": 1,
+        "arm": "head_tail_117",
+        "value": 0.3
+      },
+      {
+        "id": "windowed-117-indel-gains-10-points",
+        "statement": "On the same single-indel draws the W = 117 windowed climb detects at least 10 points more than the whole-message climb.",
+        "kind": "rate_gain_at_least",
+        "cell": 1,
+        "arm": "head_tail_117",
+        "value": 0.1,
+        "over": "middle_past_notch"
+      },
+      {
+        "id": "windowed-117-clean-at-least-60pct",
+        "statement": "The W = 117 windowed climb detects at least 60% of unperturbed 167-letter draws.",
+        "kind": "rate_at_least",
+        "cell": 0,
+        "arm": "head_tail_117",
+        "value": 0.6
+      },
+      {
+        "id": "windowed-117-clean-loss-at-most-25-points",
+        "statement": "On unperturbed draws the W = 117 windowed climb loses at most 25 points against the whole-message climb.",
+        "kind": "rate_gain_at_least",
+        "cell": 0,
+        "arm": "head_tail_117",
+        "value": -0.25,
+        "over": "middle_past_notch"
+      },
+      {
+        "id": "whole-clean-replicates-v1",
+        "statement": "The whole-message middle-past-notch climb detects at least 68% of unperturbed draws, the lower 95% bound v1 measured.",
+        "kind": "rate_at_least",
+        "cell": 0,
+        "arm": "middle_past_notch",
+        "value": 0.68
+      },
+      {
+        "id": "whole-indel-at-most-30pct",
+        "statement": "The whole-message climb detects at most 30% of single-indel draws, even with the neighbouring right positions in the slice.",
+        "kind": "rate_at_most",
+        "cell": 1,
+        "arm": "middle_past_notch",
+        "value": 0.3
+      },
+      {
+        "id": "shortest-window-is-weak",
+        "statement": "The W = 84 windowed climb detects at most 15% of single-indel draws: a clean window nearly always exists but 84 letters are too few to recover ten pairs.",
+        "kind": "rate_at_most",
+        "cell": 1,
+        "arm": "head_tail_84",
+        "value": 0.15
+      },
+      {
+        "id": "longest-window-keeps-clean-power",
+        "statement": "The W = 134 windowed climb detects at least 70% of unperturbed draws.",
+        "kind": "rate_at_least",
+        "cell": 0,
+        "arm": "head_tail_134",
+        "value": 0.7
+      }
+    ],
+    "right_neighbours_rationale": "The tail window decrypts cleanly only at the setting one keystroke away from the planted one (the right position one further for a deletion, one back for an insertion). A complete sweep enumerates every right position, so it always visits that setting; the slice includes the planted right position and both neighbours for every arm, so the whole-message arm is measured on the same slice as the windowed ones. v1 swept the planted right position only, so this whole-message arm is a re-measurement on a wider slice, not a replication of v1's number.",
+    "arm_rationale": "84 is the largest W for which one interior indel almost always leaves a clean window (W <= n/2); 134 is 80% of the message and leaves one about 40% of the time; 117 (70%) is the preregistered headline, chosen before any measurement as the size whose product of clean-window probability (about 0.60) and expected recovery looked largest. No other size can become the headline after the run: a sweep using another W needs its own calibration with a fresh seed.",
+    "sweep_decision_rule": "A windowed sweep of BYQMZ is preregistered next only if windowed-117-indel-at-least-30pct, windowed-117-indel-gains-10-points and windowed-117-clean-loss-at-most-25-points all hold. It then uses W = 117 and states this run's W = 117 rates as its power. If they do not all hold, no windowed sweep is run on this evidence, whatever another window size measures; a different W would need its own calibration with a fresh seed."
+  },
+  "limitations": [
+    "The slice is the planted key's own neighbourhood: the planted wheel order, left offsets within one of the planted, middle offsets within two, and the planted right wheel. Every other wheel order and distant start is absent, so a detection is a detection against that neighbourhood and a pooled wrong-setting null, not against 2.7e7 settings. The detection threshold is set at 6 null standard deviations to stand in for the extreme value of that many draws, and that substitution assumes the null is close to normal.",
+    "The right wheel's ring and position are taken at the planted values (or, for the AAA arm, at the planted right offset with ring A). That is the one axis the full sweep enumerates exactly, so it always visits those values, but the experiment does not test it.",
+    "One plaintext prefix at one length is used for every draw. The draws vary the key, not the text, so a text that scores unusually well or badly under the published counts moves every rate together.",
+    "The null is the climb's score at randomly drawn wrong settings of the same message. It is pooled over the cell's draws, eight per draw, and is a reference distribution rather than a sample of the space a sweep would see.",
+    "Forty draws per cell give a 95% Wilson interval about 0.15 wide at a rate of 0.7, so differences of a few points between arms are not resolved. The preregistered thresholds are set with that in mind.",
+    "The indel cell drops or inserts one random letter at a uniformly random interior position. Real garbles can be several letters, can fall in the first or last few letters, or can be a transposition; this measures the single-letter case only.",
+    "Constructed plaintext enciphered by the reference machine, not authentic held-out traffic with an authentic daily key.",
+    "The right wheel's position is swept over the planted value and its two neighbours, so the slice holds the setting one keystroke away that the tail window needs. Under the middle-past-notch rule the middle wheel's phase is fixed, so when the planted machine's first keystroke steps its middle wheel the shifted setting is not exactly reachable; the measurement includes that loss rather than assuming it away.",
+    "Each windowed arm is compared with its own pooled null, the same windowed climb at the same wrong settings, because the better of two shorter windows is distributed differently from a whole-message score. The 6-sigma threshold stands in for the extreme of a full sweep in which every setting contributes the better of two windows, which is twice as many scores as the whole-message sweep and assumes the windowed null is also near normal.",
+    "Only a single dropped or inserted letter is modelled. Two faults, a substituted letter or a fault in the last or first few letters behave differently, and the head-and-tail argument does not extend to two indels.",
+    "Detection asks for the exact planted plugboard. A window of W letters may not contain every plugged letter in either text, in which case the windowed climb cannot be credited even when its window decrypts correctly."
+  ]
+}

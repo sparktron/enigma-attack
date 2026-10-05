@@ -18,7 +18,7 @@ import phase1
 import phase7
 from provenance import sha256_text
 import stecker_batch
-from stecker_climb import body_direct_climb
+from stecker_climb import body_direct_climb, climb_windows, windowed_climb
 from stecker_scoring import FastNgramScorer
 from stecker_sweeps import resolve_engine
 from stecker_traffic import Traffic, encipher_control, normalize_plaintext, random_plugboard
@@ -58,6 +58,17 @@ def evaluate_positive_control(
             traffic, expected, outcome.plugboard, reflector
         ),
     }
+    windowed: dict[str, Any] = {}
+    if config["climb"].get("window") is not None:
+        windowed = {
+            "windowed_climb": windowed_control_cases(
+                traffic,
+                [normalize_plaintext(m["plaintext"], m.get("length")) for m in spec["messages"]],
+                starts, rotors, rings, scorer, reflector, config["climb"],
+                config.get("windowed_control", {}),
+            )
+        }
+        checks["windowed_climb_recovers_known_key"] = windowed["windowed_climb"]["passed"]
     return {
         "id": spec["id"],
         "source": spec.get("source"),
@@ -70,8 +81,116 @@ def evaluate_positive_control(
         "climb_passes": outcome.passes,
         "climb_evaluations": outcome.evaluations,
         "recovered_plaintext_prefixes": [text[:60] for text in plaintexts],
+        **windowed,
         "checks": checks,
         "passed": all(checks.values()),
+    }
+
+
+def windowed_control_cases(
+    traffic: Sequence[Traffic],
+    plaintexts: Sequence[str],
+    starts: Sequence[Sequence[int]],
+    rotors: Sequence[str],
+    rings: Sequence[int],
+    scorer: FastNgramScorer,
+    reflector: Sequence[int],
+    settings: Mapping[str, Any],
+    control: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Run the configured windowed climb on planted keys over a control message.
+
+    ``body_direct_climb`` ignores ``climb.window``, so the ordinary control
+    certifies the whole-message climb only.  For every control message at least
+    ten letters longer than the window, this re-enciphers the message's
+    plaintext under the control's wheel order, rings and start with ``draws``
+    seeded random ten-pair plugboards, cycling through three forms: clean; one
+    letter deleted at position W, which leaves the head window clean at the
+    true setting; and one letter deleted at position n - 1 - W, read at the
+    setting one keystroke later, which leaves the tail clean.  Each is climbed
+    exactly as a sweep climbs a setting.
+
+    One fixed key is a poor gate here: a W-letter window recovers a ten-pair
+    plugboard only most of the time (phase1-windowed-climb-power-v1), so a sound
+    climb would fail a single-key check by chance.  The gate is instead a floor
+    on the number of planted keys recovered exactly, set far below the measured
+    rate so a sound climb practically never misses it, while broken slicing or
+    window selection recovers none.
+    """
+
+    size = int(settings["window"]["letters"])
+    seed = int(control.get("seed", 20261006))
+    draws = int(control.get("draws", 12))
+    minimum = int(control.get("minimum_recovered", 3))
+    order = [enigma_fast.rotor_tables(name) for name in rotors]
+    rows: list[dict[str, Any]] = []
+    for message, plaintext, start in zip(traffic, plaintexts, starts):
+        length = len(message.body)
+        if length < size + 10:
+            continue
+        generator = random.Random(f"{seed}:{message.designator}")
+        rotor_names = tuple(rotors)
+        table = enigma_fast.position_permutations(order, rings, start, length, reflector)
+        forms = (
+            ("clean", None, table),
+            ("deletion_at_window", size, table),
+            # After a deletion at p the letters from p on were enciphered one
+            # keystroke later than their new index says, so the clean tail is
+            # read with the table shifted by one position.
+            ("deletion_before_tail", length - 1 - size, table[26:]),
+        )
+        for draw in range(draws):
+            form, position, shifted = forms[draw % len(forms)]
+            plugboard = random_plugboard(generator, 10)
+            body = list(
+                enigma_fast.text_to_indices(
+                    EnigmaI(
+                        rotors=rotor_names,
+                        rings="".join(chr(65 + value) for value in rings),
+                        positions="".join(chr(65 + value) for value in start),
+                        plugboard=plugboard,
+                    ).crypt(plaintext)
+                )
+            )
+            if position is not None:
+                del body[position]
+            found, _, score, window = windowed_climb(
+                shifted[: 26 * len(body)], body, scorer, settings
+            )
+            expected = enigma_fast.plugboard_pairs(enigma_fast.plugboard_table(plugboard))
+            rows.append(
+                {
+                    "message": message.designator,
+                    "draw": draw,
+                    "form": form,
+                    "deleted_position": position,
+                    "window": window,
+                    "plugboard_recovered_exactly": enigma_fast.plugboard_pairs(found) == expected,
+                    "score_per_letter": round(score, 9),
+                }
+            )
+    recovered = sum(1 for row in rows if row["plugboard_recovered_exactly"])
+    messages = len({row["message"] for row in rows})
+    return {
+        "window": dict(settings["window"]),
+        "seed": seed,
+        "draws_per_message": draws,
+        "minimum_recovered_per_message": minimum,
+        "recovered": recovered,
+        "attempted": len(rows),
+        "draws": rows,
+        "passed": all(
+            sum(1 for row in rows if row["message"] == name and row["plugboard_recovered_exactly"])
+            >= minimum
+            for name in {row["message"] for row in rows}
+        ),
+        "note": (
+            "No control message is long enough to split into windows, so the "
+            "windowed climb is the whole-message climb certified above."
+            if not messages
+            else "Planted keys over the control plaintext at the control's setting; "
+            "each message must recover at least the minimum."
+        ),
     }
 
 
@@ -246,6 +365,19 @@ def confirm_against_date(
     }
 
 
+def configured_windows(config: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Every climb window a configuration can run, in first-mention order."""
+
+    windows: list[dict[str, Any]] = []
+    candidates = [config["climb"].get("window")] + [
+        arm.get("window") for arm in config.get("end_to_end_power", {}).get("arms", [])
+    ]
+    for window in candidates:
+        if window is not None and dict(window) not in windows:
+            windows.append(dict(window))
+    return windows
+
+
 def batched_climb_parity_report(
     config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
 ) -> dict[str, Any]:
@@ -266,7 +398,9 @@ def batched_climb_parity_report(
         normalize_plaintext(row["raw"]) for row in config["scorer_validation"]["plaintexts"]
     )
     climb = config["climb"]
+    windows = configured_windows(config)
     identical = same_evaluations = 0
+    windowed_identical = 0
     for case in range(samples):
         length = generator.randrange(60, min(167, len(source)) + 1)
         order = tuple(generator.sample(wheels, 3))
@@ -298,13 +432,31 @@ def batched_climb_parity_report(
         ).climb(table)
         identical += list(reference.plugboard) == plugboard
         same_evaluations += reference.evaluations == evaluations
-    return {
+        # The windowed climb runs the same batched climber on each window's
+        # letters; it has to pick the same window and end on the same
+        # plugboard, after the same count, as the reference windowed climb.
+        for window in windows:
+            windowed = {**climb, "window": window}
+            expected = windowed_climb(table, body, scorer, windowed)
+            climbers = [
+                stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body[first:stop], windowed)
+                for _, first, stop in climb_windows(len(body), window)
+            ]
+            windowed_identical += windowed_climb(table, body, scorer, windowed, climbers) == expected
+    report: dict[str, Any] = {
         "seed": seed,
         "samples": samples,
         "identical_final_plugboards": identical,
         "identical_evaluation_counts": same_evaluations,
-        "passed": identical == samples and same_evaluations == samples,
     }
+    passed = identical == samples and same_evaluations == samples
+    if windows:
+        report["windows"] = windows
+        report["windowed_climbs_compared"] = samples * len(windows)
+        report["windowed_climbs_identical"] = windowed_identical
+        passed = passed and windowed_identical == samples * len(windows)
+    report["passed"] = passed
+    return report
 
 
 def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[str, Any]:
