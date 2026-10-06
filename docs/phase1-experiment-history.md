@@ -1149,6 +1149,17 @@ that score the other arms; the oracle is an upper bound that is handed the
 position; 400 draws leave about 36 clean missed draws, so a stratum rate
 carries an interval about 0.3 wide; only a single indel is modelled.
 
+> **Amended 2026-10-06, before any run (PR review).** As first committed, the
+> oracle arm was judged against the cell's pooled whole-message null, which is
+> climbed on the unrepaired message. A repaired deletion carries a mask that
+> breaks the n-gram chain and a repaired insertion is one letter shorter, so
+> that null does not fit the oracle's score, and C3 could misclassify. A
+> repaired arm now gets its own null, as a windowed arm does: the same climb,
+> at the same wrong settings, on the repaired message. On clean draws repair
+> is the identity and the two nulls coincide. The other arms are bit-identical
+> to the previous runner on clean, deletion and insertion draws. The cost is
+> eight more whole-message climbs per indel draw, small beside the sweeps.
+
 Run command, not run:
 
 ```bash
