@@ -627,6 +627,70 @@
       ],
       "long_running": "160 planted-key draws over five arms, each draw 225 converged climbs (45 whole-message and 180 windowed) plus 72 null climbs: 147 seconds wall-clock on 10 workers with the batched engine when recorded, about 25 minutes single-process, more than the determinism job should spend twice. The windowed climb, its batched parity and the per-arm null are covered by tests/test_phase1_stecker.py (WindowedClimbTests, BatchedClimbTests, EndToEndPowerTests)."
     },
+    "artifacts/phase1-middle-complete-power-v1.json": {
+      "runner": [
+        "phase1_stecker.py",
+        "--config",
+        "experiments/phase1-middle-complete-power-v1/config.json",
+        "--jobs",
+        "10"
+      ],
+      "claim_paths": [
+        "schema",
+        "mode",
+        "status",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.corpus_sha256",
+        "inputs.bigram_counts_sha256",
+        "inputs.trigram_counts_sha256",
+        "preflight.passed",
+        "positive_controls.passed",
+        "result.formulation",
+        "result.seed",
+        "result.draws_per_cell",
+        "result.detection_z",
+        "result.coverage_by_rule.*",
+        "result.findings.headline_arm",
+        "result.findings.end_to_end_detection_rate_at_target_scale",
+        "result.findings.end_to_end_detection_interval_95",
+        "result.findings.single_indel_detection_rate_at_target_length",
+        "result.cells[].length",
+        "result.cells[].perturbation",
+        "result.cells[].null.detection_threshold_score_per_letter",
+        "result.cells[].arms[].arm",
+        "result.cells[].arms[].detected",
+        "result.cells[].arms[].detection_rate",
+        "result.cells[].arms[].plugboard_recovered_by_top_candidate",
+        "result.cells[].arms[].measured_exact_equivalent_rate",
+        "result.cells[].arms[].analytic_exact_key_coverage",
+        "result.predictions[].id",
+        "result.predictions[].observed",
+        "result.predictions[].passed",
+        "preflight.batched_climb_parity.windowed_climbs_identical",
+        "result.cells[].arms[].null.detection_threshold_score_per_letter"
+      ],
+      "long_running": "800 planted-key draws over five arms, 945 converged climbs per draw (the complete rule is 405 each for two arms) plus null climbs: 2,601 seconds (43 minutes) wall-clock on 10 workers with the batched engine when recorded from a clean checkout at 68b0fa3, about 4.5 CPU-hours, far more than the artifact job should spend three times. The oracle repair, the per-arm null and the unchanged past-notch arms are covered by tests/test_stecker_power_repair.py and tests/test_phase1_stecker.py (EndToEndPowerTests); the conditional figures are regenerated from this artifact by artifacts/phase1-middle-complete-power-v1-conditional.json."
+    },
+    "artifacts/phase1-middle-complete-power-v1-conditional.json": {
+      "runner": [
+        "scripts/conditional_power.py"
+      ],
+      "claim_paths": [
+        "draws.*",
+        "missed_by_both_reference_arms.*",
+        "missed_fraction.*",
+        "conditional_predictions[].id",
+        "conditional_predictions[].stratum_size",
+        "conditional_predictions[].rate",
+        "conditional_predictions[].verdict",
+        "detection_among_missed.*.*.detected",
+        "detection_among_missed.*.*.n",
+        "rates_used.*",
+        "yield_by_fault_prior.*.*",
+        "next_step_per_decision_rule"
+      ]
+    },
     "artifacts/phase1-joint-power-v2-middle-past-notch.json": {
       "runner": [
         "scripts/joint_power.py",
