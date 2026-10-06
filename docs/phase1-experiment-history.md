@@ -912,6 +912,111 @@ do not apply. The top score lies between z = 5 and z = 7 (6.22, held).
 
 ---
 
+## phase1-fkqlz-length-calibration-v1
+
+Status: completed 2026-10-06; hypothesis **supported** — at 107 letters the
+climb recovers fewer than 24 of 32 plugboards, at 10 of 32. Five of seven
+predictions held and two were refuted.
+
+Hypothesis: FKQLZ, at 107 letters, is below the length at which the body-direct
+stecker climb reliably recovers a ten-pair plugboard. Handed the true wheel
+order, rings and start position, with the same two-phase climb and the same
+constructed plaintext prefix as [phase1-stecker-calibration-v1](#phase1-stecker-calibration-v1),
+it recovers the exact plaintext in fewer than 24 of 32 draws (75%) at 107
+letters.
+
+Refuted by: 24 or more of 32 draws recovered exactly at 107 letters. The climb
+is handed the true setting, so the rate bounds the stecker stage and not an
+end-to-end sweep.
+
+Configuration:
+[experiments/phase1-fkqlz-length-calibration-v1/config.json](../experiments/phase1-fkqlz-length-calibration-v1/config.json),
+preregistered 2026-10-04 and not edited since. Raw result:
+[artifacts/phase1-fkqlz-length-calibration-v1.json](../artifacts/phase1-fkqlz-length-calibration-v1.json).
+
+Run record: `python3 phase1_stecker.py --config experiments/phase1-fkqlz-length-calibration-v1/config.json`,
+single process, 2026-10-06 05:06:19 to 05:08:36 UTC (136.8 s), Python 3.10.12,
+Linux 6.8, 20 CPUs. Code `03b8670` on `claude/phase1-fkqlz-and-crib-prior`,
+**clean tree** (`code.dirty` is false, no status lines). Preflight and both
+positive controls passed. Nothing else was running on the host (load average
+about 2 before the run).
+
+### Predictions
+
+Scored before any reading of the result.
+
+| id | prediction | measured | |
+|---|---|---|---|
+| fkqlz-below-reliable (decides) | 107 letters: fewer than 24 of 32 | 10 of 32 | **held** |
+| fkqlz-above-xfedt | 107 letters: at least 4 of 32 | 10 of 32 | held |
+| fkqlz-interval | 107 letters: between 4 and 20 of 32 | 10 of 32 | held |
+| anchor-97 | 97 letters: at most 8 of 32 | 12 of 32 | **refuted** |
+| anchor-167 | 167 letters: at least 30 of 32 | 28 of 32 | **refuted** |
+| plugboard-matches-plaintext | exact plugboards equal exact plaintexts in every cell | 12/12, 10/10, 28/28 | held |
+| other-stages-reproduce | the three copied stages reproduce v1 exactly | see below | held, on a reading stated below |
+
+Prediction 7. `ic_stage_calibration` and `indicator_gradient_control` are
+identical to v1's. `screening_calibration` is identical except for
+`seconds_per_setting`, which differs in all 10 rows (for example 0.018689
+against 0.020205) because it is measured wall-clock time on this host at this
+load. On all 18 claim paths that `artifact_claims.json` declares for those
+three stages, the repository's own `check_artifacts.compare` finds no
+difference. I scored it held on the reading that a timing is not a calibration
+value, and that no value changed is what "code drift" would mean here. That
+reading is mine. On the literal reading, whole-dictionary equality, the
+prediction is refuted by the timing field alone.
+
+### Observed
+
+| letters | recovered exactly (plaintext and plugboard) | rate, Wilson 95% | median z over wrong settings |
+|---:|---:|---:|---:|
+| 97 | 12 of 32 | 37.5% [22.9, 54.7] | 3.13 |
+| **107** | **10 of 32** | **31.3% [18.0, 48.6]** | 1.57 |
+| 167 | 28 of 32 | 87.5% [71.9, 95.0] | 21.76 |
+
+Ten pairs, 32 key draws per cell, 8 wrong-setting nulls per draw, the same
+plaintext cut to each length as a prefix. `recovers_at_target_scale` is false
+and no length recovers every draw.
+
+Branch of `decision_rule`: 10 of 32 falls in **8 to 23 of 32**. FKQLZ is a
+companion only, as before: it confirms BYQMZ candidates and is not swept alone.
+The count is not 24 or more, so no end-to-end power control at 107 letters was
+written. The STATUS line saying FKQLZ was not measured directly is replaced by
+this rate.
+
+Exploratory, not preregistered: 97 against 107 letters, 12 of 32 against 10 of
+32, Fisher exact two-sided p = 0.79.
+
+### Interpretation (inference)
+
+- Ten more letters over 97 do not show a measurable gain here. The 107 count is
+  below the 97 count, with heavily overlapping intervals and a lower median z.
+  The preregistered "helps measurably" prediction held only in the weak sense
+  the threshold of 4 of 32 allowed.
+- The v1 figure for 97 letters, 1 of 8, was a low draw. Its interval
+  (about 2 to 47%) contains 12 of 32. XFEDT's handed-setting rate is nearer
+  four in ten than one in eight. It is still far from reliable, and an
+  end-to-end sweep would do no better.
+- The v1 figure for 167 letters, 8 of 8, was a small sample. At 32 draws the
+  rate is 87.5%, not 100%. STATUS and the earlier entries that say the climb
+  recovers the key "on every trial" at 167 letters describe the 8 draws, not the
+  rate. The windowed-climb run measured clean whole-message detection through
+  the sweep at 71 of 80 (88.8%, [80.0, 94.0]); that is the same size as this
+  handed-setting rate on different draws. It would be a mistake to read the
+  handed rate as a strict cap: phase1-end-to-end-power-v1 detected 39 of 40
+  draws when a sweep visited many near-equivalent settings, each a fresh climb.
+- Limits: one plaintext, cut as prefixes, so the 97 and 107 cells share their
+  first 97 letters and their results are not independent of what those letters
+  say; one key draw per (cell, draw); the climb is handed the true setting.
+
+### Decision
+
+- FKQLZ is not swept alone. Its companion role is unchanged.
+- XFEDT and FKQLZ both remain below the length at which a body-direct climb is
+  reliable (31% and 38% handed, against 88% at 167 letters).
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.
@@ -991,3 +1096,7 @@ Its measurement is preregistered and queued, not run:
 [phase1-fkqlz-length-calibration-v1](../experiments/phase1-fkqlz-length-calibration-v1/config.json)
 (32 draws at 97, 107 and 167 letters, predicting fewer than 24 of 32 recovered
 at 107).
+
+> **Measured, 2026-10-06.** [phase1-fkqlz-length-calibration-v1](#phase1-fkqlz-length-calibration-v1)
+> ran: 12 of 32 at 97 letters, 10 of 32 at 107, 28 of 32 at 167. FKQLZ stays a
+> companion. The "not run" and "queued" wording above is the 2026-10-04 text.
