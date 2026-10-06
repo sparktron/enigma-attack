@@ -912,6 +912,263 @@ do not apply. The top score lies between z = 5 and z = 7 (6.22, held).
 
 ---
 
+## phase1-fkqlz-length-calibration-v1
+
+Status: completed 2026-10-06; hypothesis **supported** — at 107 letters the
+climb recovers fewer than 24 of 32 plugboards, at 10 of 32. Five of seven
+predictions held and two were refuted.
+
+Hypothesis: FKQLZ, at 107 letters, is below the length at which the body-direct
+stecker climb reliably recovers a ten-pair plugboard. Handed the true wheel
+order, rings and start position, with the same two-phase climb and the same
+constructed plaintext prefix as [phase1-stecker-calibration-v1](#phase1-stecker-calibration-v1),
+it recovers the exact plaintext in fewer than 24 of 32 draws (75%) at 107
+letters.
+
+Refuted by: 24 or more of 32 draws recovered exactly at 107 letters. The climb
+is handed the true setting, so the rate bounds the stecker stage and not an
+end-to-end sweep.
+
+Configuration:
+[experiments/phase1-fkqlz-length-calibration-v1/config.json](../experiments/phase1-fkqlz-length-calibration-v1/config.json),
+preregistered 2026-10-04 and not edited since. Raw result:
+[artifacts/phase1-fkqlz-length-calibration-v1.json](../artifacts/phase1-fkqlz-length-calibration-v1.json).
+
+Run record: `python3 phase1_stecker.py --config experiments/phase1-fkqlz-length-calibration-v1/config.json`,
+single process, 2026-10-06 05:06:19 to 05:08:36 UTC (136.8 s), Python 3.10.12,
+Linux 6.8, 20 CPUs. Code `03b8670` on `claude/phase1-fkqlz-and-crib-prior`,
+**clean tree** (`code.dirty` is false, no status lines). Preflight and both
+positive controls passed. Nothing else was running on the host (load average
+about 2 before the run).
+
+### Predictions
+
+Scored before any reading of the result.
+
+| id | prediction | measured | |
+|---|---|---|---|
+| fkqlz-below-reliable (decides) | 107 letters: fewer than 24 of 32 | 10 of 32 | **held** |
+| fkqlz-above-xfedt | 107 letters: at least 4 of 32 | 10 of 32 | held |
+| fkqlz-interval | 107 letters: between 4 and 20 of 32 | 10 of 32 | held |
+| anchor-97 | 97 letters: at most 8 of 32 | 12 of 32 | **refuted** |
+| anchor-167 | 167 letters: at least 30 of 32 | 28 of 32 | **refuted** |
+| plugboard-matches-plaintext | exact plugboards equal exact plaintexts in every cell | 12/12, 10/10, 28/28 | held |
+| other-stages-reproduce | the three copied stages reproduce v1 exactly | see below | held, on a reading stated below |
+
+Prediction 7. `ic_stage_calibration` and `indicator_gradient_control` are
+identical to v1's. `screening_calibration` is identical except for
+`seconds_per_setting`, which differs in all 10 rows (for example 0.018689
+against 0.020205) because it is measured wall-clock time on this host at this
+load. On all 18 claim paths that `artifact_claims.json` declares for those
+three stages, the repository's own `check_artifacts.compare` finds no
+difference. I scored it held on the reading that a timing is not a calibration
+value, and that no value changed is what "code drift" would mean here. That
+reading is mine. On the literal reading, whole-dictionary equality, the
+prediction is refuted by the timing field alone.
+
+### Observed
+
+| letters | recovered exactly (plaintext and plugboard) | rate, Wilson 95% | median z over wrong settings |
+|---:|---:|---:|---:|
+| 97 | 12 of 32 | 37.5% [22.9, 54.7] | 3.13 |
+| **107** | **10 of 32** | **31.3% [18.0, 48.6]** | 1.57 |
+| 167 | 28 of 32 | 87.5% [71.9, 95.0] | 21.76 |
+
+Ten pairs, 32 key draws per cell, 8 wrong-setting nulls per draw, the same
+plaintext cut to each length as a prefix. `recovers_at_target_scale` is false
+and no length recovers every draw.
+
+Branch of `decision_rule`: 10 of 32 falls in **8 to 23 of 32**. FKQLZ is a
+companion only, as before: it confirms BYQMZ candidates and is not swept alone.
+The count is not 24 or more, so no end-to-end power control at 107 letters was
+written. The STATUS line saying FKQLZ was not measured directly is replaced by
+this rate.
+
+Exploratory, not preregistered: 97 against 107 letters, 12 of 32 against 10 of
+32, Fisher exact two-sided p = 0.79.
+
+### Interpretation (inference)
+
+- Ten more letters over 97 do not show a measurable gain here. The 107 count is
+  below the 97 count, with heavily overlapping intervals and a lower median z.
+  The preregistered "helps measurably" prediction held only in the weak sense
+  the threshold of 4 of 32 allowed.
+- The v1 figure for 97 letters, 1 of 8, was a low draw. Its interval
+  (about 2 to 47%) contains 12 of 32. XFEDT's handed-setting rate is nearer
+  four in ten than one in eight. It is still far from reliable, and an
+  end-to-end sweep would do no better.
+- The v1 figure for 167 letters, 8 of 8, was a small sample. At 32 draws the
+  rate is 87.5%, not 100%. STATUS and the earlier entries that say the climb
+  recovers the key "on every trial" at 167 letters describe the 8 draws, not the
+  rate. The windowed-climb run measured clean whole-message detection through
+  the sweep at 71 of 80 (88.8%, [80.0, 94.0]); that is the same size as this
+  handed-setting rate on different draws. It would be a mistake to read the
+  handed rate as a strict cap: phase1-end-to-end-power-v1 detected 39 of 40
+  draws when a sweep visited many near-equivalent settings, each a fresh climb.
+- Limits: one plaintext, cut as prefixes, so the 97 and 107 cells share their
+  first 97 letters and their results are not independent of what those letters
+  say; one key draw per (cell, draw); the climb is handed the true setting.
+
+### Decision
+
+- FKQLZ is not swept alone. Its companion role is unchanged.
+- XFEDT and FKQLZ both remain below the length at which a body-direct climb is
+  reliable (31% and 38% handed, against 88% at 167 letters).
+
+---
+
+## Choosing the next Phase 1 experiment (2026-10-06)
+
+Written after [phase1-fkqlz-length-calibration-v1](#phase1-fkqlz-length-calibration-v1)
+and [phase2-crib-prior-v1](phase2-experiment-history.md#result-run-2026-10-06),
+which decide what is on the list. Nothing in this section was run.
+
+### What the two results leave
+
+- The Bombe is not a candidate: G1 to G3 fail on the held-out check, and no
+  crib prior can be built from published plaintext.
+- An FKQLZ sweep is not a candidate: 10 of 32 at 107 letters is under the
+  24-of-32 line, and a handed-setting rate is an upper bound.
+- Two crib-free steps are left for BYQMZ, after v2 and v3 were both null:
+  **A**, the middle-complete ring rule, and **B**, a climb that sees a
+  middle-third indel by using the head setting, the shifted tail setting and a
+  searched split point.
+
+### Facts the comparison rests on
+
+- A's cost. The complete rule has 246.8 million reducible settings against 27.4
+  million, a ratio of 9.0. At v3's measured 2.22 ms per setting on 10 workers
+  that is 152.6 host-hours; the earlier "150 to 230" brackets it.
+- A's power is not unmeasured, contrary to the v3 decision list and the
+  phase2-crib-prior-v1 configuration. `phase1-end-to-end-power-v1` ran a
+  `middle_complete` arm: 39 of 40 clean (97.5%, interval 87.1 to 99.6) and 11
+  of 40 with one indel (27.5%), against 33 of 40 and 6 of 40 for
+  `middle_past_notch` on the same draws, whole-message climb. That slice held
+  the planted right position only; adding the neighbouring right positions
+  raised the past-notch indel rate from 15% to 41%, so A's indel figure is
+  probably low too. What has not been measured is A on the keys v2 and v3
+  already missed, with the W = 117 climb, which is the only thing that matters
+  for choosing it.
+- What v2 and v3 already cover on planted draws: 73 of 80 clean and 46 of 80
+  one-indel keys are confirmed by one or the other.
+- B's headroom. A middle-third indel (letters 56 to 111) is the hole: on planted
+  draws the whole-message past-notch climb gets 2 of 32 and W = 117 gets 8 of
+  32 (exploratory split by position, 32 draws between letters 50 and 117). B's
+  code and cost do not exist.
+- The stecker stage, handed the true setting, recovers 28 of 32 at 167 letters.
+
+### Comparison
+
+Expected detection per host-hour, in the convention of G4 (conditional
+probability given a standard reading and both nulls, divided by host-hours;
+v3's was 0.29 in about 22 host-hours, 0.013). The comparison needs three inputs
+the repository does not have: A's and B's detection among the keys v2 and v3
+missed, B's cost, and q, the prior that BYQMZ carries one dropped or inserted
+letter. The control below measures the first and bounds the second. Nothing
+measures q.
+
+Illustration with **placeholder inputs, not measurements**: 9% of clean and 42%
+of indel keys missed (from 73/80 and 46/80), A detecting 60% of the clean and
+15% of the indel keys it is given, an oracle for B detecting 75% of the indel
+keys, B costing 4 times v3:
+
+| q (P of one indel) | A, per host-hour | B ceiling, per host-hour | break-even B cost, in multiples of v3 |
+|---:|---:|---:|---:|
+| 0.05 | 0.0034 | 0.0022 | 2.6 |
+| 0.10 | 0.0029 | 0.0038 | 5.2 |
+| 0.20 | 0.0023 | 0.0060 | 10.2 |
+| 0.35 | 0.0018 | 0.0079 | 17.4 |
+| 0.50 | 0.0015 | 0.0091 | 24.2 |
+
+Inference from the illustration, to be checked by the control: with these
+inputs the choice turns on q and on B's cost, B is ahead above about q = 0.1,
+and both are well under v3's 0.013 per host-hour. That is expected, since each
+step now buys detection only among keys two sweeps already missed.
+Speculation: that q is large. BYQMZ carries a masked letter at position 28,
+which says its transcription is imperfect and says nothing about a dropped
+letter.
+
+### What the choice does not cover
+
+Every number above assumes a standard Enigma I with wheels I to V as wired.
+The cited paper's authors suspect that Batch C used differently wired wheels
+([STATUS](STATUS.md); their method also fails on short messages generally). If
+that is so, both A and B search a space that does not contain the key, and the
+better use of host time is a test of the assumption. The preregistered
+decision rule has a branch for it; no cheap test is designed here.
+
+---
+
+## phase1-middle-complete-power-v1 (preregistered)
+
+Status: preregistered 2026-10-06; not run. Configuration:
+[experiments/phase1-middle-complete-power-v1/config.json](../experiments/phase1-middle-complete-power-v1/config.json).
+Code committed before it in `b8f1c3a` (an `oracle` repair option for the power
+runner, and `scripts/conditional_power.py`), unit-tested on synthetic draws and,
+for existing arms, compared against the previous runner on six draws with
+identical results.
+
+Why this one. It is the cheapest control that separates A from B, about 30 to
+40 minutes on 10 workers against 150 hours for A's sweep, and it needs no new
+climb. It runs the two past-notch climbs (v2's and v3's), the complete rule
+with each, and an oracle that undoes the indel at its true position, on 400
+clean and 400 one-indel draws at 167 letters with ten pairs. The draws neither
+past-notch climb detects are the planted-key stand-in for both sweeps being
+null; the experiment asks what A and the oracle detect among them.
+
+Hypothesis. (i) The complete rule with the W = 117 climb detects at least half
+of the clean draws both past-notch climbs miss (C1). (ii) On one-indel draws
+with the indel in letters 56 to 111 that both miss, it detects at most 20%
+(C2), while the oracle detects at least 60% (C3): the rings and the split
+point address different keys.
+
+Refuted by: C1 below 50%, C2 above 20%, or C3 below 60%, each scored on strata
+of at least 25 draws; a smaller stratum is reported as not estimable. Six
+marginal predictions are also scored by the runner (replications of the
+earlier past-notch rates, the complete rule's clean rate, and the oracle's
+indel rate), each refuting only itself.
+
+Decision rule, fixed now. The script reports, for fault priors 0.05, 0.1, 0.2,
+0.35 and 0.5, A's conditional detection per host-hour and B's ceiling, and the
+break-even cost k* in multiples of v3 at which a split-point sweep ties the
+complete-rule sweep.
+
+- C1 and C3 both refuted: neither is built; the next step tests the
+  standard-reading assumption.
+- Only C3 refuted: the complete-rule sweep is preregistered at its measured
+  conditional rate.
+- Only C1 refuted: a split-point climb is built, calibrated on this control's
+  draws and benchmarked before any sweep.
+- Neither refuted: B first if k* at q = 0.2 is at least 4, else A first.
+  q = 0.2 and a cost of 4 are values declared now so the rule is fixed; neither is
+  measured, and the k* at every q is printed so another belief can be applied
+  without a rerun.
+
+Limits, in the configuration: "missed by both" is defined on the same draws
+that score the other arms; the oracle is an upper bound that is handed the
+position; 400 draws leave about 36 clean missed draws, so a stratum rate
+carries an interval about 0.3 wide; only a single indel is modelled.
+
+> **Amended 2026-10-06, before any run (PR review).** As first committed, the
+> oracle arm was judged against the cell's pooled whole-message null, which is
+> climbed on the unrepaired message. A repaired deletion carries a mask that
+> breaks the n-gram chain and a repaired insertion is one letter shorter, so
+> that null does not fit the oracle's score, and C3 could misclassify. A
+> repaired arm now gets its own null, as a windowed arm does: the same climb,
+> at the same wrong settings, on the repaired message. On clean draws repair
+> is the identity and the two nulls coincide. The other arms are bit-identical
+> to the previous runner on clean, deletion and insertion draws. The cost is
+> eight more whole-message climbs per indel draw, small beside the sweeps.
+
+Run command, not run:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-middle-complete-power-v1/config.json --jobs 10
+python3 scripts/conditional_power.py
+```
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.
@@ -991,3 +1248,7 @@ Its measurement is preregistered and queued, not run:
 [phase1-fkqlz-length-calibration-v1](../experiments/phase1-fkqlz-length-calibration-v1/config.json)
 (32 draws at 97, 107 and 167 letters, predicting fewer than 24 of 32 recovered
 at 107).
+
+> **Measured, 2026-10-06.** [phase1-fkqlz-length-calibration-v1](#phase1-fkqlz-length-calibration-v1)
+> ran: 12 of 32 at 97 letters, 10 of 32 at 107, 28 of 32 at 167. FKQLZ stays a
+> companion. The "not run" and "queued" wording above is the 2026-10-04 text.

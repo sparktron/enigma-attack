@@ -1,0 +1,2020 @@
+{
+  "schema": "enigma-attack.phase1-stecker-result/v1",
+  "experiment_id": "phase1-fkqlz-length-calibration-v1",
+  "mode": "calibration",
+  "status": "complete",
+  "accepted_break": false,
+  "hypothesis": "FKQLZ, at 107 letters, is below the length at which the body-direct stecker climb reliably recovers a ten-pair plugboard. Handed the true wheel order, rings and start position, with the same two-phase climb and the same constructed plaintext prefix as phase1-stecker-calibration-v1 (which recovered 1 of 8 at 97 letters and 8 of 8 at 167), the climb recovers the exact plaintext in fewer than 24 of 32 draws (75%) at 107 letters.",
+  "refuted_by": "24 or more of 32 draws recovered exactly at 107 letters with ten pairs. This measures the stecker stage only: the climb is handed the true setting, so a recovery rate here is an upper bound on what a sweep of FKQLZ could detect end to end, not that figure.",
+  "started_at": "2026-10-06T05:06:19.728105+00:00",
+  "completed_at": "2026-10-06T05:08:36.539942+00:00",
+  "duration_seconds": 136.81183933198918,
+  "configuration": {
+    "path": "experiments/phase1-fkqlz-length-calibration-v1/config.json",
+    "sha256": "d35b0ec5b98d16f6d207d24409e90d84dc3a1fc8795452e11e078bedb2e4beda",
+    "arguments": [
+      "--config",
+      "experiments/phase1-fkqlz-length-calibration-v1/config.json"
+    ]
+  },
+  "code": {
+    "source": "git_checkout",
+    "commit": "03b867036aec2e888e8d82422456d3487770bb2e",
+    "branch": "claude/phase1-fkqlz-and-crib-prior",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "2c85ad5349d5d3b0a0dc7895519264d1c1a0647921840d127b3c8ee3dfd24a0f",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "020247785edde8a8ef845c61260e398dc3bd7ede1b46bd0c4461a993b937a30d",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "35f8781aee10b62c649d5dfb88ec0b2bd96a69c7abfceaef95c31e8e876178c4",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "3c19b23152ebeae1c3337879524daa42734b484366d465831fa8d760ce2d8a98",
+      "stecker_power.py": "668e478d4a92509ec4ca857cd4d9a44c1820e2700c83b167ba4c1a728b609cc9",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "d72c5b78b61818f5e407b14616205490c98e4082ba55dd2396a9eae7a95ac980",
+      "stecker_sweeps.py": "b28c4b947f62592f5452f8f2d8df70d4f4a9372ef35d3cb18e1ecd83ac5e992d",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cpu_count": 20
+  },
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "bigram_counts_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
+    "trigram_counts_sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+  },
+  "preflight": {
+    "simulator_validation": [
+      {
+        "name": "canonical_I_II_III_AAAAA",
+        "source": "widely published Enigma-I simulator check",
+        "expected": "BDZGO",
+        "actual": "BDZGO",
+        "passed": true
+      },
+      {
+        "name": "py_enigma_army_procedure_example",
+        "source": "https://py-enigma.readthedocs.io/en/latest/guide.html",
+        "expected_message_key": "BLA",
+        "actual_message_key": "BLA",
+        "expected_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "actual_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "passed": true
+      }
+    ],
+    "kernel_parity": {
+      "reference": "enigma.EnigmaI",
+      "seed": 20260923,
+      "samples": 60,
+      "checked_paths": [
+        "crypt_indices",
+        "position_permutations+decrypt_with_tables"
+      ],
+      "mismatches": [],
+      "passed": true
+    },
+    "scorer_parity": {
+      "reference": "phase7.PublishedNgramScorer",
+      "seed": 20260924,
+      "samples": 120,
+      "relative_tolerance": 1e-09,
+      "worst_absolute_difference_vs_phase7": 7.958078640513122e-12,
+      "worst_absolute_difference_fused_vs_split": 0.0,
+      "mismatches": [],
+      "passed": true,
+      "note": "The scorers sum the same n-gram terms in different orders, so they agree to floating-point association rather than bit for bit."
+    },
+    "scorer_discrimination": {
+      "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "shuffle_seeds": [
+        17,
+        29,
+        43,
+        71,
+        101,
+        137,
+        173,
+        211,
+        257,
+        307,
+        359,
+        401,
+        463,
+        509,
+        563,
+        617
+      ],
+      "messages": [
+        {
+          "id": "1941-09-02-15",
+          "length": 36,
+          "authentic_score_per_letter": -6.041605649,
+          "shuffled_scores_per_letter": [
+            -7.53381238,
+            -7.138965234,
+            -7.957878911,
+            -7.729892505,
+            -6.996928517,
+            -7.713943316,
+            -7.838237335,
+            -8.142174904,
+            -7.598699043,
+            -7.431054332,
+            -7.972140343,
+            -7.611678603,
+            -8.151700296,
+            -7.657444266,
+            -7.550083665,
+            -7.780321492
+          ],
+          "margin_over_best_shuffle": 0.955322868,
+          "passed": true
+        },
+        {
+          "id": "1941-08-22-30",
+          "length": 46,
+          "authentic_score_per_letter": -6.283889072,
+          "shuffled_scores_per_letter": [
+            -7.968581626,
+            -7.419135349,
+            -7.806293305,
+            -7.808875711,
+            -7.686267614,
+            -8.265622519,
+            -7.993060744,
+            -8.067796545,
+            -7.465451599,
+            -7.728003386,
+            -8.17733991,
+            -7.698991665,
+            -8.274964894,
+            -7.989477064,
+            -7.971299542,
+            -7.955495162
+          ],
+          "margin_over_best_shuffle": 1.135246277,
+          "passed": true
+        },
+        {
+          "id": "1941-09-06-36",
+          "length": 48,
+          "authentic_score_per_letter": -6.708148394,
+          "shuffled_scores_per_letter": [
+            -8.816263798,
+            -8.102734021,
+            -8.515933937,
+            -7.876037887,
+            -8.002299791,
+            -8.186431878,
+            -8.403116894,
+            -7.931246188,
+            -8.166665948,
+            -8.546867284,
+            -8.450565149,
+            -8.347104407,
+            -8.315764661,
+            -8.017910537,
+            -8.273352821,
+            -8.362505014
+          ],
+          "margin_over_best_shuffle": 1.167889493,
+          "passed": true
+        },
+        {
+          "id": "1941-09-14-46",
+          "length": 69,
+          "authentic_score_per_letter": -7.177161225,
+          "shuffled_scores_per_letter": [
+            -8.675908687,
+            -8.675470911,
+            -8.497716346,
+            -8.779147011,
+            -8.282465135,
+            -8.635697295,
+            -8.641996226,
+            -8.61997743,
+            -8.371093781,
+            -8.807484713,
+            -8.619025631,
+            -8.993581533,
+            -8.559283085,
+            -8.921036452,
+            -8.782698615,
+            -8.715187932
+          ],
+          "margin_over_best_shuffle": 1.10530391,
+          "passed": true
+        },
+        {
+          "id": "1941-09-24-94",
+          "length": 76,
+          "authentic_score_per_letter": -6.701798158,
+          "shuffled_scores_per_letter": [
+            -8.69004742,
+            -8.826037456,
+            -8.370787634,
+            -8.354428861,
+            -8.496953699,
+            -8.415178937,
+            -8.681825002,
+            -8.417311977,
+            -8.602547877,
+            -8.179790622,
+            -8.54097936,
+            -8.560020672,
+            -8.082113862,
+            -8.30474769,
+            -8.745480038,
+            -8.575674967
+          ],
+          "margin_over_best_shuffle": 1.380315704,
+          "passed": true
+        }
+      ],
+      "passing_messages": 5,
+      "required_messages": 4,
+      "passed": true
+    },
+    "checks": {
+      "published_simulator_vectors": true,
+      "fast_kernel_matches_reference": true,
+      "fast_scorer_matches_phase7": true,
+      "scorer_discriminates_authentic_plaintext": true
+    },
+    "passed": true
+  },
+  "positive_controls": {
+    "evaluated": [
+      {
+        "id": "authentic-solved-1941-army-plaintexts",
+        "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+        "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "rings": "KQL",
+          "plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-A1",
+              "length": 36,
+              "indicator": [
+                "QWE",
+                "YYY"
+              ],
+              "true_message_key": "BNM",
+              "plaintext_sha256": "204b1c2ca2701bfa70d7ec3f44ee84a726e4f1f0fe7808e6dbf37f50bcab7089"
+            },
+            {
+              "designator": "CTRL-A2",
+              "length": 46,
+              "indicator": [
+                "LDR",
+                "WLA"
+              ],
+              "true_message_key": "KPT",
+              "plaintext_sha256": "b0281f45ce7c98f5e7b29e37c94ed4753ce32d97eaaac83a26a8f9d47e405ba3"
+            },
+            {
+              "designator": "CTRL-A3",
+              "length": 48,
+              "indicator": [
+                "ZUI",
+                "QOY"
+              ],
+              "true_message_key": "VCX",
+              "plaintext_sha256": "7f835a4a909a11ae6e30f648e1790f74b696cd8cf08a4531e2a4884c6537dc7b"
+            },
+            {
+              "designator": "CTRL-A4",
+              "length": 69,
+              "indicator": [
+                "PMF",
+                "FUB"
+              ],
+              "true_message_key": "HGD",
+              "plaintext_sha256": "434d264305fc45d9bdee67bc0ec09d49d723e293dfa0409df6dbc6671879ed05"
+            },
+            {
+              "designator": "CTRL-A5",
+              "length": 76,
+              "indicator": [
+                "TRQ",
+                "WNE"
+              ],
+              "true_message_key": "YBN",
+              "plaintext_sha256": "33ba130f62471f63b74cc542a8d81962683d2741b5666585faeb210ba2319e40"
+            }
+          ]
+        },
+        "recovered_plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.665849484,
+        "unsteckered_score_per_letter": -9.32595912,
+        "climb_passes": 22,
+        "climb_evaluations": 7283,
+        "recovered_plaintext_prefixes": [
+          "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHAR",
+          "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTE"
+        ],
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true
+        },
+        "passed": true
+      },
+      {
+        "id": "constructed-army-style-plaintexts",
+        "source": "constructed for this experiment",
+        "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "V"
+          ],
+          "rings": "BUL",
+          "plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-B1",
+              "length": 167,
+              "indicator": [
+                "XYZ",
+                "RSN"
+              ],
+              "true_message_key": "TRE",
+              "plaintext_sha256": "3602f6597566c773714ecd5f599fd5c011a30f9ab87546a5df59b33a35556a4b"
+            },
+            {
+              "designator": "CTRL-B2",
+              "length": 107,
+              "indicator": [
+                "MNB",
+                "XSE"
+              ],
+              "true_message_key": "OIU",
+              "plaintext_sha256": "a1445ab268e0bfb3f479d0b8ed294ea36527535105879a05e6cf434ad34238bb"
+            },
+            {
+              "designator": "CTRL-B3",
+              "length": 97,
+              "indicator": [
+                "GHJ",
+                "VUR"
+              ],
+              "true_message_key": "WSX",
+              "plaintext_sha256": "a00a63d6cb5409dc3978d0fdbe0dfcbe1c10a70d12586107c697f705fcc3409e"
+            }
+          ]
+        },
+        "recovered_plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.697861007,
+        "unsteckered_score_per_letter": -9.380992204,
+        "climb_passes": 12,
+        "climb_evaluations": 3937,
+        "recovered_plaintext_prefixes": [
+          "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXE",
+          "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITO",
+          "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTS"
+        ],
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true
+        },
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "gate": "A failed control makes zero target-search calls, so a target number can never come from a pipeline that cannot recover a key it was handed."
+  },
+  "result": {
+    "ic_stage_calibration": {
+      "method_reference": "https://cryptocellar.org/pubs/mcts.pdf",
+      "null_trials_per_cell": 400,
+      "usable_z": 3.0,
+      "cells": [
+        {
+          "length": 97,
+          "stecker_pairs": 0,
+          "true_setting_ic": 0.071091065,
+          "wrong_setting_ic_mean": 0.038534686,
+          "wrong_setting_ic_sd": 0.002943327,
+          "wrong_setting_ic_max": 0.050472509,
+          "z_score": 11.061081,
+          "separates": true
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 3,
+          "true_setting_ic": 0.056701031,
+          "wrong_setting_ic_mean": 0.038307023,
+          "wrong_setting_ic_sd": 0.002585403,
+          "wrong_setting_ic_max": 0.047465636,
+          "z_score": 7.114561,
+          "separates": true
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 6,
+          "true_setting_ic": 0.046821306,
+          "wrong_setting_ic_mean": 0.038590528,
+          "wrong_setting_ic_sd": 0.002790183,
+          "wrong_setting_ic_max": 0.047895189,
+          "z_score": 2.949906,
+          "separates": false
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 8,
+          "true_setting_ic": 0.045317869,
+          "wrong_setting_ic_mean": 0.038485825,
+          "wrong_setting_ic_sd": 0.002846491,
+          "wrong_setting_ic_max": 0.051546392,
+          "z_score": 2.400164,
+          "separates": false
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 10,
+          "true_setting_ic": 0.047036082,
+          "wrong_setting_ic_mean": 0.03837253,
+          "wrong_setting_ic_sd": 0.002625363,
+          "wrong_setting_ic_max": 0.049183849,
+          "z_score": 3.299945,
+          "separates": false
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 0,
+          "true_setting_ic": 0.079215064,
+          "wrong_setting_ic_mean": 0.038415699,
+          "wrong_setting_ic_sd": 0.00161984,
+          "wrong_setting_ic_max": 0.044441238,
+          "z_score": 25.187275,
+          "separates": true
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 3,
+          "true_setting_ic": 0.06521896,
+          "wrong_setting_ic_mean": 0.038573876,
+          "wrong_setting_ic_sd": 0.001628278,
+          "wrong_setting_ic_max": 0.044585528,
+          "z_score": 16.363962,
+          "separates": true
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 6,
+          "true_setting_ic": 0.049058509,
+          "wrong_setting_ic_mean": 0.038317942,
+          "wrong_setting_ic_sd": 0.001634721,
+          "wrong_setting_ic_max": 0.045523411,
+          "z_score": 6.570275,
+          "separates": true
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 8,
+          "true_setting_ic": 0.049274944,
+          "wrong_setting_ic_mean": 0.038532754,
+          "wrong_setting_ic_sd": 0.001612961,
+          "wrong_setting_ic_max": 0.044801962,
+          "z_score": 6.659918,
+          "separates": true
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 10,
+          "true_setting_ic": 0.040040401,
+          "wrong_setting_ic_mean": 0.038355458,
+          "wrong_setting_ic_sd": 0.001554415,
+          "wrong_setting_ic_max": 0.044585528,
+          "z_score": 1.083973,
+          "separates": false
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 0,
+          "true_setting_ic": 0.070663656,
+          "wrong_setting_ic_mean": 0.03849643,
+          "wrong_setting_ic_sd": 0.000727229,
+          "wrong_setting_ic_max": 0.040693524,
+          "z_score": 44.232614,
+          "separates": true
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 3,
+          "true_setting_ic": 0.057128287,
+          "wrong_setting_ic_mean": 0.038475632,
+          "wrong_setting_ic_sd": 0.000741777,
+          "wrong_setting_ic_max": 0.040737233,
+          "z_score": 25.1459,
+          "separates": true
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 6,
+          "true_setting_ic": 0.050848692,
+          "wrong_setting_ic_mean": 0.038433634,
+          "wrong_setting_ic_sd": 0.000735967,
+          "wrong_setting_ic_max": 0.041451155,
+          "z_score": 16.869048,
+          "separates": true
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 8,
+          "true_setting_ic": 0.04187368,
+          "wrong_setting_ic_mean": 0.038504626,
+          "wrong_setting_ic_sd": 0.000708023,
+          "wrong_setting_ic_max": 0.041203468,
+          "z_score": 4.758395,
+          "separates": true
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 10,
+          "true_setting_ic": 0.038857726,
+          "wrong_setting_ic_mean": 0.038482443,
+          "wrong_setting_ic_sd": 0.000742657,
+          "wrong_setting_ic_max": 0.041392875,
+          "z_score": 0.505324,
+          "separates": false
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 0,
+          "true_setting_ic": 0.069111389,
+          "wrong_setting_ic_mean": 0.03845679,
+          "wrong_setting_ic_sd": 0.000328666,
+          "wrong_setting_ic_max": 0.03965582,
+          "z_score": 93.269859,
+          "separates": true
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 3,
+          "true_setting_ic": 0.056711514,
+          "wrong_setting_ic_mean": 0.038458472,
+          "wrong_setting_ic_sd": 0.000318859,
+          "wrong_setting_ic_max": 0.039715269,
+          "z_score": 57.24479,
+          "separates": true
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 6,
+          "true_setting_ic": 0.047797247,
+          "wrong_setting_ic_mean": 0.038459105,
+          "wrong_setting_ic_sd": 0.000352578,
+          "wrong_setting_ic_max": 0.03988423,
+          "z_score": 26.48534,
+          "separates": true
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 8,
+          "true_setting_ic": 0.041711514,
+          "wrong_setting_ic_mean": 0.038424625,
+          "wrong_setting_ic_sd": 0.000334594,
+          "wrong_setting_ic_max": 0.03971214,
+          "z_score": 9.823508,
+          "separates": true
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 10,
+          "true_setting_ic": 0.03931164,
+          "wrong_setting_ic_mean": 0.03845564,
+          "wrong_setting_ic_sd": 0.000344197,
+          "wrong_setting_ic_max": 0.039709011,
+          "z_score": 2.486949,
+          "separates": false
+        }
+      ],
+      "usable_cells": [
+        {
+          "length": 97,
+          "stecker_pairs": 0
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 3
+        },
+        {
+          "length": 97,
+          "stecker_pairs": 10
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 0
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 3
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 6
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 8
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 0
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 3
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 6
+        },
+        {
+          "length": 371,
+          "stecker_pairs": 8
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 0
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 3
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 6
+        },
+        {
+          "length": 800,
+          "stecker_pairs": 8
+        }
+      ],
+      "usable_at_target_scale": false,
+      "interpretation": "The index-of-coincidence stage separates the true rotor setting only in the cells listed as usable. Outside them the retained candidate list is uninformative however large it is made, because the statistic itself carries no signal."
+    },
+    "climb_capability_calibration": {
+      "null_trials_per_cell_per_draw": 8,
+      "draws_per_cell": 32,
+      "cells": [
+        {
+          "length": 97,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "plaintexts_recovered_exactly": 12,
+          "plugboards_recovered_exactly": 12,
+          "recovered_every_draw": false,
+          "median_z_score": 3.132277,
+          "attempts": [
+            {
+              "draw": 0,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.940376626,
+              "wrong_setting_score_mean": -8.322807973,
+              "wrong_setting_score_max": -8.147906136,
+              "z_score": 2.834099,
+              "margin_over_best_wrong_setting": 0.20752951,
+              "climb_evaluations": 5606
+            },
+            {
+              "draw": 1,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.210020845,
+              "wrong_setting_score_mean": -8.186676061,
+              "wrong_setting_score_max": -8.039038307,
+              "z_score": -0.215312,
+              "margin_over_best_wrong_setting": -0.170982538,
+              "climb_evaluations": 5592
+            },
+            {
+              "draw": 2,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.19398008,
+              "wrong_setting_score_mean": -8.180144088,
+              "wrong_setting_score_max": -8.018691762,
+              "z_score": -0.154282,
+              "margin_over_best_wrong_setting": -0.175288318,
+              "climb_evaluations": 5939
+            },
+            {
+              "draw": 3,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.515415238,
+              "wrong_setting_score_mean": -8.258021823,
+              "wrong_setting_score_max": -8.110939284,
+              "z_score": -3.425625,
+              "margin_over_best_wrong_setting": -0.404475954,
+              "climb_evaluations": 5579
+            },
+            {
+              "draw": 4,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.222270865,
+              "wrong_setting_score_max": -8.061464831,
+              "z_score": 19.659025,
+              "margin_over_best_wrong_setting": 1.567086676,
+              "climb_evaluations": 6191
+            },
+            {
+              "draw": 5,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.21211957,
+              "wrong_setting_score_mean": -8.318054721,
+              "wrong_setting_score_max": -8.037503708,
+              "z_score": 0.699459,
+              "margin_over_best_wrong_setting": -0.174615862,
+              "climb_evaluations": 6525
+            },
+            {
+              "draw": 6,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.95746773,
+              "wrong_setting_score_mean": -8.238683291,
+              "wrong_setting_score_max": -8.044631144,
+              "z_score": 2.014929,
+              "margin_over_best_wrong_setting": 0.087163414,
+              "climb_evaluations": 5259
+            },
+            {
+              "draw": 7,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.835805541,
+              "wrong_setting_score_mean": -8.238241952,
+              "wrong_setting_score_max": -8.076555763,
+              "z_score": 3.763798,
+              "margin_over_best_wrong_setting": 0.240750222,
+              "climb_evaluations": 7485
+            },
+            {
+              "draw": 8,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.166336461,
+              "wrong_setting_score_max": -7.97585725,
+              "z_score": 11.171675,
+              "margin_over_best_wrong_setting": 1.481479095,
+              "climb_evaluations": 7594
+            },
+            {
+              "draw": 9,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.807023839,
+              "wrong_setting_score_mean": -8.265355309,
+              "wrong_setting_score_max": -8.059848406,
+              "z_score": 3.430455,
+              "margin_over_best_wrong_setting": 0.252824567,
+              "climb_evaluations": 7254
+            },
+            {
+              "draw": 10,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.284401531,
+              "wrong_setting_score_max": -8.063839738,
+              "z_score": 11.57714,
+              "margin_over_best_wrong_setting": 1.569461583,
+              "climb_evaluations": 6908
+            },
+            {
+              "draw": 11,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.294424092,
+              "wrong_setting_score_max": -8.122556911,
+              "z_score": 13.300918,
+              "margin_over_best_wrong_setting": 1.628178756,
+              "climb_evaluations": 5280
+            },
+            {
+              "draw": 12,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.308248547,
+              "wrong_setting_score_mean": -8.257255122,
+              "wrong_setting_score_max": -8.124014588,
+              "z_score": -0.475284,
+              "margin_over_best_wrong_setting": -0.18423396,
+              "climb_evaluations": 5579
+            },
+            {
+              "draw": 13,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.164404202,
+              "wrong_setting_score_max": -7.997064006,
+              "z_score": 15.423188,
+              "margin_over_best_wrong_setting": 1.502685852,
+              "climb_evaluations": 6924
+            },
+            {
+              "draw": 14,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.912545223,
+              "wrong_setting_score_mean": -8.285619833,
+              "wrong_setting_score_max": -8.139487896,
+              "z_score": 3.537323,
+              "margin_over_best_wrong_setting": 0.226942674,
+              "climb_evaluations": 6259
+            },
+            {
+              "draw": 15,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.423812652,
+              "wrong_setting_score_mean": -8.285427746,
+              "wrong_setting_score_max": -8.142694997,
+              "z_score": -1.852209,
+              "margin_over_best_wrong_setting": -0.281117655,
+              "climb_evaluations": 6233
+            },
+            {
+              "draw": 16,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.116021932,
+              "wrong_setting_score_mean": -8.349797132,
+              "wrong_setting_score_max": -8.132047988,
+              "z_score": 2.280443,
+              "margin_over_best_wrong_setting": 0.016026056,
+              "climb_evaluations": 6898
+            },
+            {
+              "draw": 17,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.226122926,
+              "wrong_setting_score_mean": -8.179504697,
+              "wrong_setting_score_max": -7.76839692,
+              "z_score": -0.259084,
+              "margin_over_best_wrong_setting": -0.457726007,
+              "climb_evaluations": 6831
+            },
+            {
+              "draw": 18,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.296588977,
+              "wrong_setting_score_max": -8.071770473,
+              "z_score": 12.422432,
+              "margin_over_best_wrong_setting": 1.577392318,
+              "climb_evaluations": 7580
+            },
+            {
+              "draw": 19,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.456341971,
+              "wrong_setting_score_mean": -8.248509022,
+              "wrong_setting_score_max": -8.115178851,
+              "z_score": -2.33714,
+              "margin_over_best_wrong_setting": -0.341163121,
+              "climb_evaluations": 4629
+            },
+            {
+              "draw": 20,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.214090804,
+              "wrong_setting_score_mean": -8.25377804,
+              "wrong_setting_score_max": -8.078125439,
+              "z_score": 0.257514,
+              "margin_over_best_wrong_setting": -0.135965365,
+              "climb_evaluations": 5565
+            },
+            {
+              "draw": 21,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.911809483,
+              "wrong_setting_score_mean": -8.178618303,
+              "wrong_setting_score_max": -8.022342418,
+              "z_score": 2.464583,
+              "margin_over_best_wrong_setting": 0.110532935,
+              "climb_evaluations": 7285
+            },
+            {
+              "draw": 22,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.274365653,
+              "wrong_setting_score_max": -8.150775937,
+              "z_score": 19.405758,
+              "margin_over_best_wrong_setting": 1.656397783,
+              "climb_evaluations": 6611
+            },
+            {
+              "draw": 23,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.346113351,
+              "wrong_setting_score_mean": -8.33219557,
+              "wrong_setting_score_max": -8.035543898,
+              "z_score": -0.093868,
+              "margin_over_best_wrong_setting": -0.310569454,
+              "climb_evaluations": 6289
+            },
+            {
+              "draw": 24,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.295973501,
+              "wrong_setting_score_max": -8.052744558,
+              "z_score": 14.188126,
+              "margin_over_best_wrong_setting": 1.558366403,
+              "climb_evaluations": 5926
+            },
+            {
+              "draw": 25,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.190161845,
+              "wrong_setting_score_max": -7.942589226,
+              "z_score": 11.429803,
+              "margin_over_best_wrong_setting": 1.448211071,
+              "climb_evaluations": 6581
+            },
+            {
+              "draw": 26,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.047578261,
+              "wrong_setting_score_mean": -8.293879389,
+              "wrong_setting_score_max": -8.162590652,
+              "z_score": 3.803033,
+              "margin_over_best_wrong_setting": 0.11501239,
+              "climb_evaluations": 5938
+            },
+            {
+              "draw": 27,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.181106558,
+              "wrong_setting_score_max": -8.017427827,
+              "z_score": 14.87679,
+              "margin_over_best_wrong_setting": 1.523049672,
+              "climb_evaluations": 5593
+            },
+            {
+              "draw": 28,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.255574862,
+              "wrong_setting_score_max": -7.872853409,
+              "z_score": 11.004273,
+              "margin_over_best_wrong_setting": 1.378475254,
+              "climb_evaluations": 6952
+            },
+            {
+              "draw": 29,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.710129904,
+              "wrong_setting_score_mean": -8.283625327,
+              "wrong_setting_score_max": -8.120120462,
+              "z_score": -3.721777,
+              "margin_over_best_wrong_setting": -0.590009442,
+              "climb_evaluations": 5231
+            },
+            {
+              "draw": 30,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.494378155,
+              "wrong_setting_score_mean": -8.271566398,
+              "wrong_setting_score_max": -7.999508512,
+              "z_score": 11.928153,
+              "margin_over_best_wrong_setting": 1.505130357,
+              "climb_evaluations": 6284
+            },
+            {
+              "draw": 31,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.142581709,
+              "wrong_setting_score_mean": -8.285294222,
+              "wrong_setting_score_max": -8.196980237,
+              "z_score": 1.247151,
+              "margin_over_best_wrong_setting": 0.054398528,
+              "climb_evaluations": 5899
+            }
+          ]
+        },
+        {
+          "length": 107,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "plaintexts_recovered_exactly": 10,
+          "plugboards_recovered_exactly": 10,
+          "recovered_every_draw": false,
+          "median_z_score": 1.574577,
+          "attempts": [
+            {
+              "draw": 0,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.39651969,
+              "wrong_setting_score_max": -8.169348967,
+              "z_score": 14.55265,
+              "margin_over_best_wrong_setting": 1.628927602,
+              "climb_evaluations": 5926
+            },
+            {
+              "draw": 1,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.426847731,
+              "wrong_setting_score_mean": -8.295361689,
+              "wrong_setting_score_max": -8.186286383,
+              "z_score": -1.816039,
+              "margin_over_best_wrong_setting": -0.240561348,
+              "climb_evaluations": 5913
+            },
+            {
+              "draw": 2,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.539001458,
+              "wrong_setting_score_mean": -8.374918226,
+              "wrong_setting_score_max": -8.287693987,
+              "z_score": -2.967222,
+              "margin_over_best_wrong_setting": -0.251307472,
+              "climb_evaluations": 5857
+            },
+            {
+              "draw": 3,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.319837951,
+              "wrong_setting_score_max": -8.124599897,
+              "z_score": 15.025593,
+              "margin_over_best_wrong_setting": 1.584178532,
+              "climb_evaluations": 5565
+            },
+            {
+              "draw": 4,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.068326638,
+              "wrong_setting_score_mean": -8.345145446,
+              "wrong_setting_score_max": -8.047112088,
+              "z_score": 1.721237,
+              "margin_over_best_wrong_setting": -0.021214551,
+              "climb_evaluations": 5940
+            },
+            {
+              "draw": 5,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.245754905,
+              "wrong_setting_score_mean": -8.351116229,
+              "wrong_setting_score_max": -8.020517396,
+              "z_score": 0.592375,
+              "margin_over_best_wrong_setting": -0.22523751,
+              "climb_evaluations": 6259
+            },
+            {
+              "draw": 6,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.42599126,
+              "wrong_setting_score_mean": -8.338843587,
+              "wrong_setting_score_max": -8.142131683,
+              "z_score": -0.632375,
+              "margin_over_best_wrong_setting": -0.283859577,
+              "climb_evaluations": 6590
+            },
+            {
+              "draw": 7,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.475576052,
+              "wrong_setting_score_mean": -8.428855309,
+              "wrong_setting_score_max": -8.290485229,
+              "z_score": -0.532547,
+              "margin_over_best_wrong_setting": -0.185090823,
+              "climb_evaluations": 5565
+            },
+            {
+              "draw": 8,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.32029917,
+              "wrong_setting_score_max": -8.145976774,
+              "z_score": 12.752594,
+              "margin_over_best_wrong_setting": 1.60555541,
+              "climb_evaluations": 6247
+            },
+            {
+              "draw": 9,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.448951845,
+              "wrong_setting_score_mean": -8.343687096,
+              "wrong_setting_score_max": -8.097283806,
+              "z_score": -0.747757,
+              "margin_over_best_wrong_setting": -0.351668039,
+              "climb_evaluations": 7843
+            },
+            {
+              "draw": 10,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.982101477,
+              "wrong_setting_score_mean": -8.253064527,
+              "wrong_setting_score_max": -7.99209094,
+              "z_score": 1.727614,
+              "margin_over_best_wrong_setting": 0.009989463,
+              "climb_evaluations": 5632
+            },
+            {
+              "draw": 11,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.347956535,
+              "wrong_setting_score_max": -8.077573063,
+              "z_score": 12.985526,
+              "margin_over_best_wrong_setting": 1.537151698,
+              "climb_evaluations": 5283
+            },
+            {
+              "draw": 12,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.327678198,
+              "wrong_setting_score_max": -8.175629866,
+              "z_score": 14.652176,
+              "margin_over_best_wrong_setting": 1.635208501,
+              "climb_evaluations": 6899
+            },
+            {
+              "draw": 13,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.132813791,
+              "wrong_setting_score_mean": -8.353841126,
+              "wrong_setting_score_max": -8.117420126,
+              "z_score": 1.693023,
+              "margin_over_best_wrong_setting": -0.015393665,
+              "climb_evaluations": 4925
+            },
+            {
+              "draw": 14,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.412816696,
+              "wrong_setting_score_max": -8.282115142,
+              "z_score": 18.191317,
+              "margin_over_best_wrong_setting": 1.741693778,
+              "climb_evaluations": 5925
+            },
+            {
+              "draw": 15,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.393327641,
+              "wrong_setting_score_mean": -8.36737132,
+              "wrong_setting_score_max": -8.252755163,
+              "z_score": -0.234604,
+              "margin_over_best_wrong_setting": -0.140572478,
+              "climb_evaluations": 5562
+            },
+            {
+              "draw": 16,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.283871663,
+              "wrong_setting_score_mean": -8.328556369,
+              "wrong_setting_score_max": -8.091217358,
+              "z_score": 0.321281,
+              "margin_over_best_wrong_setting": -0.192654305,
+              "climb_evaluations": 5273
+            },
+            {
+              "draw": 17,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.092561624,
+              "wrong_setting_score_mean": -8.316897974,
+              "wrong_setting_score_max": -8.124200156,
+              "z_score": 1.456131,
+              "margin_over_best_wrong_setting": 0.031638531,
+              "climb_evaluations": 6525
+            },
+            {
+              "draw": 18,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.084248071,
+              "wrong_setting_score_mean": -8.345846058,
+              "wrong_setting_score_max": -8.218723347,
+              "z_score": 3.092643,
+              "margin_over_best_wrong_setting": 0.134475276,
+              "climb_evaluations": 5631
+            },
+            {
+              "draw": 19,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.504789985,
+              "wrong_setting_score_mean": -8.320228336,
+              "wrong_setting_score_max": -8.185850051,
+              "z_score": -1.45377,
+              "margin_over_best_wrong_setting": -0.318939935,
+              "climb_evaluations": 6297
+            },
+            {
+              "draw": 20,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.421116514,
+              "wrong_setting_score_max": -8.316218821,
+              "z_score": 20.004144,
+              "margin_over_best_wrong_setting": 1.775797456,
+              "climb_evaluations": 5259
+            },
+            {
+              "draw": 21,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.373696628,
+              "wrong_setting_score_max": -8.084346914,
+              "z_score": 13.87096,
+              "margin_over_best_wrong_setting": 1.543925549,
+              "climb_evaluations": 5950
+            },
+            {
+              "draw": 22,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.260265723,
+              "wrong_setting_score_max": -8.006409223,
+              "z_score": 13.436764,
+              "margin_over_best_wrong_setting": 1.465987859,
+              "climb_evaluations": 6614
+            },
+            {
+              "draw": 23,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.540421365,
+              "wrong_setting_score_mean": -8.339534856,
+              "wrong_setting_score_max": -8.22269002,
+              "z_score": 19.581975,
+              "margin_over_best_wrong_setting": 1.682268655,
+              "climb_evaluations": 5592
+            },
+            {
+              "draw": 24,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.07234196,
+              "wrong_setting_score_mean": -8.3551941,
+              "wrong_setting_score_max": -8.193249419,
+              "z_score": 3.595583,
+              "margin_over_best_wrong_setting": 0.120907458,
+              "climb_evaluations": 6201
+            },
+            {
+              "draw": 25,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.286043596,
+              "wrong_setting_score_mean": -8.376917715,
+              "wrong_setting_score_max": -8.186156934,
+              "z_score": 0.837793,
+              "margin_over_best_wrong_setting": -0.099886662,
+              "climb_evaluations": 5217
+            },
+            {
+              "draw": 26,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.192341869,
+              "wrong_setting_score_mean": -8.45338765,
+              "wrong_setting_score_max": -8.308812855,
+              "z_score": 1.74399,
+              "margin_over_best_wrong_setting": 0.116470985,
+              "climb_evaluations": 6885
+            },
+            {
+              "draw": 27,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.413096417,
+              "wrong_setting_score_mean": -8.389447005,
+              "wrong_setting_score_max": -8.299277064,
+              "z_score": -0.277406,
+              "margin_over_best_wrong_setting": -0.113819353,
+              "climb_evaluations": 5871
+            },
+            {
+              "draw": 28,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.434953841,
+              "wrong_setting_score_mean": -8.318950195,
+              "wrong_setting_score_max": -7.989755841,
+              "z_score": -0.723163,
+              "margin_over_best_wrong_setting": -0.445198,
+              "climb_evaluations": 5951
+            },
+            {
+              "draw": 29,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.358337583,
+              "wrong_setting_score_mean": -8.406987734,
+              "wrong_setting_score_max": -8.209585972,
+              "z_score": 0.535218,
+              "margin_over_best_wrong_setting": -0.14875161,
+              "climb_evaluations": 5963
+            },
+            {
+              "draw": 30,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.246041327,
+              "wrong_setting_score_mean": -8.408721961,
+              "wrong_setting_score_max": -8.117570233,
+              "z_score": 1.122776,
+              "margin_over_best_wrong_setting": -0.128471094,
+              "climb_evaluations": 5924
+            },
+            {
+              "draw": 31,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.222317338,
+              "wrong_setting_score_mean": -8.353472712,
+              "wrong_setting_score_max": -8.176216957,
+              "z_score": 1.134208,
+              "margin_over_best_wrong_setting": -0.046100381,
+              "climb_evaluations": 4948
+            }
+          ]
+        },
+        {
+          "length": 167,
+          "stecker_pairs": 10,
+          "draws": 32,
+          "plaintexts_recovered_exactly": 28,
+          "plugboards_recovered_exactly": 28,
+          "recovered_every_draw": false,
+          "median_z_score": 21.760072,
+          "attempts": [
+            {
+              "draw": 0,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.62116535,
+              "wrong_setting_score_max": -8.381156521,
+              "z_score": 18.600029,
+              "margin_over_best_wrong_setting": 1.771153834,
+              "climb_evaluations": 4591
+            },
+            {
+              "draw": 1,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.602149706,
+              "wrong_setting_score_max": -8.408353991,
+              "z_score": 23.779339,
+              "margin_over_best_wrong_setting": 1.798351304,
+              "climb_evaluations": 4619
+            },
+            {
+              "draw": 2,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.676200222,
+              "wrong_setting_score_max": -8.516231301,
+              "z_score": 19.30152,
+              "margin_over_best_wrong_setting": 1.906228614,
+              "climb_evaluations": 5286
+            },
+            {
+              "draw": 3,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.706993806,
+              "wrong_setting_score_mean": -8.687866123,
+              "wrong_setting_score_max": -8.593673032,
+              "z_score": -0.343554,
+              "margin_over_best_wrong_setting": -0.113320775,
+              "climb_evaluations": 5272
+            },
+            {
+              "draw": 4,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.658648041,
+              "wrong_setting_score_max": -8.555891357,
+              "z_score": 31.426878,
+              "margin_over_best_wrong_setting": 1.94588867,
+              "climb_evaluations": 5925
+            },
+            {
+              "draw": 5,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.698194174,
+              "wrong_setting_score_mean": -8.631913591,
+              "wrong_setting_score_max": -8.568148784,
+              "z_score": -1.543227,
+              "margin_over_best_wrong_setting": -0.13004539,
+              "climb_evaluations": 5283
+            },
+            {
+              "draw": 6,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.633272504,
+              "wrong_setting_score_max": -8.529760813,
+              "z_score": 32.121698,
+              "margin_over_best_wrong_setting": 1.919758126,
+              "climb_evaluations": 4911
+            },
+            {
+              "draw": 7,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.671876306,
+              "wrong_setting_score_max": -8.569337418,
+              "z_score": 21.768872,
+              "margin_over_best_wrong_setting": 1.959334731,
+              "climb_evaluations": 4951
+            },
+            {
+              "draw": 8,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.634336727,
+              "wrong_setting_score_max": -8.542158819,
+              "z_score": 26.208317,
+              "margin_over_best_wrong_setting": 1.932156132,
+              "climb_evaluations": 5592
+            },
+            {
+              "draw": 9,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -7.244445628,
+              "wrong_setting_score_mean": -8.641108944,
+              "wrong_setting_score_max": -8.527170842,
+              "z_score": 17.231791,
+              "margin_over_best_wrong_setting": 1.282725214,
+              "climb_evaluations": 4619
+            },
+            {
+              "draw": 10,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.649388919,
+              "wrong_setting_score_max": -8.427103234,
+              "z_score": 21.008829,
+              "margin_over_best_wrong_setting": 1.817100547,
+              "climb_evaluations": 4591
+            },
+            {
+              "draw": 11,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.688154558,
+              "wrong_setting_score_max": -8.508520861,
+              "z_score": 15.063376,
+              "margin_over_best_wrong_setting": 1.898518175,
+              "climb_evaluations": 4911
+            },
+            {
+              "draw": 12,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.645127078,
+              "wrong_setting_score_max": -8.440004655,
+              "z_score": 17.126677,
+              "margin_over_best_wrong_setting": 1.830001968,
+              "climb_evaluations": 4591
+            },
+            {
+              "draw": 13,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.637668471,
+              "wrong_setting_score_max": -8.55536999,
+              "z_score": 33.079871,
+              "margin_over_best_wrong_setting": 1.945367303,
+              "climb_evaluations": 4618
+            },
+            {
+              "draw": 14,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.639829455,
+              "wrong_setting_score_max": -8.526608662,
+              "z_score": 21.751271,
+              "margin_over_best_wrong_setting": 1.916605975,
+              "climb_evaluations": 4897
+            },
+            {
+              "draw": 15,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.632257759,
+              "wrong_setting_score_max": -8.504411302,
+              "z_score": 22.960699,
+              "margin_over_best_wrong_setting": 1.894408615,
+              "climb_evaluations": 4911
+            },
+            {
+              "draw": 16,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.651201,
+              "wrong_setting_score_max": -8.50131083,
+              "z_score": 21.970852,
+              "margin_over_best_wrong_setting": 1.891308143,
+              "climb_evaluations": 4257
+            },
+            {
+              "draw": 17,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.662875522,
+              "wrong_setting_score_max": -8.429855804,
+              "z_score": 16.332227,
+              "margin_over_best_wrong_setting": 1.819853117,
+              "climb_evaluations": 4911
+            },
+            {
+              "draw": 18,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.619807237,
+              "wrong_setting_score_max": -8.492686792,
+              "z_score": 23.476106,
+              "margin_over_best_wrong_setting": 1.882684105,
+              "climb_evaluations": 4925
+            },
+            {
+              "draw": 19,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.732230491,
+              "wrong_setting_score_max": -8.580255589,
+              "z_score": 20.715033,
+              "margin_over_best_wrong_setting": 1.970252902,
+              "climb_evaluations": 5242
+            },
+            {
+              "draw": 20,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.638171813,
+              "wrong_setting_score_max": -8.531791408,
+              "z_score": 23.338775,
+              "margin_over_best_wrong_setting": 1.921788721,
+              "climb_evaluations": 4577
+            },
+            {
+              "draw": 21,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.734880287,
+              "wrong_setting_score_max": -8.638248092,
+              "z_score": 32.837292,
+              "margin_over_best_wrong_setting": 2.028245405,
+              "climb_evaluations": 4925
+            },
+            {
+              "draw": 22,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.690929096,
+              "wrong_setting_score_max": -8.525342945,
+              "z_score": 17.766949,
+              "margin_over_best_wrong_setting": 1.915340259,
+              "climb_evaluations": 4285
+            },
+            {
+              "draw": 23,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.68592883,
+              "wrong_setting_score_max": -8.586402723,
+              "z_score": 20.349828,
+              "margin_over_best_wrong_setting": 1.976400037,
+              "climb_evaluations": 5913
+            },
+            {
+              "draw": 24,
+              "plaintext_recovered_exactly": false,
+              "plugboard_recovered_exactly": false,
+              "true_setting_score_per_letter": -8.671250476,
+              "wrong_setting_score_mean": -8.706653589,
+              "wrong_setting_score_max": -8.538571149,
+              "z_score": 0.337466,
+              "margin_over_best_wrong_setting": -0.132679327,
+              "climb_evaluations": 5940
+            },
+            {
+              "draw": 25,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.611469967,
+              "wrong_setting_score_max": -8.465154311,
+              "z_score": 22.643419,
+              "margin_over_best_wrong_setting": 1.855151624,
+              "climb_evaluations": 5231
+            },
+            {
+              "draw": 26,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.674772699,
+              "wrong_setting_score_max": -8.501533136,
+              "z_score": 17.329673,
+              "margin_over_best_wrong_setting": 1.891530449,
+              "climb_evaluations": 4577
+            },
+            {
+              "draw": 27,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.657251975,
+              "wrong_setting_score_max": -8.537462249,
+              "z_score": 25.622378,
+              "margin_over_best_wrong_setting": 1.927459562,
+              "climb_evaluations": 4911
+            },
+            {
+              "draw": 28,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.673313816,
+              "wrong_setting_score_max": -8.593144267,
+              "z_score": 31.706452,
+              "margin_over_best_wrong_setting": 1.983141581,
+              "climb_evaluations": 5591
+            },
+            {
+              "draw": 29,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.648998362,
+              "wrong_setting_score_max": -8.495789442,
+              "z_score": 21.593746,
+              "margin_over_best_wrong_setting": 1.885786755,
+              "climb_evaluations": 5883
+            },
+            {
+              "draw": 30,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.670110732,
+              "wrong_setting_score_max": -8.502966353,
+              "z_score": 23.388663,
+              "margin_over_best_wrong_setting": 1.892963666,
+              "climb_evaluations": 6258
+            },
+            {
+              "draw": 31,
+              "plaintext_recovered_exactly": true,
+              "plugboard_recovered_exactly": true,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.60646641,
+              "wrong_setting_score_max": -8.496290378,
+              "z_score": 37.185103,
+              "margin_over_best_wrong_setting": 1.886287691,
+              "climb_evaluations": 3937
+            }
+          ]
+        }
+      ],
+      "recovers_at_target_scale": false,
+      "shortest_length_recovered_every_draw_at_target_stecker": null,
+      "interpretation": "Where the plaintext is recovered on every draw, the stecker stage is not the limiting factor and the cost of enumerating rotor settings is. Where it is not, no amount of rotor enumeration helps, because the objective does not identify the key even when the rotor setting is handed to it."
+    },
+    "screening_calibration": {
+      "stecker_pairs": 10,
+      "null_trials": 20,
+      "rationale": "Asked at the target message length of 167 and at the 371 letters a whole date pools to. A separating truncated climb at 167 is what decides whether a body-direct sweep over BYQMZ can cover the full 60 x 26^3 start-position space or only a declared slice of it.",
+      "lengths": [
+        {
+          "length": 167,
+          "rows": [
+            {
+              "max_passes": 1,
+              "true_setting_score_per_letter": -9.233739708,
+              "wrong_setting_score_mean": -9.262564509,
+              "wrong_setting_score_max": -9.078483026,
+              "z_score": 0.226863,
+              "separates": false,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.018689
+            },
+            {
+              "max_passes": 2,
+              "true_setting_score_per_letter": -8.936121282,
+              "wrong_setting_score_mean": -9.071643516,
+              "wrong_setting_score_max": -8.818559467,
+              "z_score": 1.145359,
+              "separates": false,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.037219
+            },
+            {
+              "max_passes": 3,
+              "true_setting_score_per_letter": -8.605750732,
+              "wrong_setting_score_mean": -8.86671169,
+              "wrong_setting_score_max": -8.652378971,
+              "z_score": 2.537471,
+              "separates": true,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.056714
+            },
+            {
+              "max_passes": 5,
+              "true_setting_score_per_letter": -7.888127815,
+              "wrong_setting_score_mean": -8.680946565,
+              "wrong_setting_score_max": -8.478527594,
+              "z_score": 7.016811,
+              "separates": true,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.095051
+            },
+            {
+              "max_passes": 30,
+              "true_setting_score_per_letter": -6.610002687,
+              "wrong_setting_score_mean": -8.644118124,
+              "wrong_setting_score_max": -8.540827018,
+              "z_score": 29.486474,
+              "separates": true,
+              "plaintext_recovered_exactly": true,
+              "seconds_per_setting": 0.110281
+            }
+          ],
+          "cheapest_separating_max_passes": 3
+        },
+        {
+          "length": 371,
+          "rows": [
+            {
+              "max_passes": 1,
+              "true_setting_score_per_letter": -9.302881238,
+              "wrong_setting_score_mean": -9.509907148,
+              "wrong_setting_score_max": -9.248595142,
+              "z_score": 1.565335,
+              "separates": false,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.044656
+            },
+            {
+              "max_passes": 2,
+              "true_setting_score_per_letter": -8.984250923,
+              "wrong_setting_score_mean": -9.351731778,
+              "wrong_setting_score_max": -9.15321682,
+              "z_score": 3.578678,
+              "separates": true,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.094751
+            },
+            {
+              "max_passes": 3,
+              "true_setting_score_per_letter": -8.490981176,
+              "wrong_setting_score_mean": -9.236296678,
+              "wrong_setting_score_max": -9.089564552,
+              "z_score": 10.637823,
+              "separates": true,
+              "plaintext_recovered_exactly": false,
+              "seconds_per_setting": 0.131802
+            },
+            {
+              "max_passes": 5,
+              "true_setting_score_per_letter": -6.769100779,
+              "wrong_setting_score_mean": -9.101502782,
+              "wrong_setting_score_max": -8.910853947,
+              "z_score": 26.316278,
+              "separates": true,
+              "plaintext_recovered_exactly": true,
+              "seconds_per_setting": 0.203198
+            },
+            {
+              "max_passes": 30,
+              "true_setting_score_per_letter": -6.769100779,
+              "wrong_setting_score_mean": -9.035852432,
+              "wrong_setting_score_max": -8.907502914,
+              "z_score": 37.343502,
+              "separates": true,
+              "plaintext_recovered_exactly": true,
+              "seconds_per_setting": 0.196609
+            }
+          ],
+          "cheapest_separating_max_passes": 2
+        }
+      ],
+      "cheap_screen_exists": true,
+      "cheap_screen_at_target_length": true,
+      "interpretation": "If no truncated climb separates at a length, every rotor setting in a body-direct sweep of a message that long costs a converged climb and the sweep cannot be made cheaper by pre-filtering."
+    },
+    "indicator_gradient_control": {
+      "known_key": {
+        "rotor_order_left_to_right": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+        "plugboard_pairs": 10,
+        "indicator_ordering": "grundstellung_first",
+        "messages": [
+          {
+            "designator": "GRAD-1",
+            "length": 36,
+            "indicator": [
+              "QWE",
+              "YYY"
+            ],
+            "true_message_key": "BNM",
+            "plaintext_sha256": "204b1c2ca2701bfa70d7ec3f44ee84a726e4f1f0fe7808e6dbf37f50bcab7089"
+          },
+          {
+            "designator": "GRAD-2",
+            "length": 46,
+            "indicator": [
+              "LDR",
+              "WLA"
+            ],
+            "true_message_key": "KPT",
+            "plaintext_sha256": "b0281f45ce7c98f5e7b29e37c94ed4753ce32d97eaaac83a26a8f9d47e405ba3"
+          },
+          {
+            "designator": "GRAD-3",
+            "length": 48,
+            "indicator": [
+              "ZUI",
+              "QOY"
+            ],
+            "true_message_key": "VCX",
+            "plaintext_sha256": "7f835a4a909a11ae6e30f648e1790f74b696cd8cf08a4531e2a4884c6537dc7b"
+          },
+          {
+            "designator": "GRAD-4",
+            "length": 69,
+            "indicator": [
+              "PMF",
+              "FUB"
+            ],
+            "true_message_key": "HGD",
+            "plaintext_sha256": "434d264305fc45d9bdee67bc0ec09d49d723e293dfa0409df6dbc6671879ed05"
+          },
+          {
+            "designator": "GRAD-5",
+            "length": 76,
+            "indicator": [
+              "TRQ",
+              "WNE"
+            ],
+            "true_message_key": "YBN",
+            "plaintext_sha256": "33ba130f62471f63b74cc542a8d81962683d2741b5666585faeb210ba2319e40"
+          }
+        ]
+      },
+      "indicator_coupled": {
+        "score_per_letter": -8.930081057,
+        "recovered_plugboard": "BF CE GT HP KV LX OW RZ",
+        "recovered_plugboard_pairs": 8,
+        "recovered_message_keys": [
+          "SIV",
+          "MMI",
+          "ATZ",
+          "JCL",
+          "YYQ"
+        ],
+        "true_message_keys": [
+          "BNM",
+          "KPT",
+          "VCX",
+          "HGD",
+          "YBN"
+        ],
+        "message_keys_recovered": false,
+        "plaintexts_recovered": false,
+        "climb_evaluations": 3624
+      },
+      "body_direct_reference": {
+        "score_per_letter": -6.665849484,
+        "recovered_plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+        "plugboard_recovered_exactly": true,
+        "plaintexts_recovered": true,
+        "climb_evaluations": 7283
+      },
+      "indicator_coupling_is_climbable": false,
+      "interpretation": "Both arms are handed the true wheel order and ring setting and the same climb. The body-direct arm is given the true start positions; the indicator-coupled arm must derive them through the plugboard it is searching for. A failure in the coupled arm beside a success in the direct arm isolates the coupling, not the climb, as the cause."
+    },
+    "findings": {
+      "ic_stage_usable_at_target_scale": false,
+      "stecker_climb_recovers_at_target_scale": false,
+      "cheap_screen_exists": true,
+      "indicator_coupling_is_climbable": false
+    }
+  },
+  "limitations": [
+    "The controls are constructed or independently solved plaintexts, not authentic held-out Army traffic with an authentic daily key.",
+    "The messages behind the published 1941 n-gram counts are not enumerated, so overlap between the authentic control plaintexts and the scorer's training data cannot be ruled out. The constructed control exists to bound that risk, not to remove it.",
+    "The positive controls are body-direct and are handed the true wheel order, ring setting and start positions. They certify the stecker stage at the target lengths and say nothing about the rotor enumeration, which the sweeps and calibrations cover separately.",
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure. A different reflector, a Naval wheel or a different indicator convention is outside every space searched here.",
+    "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
+    "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
+    "One constructed plaintext, cut to each length as a prefix, so the 97-, 107- and 167-letter cells share their first 97 letters. The rate at 107 letters depends on what text occupies those letters, which a single plaintext does not average over.",
+    "The climb is handed the true setting. The rate is an upper bound on end-to-end detection at this length, as phase1-end-to-end-power-v1 showed at 167 (8 of 8 handed, 82.5% end to end)."
+  ]
+}

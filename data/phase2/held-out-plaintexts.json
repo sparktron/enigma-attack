@@ -1,0 +1,101 @@
+{
+ "schema": "enigma-attack.phase2-held-out-plaintexts/v1",
+ "purpose": "Solved 1941 Army plaintext for phase2-crib-prior-v1, transcribed after data/phase2/held-out-manifest.json was committed. Same fields as data/phase5/army-plaintext-controls.json (id, raw), plus date, direction, callsigns, network, address_end.",
+ "manifest": "data/phase2/held-out-manifest.json",
+ "source": {
+  "url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+  "attribution": "Olaf Ostwald and Frode Weierud, 'Modern breaking of Enigma ciphertexts', Cryptologia 41(5), 395-421, companion page at CryptoCellar",
+  "license": "CC BY-NC-SA 4.0, as the repository records for the CryptoCellar BGAC material (data/phase5/README.md). The licence of this companion page was not checked separately.",
+  "retrieved_utc": "2026-10-06T05:08:09Z",
+  "sha256": "175a73cdf6e105f0f2af333adeeb658996f893a773187cafdf48a18cde772c5a",
+  "text_used": "The 'raw plaintext' block, the green text under each ciphertext, with whitespace removed. The same extraction reproduces the five development strings in data/phase5/army-plaintext-controls.json exactly. Garbles are kept as published; Q stands for CH as in the source.",
+  "excluded": [
+   "1941-08-22-30",
+   "1941-09-02-15",
+   "1941-09-06-36",
+   "1941-09-14-46",
+   "1941-09-24-94"
+  ],
+  "excluded_why": "The five development messages, read in full when the configuration was written."
+ },
+ "callsigns_and_network": "Not given by this page for any message. It shows only the key-sheet line (reflector, wheel order, rings, start, Stecker), the message number and the date. The facsimile PDFs it links may carry the Von/An callsigns; they were not fetched. callsigns and network are therefore null, not guessed.",
+ "address_annotation": "address_end is the offset one past the last letter of the address block, taken from the page's own layout, or null when the page shows none. Spelling alone is never used: 1941-07-14-203 begins with an addressee (An Roem Eins Berta Quartiermeister ...) but the page marks no boundary, so it is null.",
+ "plaintexts": [
+  {
+   "id": "1941-07-08-128",
+   "date": "1941-07-08",
+   "raw": "WOROEMEINSBERTASTAFFELFRAGE",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null
+  },
+  {
+   "id": "1941-07-13-25",
+   "date": "1941-07-13",
+   "raw": "ANXPANZXGRUPPEXVIERXSIEGFRIEDSIEGFRIEDTONIXDIVXSTEHTSEITXEINSZWOXSIEBENXEINSEINSNULLNULLXUHRMITANFAENGENAMUNTERKUNFTSRAUMXKANNNIQTEINFLIESZENXDAXDRITTEXINFXDIVXUNDXAQTEXPANZXDIVXBLOQIERENUNDRANMBELEGTHALTEXDIVXKDRX",
+   "direction": "outgoing",
+   "callsigns": null,
+   "network": null,
+   "address_end": 19,
+   "address_note": "The page's English line reads 'To Tank Group 4:' and the colon closes it; the raw letters AN X PANZ X GRUPPE X VIER map to it. The X after VIER is a separator and is outside the block. This is the only message whose layout marks an address end."
+  },
+  {
+   "id": "1941-07-14-203",
+   "date": "1941-07-14",
+   "raw": "ANROEMEINSBERTAXQUARTIERMEISPCRPANZXGRUPPEXOSTROWOSTROWXKASERNENGELZENME",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null
+  },
+  {
+   "id": "1941-07-19-233",
+   "date": "1941-07-19",
+   "raw": "WIEVIELKLEINSIEGFRIEDGWOSMFRIEDRICHXHEINWIGHMUNXINSQRZAQTEINSSIEBENSTRIQAINSAQHXSIEBENWILXPLESNAUXABGEHOLTFRAGEXWERP---EFYHLKOMMADOHZATZUXOLENFRAGOVUNKANTWORTXDERQNAATYEKVEVSTER",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null,
+   "note": "Three letters are unrecorded in the source and appear as '---'. The message was enciphered with the key of 18 July and sent on 19 July; it is dated by its message number and the page's heading, 19 July."
+  },
+  {
+   "id": "1941-08-26-65",
+   "date": "1941-08-26",
+   "raw": "TAGESMMLDUNGFUNKEN",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null
+  },
+  {
+   "id": "1941-08-27-71",
+   "date": "1941-08-27",
+   "raw": "ZWOXSTAFDELAMXZWOSIEBENXAQTXVIER",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null,
+   "truncated": true,
+   "truncation_note": "The form records only part of the ciphertext, so raw is the deciphered part and ends mid-message. The page's Note gives the complete plaintext in transcribed form: Zwo x Staffel am x Zwo Sieben x Aqt x Vier Eins x Eins Neun Drei Null x in x Wjelikoje x Wjelikoje x Striq x Sjelok x Sjelok untergezogen x Schoeffler x Schoeffler. Its end is not in raw, so this message gives no sign-off or end-of-message evidence."
+  },
+  {
+   "id": "1941-10-01-1",
+   "date": "1941-10-01",
+   "raw": "MORGENMELDUNGENTFAELCT",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null
+  },
+  {
+   "id": "1941-10-01-2",
+   "date": "1941-10-01",
+   "raw": "ZWISNENMELDCNGENTFAELLTX",
+   "direction": "incoming",
+   "callsigns": null,
+   "network": null,
+   "address_end": null
+  }
+ ]
+}

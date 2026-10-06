@@ -64,6 +64,44 @@ def perturb_ciphertext(
     raise ValueError(f"unknown perturbation: {kind!r}")
 
 
+def repair_fault(ciphertext: str, perturbation: Mapping[str, Any]) -> str:
+    """The faulty message with its fault undone at the true position.
+
+    An oracle: no search can know where the fault is. A dropped letter gets an
+    uncertainty mask (``?``) back at its position and an inserted letter is
+    removed, so the result has the unperturbed length and every letter after
+    the fault is aligned with the swept setting again. It bounds what a climb
+    that searched the fault's position could achieve, from above.
+    """
+
+    position = perturbation.get("position")
+    if perturbation["kind"] == "deletion":
+        return ciphertext[:position] + "?" + ciphertext[position:]
+    if perturbation["kind"] == "insertion":
+        return ciphertext[:position] + ciphertext[position + 1 :]
+    return ciphertext
+
+
+def arm_message(message: Traffic, ciphertext: str, perturbation: Mapping[str, Any], arm: Mapping[str, Any]) -> Traffic:
+    """The message an arm sweeps: as received, or with the fault undone if the arm says so.
+
+    An arm without ``repair`` gets ``message`` itself, so a configuration
+    written before repairs existed runs exactly as it did.
+    """
+
+    kind = arm.get("repair")
+    if kind is None:
+        return message
+    if kind != "oracle":
+        raise ValueError(f"unknown repair: {kind!r}")
+    return Traffic(
+        designator=message.designator,
+        first_trigram=message.first_trigram,
+        second_trigram=message.second_trigram,
+        body=enigma_fast.text_to_indices(repair_fault(ciphertext, perturbation)),
+    )
+
+
 def table_agreement(left: Sequence[int], right: Sequence[int], length: int) -> float:
     """Fraction of letter positions at which two flattened tables are the same."""
 
@@ -147,10 +185,11 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
                 -int(settings["right_neighbours"]), int(settings["right_neighbours"]) + 1
             )
         ]
-        rule = RingRule(arm["ring_rule"], (0, 0, 0), right_rings, len(message.body))
+        swept_message = arm_message(message, ciphertext, perturbation, arm)
+        rule = RingRule(arm["ring_rule"], (0, 0, 0), right_rings, len(swept_message.body))
         swept = len(rule.settings(order, starts))
         ranked, evaluated, _ = body_direct_sweep(
-            message, [order], rule, starts, config["scorer"], reflector, arm_climb(config, arm),
+            swept_message, [order], rule, starts, config["scorer"], reflector, arm_climb(config, arm),
             swept, 1,
         )
         fractions: list[float | None] = []
@@ -189,25 +228,38 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
     # Wrong settings drawn the same way the existing capability calibration
     # draws them, so the climb's score on a key it cannot recover has a
     # reference distribution to be separated from.
-    # A windowed arm is compared with its own null: the same windowed climb at
-    # the same wrong settings, since its score is the better of two shorter
-    # windows and is distributed differently from a whole-message score.
-    windowed_arms = [arm for arm in settings["arms"] if arm.get("window") is not None]
+    # An arm whose score is not distributed like the pooled whole-message null
+    # is compared with its own null: the same climb on the same message the arm
+    # sweeps, at the same wrong settings. A windowed arm scores the better of
+    # two shorter windows. A repaired arm scores the repaired message, whose
+    # mask breaks the n-gram chain after a deletion and whose length is one
+    # shorter after an insertion.
+    own_null_arms = [
+        arm
+        for arm in settings["arms"]
+        if arm.get("window") is not None or arm.get("repair") is not None
+    ]
+    own_null_messages = {
+        arm["id"]: arm_message(message, ciphertext, perturbation, arm) for arm in own_null_arms
+    }
     window_climbers: dict[str, Any] = {}
-    for arm in windowed_arms:
+    for arm in own_null_arms:
         climb = arm_climb(config, arm)
+        if climb.get("window") is None:
+            continue
+        body = own_null_messages[arm["id"]].body
         window_climbers[arm["id"]] = (
             [
                 stecker_batch.BatchedClimber(
-                    scorer.bigram, scorer.combined, message.body[first:stop], climb
+                    scorer.bigram, scorer.combined, body[first:stop], climb
                 )
-                for _, first, stop in climb_windows(len(message.body), climb["window"])
+                for _, first, stop in climb_windows(len(body), climb["window"])
             ]
             if resolve_engine(climb) == "batched"
             else None
         )
     null_scores: list[float] = []
-    arm_null_scores: dict[str, list[float]] = {arm["id"]: [] for arm in windowed_arms}
+    arm_null_scores: dict[str, list[float]] = {arm["id"]: [] for arm in own_null_arms}
     for _ in range(int(settings["null_trials"])):
         wrong_order = tuple(generator.sample(wheels, 3))
         while wrong_order == order:
@@ -220,19 +272,32 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
                 config["climb"],
             )[0].score_per_letter
         )
-        if windowed_arms:
-            wrong_table = enigma_fast.position_permutations(
-                [enigma_fast.rotor_tables(name) for name in wrong_order],
-                wrong_rings, wrong_start, len(message.body), reflector,
-            )
-            for arm in windowed_arms:
-                arm_null_scores[arm["id"]].append(
-                    windowed_climb(
-                        wrong_table, message.body, scorer, arm_climb(config, arm),
-                        window_climbers[arm["id"]],
-                    )[2]
-                )
-    for arm in windowed_arms:
+        wrong_tables: dict[int, Sequence[int]] = {}
+        for arm in own_null_arms:
+            arm_body = own_null_messages[arm["id"]]
+            climb = arm_climb(config, arm)
+            if climb.get("window") is None:
+                if arm_body.body == message.body and climb is config["climb"]:
+                    # Repair was the identity (no fault): the pooled score is this score.
+                    score = null_scores[-1]
+                else:
+                    score = body_direct_climb(
+                        [arm_body], wrong_order, wrong_rings, [wrong_start], scorer, reflector,
+                        climb,
+                    )[0].score_per_letter
+            else:
+                length = len(arm_body.body)
+                if length not in wrong_tables:
+                    wrong_tables[length] = enigma_fast.position_permutations(
+                        [enigma_fast.rotor_tables(name) for name in wrong_order],
+                        wrong_rings, wrong_start, length, reflector,
+                    )
+                score = windowed_climb(
+                    wrong_tables[length], arm_body.body, scorer, climb,
+                    window_climbers[arm["id"]],
+                )[2]
+            arm_null_scores[arm["id"]].append(score)
+    for arm in own_null_arms:
         arms[arm["id"]]["null_scores"] = [round(value, 9) for value in arm_null_scores[arm["id"]]]
     return {
         "cell": cell_index,
@@ -325,23 +390,27 @@ def run_end_to_end_power(
             per = [row["arms"][arm["id"]] for row in mine]
             arm_null: dict[str, Any] = {}
             arm_mean, arm_sd, arm_threshold = null_mean, null_sd, threshold
-            if arm.get("window") is not None:
+            if arm.get("window") is not None or arm.get("repair") is not None:
                 own = [value for item in per for value in item["null_scores"]]
                 arm_mean, arm_sd = statistics.fmean(own), statistics.pstdev(own)
                 arm_threshold = arm_mean + z_detect * arm_sd
                 arm_null = {
-                    "window": dict(arm["window"]),
                     "null": {
                         "samples": len(own),
                         "mean_score_per_letter": round(arm_mean, 9),
                         "sd_score_per_letter": round(arm_sd, 9),
                         "detection_threshold_score_per_letter": round(arm_threshold, 9),
                     },
-                    "top_window_counts": {
-                        name: sum(1 for item in per if item.get("top_window") == name)
-                        for name in ("head", "tail", "whole")
-                    },
                 }
+                if arm.get("window") is not None:
+                    arm_null = {
+                        "window": dict(arm["window"]),
+                        **arm_null,
+                        "top_window_counts": {
+                            name: sum(1 for item in per if item.get("top_window") == name)
+                            for name in ("head", "tail", "whole")
+                        },
+                    }
             recovered = [item["top"]["plugboard_recovered_exactly"] for item in per]
             detected = [
                 item["top"]["plugboard_recovered_exactly"]
@@ -373,6 +442,7 @@ def run_end_to_end_power(
                     "arm": arm["id"],
                     "ring_rule": arm["ring_rule"],
                     "right_ring": arm["right_ring"],
+                    **({"repair": arm["repair"]} if arm.get("repair") else {}),
                     "draws": len(per),
                     "settings_evaluated_per_draw": per[0]["settings_evaluated"],
                     "plugboard_recovered_by_top_candidate": sum(recovered),
