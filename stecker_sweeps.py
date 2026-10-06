@@ -24,6 +24,7 @@ import enigma_fast
 from phase7 import resolve_path
 from provenance import sha256_file, sha256_text
 import stecker_batch
+import stecker_split
 from stecker_climb import (
     climb_windows,
     coincidence_of_decryption,
@@ -156,9 +157,17 @@ def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[
     scorer = _WORKER["scorer"]
     batched = resolve_engine(settings) == "batched"
     window = settings.get("window")
+    split = settings.get("split")
+    if split is not None and (window is not None or not batched):
+        raise ValueError("climb.split needs the batched engine and cannot be combined with climb.window")
+    _WORKER["split_climber"] = (
+        stecker_split.SplitClimber(scorer.bigram, scorer.combined, body, settings)
+        if split is not None
+        else None
+    )
     _WORKER["climber"] = (
         stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body, settings)
-        if batched and window is None
+        if batched and window is None and split is None
         else None
     )
     # A windowed climb needs one batched climber per window, each built on that
@@ -189,15 +198,22 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
     climber = _WORKER["climber"]
     window_climbers = _WORKER["window_climbers"]
     windowed = settings.get("window") is not None
+    split_climber = _WORKER["split_climber"]
     order = [enigma_fast.rotor_tables(name) for name in names]
     letters = sum(1 for value in body if value >= 0)
     phases = list(settings["phases"])
     heap: list[tuple[float, int, dict[str, Any]]] = []
     count, mean, m2, best = 0, 0.0, 0.0, -math.inf
     for local, (rings, start) in enumerate(swept):
-        table = enigma_fast.position_permutations(order, rings, start, len(body), reflector)
+        # The split climb reads one keystroke past the message for a dropped letter.
+        table = enigma_fast.position_permutations(
+            order, rings, start, len(body) + (1 if split_climber is not None else 0), reflector
+        )
         window_name = None
-        if windowed:
+        hypothesis = None
+        if split_climber is not None:
+            plugboard, evaluations, score, hypothesis = split_climber.climb(table)
+        elif windowed:
             plugboard, evaluations, score, window_name = windowed_climb(
                 table, body, scorer, settings, window_climbers
             )
@@ -213,7 +229,7 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
                 letters,
                 settings,
             )
-        if not windowed:
+        if not windowed and split_climber is None:
             score = scorer.score_decryption(table, body, plugboard) / letters
         count += 1
         delta = score - mean
@@ -233,6 +249,7 @@ def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) ->
                 "plugboard_pairs": sum(1 for x in range(26) if plugboard[x] > x),
                 "evaluations": evaluations,
                 **({"window": window_name} if windowed else {}),
+                **({"split": list(hypothesis)} if split_climber is not None else {}),
             },
         )
         # Ordered by (score, earlier first); ``-local`` is unique, so the row
@@ -503,6 +520,7 @@ def sweep_slice(
             "plugboard": enigma_fast.plugboard_pairs(row["plugboard"]),
             "plugboard_pairs": row["plugboard_pairs"],
             **({"window": row["window"]} if "window" in row else {}),
+            **({"split": row["split"]} if "split" in row else {}),
             "_plugboard": row["plugboard"],
         }
         for position, (_, _, _, row) in enumerate(candidates[:keep])

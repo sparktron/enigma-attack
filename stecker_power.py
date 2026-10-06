@@ -13,6 +13,7 @@ from typing import Any
 from enigma import EnigmaI
 import enigma_fast
 import stecker_batch
+import stecker_split
 from stecker_climb import body_direct_climb, climb_windows, windowed_climb
 from stecker_scoring import FastNgramScorer
 from stecker_space import RING_RULES, RingRule, reducible_space_size, rule_key_coverage
@@ -118,6 +119,10 @@ def arm_climb(config: Mapping[str, Any], arm: Mapping[str, Any]) -> Mapping[str,
     configuration written before windows existed runs exactly as it did.
     """
 
+    if arm.get("split") is not None:
+        if arm.get("window") is not None:
+            raise ValueError(f"arm {arm['id']!r} sets both window and split")
+        return {**config["climb"], "split": dict(arm["split"])}
     if arm.get("window") is None:
         return config["climb"]
     return {**config["climb"], "window": dict(arm["window"])}
@@ -209,6 +214,7 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
         best = max((value for value in fractions if value is not None), default=None)
         arms[arm["id"]] = {
             **({"top_window": top["window"]} if "window" in top else {}),
+            **({"top_hypothesis": top["split"]} if "split" in top else {}),
             "settings_evaluated": evaluated,
             "best_equivalent_fraction": None if best is None else round(best, 6),
             "exact_equivalent_exists": None if best is None else best == 1.0,
@@ -237,14 +243,22 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
     own_null_arms = [
         arm
         for arm in settings["arms"]
-        if arm.get("window") is not None or arm.get("repair") is not None
+        if arm.get("window") is not None
+        or arm.get("repair") is not None
+        or arm.get("split") is not None
     ]
     own_null_messages = {
         arm["id"]: arm_message(message, ciphertext, perturbation, arm) for arm in own_null_arms
     }
     window_climbers: dict[str, Any] = {}
+    split_climbers: dict[str, Any] = {}
     for arm in own_null_arms:
         climb = arm_climb(config, arm)
+        if climb.get("split") is not None:
+            split_climbers[arm["id"]] = stecker_split.SplitClimber(
+                scorer.bigram, scorer.combined, own_null_messages[arm["id"]].body, climb
+            )
+            continue
         if climb.get("window") is None:
             continue
         body = own_null_messages[arm["id"]].body
@@ -276,7 +290,15 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
         for arm in own_null_arms:
             arm_body = own_null_messages[arm["id"]]
             climb = arm_climb(config, arm)
-            if climb.get("window") is None:
+            if climb.get("split") is not None:
+                length = len(arm_body.body) + 1
+                if length not in wrong_tables:
+                    wrong_tables[length] = enigma_fast.position_permutations(
+                        [enigma_fast.rotor_tables(name) for name in wrong_order],
+                        wrong_rings, wrong_start, length, reflector,
+                    )
+                score = split_climbers[arm["id"]].climb(wrong_tables[length])[2]
+            elif climb.get("window") is None:
                 if arm_body.body == message.body and climb is config["climb"]:
                     # Repair was the identity (no fault): the pooled score is this score.
                     score = null_scores[-1]
@@ -390,7 +412,11 @@ def run_end_to_end_power(
             per = [row["arms"][arm["id"]] for row in mine]
             arm_null: dict[str, Any] = {}
             arm_mean, arm_sd, arm_threshold = null_mean, null_sd, threshold
-            if arm.get("window") is not None or arm.get("repair") is not None:
+            if (
+                arm.get("window") is not None
+                or arm.get("repair") is not None
+                or arm.get("split") is not None
+            ):
                 own = [value for item in per for value in item["null_scores"]]
                 arm_mean, arm_sd = statistics.fmean(own), statistics.pstdev(own)
                 arm_threshold = arm_mean + z_detect * arm_sd
@@ -443,6 +469,7 @@ def run_end_to_end_power(
                     "ring_rule": arm["ring_rule"],
                     "right_ring": arm["right_ring"],
                     **({"repair": arm["repair"]} if arm.get("repair") else {}),
+                    **({"split": dict(arm["split"])} if arm.get("split") is not None else {}),
                     "draws": len(per),
                     "settings_evaluated_per_draw": per[0]["settings_evaluated"],
                     "plugboard_recovered_by_top_candidate": sum(recovered),
