@@ -323,19 +323,24 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-Phase 1 next: `phase1-middle-complete-power-v1`, preregistered 2026-10-06 and
-not run (about 30 to 40 minutes on 10 workers). It decides between the two
-steps still open for BYQMZ: the middle-complete rule (nine times v2's cost,
-about 153 host-hours) for the keys with no exact equivalent in the past-notch
-space, and a split climb that reads the head at one setting and the tail at the
-shifted one, for an indel in the middle third (8 of 32 windowed, 2 of 32
-whole). The complete rule's power is not unmeasured, as this paragraph used to
-say: 39 of 40 clean and 11 of 40 with one indel in an earlier slice. What is
-unmeasured is its yield on keys v2 and v3 already missed. The comparison and the
-decision rule are in the [Phase 1 history](phase1-experiment-history.md#choosing-the-next-phase-1-experiment-2026-10-06).
-Run it, then `scripts/conditional_power.py`. The body-direct route at the
-past-notch rule is otherwise exhausted for BYQMZ. Both candidates assume wheels
-I to V as wired, which the cited paper's authors doubt for Batch C.
+Phase 1 next: a **split-point climb** for an indel in BYQMZ's middle third,
+chosen by the preregistered rule of `phase1-middle-complete-power-v1`, which
+ran on 2026-10-06 (400 clean and 400 one-indel draws, 43 minutes, clean tree).
+Among planted keys that neither past-notch climb detects, the middle-complete
+rule recovers 59.6% of the clean ones but 20.3% of the middle-third-indel
+ones, where an oracle that undoes the indel recovers 70.3%. The rule needs the
+climb built and benchmarked before any sweep; its cost against the assumed 4
+times v3 decides it, and the choice flips to the complete-rule sweep (about 153
+host-hours, nine times v2) if the climb costs more than about 5.7 times v3 at a
+prior q of 0.2 on a dropped or inserted letter, or at q below about 0.14. Neither
+q nor the cost is measured. Each yields about 0.003 to 0.004 conditional
+detection per host-hour, against v3's 0.013. The same run puts v2's whole-message
+climb at 79.0% on clean draws and v3's windowed climb at 42.5% with one indel,
+below the 88.8% and 56.3% of the earlier 80-draw run, so the two nulls multiply
+the odds of a standard reading by about 0.14 ungarbled and 0.48 with one indel,
+not 0.09 and 0.43. The body-direct route at the past-notch rule is otherwise
+exhausted for BYQMZ. Both candidates assume wheels I to V as wired, which the
+cited paper's authors doubt for Batch C.
 
 A **crib-driven Bombe** would eliminate the plugboard algebraically through
 crib-derived menus instead of searching it, the historically correct answer to
