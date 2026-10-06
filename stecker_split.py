@@ -299,6 +299,8 @@ class SplitClimber(stecker_batch.BatchedClimber):
         total_h = counts_h.sum(axis=1)
         squares = [np.einsum("kl,kl->k", total_h, total_h)]
         for other in (counts_d, counts_i):
+            if self.segments < 2:
+                break  # the grid leaves no boundary, so only the clean score stands
             # Letters before boundary b come from the head stream and the rest
             # from the other one, so the mixed count is the head's cumulative
             # count minus the other's, plus the other's total.

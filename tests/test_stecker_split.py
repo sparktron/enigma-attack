@@ -109,6 +109,24 @@ class ObjectiveParityTest(unittest.TestCase):
         body[41] = -1
         self.check(body, table, 15)
 
+    def test_a_grid_as_long_as_the_message_leaves_only_the_clean_score(self):
+        import numpy as np
+
+        body, table, *_ = planted(1, 60, "indel")
+        grid = np.asarray(table, dtype=np.int64).reshape(len(body) + 1, 26)
+        boards = np.asarray(random_boards(random.Random(5), 3), dtype=np.int64)
+        for size in (len(body), len(body) + 100):
+            climber = stecker_split.SplitClimber(
+                self.scorer.bigram, self.scorer.combined, body, {**SETTINGS, "split": {"ic_grid": size}}
+            )
+            got = climber._coincidence(boards, grid)
+            for index, board in enumerate(boards.tolist()):
+                self.assertAlmostEqual(
+                    float(got[index]),
+                    stecker_split.reference_coincidence_objective(table, body, board, size),
+                    places=9,
+                )
+
     def test_the_hypothesis_count(self):
         self.assertEqual(len(stecker_split.hypotheses(10)), 1 + 9 + 8)
 

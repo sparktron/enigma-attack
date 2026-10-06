@@ -41,7 +41,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--settings", type=int, default=2000)
     parser.add_argument("--jobs", type=int, default=1)
-    parser.add_argument("--engines", nargs="+", default=["reference", "batched"])
+    parser.add_argument(
+        "--engines", nargs="+", default=None,
+        help="climb engines to time (default: reference and batched, or only batched with --split-grid, "
+        "which the split-point climb needs)",
+    )
     parser.add_argument(
         "--window", type=int, default=None,
         help="climb the head and tail windows of this many letters instead of the whole message",
@@ -57,6 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--repeats", type=int, default=1, help="rounds of --compare")
     arguments = parser.parse_args(argv)
+    if arguments.engines is None:
+        arguments.engines = ["batched"] if arguments.split_grid is not None else ["reference", "batched"]
+    if arguments.split_grid is not None and arguments.engines != ["batched"] and not arguments.compare:
+        parser.error("--split-grid needs the batched engine: use --engines batched")
 
     config = stecker.load_config(ROOT / "experiments/phase1-body-direct-sweep-v1/config.json")
     calibration = stecker.load_config(ROOT / "experiments/phase1-stecker-calibration-v1/config.json")
