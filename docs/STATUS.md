@@ -217,7 +217,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 204 tests passed locally on 2026-10-06,
+- `python3 -m unittest discover -q`: 216 tests passed locally on 2026-10-06,
   with numpy installed; without it the five batched-climb tests skip. A test
   checks that `engine: auto` falls back to the reference climb and
   `engine: batched` fails loudly when numpy is missing.
@@ -323,12 +323,19 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-Phase 1 next, in order of cost: the middle-complete rule (nine times v2's
-cost) for the keys with no exact equivalent in the past-notch space; a split
-climb that reads the head at one setting and the tail at the shifted one, for
-an indel in the middle third of BYQMZ, which neither climb sees well (8 of 32
-windowed, 2 of 32 whole). The body-direct route at the past-notch rule is
-otherwise exhausted for BYQMZ.
+Phase 1 next: `phase1-middle-complete-power-v1`, preregistered 2026-10-06 and
+not run (about 30 to 40 minutes on 10 workers). It decides between the two
+steps still open for BYQMZ: the middle-complete rule (nine times v2's cost,
+about 153 host-hours) for the keys with no exact equivalent in the past-notch
+space, and a split climb that reads the head at one setting and the tail at the
+shifted one, for an indel in the middle third (8 of 32 windowed, 2 of 32
+whole). The complete rule's power is not unmeasured, as this paragraph used to
+say: 39 of 40 clean and 11 of 40 with one indel in an earlier slice. What is
+unmeasured is its yield on keys v2 and v3 already missed. The comparison and the
+decision rule are in the [Phase 1 history](phase1-experiment-history.md#choosing-the-next-phase-1-experiment-2026-10-06).
+Run it, then `scripts/conditional_power.py`. The body-direct route at the
+past-notch rule is otherwise exhausted for BYQMZ. Both candidates assume wheels
+I to V as wired, which the cited paper's authors doubt for Batch C.
 
 A **crib-driven Bombe** would eliminate the plugboard algebraically through
 crib-derived menus instead of searching it, the historically correct answer to
