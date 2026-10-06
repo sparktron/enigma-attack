@@ -1,0 +1,155 @@
+{
+  "schema": "enigma-attack.phase2-crib-prior-config/v1",
+  "experiment_id": "phase2-crib-prior-v1",
+  "status": "preregistered 2026-10-04; nothing has been run beyond counting the development set",
+  "review_finding": "docs/code-review-2026-10-02.md P3",
+  "question": "Is a crib-driven Bombe worth building for BYQMZ, FKQLZ and XFEDT, compared with another crib-free body-direct sweep?",
+  "hypothesis": "Solved 1941 German Army traffic from the Batch C network, or from a network a cited source places with it, supports a per-message crib-placement prior. A Bombe's expected detection probability under that prior is high enough that a null from it would be at least as informative as phase1-body-direct-sweep-v3 (likelihood ratio 0.71 or lower), at a run cost per unit of detection no worse than the measured body-direct sweeps.",
+  "refuted_by": "Any gate below failing on the held-out set: too few held-out messages to estimate (gate G1), no cited source linking the training network to Batch C (G2), a campaign detection lower bound below 0.29 (G3), or worse detection per host-hour than the body-direct reference (G4). A refutation means the Bombe is not preferred. It does not show that no crib exists.",
+  "inputs": {
+    "crib_catalog": "cribs.json",
+    "development_set": {
+      "path": "data/phase5/army-plaintext-controls.json",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "attribution": "Geoff Sullivan and Frode Weierud, CryptoCellar (CC BY-NC-SA 4.0)",
+      "accessed_by_repository": "2026-09-22",
+      "messages": [
+        "1941-08-22-30",
+        "1941-09-02-15",
+        "1941-09-06-36",
+        "1941-09-14-46",
+        "1941-09-24-94"
+      ],
+      "letters": 275,
+      "role": "Development set. All five were read in full while this configuration was written, so they cannot be held out. Every number in development_set_counts below comes from them, and none of it may be used as the held-out estimate.",
+      "network": "Not recorded in the repository. Nothing in the repository says which network or unit sent these five, or that it is the network of Batch C."
+    },
+    "excluded_text": [
+      {
+        "what": "The long Army-style plaintext in experiments/phase1-stecker-calibration-v1 and later configs (FUNKSTELLEMELDET...)",
+        "why": "Constructed for this project (\"source\": \"constructed for this experiment\"). It is not solved traffic, and counting it would measure our own writing."
+      },
+      {
+        "what": "The 1930 and 1938 Army messages that supply eight of the catalogued cribs",
+        "why": "Their plaintext is not in the repository, only the extracted cribs. They are also from another period, not 1941."
+      },
+      {
+        "what": "The 2026 ALQFI archival retransmission plaintext that supplies five cribs",
+        "why": "Not in the repository; only the extracted cribs are."
+      }
+    ],
+    "held_out_source_candidates": [
+      {
+        "url": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+        "why": "Transcriptions and solved plaintext of the 1941 Army collection Batch C belongs to (cribs.json source g-army-messages-2026-08-01)."
+      },
+      {
+        "url": "https://cryptocellar.org/bgac/key-of-e.html",
+        "why": "Six solved 1941 Army messages in key E (search result title \"Five or six Easy Pieces in the key of E\", seen 2026-10-04)."
+      },
+      {
+        "url": "https://cryptocellar.org/pubs/bgac.pdf",
+        "why": "Sullivan and Weierud, Breaking German Army Ciphers: procedures and solved traffic of the 1941 networks."
+      }
+    ],
+    "held_out_access_note": "From the 2026-10-04 preregistration container the network egress proxy refused cryptocellar.org, www.cryptocellar.org, cryptocellartales.blogspot.com and web.archive.org (HTTP 403 on CONNECT). No held-out text has been read. The search engine returned only page titles and short descriptions."
+  },
+  "development_set_counts": {
+    "procedure": "python3 scripts/count_crib_occurrences.py: case-insensitive exact substring search over whitespace-stripped raw text. A crib ending in X is also searched without its X. Position classes: address (wholly inside the message's annotated address block, address_end), opening (offset 0), sign_off (ends at the last letter, or before a single trailing X), other. The address block is never guessed from spelling; the output reports messages_with_address_annotation. The five development messages carry no annotation (0 of 5), because none has an address block.",
+    "fact": [
+      "15 of the 16 catalogued cribs, as written, occur in 0 of 5 messages (0 of 275 letters). That includes all 13 enabled by default.",
+      "HARTJENSTEINX (archive1941_signature) occurs in 0 of 5 as written. Without its trailing X, HARTJENSTEIN occurs in 2 of 5 (1941-09-02-15 at offset 24, 1941-09-14-46 at offset 57), both times as the last 12 letters. Class counts: sign_off 2, opening 0, address 0, other 0.",
+      "MELDUNG (generic_meldung, speculation, disabled) occurs in 1 of 5, inside ABENDMELDUNGEN at offset 5: class other.",
+      "The last X-separated token of each message: HARTJENSTEIN (2), ROEMEINSBERTA (1), STEINECKE (1, written twice: STEINECKEXSTEINECKE), SCHNEIDDR (1, followed by a trailing X). 1 of 5 messages ends in X.",
+      "The first X-separated tokens are all different: no opening word recurs (0 of 5 repeats).",
+      "None of the five has an address group: 0 of 5.",
+      "X separators per message: 1, 1, 4, 4, 3.",
+      "1941-09-14-46 spells one place name two ways (OMYTSCIKINO, OMYTSCUKINO): one letter differs within the message."
+    ],
+    "leave_one_out": {
+      "rule_single": "Predict the terminal token seen in at least 2 of the 4 training messages; otherwise abstain.",
+      "result_single": "0 of 5 hits. HARTJENSTEIN is predicted for the three messages that do not end in it and misses all three; the two that do end in it abstain, because with one held out it is seen only once.",
+      "rule_set": "Predict the set of every terminal token seen in the 4 training messages (3 or 4 cribs, 2 placements each).",
+      "result_set": "2 of 5 hits, both HARTJENSTEIN. Point 0.40; exact 95% interval [0.053, 0.853]; one-sided 80% lower bound 0.169.",
+      "note": "Leave-one-out on the development set is the only held-out figure available today, and it is an in-network figure: it says nothing about Batch C."
+    },
+    "no_self_encipherment_check": {
+      "fact": "HARTJENSTEIN as the last 12 letters (offset L-12), and one letter earlier (L-13, a trailing X), is not excluded by no-self-encipherment in BYQMZ (155, 154), FKQLZ (95, 94) or XFEDT (85, 84). Over all offsets it passes at 87 of 156, 64 of 96 and 55 of 86.",
+      "inference": "A random 12-letter placement passes with probability about (25/26)^12 = 0.62, so passing at the terminal offsets is weak evidence (likelihood ratio about 1.6)."
+    }
+  },
+  "inference": [
+    "The development set points to a single crib class with any repeat: the sign-off, the last X-separated token. A personal name or unit appears there in 5 of 5. That is an inference, because classifying ROEMEINSBERTA (staff section Ib) and SCHNEIDDR as sign-offs is a reading of the text, not a count.",
+    "A sign-off is the best class for a Bombe: at most 2 placements per message (the end, or one letter before a trailing X), and it is unaffected by a dropped or inserted letter earlier in the message, which is v3's weak spot.",
+    "Only one sign-off name repeats, and its two uses are 12 days apart (2 and 14 September). The latest message in the set, 24 September, is signed by someone else."
+  ],
+  "speculation": [
+    "That BYQMZ, FKQLZ or XFEDT ends in HARTJENSTEIN, or in any name in the development set. Nothing in the repository links the network of the five solved messages to Batch C. The cited challenge page says Batch C's operators, remarks and frequencies differ from the wider 1941 collection (docs/phase2-research.md).",
+    "That one sign-off is shared by all three. The metadata shows three different addressees (ugn, g19, 6q8), two operator entries (Otor. ? and Fuhrmann), and FKQLZ sent from ugn while BYQMZ was sent to it, so the three need not share an originator."
+  ],
+  "method": {
+    "held_out_split": {
+      "freeze": "Before any held-out plaintext is read, record the list of message identifiers to be fetched and the SHA-256 of each fetched page in the result. Each held-out message is annotated with address_end from the source's own layout (header or address lines), or recorded as having no address block, before any crib is counted. The result reports messages_with_address_annotation for each split; an address-class prior is estimated only from annotated messages. The development set above is excluded from evaluation.",
+      "train": "Solved messages of the 1941 Army collection dated on or before 1941-09-15, excluding the development set.",
+      "evaluate": "Solved messages dated 1941-09-16 to 1941-10-31, the period nearest the 1941-09-30 target, excluding the development set. If the cited sources label networks or callsigns, the evaluate split is also reported restricted to messages that share a callsign, frequency or operator with Batch C.",
+      "rationale": "A chronological split tests what matters here: whether names and formulae persist from the traffic we can learn from to the date of the target. A random split would let a name used once in late September appear on both sides."
+    },
+    "candidate_generation": "From the training split only: every token that recurs (at least 2 training messages) in the opening, address or sign-off class, plus every catalogued crib in cribs.json. Nothing is added after the evaluate split is read.",
+    "estimate": "For each candidate c and class k, q(c,k) = the fraction of evaluate-split messages with c in class k, reported with an exact Clopper-Pearson interval. q_L80 is the one-sided 80% lower bound. These marginals set the placement weights only. The quantity the gates use is measured directly as a union, not summed from marginals: u = the fraction of evaluate-split messages in which at least one listed (crib, offset) is correct, with u_L80 its one-sided 80% Clopper-Pearson lower bound. Openings, addresses, sign-offs and nested catalogue cribs can coexist in one message, so summing marginals would double-count.",
+    "transfer_to_batch_c": "t = 1 only if a cited source places the evaluate messages and Batch C in the same network, originating station or unit. Otherwise t is not estimable and q for Batch C is reported as not estimable. It is not set to a guessed value."
+  },
+  "prior_produced": {
+    "form": "For each of BYQMZ (167), FKQLZ (107) and XFEDT (97): a list of (crib text, offset, prior probability) and the remaining mass, P(no listed crib at any listed offset).",
+    "placements": {
+      "sign_off": "Offsets L-n and L-n-1, with the split set by the evaluate split's trailing-X frequency.",
+      "opening": "Offset 0.",
+      "address": "The offsets the evaluate split's address groups occupy.",
+      "other": "Uniform over the offsets that pass no-self-encipherment."
+    },
+    "no_self_encipherment": "A placement whose crib letter equals the ciphertext letter gets probability zero. Its mass moves to the remaining mass and is never spread over the other placements.",
+    "per_message_prior": "p(c, o, m) = t * q(c, k(o)) / placements(k, m) for every surviving placement.",
+    "development_set_illustration": {
+      "status": "Illustration only, not the prior. It is built from the inspected development set and assumes t = 1, which nothing supports.",
+      "BYQMZ": [{"crib": "HARTJENSTEIN", "offset": 155, "p": 0.32}, {"crib": "HARTJENSTEIN", "offset": 154, "p": 0.08}],
+      "FKQLZ": [{"crib": "HARTJENSTEIN", "offset": 95, "p": 0.32}, {"crib": "HARTJENSTEIN", "offset": 94, "p": 0.08}],
+      "XFEDT": [{"crib": "HARTJENSTEIN", "offset": 85, "p": 0.32}, {"crib": "HARTJENSTEIN", "offset": 84, "p": 0.08}],
+      "remaining_mass": 0.6,
+      "derivation": "2 of 5 messages end in HARTJENSTEIN; 4 of 5 messages have no trailing X, giving a 0.8/0.2 split between L-12 and L-13. Under the single-crib leave-one-out rule the held-out rate for this crib is 0 of 5, not 0.4."
+    }
+  },
+  "decision_rule": {
+    "body_direct_reference": {
+      "phase1-body-direct-sweep-v2": {"joint_power_clean": 0.825, "interval": [0.68, 0.91], "host_hours": 16.4, "detection_per_host_hour": 0.050, "status": "null"},
+      "phase1-body-direct-sweep-v3": {"power_clean": 0.78, "power_one_indel": 0.54, "conditional_on_v2_null_one_indel": 0.29, "conditional_on_v2_null_clean": "3 of 10", "host_hours_projected": [19, 26], "conditional_detection_per_host_hour": 0.013, "null_likelihood_ratio_one_indel": 0.71, "status": "running at preregistration"},
+      "next_crib_free_option": "Middle-complete rule: about 9 times v2's cost (about 150 to 230 host-hours), power not yet measured. A rate per host-hour for it must be measured before G4 can use it; until then G4 uses v3's 0.013.",
+      "host": "i9-10900K, 10 workers; one host-hour is one wall-clock hour of that host"
+    },
+    "bombe_detection": "r is the Bombe's probability of recovering the daily key given a correct crib at a correct offset. It is measured by a separately preregistered Bombe calibration (planted keys, ten-pair steckers, 12-letter terminal cribs, middle-wheel turnover inside the crib span included) before any target run. Per message, D_m = t * u_m * r, where u_m is the measured union rate for message m's candidate list (the same list for all three unless the evaluate split supports message-specific cribs). For the lower bound D_m,L, use u_L80 and r's one-sided 80% lower bound. One daily key is assumed, so a hit on any message breaks the date, but crib presence and Bombe recovery across three same-date messages can be correlated, so the messages are not treated as independent. The campaign figures are bounds valid under any dependence: D_L = max over m of D_m,L, and D = max over m of D_m for the point value used in G4. 1 - product over m of (1 - D_m) assumes independence and is reported for reference only; no gate uses it.",
+    "gates": [
+      {"id": "G1", "rule": "The evaluate split holds at least 20 solved messages. Otherwise the verdict is 'too sparse to estimate' and the Bombe is not preferred."},
+      {"id": "G2", "rule": "t is established by a cited source. Otherwise q for Batch C is not estimable and the Bombe is not preferred."},
+      {"id": "G3", "rule": "The dependence-free campaign lower bound D_L = max over m of D_m,L is at least 0.29, so a Bombe null would multiply the odds of the standard reading by 0.71 or less, at least as much as v3. As a necessary condition it is checked first with r = 1: if D_L < 0.29 even then, the Bombe loses without being built."},
+      {"id": "G4", "rule": "D / E_run >= the best measured body-direct detection per host-hour for the remaining crib-free option (0.013 per host-hour, v3's conditional rate, until the middle-complete rule's rate is measured). E_run is the Bombe's measured run time for the whole candidate list in host-hours. Engineering cost is not comparable in these units; it is reported separately and left to the maintainer."}
+    ],
+    "verdict": "Bombe preferred if and only if G1 to G4 all pass. Otherwise the next crib-free body-direct step is preferred, and the history records which gate failed.",
+    "verdict_on_development_set": {
+      "status": "Not a test, because the development set is not held out. Recorded so the held-out verdict can be compared with it.",
+      "G1": "fails: 5 messages, not 20",
+      "G2": "fails: no source in the repository links the five to Batch C",
+      "G3": "fails even with t = 1 assumed, which G2 does not allow, and r = 1. The set rule's leave-one-out union rate is 2 of 5, u_L80 = 0.169, so D_L = 0.169 < 0.29. Under the single-crib rule u = 0 and D_L = 0. (The independence formula would give 1 - (1 - 0.169)^3 = 0.43; it is not a lower bound and no gate uses it.)",
+      "G4": "not evaluated: no Bombe exists to time",
+      "verdict": "No prior can be estimated yet. Bombe not preferred."
+    }
+  },
+  "predictions": [
+    {"id": "too-sparse", "statement": "The evaluate split from the cited sources holds fewer than 20 solved messages from the network of Batch C or a network linked to it by a cited source, so G1 or G2 fails.", "decides_hypothesis": true},
+    {"id": "sign-off-is-the-only-repeating-class", "statement": "If G1 passes, no opening token and no catalogued crib other than a sign-off name reaches q_L80 >= 0.10 in the evaluate split.", "decides_hypothesis": false},
+    {"id": "catalogued-cribs-absent", "statement": "Each of the 13 cribs enabled by default in cribs.json occurs in fewer than 5% of evaluate-split messages.", "decides_hypothesis": false}
+  ],
+  "limitations": [
+    "The held-out sources could not be read from the preregistration container. The verdict above rests on the in-repository development set alone.",
+    "The development set is short (275 letters in 5 messages of 36 to 76 letters) and was published as a demonstration selection, so it may not represent ordinary traffic.",
+    "One daily key across the three messages is a working assumption of Phase 1, not a fact.",
+    "A dropped or inserted letter inside the crib span defeats a terminal crib, just as it defeats a climb window."
+  ]
+}
