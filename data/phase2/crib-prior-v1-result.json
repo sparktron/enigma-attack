@@ -1,0 +1,981 @@
+{
+ "schema": "enigma-attack.phase2-crib-prior-result/v1",
+ "experiment_id": "phase2-crib-prior-v1",
+ "split": {
+  "train_end": "1941-09-15",
+  "evaluate": [
+   "1941-09-16",
+   "1941-10-31"
+  ],
+  "train_ids": [
+   "1941-07-08-128",
+   "1941-07-13-25",
+   "1941-07-14-203",
+   "1941-07-19-233",
+   "1941-08-26-65",
+   "1941-08-27-71"
+  ],
+  "evaluate_ids": [
+   "1941-10-01-1",
+   "1941-10-01-2"
+  ]
+ },
+ "messages_with_address_annotation": {
+  "train": 1,
+  "evaluate": 0
+ },
+ "candidates_from_train_only": [
+  {
+   "id": "army1930_feindliche_kolonne",
+   "text": "FEINDLIQEINFANTERIEKOLONNE",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1930_beobachtet",
+   "text": "BEOBAQTETX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1930_suedausgang",
+   "text": "ANFANGSUEDAUSGANG",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1930_ende_ostwaerts",
+   "text": "ENDEDREIKMOSTWAERTS",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1938_auf_befehl",
+   "text": "AUFBEFEHLDES",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1938_fuehrung_truppe",
+   "text": "FUEHRUNGUNDTRUPPE",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1938_aenderung_anweisung",
+   "text": "AENDERUNGDERANWEISUNGX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "army1938_bleibt_vorbehalten",
+   "text": "BLEIBTVORBEHALTENX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "archive1941_number_group",
+   "text": "EINSNEUNEINSFUENFX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "archive1941_kolonnen",
+   "text": "KOLONNENUEBERX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "archive1941_place_name",
+   "text": "STARAJARUSSAX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "archive1941_in_marsch",
+   "text": "INMARSQGESETZTX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "archive1941_signature",
+   "text": "HARTJENSTEINX",
+   "evidence_level": "fact",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "batchc_repeat_header",
+   "text": "SPRUQKOPFWIEDERHOLEN",
+   "evidence_level": "inference",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "batchc_pass_on",
+   "text": "DURQGEBEN",
+   "evidence_level": "inference",
+   "class": null,
+   "training_messages": null
+  },
+  {
+   "id": "generic_meldung",
+   "text": "MELDUNGX",
+   "evidence_level": "speculation",
+   "class": null,
+   "training_messages": null
+  }
+ ],
+ "train_counts": {
+  "messages": 6,
+  "letters": 540,
+  "messages_with_address_annotation": 1,
+  "terminal_letters": {
+   "1941-07-08-128": "TASTAFFELFRAGE",
+   "1941-07-13-25": "HALTEXDIVXKDRX",
+   "1941-07-14-203": "SERNENGELZENME",
+   "1941-07-19-233": "NAATYEKVEVSTER",
+   "1941-08-26-65": "SMMLDUNGFUNKEN",
+   "1941-08-27-71": "IEBENXAQTXVIER"
+  },
+  "cribs": [
+   {
+    "crib_id": "army1930_feindliche_kolonne",
+    "evidence_level": "fact",
+    "by_variant": {
+     "FEINDLIQEINFANTERIEKOLONNE": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1930_beobachtet",
+    "evidence_level": "fact",
+    "by_variant": {
+     "BEOBAQTETX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "BEOBAQTET": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1930_suedausgang",
+    "evidence_level": "fact",
+    "by_variant": {
+     "ANFANGSUEDAUSGANG": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1930_ende_ostwaerts",
+    "evidence_level": "fact",
+    "by_variant": {
+     "ENDEDREIKMOSTWAERTS": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_auf_befehl",
+    "evidence_level": "fact",
+    "by_variant": {
+     "AUFBEFEHLDES": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_fuehrung_truppe",
+    "evidence_level": "fact",
+    "by_variant": {
+     "FUEHRUNGUNDTRUPPE": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_aenderung_anweisung",
+    "evidence_level": "fact",
+    "by_variant": {
+     "AENDERUNGDERANWEISUNGX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "AENDERUNGDERANWEISUNG": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_bleibt_vorbehalten",
+    "evidence_level": "fact",
+    "by_variant": {
+     "BLEIBTVORBEHALTENX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "BLEIBTVORBEHALTEN": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_number_group",
+    "evidence_level": "fact",
+    "by_variant": {
+     "EINSNEUNEINSFUENFX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "EINSNEUNEINSFUENF": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_kolonnen",
+    "evidence_level": "fact",
+    "by_variant": {
+     "KOLONNENUEBERX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "KOLONNENUEBER": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_place_name",
+    "evidence_level": "fact",
+    "by_variant": {
+     "STARAJARUSSAX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "STARAJARUSSA": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_in_marsch",
+    "evidence_level": "fact",
+    "by_variant": {
+     "INMARSQGESETZTX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "INMARSQGESETZT": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_signature",
+    "evidence_level": "fact",
+    "by_variant": {
+     "HARTJENSTEINX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "HARTJENSTEIN": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "batchc_repeat_header",
+    "evidence_level": "inference",
+    "by_variant": {
+     "SPRUQKOPFWIEDERHOLEN": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "batchc_pass_on",
+    "evidence_level": "inference",
+    "by_variant": {
+     "DURQGEBEN": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "generic_meldung",
+    "evidence_level": "speculation",
+    "by_variant": {
+     "MELDUNGX": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "MELDUNG": {
+      "messages_containing": 0,
+      "messages_total": 6,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   }
+  ]
+ },
+ "evaluate_counts": {
+  "messages": 2,
+  "letters": 46,
+  "messages_with_address_annotation": 0,
+  "terminal_letters": {
+   "1941-10-01-1": "LDUNGENTFAELCT",
+   "1941-10-01-2": "DCNGENTFAELLTX"
+  },
+  "cribs": [
+   {
+    "crib_id": "army1930_feindliche_kolonne",
+    "evidence_level": "fact",
+    "by_variant": {
+     "FEINDLIQEINFANTERIEKOLONNE": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1930_beobachtet",
+    "evidence_level": "fact",
+    "by_variant": {
+     "BEOBAQTETX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "BEOBAQTET": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1930_suedausgang",
+    "evidence_level": "fact",
+    "by_variant": {
+     "ANFANGSUEDAUSGANG": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1930_ende_ostwaerts",
+    "evidence_level": "fact",
+    "by_variant": {
+     "ENDEDREIKMOSTWAERTS": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_auf_befehl",
+    "evidence_level": "fact",
+    "by_variant": {
+     "AUFBEFEHLDES": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_fuehrung_truppe",
+    "evidence_level": "fact",
+    "by_variant": {
+     "FUEHRUNGUNDTRUPPE": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_aenderung_anweisung",
+    "evidence_level": "fact",
+    "by_variant": {
+     "AENDERUNGDERANWEISUNGX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "AENDERUNGDERANWEISUNG": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "army1938_bleibt_vorbehalten",
+    "evidence_level": "fact",
+    "by_variant": {
+     "BLEIBTVORBEHALTENX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "BLEIBTVORBEHALTEN": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_number_group",
+    "evidence_level": "fact",
+    "by_variant": {
+     "EINSNEUNEINSFUENFX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "EINSNEUNEINSFUENF": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_kolonnen",
+    "evidence_level": "fact",
+    "by_variant": {
+     "KOLONNENUEBERX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "KOLONNENUEBER": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_place_name",
+    "evidence_level": "fact",
+    "by_variant": {
+     "STARAJARUSSAX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "STARAJARUSSA": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_in_marsch",
+    "evidence_level": "fact",
+    "by_variant": {
+     "INMARSQGESETZTX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "INMARSQGESETZT": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "archive1941_signature",
+    "evidence_level": "fact",
+    "by_variant": {
+     "HARTJENSTEINX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "HARTJENSTEIN": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "batchc_repeat_header",
+    "evidence_level": "inference",
+    "by_variant": {
+     "SPRUQKOPFWIEDERHOLEN": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "batchc_pass_on",
+    "evidence_level": "inference",
+    "by_variant": {
+     "DURQGEBEN": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     }
+    }
+   },
+   {
+    "crib_id": "generic_meldung",
+    "evidence_level": "speculation",
+    "by_variant": {
+     "MELDUNGX": {
+      "messages_containing": 0,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 0
+      },
+      "hits": {}
+     },
+     "MELDUNG": {
+      "messages_containing": 1,
+      "messages_total": 2,
+      "occurrences_by_class": {
+       "opening": 0,
+       "address": 0,
+       "sign_off": 0,
+       "other": 1
+      },
+      "hits": {
+       "1941-10-01-1": [
+        {
+         "offset": 6,
+         "position_class": "other"
+        }
+       ]
+      }
+     }
+    }
+   }
+  ]
+ },
+ "union": {
+  "all_catalogued_and_train_recurring_incl_other": {
+   "messages_hit": [
+    "1941-10-01-1"
+   ],
+   "x": 1,
+   "n": 2,
+   "u": 0.5,
+   "u_L80": 0.10557280900008412,
+   "interval_95_exact": [
+    0.01257911709342505,
+    0.9874208829065749
+   ]
+  },
+  "listed_classes_only_excluding_other": {
+   "messages_hit": [],
+   "x": 0,
+   "n": 2,
+   "u": 0.0,
+   "u_L80": 0.0,
+   "interval_95_exact": [
+    0.0,
+    0.8418861169915808
+   ]
+  },
+  "default_enabled_cribs_only_incl_other": {
+   "messages_hit": [],
+   "x": 0,
+   "n": 2,
+   "u": 0.0,
+   "u_L80": 0.0,
+   "interval_95_exact": [
+    0.0,
+    0.8418861169915808
+   ]
+  }
+ },
+ "batch_c_linked_subset": {
+  "messages": 0,
+  "why": "no held-out message carries a callsign, frequency or operator; the source gives none"
+ },
+ "gates": {
+  "G1": {
+   "rule": "evaluate split holds at least 20 solved messages",
+   "n": 2,
+   "pass": false
+  },
+  "G2": {
+   "rule": "t established by a cited source",
+   "pass": false,
+   "why": "Set by hand from the cited paper (Sullivan and Weierud 2005, footnote 42 to Figure 11): Batch C is from a different radio network than the other 1941 messages. No cited source links the solved messages to Batch C."
+  },
+  "G3": {
+   "rule": "D_L = u_L80 * r_L >= 0.29, checked with r = 1",
+   "D_L_with_r_1": 0.10557280900008412,
+   "pass": false,
+   "r": "not measured; r = 1 is the necessary condition"
+  },
+  "G4": {
+   "rule": "D / E_run >= 0.013 per host-hour",
+   "pass": null,
+   "why": "not evaluated: no Bombe exists to time"
+  }
+ },
+ "verdict": "Bombe not preferred"
+}
