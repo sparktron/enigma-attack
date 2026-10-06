@@ -1,0 +1,383 @@
+{
+ "schema": "enigma-attack.phase2-held-out-manifest/v1",
+ "experiment_id": "phase2-crib-prior-v1",
+ "purpose": "Frozen before any held-out plaintext was read. Lists the pages fetched, their SHA-256 and what each was found to contain by structural inspection with every run of eight or more capital letters masked.",
+ "frozen_at_utc": "2026-10-06",
+ "fetch_tool": "curl 8, one request per URL, no authentication, redirects followed (none occurred); HTTP 200 for all four",
+ "preregistered_sources": [
+  {
+   "url": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+   "retrieved_utc": "2026-10-06T05:06:37Z",
+   "bytes": 28242,
+   "sha256": "0889dbb44b246f7ba7e5587715cd400ee09ac35d6e1513b2f39fddeeae8e31f8",
+   "moved": false,
+   "found": "Ciphertext of 30 headed messages, not solved plaintext (the page calls itself 'Messages That We Have Failed to Break' and its meta description says 23 messages). Some carry a 'Broken' tag; no plaintext is given for them on this page. Cipher groups are 5 letters. It includes the three targets BYQMZ, FKQLZ and XFEDT (30 September, Nr. 8, 11, 12).",
+   "solved_plaintext_messages": 0,
+   "messages": [
+    {
+     "date": "1941-06-22",
+     "number": "3",
+     "designator": "EHSTQ",
+     "von": "j3e",
+     "an": "j3e",
+     "tagged_broken": false,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-06-27",
+     "number": "45",
+     "designator": "HXZKV",
+     "von": "zvc",
+     "an": "zvc",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-06-27",
+     "number": "48",
+     "designator": "WRMKX",
+     "von": "zvc",
+     "an": "zvc",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-06-28",
+     "number": "51",
+     "designator": "PLDRV",
+     "von": "5l8",
+     "an": "5l8",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-06-28",
+     "number": "53",
+     "designator": "RXPSB",
+     "von": "5l8",
+     "an": "5l8",
+     "tagged_broken": false,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-07-08",
+     "number": "23",
+     "designator": "KHLPT",
+     "von": "umo",
+     "an": "umo",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-08-03",
+     "number": "4",
+     "designator": "CZURH",
+     "von": "wef",
+     "an": "wef,",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-08-13",
+     "number": "7",
+     "designator": "KEJNQ",
+     "von": "9cz",
+     "an": "9cz",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-08-19",
+     "number": "19",
+     "designator": "ALWOK",
+     "von": "An",
+     "an": "Vermerke:",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-08-28",
+     "number": "81",
+     "designator": "ALQFI",
+     "von": "2zt",
+     "an": "2zt",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-08-28",
+     "number": "55 NF",
+     "designator": "ALQFI",
+     "von": "2zt",
+     "an": "2zt",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-09",
+     "number": "38",
+     "designator": "GEHRG",
+     "von": "rxg",
+     "an": "rxg",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-16",
+     "number": "59",
+     "designator": "ADAFU",
+     "von": "noa",
+     "an": "noa",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-16",
+     "number": "60",
+     "designator": "CHAFU",
+     "von": "noa",
+     "an": "noa",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "114",
+     "designator": "DAFPX",
+     "von": "91j",
+     "an": "91j",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "115",
+     "designator": "AEFXP",
+     "von": "91i",
+     "an": "91i",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "116",
+     "designator": "ITFPX",
+     "von": "91i",
+     "an": "91i",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "117",
+     "designator": "MNQBH",
+     "von": "91i",
+     "an": "91i",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-16",
+     "number": "69",
+     "designator": "DKAFU",
+     "von": "noa",
+     "an": "noa",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-16",
+     "number": "70",
+     "designator": "NOEGP",
+     "von": "noa",
+     "an": "noa",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-16",
+     "number": "71",
+     "designator": "HOEPG",
+     "von": "noa",
+     "an": "noa",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "103",
+     "designator": "ARPTZ",
+     "von": "91j",
+     "an": "91j",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "104",
+     "designator": "ABBHQ",
+     "von": "91i",
+     "an": "91i",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "105",
+     "designator": "ANQIX",
+     "von": "91i",
+     "an": "91i",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-27",
+     "number": "106",
+     "designator": "FDTZP",
+     "von": "91i",
+     "an": "91i",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-30",
+     "number": "8",
+     "designator": "BYQMZ",
+     "von": "An",
+     "an": "ugn",
+     "tagged_broken": false,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-30",
+     "number": "11",
+     "designator": "FKQLZ",
+     "von": "An",
+     "an": "g19",
+     "tagged_broken": false,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-09-30",
+     "number": "12",
+     "designator": "XFEDT",
+     "von": "An",
+     "an": "6q8",
+     "tagged_broken": false,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-10-02",
+     "number": "8",
+     "designator": "ALGXZ",
+     "von": "nex",
+     "an": "nex",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    },
+    {
+     "date": "1941-10-03",
+     "number": "4",
+     "designator": "NKMOW",
+     "von": "36t",
+     "an": "7fg",
+     "tagged_broken": true,
+     "carries": "ciphertext only"
+    }
+   ]
+  },
+  {
+   "url": "https://cryptocellar.org/bgac/key-of-e.html",
+   "retrieved_utc": "2026-10-06T05:06:37Z",
+   "bytes": 6742,
+   "sha256": "d4312134c9f37eba88da68d4ec25e05307a06844214cacc7118fbc28554a8011",
+   "moved": false,
+   "found": "Six ciphertext challenge messages from 1941 ('Below are six original German Army Enigma messages'), numbered I to VI, with lengths 186, 241, 149, 83, 167 and 195 letters as printed in the headers. Dates are not given. No plaintext.",
+   "solved_plaintext_messages": 0
+  },
+  {
+   "url": "https://cryptocellar.org/pubs/bgac.pdf",
+   "retrieved_utc": "2026-10-06T05:06:39Z",
+   "bytes": 6089311,
+   "sha256": "46baf5fffac592e00b18aab435a577728b20f9d6f5059967ab6f8ae8309eb608",
+   "moved": false,
+   "found": "Sullivan and Weierud, Cryptologia 29(3), July 2005 (pdftotext -layout, masked). Prose and tables, not a corpus. Plaintext appears only inside worked examples and figures (13 July, 17, 22 and 27 August 1941), none dated after 1941-09-15. Its Figure 11 counts 5 'Sep. 1941, Batch C' Enigma message parts, 577 letters, 5 unbroken; its footnote 42 says Batch C comes from a different radio network than the other 1941 messages.",
+   "solved_plaintext_messages": 0
+  }
+ ],
+ "added_source": {
+  "status": "Deviation from held_out_source_candidates. Added before any plaintext was read, because none of the three listed pages carries solved plaintext. It is the page the five development messages came from.",
+  "url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+  "retrieved_utc": "2026-10-06T05:08:09Z",
+  "bytes": 32977,
+  "sha256": "175a73cdf6e105f0f2af333adeeb658996f893a773187cafdf48a18cde772c5a",
+  "found": "13 messages, each with a facsimile and raw, transcribed, emended and translated plaintext. Identified from the page's headings only.",
+  "messages_on_page": [
+   {
+    "id": "1941-07-08-128",
+    "role": "train"
+   },
+   {
+    "id": "1941-07-13-25",
+    "role": "train"
+   },
+   {
+    "id": "1941-07-14-203",
+    "role": "train"
+   },
+   {
+    "id": "1941-07-19-233",
+    "role": "train"
+   },
+   {
+    "id": "1941-08-26-65",
+    "role": "train"
+   },
+   {
+    "id": "1941-08-27-71",
+    "role": "train"
+   },
+   {
+    "id": "1941-08-22-30",
+    "role": "development_excluded"
+   },
+   {
+    "id": "1941-09-02-15",
+    "role": "development_excluded"
+   },
+   {
+    "id": "1941-09-06-36",
+    "role": "development_excluded"
+   },
+   {
+    "id": "1941-09-14-46",
+    "role": "development_excluded"
+   },
+   {
+    "id": "1941-09-24-94",
+    "role": "development_excluded"
+   },
+   {
+    "id": "1941-10-01-1",
+    "role": "evaluate"
+   },
+   {
+    "id": "1941-10-01-2",
+    "role": "evaluate"
+   }
+  ],
+  "role_rule": "By date, as the configuration fixes it: train on or before 1941-09-15, evaluate 1941-09-16 to 1941-10-31, the five development messages excluded.",
+  "to_transcribe": [
+   "1941-07-08-128",
+   "1941-07-13-25",
+   "1941-07-14-203",
+   "1941-07-19-233",
+   "1941-08-26-65",
+   "1941-08-27-71",
+   "1941-10-01-1",
+   "1941-10-01-2"
+  ],
+  "text_to_transcribe": "The raw plaintext, with whitespace removed, as data/phase5/army-plaintext-controls.json does."
+ },
+ "result_of_inventory": "Counted from page headings before reading any plaintext: at most 2 solved messages fall in the evaluate window (1941-10-01-1 and 1941-10-01-2), against a gate of 20."
+}
