@@ -64,6 +64,44 @@ def perturb_ciphertext(
     raise ValueError(f"unknown perturbation: {kind!r}")
 
 
+def repair_fault(ciphertext: str, perturbation: Mapping[str, Any]) -> str:
+    """The faulty message with its fault undone at the true position.
+
+    An oracle: no search can know where the fault is. A dropped letter gets an
+    uncertainty mask (``?``) back at its position and an inserted letter is
+    removed, so the result has the unperturbed length and every letter after
+    the fault is aligned with the swept setting again. It bounds what a climb
+    that searched the fault's position could achieve, from above.
+    """
+
+    position = perturbation.get("position")
+    if perturbation["kind"] == "deletion":
+        return ciphertext[:position] + "?" + ciphertext[position:]
+    if perturbation["kind"] == "insertion":
+        return ciphertext[:position] + ciphertext[position + 1 :]
+    return ciphertext
+
+
+def arm_message(message: Traffic, ciphertext: str, perturbation: Mapping[str, Any], arm: Mapping[str, Any]) -> Traffic:
+    """The message an arm sweeps: as received, or with the fault undone if the arm says so.
+
+    An arm without ``repair`` gets ``message`` itself, so a configuration
+    written before repairs existed runs exactly as it did.
+    """
+
+    kind = arm.get("repair")
+    if kind is None:
+        return message
+    if kind != "oracle":
+        raise ValueError(f"unknown repair: {kind!r}")
+    return Traffic(
+        designator=message.designator,
+        first_trigram=message.first_trigram,
+        second_trigram=message.second_trigram,
+        body=enigma_fast.text_to_indices(repair_fault(ciphertext, perturbation)),
+    )
+
+
 def table_agreement(left: Sequence[int], right: Sequence[int], length: int) -> float:
     """Fraction of letter positions at which two flattened tables are the same."""
 
@@ -147,10 +185,11 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
                 -int(settings["right_neighbours"]), int(settings["right_neighbours"]) + 1
             )
         ]
-        rule = RingRule(arm["ring_rule"], (0, 0, 0), right_rings, len(message.body))
+        swept_message = arm_message(message, ciphertext, perturbation, arm)
+        rule = RingRule(arm["ring_rule"], (0, 0, 0), right_rings, len(swept_message.body))
         swept = len(rule.settings(order, starts))
         ranked, evaluated, _ = body_direct_sweep(
-            message, [order], rule, starts, config["scorer"], reflector, arm_climb(config, arm),
+            swept_message, [order], rule, starts, config["scorer"], reflector, arm_climb(config, arm),
             swept, 1,
         )
         fractions: list[float | None] = []
@@ -373,6 +412,7 @@ def run_end_to_end_power(
                     "arm": arm["id"],
                     "ring_rule": arm["ring_rule"],
                     "right_ring": arm["right_ring"],
+                    **({"repair": arm["repair"]} if arm.get("repair") else {}),
                     "draws": len(per),
                     "settings_evaluated_per_draw": per[0]["settings_evaluated"],
                     "plugboard_recovered_by_top_candidate": sum(recovered),
