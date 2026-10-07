@@ -691,6 +691,71 @@
         "next_step_per_decision_rule"
       ]
     },
+    "artifacts/phase1-split-point-power-v1.json": {
+      "runner": [
+        "phase1_stecker.py",
+        "--config",
+        "experiments/phase1-split-point-power-v1/config.json",
+        "--jobs",
+        "10"
+      ],
+      "claim_paths": [
+        "schema",
+        "mode",
+        "status",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.corpus_sha256",
+        "inputs.bigram_counts_sha256",
+        "inputs.trigram_counts_sha256",
+        "preflight.passed",
+        "positive_controls.passed",
+        "result.formulation",
+        "result.seed",
+        "result.draws_per_cell",
+        "result.detection_z",
+        "result.coverage_by_rule.*",
+        "result.findings.headline_arm",
+        "result.findings.end_to_end_detection_rate_at_target_scale",
+        "result.findings.end_to_end_detection_interval_95",
+        "result.findings.single_indel_detection_rate_at_target_length",
+        "result.cells[].length",
+        "result.cells[].perturbation",
+        "result.cells[].null.detection_threshold_score_per_letter",
+        "result.cells[].arms[].arm",
+        "result.cells[].arms[].detected",
+        "result.cells[].arms[].detection_rate",
+        "result.cells[].arms[].plugboard_recovered_by_top_candidate",
+        "result.cells[].arms[].measured_exact_equivalent_rate",
+        "result.cells[].arms[].analytic_exact_key_coverage",
+        "result.predictions[].id",
+        "result.predictions[].observed",
+        "result.predictions[].passed",
+        "preflight.batched_climb_parity.windowed_climbs_identical",
+        "result.cells[].arms[].null.detection_threshold_score_per_letter"
+      ],
+      "long_running": "800 planted-key draws over four arms, 180 converged climbs per draw (45 settings each, the split-point arm about three times a windowed climb) plus null climbs: 1,198 seconds (20 minutes) wall-clock on 10 workers with the batched engine when recorded from a clean checkout at c54f42a on a host that was not idle, about 3.3 CPU-hours, more than the artifact job should spend three times. The split-point climb and its parity are covered by tests/test_stecker_split.py, the unchanged arms by tests/test_phase1_stecker.py (EndToEndPowerTests); the conditional figures are regenerated from this artifact by artifacts/phase1-split-point-power-v1-split.json."
+    },
+    "artifacts/phase1-split-point-power-v1-split.json": {
+      "runner": [
+        "scripts/split_power.py"
+      ],
+      "claim_paths": [
+        "draws.*",
+        "past_notch_arms_differing_from_the_control.*",
+        "missed_by_both_reference_arms.*",
+        "missed_fraction.*",
+        "detection_among_missed.*.*.detected",
+        "detection_among_missed.*.*.n",
+        "either_candidate_among_missed_exploratory.*.detected",
+        "predictions[].id",
+        "predictions[].stratum_size",
+        "predictions[].rate",
+        "predictions[].verdict",
+        "yield_by_fault_prior.*.*",
+        "next_step_per_decision_rule"
+      ]
+    },
     "artifacts/phase1-joint-power-v2-middle-past-notch.json": {
       "runner": [
         "scripts/joint_power.py",
@@ -746,6 +811,35 @@
         "result.cells[].confirmed_and_above_v2_retention_cutoff.count",
         "result.cells[].confirmed_given_power_detected"
       ]
+    },
+    "artifacts/phase1-joint-power-v3-middle-complete-w117.json": {
+      "runner": [
+        "scripts/joint_power.py",
+        "--power",
+        "artifacts/phase1-middle-complete-power-v1.json",
+        "--power-config",
+        "experiments/phase1-middle-complete-power-v1/config.json",
+        "--arm",
+        "complete_w117",
+        "--experiment-id",
+        "phase1-joint-power-v3-middle-complete-w117"
+      ],
+      "claim_paths": [
+        "schema",
+        "preregistered",
+        "inputs.*",
+        "result.threshold_z",
+        "result.v2_retention_cutoff_score_per_letter",
+        "result.cells[].length",
+        "result.cells[].perturbation",
+        "result.cells[].draws",
+        "result.cells[].power_detected.count",
+        "result.cells[].companion_confirmed.count",
+        "result.cells[].power_detected_and_confirmed.count",
+        "result.cells[].confirmed_and_above_v2_retention_cutoff.count",
+        "result.cells[].confirmed_given_power_detected"
+      ],
+      "long_running": "800 draws, two companion scans of 17,576 starts each per draw: 417 seconds single-process when recorded from a clean checkout at 6dc6611, so the artifact job would spend about 21 minutes on it across drift and determinism. A second local run reproduced the committed result exactly. The script is covered by its two smaller declared runs (phase1-joint-power-v2-*), which CI does regenerate."
     },
     "artifacts/phase1-body-direct-sweep-v3.json": {
       "runner": [
