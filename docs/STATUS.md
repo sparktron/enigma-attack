@@ -267,8 +267,8 @@ has already closed.
   CI and passes drift and determinism locally; the joint artifact reproduced
   exactly on a second local run. The v4 sweep configuration was smoke-run on a
   108-setting slice through the runner, including a checkpoint resume.
-- `artifacts/phase3-unsteckered-sweep-v1.json` (1,017 s on 10 workers, clean
-  tree at `c3a9076`) is `long_running`; its claim paths were checked against
+- `artifacts/phase3-unsteckered-sweep-v1.json` (1,157 s on 10 workers, clean
+  tree at `4d09ab0`, after a review fix to its null weighting) is `long_running`; its claim paths were checked against
   the artifact by hand. Every run re-checks the numpy kernel against
   `enigma.py` and the scorer before any sweep, and `tests/test_variant_sweep.py`
   covers the schedules, the kernel, planting and the gates. The runner needs

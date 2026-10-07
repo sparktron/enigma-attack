@@ -126,7 +126,20 @@ three messages. Three of the four predictions were scored: the deciding one
 failed, the power and noise-band predictions held, and the companion prediction
 does not apply.
 
-Run record: `phase3_sweep.py --jobs 10`, 2026-10-07 15:42:34 to 15:59:32 UTC,
+Deviation, disclosed (review P1 on PR #18): the first run, at `c3a9076`,
+counted each distinct stepping schedule once in the mean and standard deviation,
+although a schedule stands for 26 to several hundred window starts; the
+configuration defines the null over every machine setting. `4d09ab0` weights
+each schedule by its window starts, and the configuration was rerun unchanged
+from that clean commit (16:13 to 16:32 UTC, 1,157 s, host load about 7 from an
+unrelated pytest and LM Studio). The committed artifact is the rerun. Against
+the first run: every maximum and top candidate is identical, means and standard
+deviations move in the fifth decimal, every z by at most 0.002, and every power
+count, detection and prediction verdict is unchanged. The figures below are the
+rerun's. Statistics now cover 48,190,861,056 machine settings per machine and
+message (26^7 per wheel order); the settings column counts those deciphered.
+
+First run record: `phase3_sweep.py --jobs 10`, 2026-10-07 15:42:34 to 15:59:32 UTC,
 1,017 s by the runner's clock, about 2.6 CPU-hours, Python 3.10.12, numpy
 2.2.6, 10 workers on the i9-10900K. Code `c3a9076` on
 `claude/phase3-unsteckered-sweep`, **clean tree**. The host was lightly loaded
@@ -159,7 +172,7 @@ score distribution (score per letter, published 1941 counts):
 | railway | FKQLZ (107) | 433,213,248 | -9.623 | 0.198 | 6.08 |
 | railway | XFEDT (97) | 405,794,688 | -9.610 | 0.208 | 6.50 |
 | Swiss K | BYQMZ | 597,724,608 | -9.586 | 0.157 | 6.38 |
-| Swiss K | FKQLZ | 433,213,248 | -9.622 | 0.198 | 6.50 |
+| Swiss K | FKQLZ | 433,213,248 | -9.622 | 0.198 | 6.49 |
 | Swiss K | XFEDT | 405,794,688 | -9.611 | 0.207 | 6.54 |
 | Swiss K, 1941 | BYQMZ | 597,724,608 | -9.586 | 0.158 | 6.21 |
 | Swiss K, 1941 | FKQLZ | 433,213,248 | -9.624 | 0.197 | 6.20 |

@@ -6,9 +6,9 @@
   "accepted_break": false,
   "hypothesis": "At least one of BYQMZ, FKQLZ and XFEDT (1941-09-30) was enciphered, as one continuous body from some start, on one of the three catalogued unsteckered Enigma-family machines with the wirings, notches, entry wheels and reflectors in variants.json: the Reichsbahn (railway) Enigma, the Swiss K, or the Swiss K with the 1941 Swiss Army stepping. A complete body-direct sweep of that machine on that message then ranks first a setting whose whole-message score is at least z = 8 above the sweep's own score distribution.",
   "refuted_by": "No (machine, message) sweep reaches top z >= 8. The power this null has is measured after the sweeps on planted draws shaped like each target and judged against that target's own distribution (power.method); the prediction is at least 0.95 for an ungarbled message on every machine and target. With one dropped or inserted letter only part of the message deciphers under any one key, and the power is lower and reported. A null excludes these three machines with these wirings for ungarbled messages; it says nothing about machines with undocumented wiring, about the commercial Enigma D or K, about the Abwehr Enigma G, or about any machine with a plugboard.",
-  "started_at": "2026-10-07T15:42:34.642884+00:00",
-  "completed_at": "2026-10-07T15:59:32.048155+00:00",
-  "duration_seconds": 1017.405,
+  "started_at": "2026-10-07T16:13:13.209701+00:00",
+  "completed_at": "2026-10-07T16:32:29.936308+00:00",
+  "duration_seconds": 1156.727,
   "configuration": {
     "path": "experiments/phase3-unsteckered-sweep-v1/config.json",
     "sha256": "15ada2df9a5ac062d731dd079356752726aad137615c64e7030c869eddcfd33d",
@@ -19,7 +19,7 @@
   },
   "code": {
     "source": "git_checkout",
-    "commit": "c3a9076ab65b1897d5f8663a75e17cddd3a2df12",
+    "commit": "4d09ab003ef363fb81fd7d1d62bce5a69fd4d473",
     "branch": "claude/phase3-unsteckered-sweep",
     "dirty": false,
     "status": [],
@@ -28,7 +28,7 @@
       "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
       "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
       "phase3.py": "85ed8e0b298182944db501d214087256fd21dc107a1587e57ce35d94ee7e578e",
-      "phase3_sweep.py": "34bb33ceae6189337c5544fc039d195dbc2c29c6855d590da33f6ea3e4e28fc4",
+      "phase3_sweep.py": "6c2a49702c6d148de72d64e206d82b55989ecb57a33e82426306cd0df34d50fe",
       "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
       "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
       "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
@@ -41,7 +41,7 @@
       "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
       "stecker_sweeps.py": "a0772515cd0772c04bda4d7d6387f2daffc3ebf41924941095bc4f1290d184d9",
       "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
-      "variant_sweep.py": "83dd71a203b6d185f6d2087d86c42d2c3e9ec9c77e40f72c915e4e613f1500d1"
+      "variant_sweep.py": "7dd90205067e6f5aeb381ef7a34d291da77f2098ad40e90194fabd3ddb5f2496"
     }
   },
   "environment": {
@@ -105,15 +105,15 @@
           "positions": "AAC",
           "reflector_position": "W",
           "score_per_letter": -6.711414649,
-          "z": 13.947316
+          "z": 13.948804
         },
         "top_plaintext_exact": true,
-        "top_z": 13.947316,
+        "top_z": 13.948804,
         "score_distribution": {
-          "mean_score_per_letter": -9.593060031,
-          "sd_score_per_letter": 0.206609311,
+          "mean_score_per_letter": -9.593060081,
+          "sd_score_per_letter": 0.206587272,
           "max_score_per_letter": -6.711414649,
-          "top_z": 13.947316
+          "top_z": 13.948804
         },
         "passed": true
       },
@@ -140,15 +140,15 @@
           "positions": "AAD",
           "reflector_position": "S",
           "score_per_letter": -6.633257556,
-          "z": 14.363208
+          "z": 14.360585
         },
         "top_plaintext_exact": true,
-        "top_z": 14.363208,
+        "top_z": 14.360585,
         "score_distribution": {
-          "mean_score_per_letter": -9.600843283,
-          "sd_score_per_letter": 0.20661023,
+          "mean_score_per_letter": -9.600845013,
+          "sd_score_per_letter": 0.206648085,
           "max_score_per_letter": -6.633257556,
-          "top_z": 14.363208
+          "top_z": 14.360585
         },
         "passed": true
       },
@@ -175,20 +175,20 @@
           "positions": "EHA",
           "reflector_position": "N",
           "score_per_letter": -6.482213729,
-          "z": 14.960579
+          "z": 14.959564
         },
         "top_plaintext_exact": true,
-        "top_z": 14.960579,
+        "top_z": 14.959564,
         "score_distribution": {
-          "mean_score_per_letter": -9.589935978,
-          "sd_score_per_letter": 0.207727398,
+          "mean_score_per_letter": -9.58993122,
+          "sd_score_per_letter": 0.207741184,
           "max_score_per_letter": -6.482213729,
-          "top_z": 14.960579
+          "top_z": 14.959564
         },
         "passed": true
       }
     ],
-    "seconds": 178.963,
+    "seconds": 242.758,
     "passed": true,
     "criterion": "The complete sweep of the planted message's machine ranks first a key whose reference decryption is the planted plaintext exactly, at z at least the detection threshold.",
     "gate": "A failed control makes zero target-search calls."
@@ -197,7 +197,7 @@
     "formulation": "body_direct_unsteckered",
     "threshold_z": 8.0,
     "timing": {
-      "seconds": 803.33,
+      "seconds": 873.03,
       "tasks": 54,
       "jobs": 10
     },
@@ -206,7 +206,9 @@
         "machine": "railway_enigma",
         "message": "BYQMZ",
         "letters": 166,
-        "settings_evaluated": 597724608,
+        "settings_scored": 597724608,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           218,
           218,
@@ -216,15 +218,15 @@
           218
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.586581236,
-          "sd_score_per_letter": 0.157591645,
+          "mean_score_per_letter": -9.586583507,
+          "sd_score_per_letter": 0.157565535,
           "max_score_per_letter": -8.627448414,
-          "top_z": 6.086191
+          "top_z": 6.087214
         },
         "top_candidates": [
           {
             "score_per_letter": -8.627448414,
-            "z": 6.086191,
+            "z": 6.087214,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -240,7 +242,7 @@
           },
           {
             "score_per_letter": -8.635465916,
-            "z": 6.035316,
+            "z": 6.03633,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -256,7 +258,7 @@
           },
           {
             "score_per_letter": -8.64516163,
-            "z": 5.973791,
+            "z": 5.974796,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -272,7 +274,7 @@
           },
           {
             "score_per_letter": -8.670933842,
-            "z": 5.810253,
+            "z": 5.811231,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -288,7 +290,7 @@
           },
           {
             "score_per_letter": -8.674220792,
-            "z": 5.789396,
+            "z": 5.79037,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -304,7 +306,7 @@
           },
           {
             "score_per_letter": -8.678353291,
-            "z": 5.763173,
+            "z": 5.764143,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -320,7 +322,7 @@
           },
           {
             "score_per_letter": -8.683867715,
-            "z": 5.728181,
+            "z": 5.729145,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -336,7 +338,7 @@
           },
           {
             "score_per_letter": -8.685173679,
-            "z": 5.719894,
+            "z": 5.720857,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -352,7 +354,7 @@
           },
           {
             "score_per_letter": -8.685225927,
-            "z": 5.719563,
+            "z": 5.720525,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -368,7 +370,7 @@
           },
           {
             "score_per_letter": -8.688840994,
-            "z": 5.696623,
+            "z": 5.697582,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -384,7 +386,7 @@
           },
           {
             "score_per_letter": -8.69242462,
-            "z": 5.673883,
+            "z": 5.674838,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -400,7 +402,7 @@
           },
           {
             "score_per_letter": -8.695680486,
-            "z": 5.653223,
+            "z": 5.654174,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -416,7 +418,7 @@
           },
           {
             "score_per_letter": -8.695680486,
-            "z": 5.653223,
+            "z": 5.654174,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -432,7 +434,7 @@
           },
           {
             "score_per_letter": -8.699222405,
-            "z": 5.630748,
+            "z": 5.631695,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -448,7 +450,7 @@
           },
           {
             "score_per_letter": -8.700861143,
-            "z": 5.620349,
+            "z": 5.621295,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -464,7 +466,7 @@
           },
           {
             "score_per_letter": -8.702990202,
-            "z": 5.606839,
+            "z": 5.607783,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -480,7 +482,7 @@
           },
           {
             "score_per_letter": -8.70378777,
-            "z": 5.601778,
+            "z": 5.602721,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -496,7 +498,7 @@
           },
           {
             "score_per_letter": -8.703885393,
-            "z": 5.601159,
+            "z": 5.602101,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -512,7 +514,7 @@
           },
           {
             "score_per_letter": -8.704381884,
-            "z": 5.598008,
+            "z": 5.59895,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -528,7 +530,7 @@
           },
           {
             "score_per_letter": -8.705335342,
-            "z": 5.591958,
+            "z": 5.592899,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -549,7 +551,9 @@
         "machine": "railway_enigma",
         "message": "FKQLZ",
         "letters": 107,
-        "settings_evaluated": 433213248,
+        "settings_scored": 433213248,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           158,
           158,
@@ -559,15 +563,15 @@
           158
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.623168278,
-          "sd_score_per_letter": 0.197607227,
+          "mean_score_per_letter": -9.623165502,
+          "sd_score_per_letter": 0.19762457,
           "max_score_per_letter": -8.422701882,
-          "top_z": 6.075013
+          "top_z": 6.074465
         },
         "top_candidates": [
           {
             "score_per_letter": -8.422701882,
-            "z": 6.075013,
+            "z": 6.074465,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -583,7 +587,7 @@
           },
           {
             "score_per_letter": -8.422701882,
-            "z": 6.075013,
+            "z": 6.074465,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -599,7 +603,7 @@
           },
           {
             "score_per_letter": -8.435827831,
-            "z": 6.008588,
+            "z": 6.008047,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -615,7 +619,7 @@
           },
           {
             "score_per_letter": -8.438954668,
-            "z": 5.992765,
+            "z": 5.992225,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -631,7 +635,7 @@
           },
           {
             "score_per_letter": -8.441702168,
-            "z": 5.978861,
+            "z": 5.978322,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -647,7 +651,7 @@
           },
           {
             "score_per_letter": -8.445229354,
-            "z": 5.961011,
+            "z": 5.960474,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -663,7 +667,7 @@
           },
           {
             "score_per_letter": -8.45088703,
-            "z": 5.93238,
+            "z": 5.931846,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -679,7 +683,7 @@
           },
           {
             "score_per_letter": -8.465752621,
-            "z": 5.857152,
+            "z": 5.856624,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -695,7 +699,7 @@
           },
           {
             "score_per_letter": -8.466977909,
-            "z": 5.850952,
+            "z": 5.850424,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -711,7 +715,7 @@
           },
           {
             "score_per_letter": -8.466977909,
-            "z": 5.850952,
+            "z": 5.850424,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -727,7 +731,7 @@
           },
           {
             "score_per_letter": -8.472513253,
-            "z": 5.82294,
+            "z": 5.822415,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -743,7 +747,7 @@
           },
           {
             "score_per_letter": -8.472513253,
-            "z": 5.82294,
+            "z": 5.822415,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -759,7 +763,7 @@
           },
           {
             "score_per_letter": -8.474269545,
-            "z": 5.814052,
+            "z": 5.813528,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -775,7 +779,7 @@
           },
           {
             "score_per_letter": -8.474709142,
-            "z": 5.811828,
+            "z": 5.811304,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -791,7 +795,7 @@
           },
           {
             "score_per_letter": -8.47530597,
-            "z": 5.808807,
+            "z": 5.808284,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -807,7 +811,7 @@
           },
           {
             "score_per_letter": -8.477962569,
-            "z": 5.795363,
+            "z": 5.794841,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -823,7 +827,7 @@
           },
           {
             "score_per_letter": -8.478270461,
-            "z": 5.793805,
+            "z": 5.793283,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -839,7 +843,7 @@
           },
           {
             "score_per_letter": -8.482254092,
-            "z": 5.773646,
+            "z": 5.773125,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -855,7 +859,7 @@
           },
           {
             "score_per_letter": -8.482412049,
-            "z": 5.772847,
+            "z": 5.772326,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -871,7 +875,7 @@
           },
           {
             "score_per_letter": -8.486803946,
-            "z": 5.750621,
+            "z": 5.750103,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -892,7 +896,9 @@
         "machine": "railway_enigma",
         "message": "XFEDT",
         "letters": 97,
-        "settings_evaluated": 405794688,
+        "settings_scored": 405794688,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           148,
           148,
@@ -902,15 +908,15 @@
           148
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.609746842,
-          "sd_score_per_letter": 0.207611641,
+          "mean_score_per_letter": -9.609740475,
+          "sd_score_per_letter": 0.207621131,
           "max_score_per_letter": -8.259369113,
-          "top_z": 6.504345
+          "top_z": 6.504017
         },
         "top_candidates": [
           {
             "score_per_letter": -8.259369113,
-            "z": 6.504345,
+            "z": 6.504017,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -926,7 +932,7 @@
           },
           {
             "score_per_letter": -8.270174491,
-            "z": 6.452299,
+            "z": 6.451973,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -942,7 +948,7 @@
           },
           {
             "score_per_letter": -8.288393835,
-            "z": 6.364542,
+            "z": 6.36422,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -958,7 +964,7 @@
           },
           {
             "score_per_letter": -8.305190922,
-            "z": 6.283636,
+            "z": 6.283318,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -974,7 +980,7 @@
           },
           {
             "score_per_letter": -8.309998237,
-            "z": 6.26048,
+            "z": 6.260164,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -990,7 +996,7 @@
           },
           {
             "score_per_letter": -8.318491356,
-            "z": 6.219572,
+            "z": 6.219257,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1006,7 +1012,7 @@
           },
           {
             "score_per_letter": -8.326555421,
-            "z": 6.18073,
+            "z": 6.180416,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1022,7 +1028,7 @@
           },
           {
             "score_per_letter": -8.327821236,
-            "z": 6.174633,
+            "z": 6.17432,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1038,7 +1044,7 @@
           },
           {
             "score_per_letter": -8.327821236,
-            "z": 6.174633,
+            "z": 6.17432,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1054,7 +1060,7 @@
           },
           {
             "score_per_letter": -8.334185414,
-            "z": 6.143978,
+            "z": 6.143667,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1070,7 +1076,7 @@
           },
           {
             "score_per_letter": -8.348987009,
-            "z": 6.072684,
+            "z": 6.072375,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1086,7 +1092,7 @@
           },
           {
             "score_per_letter": -8.358336079,
-            "z": 6.027652,
+            "z": 6.027346,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1102,7 +1108,7 @@
           },
           {
             "score_per_letter": -8.366250826,
-            "z": 5.989529,
+            "z": 5.989225,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1118,7 +1124,7 @@
           },
           {
             "score_per_letter": -8.366250826,
-            "z": 5.989529,
+            "z": 5.989225,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1134,7 +1140,7 @@
           },
           {
             "score_per_letter": -8.374706539,
-            "z": 5.948801,
+            "z": 5.948498,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1150,7 +1156,7 @@
           },
           {
             "score_per_letter": -8.374783563,
-            "z": 5.94843,
+            "z": 5.948127,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1166,7 +1172,7 @@
           },
           {
             "score_per_letter": -8.381026276,
-            "z": 5.918361,
+            "z": 5.918059,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1182,7 +1188,7 @@
           },
           {
             "score_per_letter": -8.385933972,
-            "z": 5.894722,
+            "z": 5.894422,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1198,7 +1204,7 @@
           },
           {
             "score_per_letter": -8.390171475,
-            "z": 5.874311,
+            "z": 5.874012,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1214,7 +1220,7 @@
           },
           {
             "score_per_letter": -8.392734875,
-            "z": 5.861964,
+            "z": 5.861665,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1235,7 +1241,9 @@
         "machine": "swiss_k_unmodified",
         "message": "BYQMZ",
         "letters": 166,
-        "settings_evaluated": 597724608,
+        "settings_scored": 597724608,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           218,
           218,
@@ -1245,15 +1253,15 @@
           218
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.586384744,
-          "sd_score_per_letter": 0.157318538,
+          "mean_score_per_letter": -9.586386097,
+          "sd_score_per_letter": 0.157332628,
           "max_score_per_letter": -8.582124642,
-          "top_z": 6.383609
+          "top_z": 6.383046
         },
         "top_candidates": [
           {
             "score_per_letter": -8.582124642,
-            "z": 6.383609,
+            "z": 6.383046,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1269,7 +1277,7 @@
           },
           {
             "score_per_letter": -8.593580594,
-            "z": 6.310789,
+            "z": 6.310233,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1285,7 +1293,7 @@
           },
           {
             "score_per_letter": -8.604959263,
-            "z": 6.23846,
+            "z": 6.23791,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1301,7 +1309,7 @@
           },
           {
             "score_per_letter": -8.606582243,
-            "z": 6.228144,
+            "z": 6.227595,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1317,7 +1325,7 @@
           },
           {
             "score_per_letter": -8.607054715,
-            "z": 6.225141,
+            "z": 6.224592,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1333,7 +1341,7 @@
           },
           {
             "score_per_letter": -8.607054715,
-            "z": 6.225141,
+            "z": 6.224592,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1349,7 +1357,7 @@
           },
           {
             "score_per_letter": -8.614925918,
-            "z": 6.175107,
+            "z": 6.174563,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1365,7 +1373,7 @@
           },
           {
             "score_per_letter": -8.616496606,
-            "z": 6.165123,
+            "z": 6.164579,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1381,7 +1389,7 @@
           },
           {
             "score_per_letter": -8.621360287,
-            "z": 6.134207,
+            "z": 6.133666,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1397,7 +1405,7 @@
           },
           {
             "score_per_letter": -8.62267972,
-            "z": 6.12582,
+            "z": 6.12528,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1413,7 +1421,7 @@
           },
           {
             "score_per_letter": -8.628477609,
-            "z": 6.088965,
+            "z": 6.088429,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1429,7 +1437,7 @@
           },
           {
             "score_per_letter": -8.636271199,
-            "z": 6.039425,
+            "z": 6.038893,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1445,7 +1453,7 @@
           },
           {
             "score_per_letter": -8.638190966,
-            "z": 6.027222,
+            "z": 6.026691,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1461,7 +1469,7 @@
           },
           {
             "score_per_letter": -8.638190966,
-            "z": 6.027222,
+            "z": 6.026691,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -1477,7 +1485,7 @@
           },
           {
             "score_per_letter": -8.642451447,
-            "z": 6.00014,
+            "z": 5.999612,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1493,7 +1501,7 @@
           },
           {
             "score_per_letter": -8.645431966,
-            "z": 5.981195,
+            "z": 5.980667,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1509,7 +1517,7 @@
           },
           {
             "score_per_letter": -8.645507781,
-            "z": 5.980713,
+            "z": 5.980186,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1525,7 +1533,7 @@
           },
           {
             "score_per_letter": -8.646256799,
-            "z": 5.975951,
+            "z": 5.975425,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1541,7 +1549,7 @@
           },
           {
             "score_per_letter": -8.656032771,
-            "z": 5.91381,
+            "z": 5.913289,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -1557,7 +1565,7 @@
           },
           {
             "score_per_letter": -8.666847406,
-            "z": 5.845067,
+            "z": 5.844552,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1578,7 +1586,9 @@
         "machine": "swiss_k_unmodified",
         "message": "FKQLZ",
         "letters": 107,
-        "settings_evaluated": 433213248,
+        "settings_scored": 433213248,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           158,
           158,
@@ -1588,15 +1598,15 @@
           158
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.622091261,
-          "sd_score_per_letter": 0.197596135,
+          "mean_score_per_letter": -9.622081984,
+          "sd_score_per_letter": 0.197622722,
           "max_score_per_letter": -8.338649815,
-          "top_z": 6.495276
+          "top_z": 6.494355
         },
         "top_candidates": [
           {
             "score_per_letter": -8.338649815,
-            "z": 6.495276,
+            "z": 6.494355,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1612,7 +1622,7 @@
           },
           {
             "score_per_letter": -8.369331872,
-            "z": 6.339999,
+            "z": 6.3391,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1628,7 +1638,7 @@
           },
           {
             "score_per_letter": -8.383733204,
-            "z": 6.267117,
+            "z": 6.266227,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1644,7 +1654,7 @@
           },
           {
             "score_per_letter": -8.383733204,
-            "z": 6.267117,
+            "z": 6.266227,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1660,7 +1670,7 @@
           },
           {
             "score_per_letter": -8.41789224,
-            "z": 6.094244,
+            "z": 6.093377,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1676,7 +1686,7 @@
           },
           {
             "score_per_letter": -8.439454309,
-            "z": 5.985122,
+            "z": 5.98427,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -1692,7 +1702,7 @@
           },
           {
             "score_per_letter": -8.439509896,
-            "z": 5.984841,
+            "z": 5.983988,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1708,7 +1718,7 @@
           },
           {
             "score_per_letter": -8.440925186,
-            "z": 5.977678,
+            "z": 5.976827,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1724,7 +1734,7 @@
           },
           {
             "score_per_letter": -8.446960203,
-            "z": 5.947136,
+            "z": 5.946289,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1740,7 +1750,7 @@
           },
           {
             "score_per_letter": -8.453696711,
-            "z": 5.913044,
+            "z": 5.912201,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1756,7 +1766,7 @@
           },
           {
             "score_per_letter": -8.454570465,
-            "z": 5.908622,
+            "z": 5.90778,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1772,7 +1782,7 @@
           },
           {
             "score_per_letter": -8.471913821,
-            "z": 5.82085,
+            "z": 5.82002,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1788,7 +1798,7 @@
           },
           {
             "score_per_letter": -8.479115199,
-            "z": 5.784405,
+            "z": 5.78358,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -1804,7 +1814,7 @@
           },
           {
             "score_per_letter": -8.480467339,
-            "z": 5.777562,
+            "z": 5.776738,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -1820,7 +1830,7 @@
           },
           {
             "score_per_letter": -8.489125753,
-            "z": 5.733743,
+            "z": 5.732925,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -1836,7 +1846,7 @@
           },
           {
             "score_per_letter": -8.490667536,
-            "z": 5.725941,
+            "z": 5.725123,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1852,7 +1862,7 @@
           },
           {
             "score_per_letter": -8.490667536,
-            "z": 5.725941,
+            "z": 5.725123,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1868,7 +1878,7 @@
           },
           {
             "score_per_letter": -8.491563649,
-            "z": 5.721405,
+            "z": 5.720589,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1884,7 +1894,7 @@
           },
           {
             "score_per_letter": -8.498782213,
-            "z": 5.684874,
+            "z": 5.684062,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1900,7 +1910,7 @@
           },
           {
             "score_per_letter": -8.500112699,
-            "z": 5.67814,
+            "z": 5.677329,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -1921,7 +1931,9 @@
         "machine": "swiss_k_unmodified",
         "message": "XFEDT",
         "letters": 97,
-        "settings_evaluated": 405794688,
+        "settings_scored": 405794688,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           148,
           148,
@@ -1931,15 +1943,15 @@
           148
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.611274904,
-          "sd_score_per_letter": 0.206540931,
+          "mean_score_per_letter": -9.61127798,
+          "sd_score_per_letter": 0.206497785,
           "max_score_per_letter": -8.261497437,
-          "top_z": 6.535157
+          "top_z": 6.536538
         },
         "top_candidates": [
           {
             "score_per_letter": -8.261497437,
-            "z": 6.535157,
+            "z": 6.536538,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -1955,7 +1967,7 @@
           },
           {
             "score_per_letter": -8.354244516,
-            "z": 6.086108,
+            "z": 6.087394,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -1971,7 +1983,7 @@
           },
           {
             "score_per_letter": -8.354244516,
-            "z": 6.086108,
+            "z": 6.087394,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -1987,7 +1999,7 @@
           },
           {
             "score_per_letter": -8.354919887,
-            "z": 6.082838,
+            "z": 6.084124,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2003,7 +2015,7 @@
           },
           {
             "score_per_letter": -8.354919887,
-            "z": 6.082838,
+            "z": 6.084124,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2019,7 +2031,7 @@
           },
           {
             "score_per_letter": -8.355995757,
-            "z": 6.077629,
+            "z": 6.078914,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -2035,7 +2047,7 @@
           },
           {
             "score_per_letter": -8.36223968,
-            "z": 6.047398,
+            "z": 6.048676,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2051,7 +2063,7 @@
           },
           {
             "score_per_letter": -8.382769858,
-            "z": 5.947998,
+            "z": 5.949256,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -2067,7 +2079,7 @@
           },
           {
             "score_per_letter": -8.397248037,
-            "z": 5.8779,
+            "z": 5.879143,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -2083,7 +2095,7 @@
           },
           {
             "score_per_letter": -8.400521269,
-            "z": 5.862052,
+            "z": 5.863292,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -2099,7 +2111,7 @@
           },
           {
             "score_per_letter": -8.404597734,
-            "z": 5.842315,
+            "z": 5.843551,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2115,7 +2127,7 @@
           },
           {
             "score_per_letter": -8.404597734,
-            "z": 5.842315,
+            "z": 5.843551,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2131,7 +2143,7 @@
           },
           {
             "score_per_letter": -8.413732664,
-            "z": 5.798087,
+            "z": 5.799313,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2147,7 +2159,7 @@
           },
           {
             "score_per_letter": -8.413732664,
-            "z": 5.798087,
+            "z": 5.799313,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2163,7 +2175,7 @@
           },
           {
             "score_per_letter": -8.415848198,
-            "z": 5.787844,
+            "z": 5.789068,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2179,7 +2191,7 @@
           },
           {
             "score_per_letter": -8.415848198,
-            "z": 5.787844,
+            "z": 5.789068,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2195,7 +2207,7 @@
           },
           {
             "score_per_letter": -8.419038566,
-            "z": 5.772397,
+            "z": 5.773618,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2211,7 +2223,7 @@
           },
           {
             "score_per_letter": -8.423265088,
-            "z": 5.751934,
+            "z": 5.753151,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2227,7 +2239,7 @@
           },
           {
             "score_per_letter": -8.431963639,
-            "z": 5.709819,
+            "z": 5.711027,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2243,7 +2255,7 @@
           },
           {
             "score_per_letter": -8.433336735,
-            "z": 5.703171,
+            "z": 5.704377,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2264,7 +2276,9 @@
         "machine": "swiss_k_army_1941",
         "message": "BYQMZ",
         "letters": 166,
-        "settings_evaluated": 597724608,
+        "settings_scored": 597724608,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           218,
           218,
@@ -2274,15 +2288,15 @@
           218
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.585918096,
-          "sd_score_per_letter": 0.157565165,
+          "mean_score_per_letter": -9.585920986,
+          "sd_score_per_letter": 0.157577107,
           "max_score_per_letter": -8.606960779,
-          "top_z": 6.213031
+          "top_z": 6.212579
         },
         "top_candidates": [
           {
             "score_per_letter": -8.606960779,
-            "z": 6.213031,
+            "z": 6.212579,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2298,7 +2312,7 @@
           },
           {
             "score_per_letter": -8.611683427,
-            "z": 6.183059,
+            "z": 6.182608,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2314,7 +2328,7 @@
           },
           {
             "score_per_letter": -8.620369891,
-            "z": 6.127929,
+            "z": 6.127483,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2330,7 +2344,7 @@
           },
           {
             "score_per_letter": -8.6445128,
-            "z": 5.974704,
+            "z": 5.97427,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2346,7 +2360,7 @@
           },
           {
             "score_per_letter": -8.650015658,
-            "z": 5.93978,
+            "z": 5.939348,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2362,7 +2376,7 @@
           },
           {
             "score_per_letter": -8.664405602,
-            "z": 5.848453,
+            "z": 5.848028,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2378,7 +2392,7 @@
           },
           {
             "score_per_letter": -8.664405602,
-            "z": 5.848453,
+            "z": 5.848028,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2394,7 +2408,7 @@
           },
           {
             "score_per_letter": -8.666121337,
-            "z": 5.837564,
+            "z": 5.83714,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2410,7 +2424,7 @@
           },
           {
             "score_per_letter": -8.667090747,
-            "z": 5.831412,
+            "z": 5.830988,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2426,7 +2440,7 @@
           },
           {
             "score_per_letter": -8.667886392,
-            "z": 5.826362,
+            "z": 5.825939,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2442,7 +2456,7 @@
           },
           {
             "score_per_letter": -8.668093422,
-            "z": 5.825048,
+            "z": 5.824625,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2458,7 +2472,7 @@
           },
           {
             "score_per_letter": -8.668093422,
-            "z": 5.825048,
+            "z": 5.824625,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2474,7 +2488,7 @@
           },
           {
             "score_per_letter": -8.668164468,
-            "z": 5.824597,
+            "z": 5.824174,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2490,7 +2504,7 @@
           },
           {
             "score_per_letter": -8.668164468,
-            "z": 5.824597,
+            "z": 5.824174,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2506,7 +2520,7 @@
           },
           {
             "score_per_letter": -8.672903841,
-            "z": 5.794518,
+            "z": 5.794098,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2522,7 +2536,7 @@
           },
           {
             "score_per_letter": -8.673972048,
-            "z": 5.787739,
+            "z": 5.787319,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2538,7 +2552,7 @@
           },
           {
             "score_per_letter": -8.676969712,
-            "z": 5.768714,
+            "z": 5.768295,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -2554,7 +2568,7 @@
           },
           {
             "score_per_letter": -8.677147987,
-            "z": 5.767583,
+            "z": 5.767164,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2570,7 +2584,7 @@
           },
           {
             "score_per_letter": -8.677215734,
-            "z": 5.767153,
+            "z": 5.766734,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2586,7 +2600,7 @@
           },
           {
             "score_per_letter": -8.677215734,
-            "z": 5.767153,
+            "z": 5.766734,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2607,7 +2621,9 @@
         "machine": "swiss_k_army_1941",
         "message": "FKQLZ",
         "letters": 107,
-        "settings_evaluated": 433213248,
+        "settings_scored": 433213248,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           158,
           158,
@@ -2617,15 +2633,15 @@
           158
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.623813349,
-          "sd_score_per_letter": 0.197395273,
+          "mean_score_per_letter": -9.623814815,
+          "sd_score_per_letter": 0.197387459,
           "max_score_per_letter": -8.400312679,
-          "top_z": 6.198227
+          "top_z": 6.19848
         },
         "top_candidates": [
           {
             "score_per_letter": -8.400312679,
-            "z": 6.198227,
+            "z": 6.19848,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2641,7 +2657,7 @@
           },
           {
             "score_per_letter": -8.413628629,
-            "z": 6.130768,
+            "z": 6.131019,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2657,7 +2673,7 @@
           },
           {
             "score_per_letter": -8.417837171,
-            "z": 6.109448,
+            "z": 6.109697,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2673,7 +2689,7 @@
           },
           {
             "score_per_letter": -8.422279115,
-            "z": 6.086945,
+            "z": 6.087194,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2689,7 +2705,7 @@
           },
           {
             "score_per_letter": -8.425256727,
-            "z": 6.071861,
+            "z": 6.072109,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2705,7 +2721,7 @@
           },
           {
             "score_per_letter": -8.425256727,
-            "z": 6.071861,
+            "z": 6.072109,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2721,7 +2737,7 @@
           },
           {
             "score_per_letter": -8.430495706,
-            "z": 6.04532,
+            "z": 6.045567,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2737,7 +2753,7 @@
           },
           {
             "score_per_letter": -8.436661728,
-            "z": 6.014083,
+            "z": 6.014329,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2753,7 +2769,7 @@
           },
           {
             "score_per_letter": -8.44782046,
-            "z": 5.957553,
+            "z": 5.957797,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2769,7 +2785,7 @@
           },
           {
             "score_per_letter": -8.450392232,
-            "z": 5.944525,
+            "z": 5.944768,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -2785,7 +2801,7 @@
           },
           {
             "score_per_letter": -8.452303477,
-            "z": 5.934843,
+            "z": 5.935085,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2801,7 +2817,7 @@
           },
           {
             "score_per_letter": -8.460729009,
-            "z": 5.892159,
+            "z": 5.8924,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2817,7 +2833,7 @@
           },
           {
             "score_per_letter": -8.470339695,
-            "z": 5.843471,
+            "z": 5.84371,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -2833,7 +2849,7 @@
           },
           {
             "score_per_letter": -8.472497941,
-            "z": 5.832538,
+            "z": 5.832776,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2849,7 +2865,7 @@
           },
           {
             "score_per_letter": -8.472497941,
-            "z": 5.832538,
+            "z": 5.832776,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2865,7 +2881,7 @@
           },
           {
             "score_per_letter": -8.484512679,
-            "z": 5.771671,
+            "z": 5.771907,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -2881,7 +2897,7 @@
           },
           {
             "score_per_letter": -8.484640759,
-            "z": 5.771023,
+            "z": 5.771259,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2897,7 +2913,7 @@
           },
           {
             "score_per_letter": -8.484951293,
-            "z": 5.769449,
+            "z": 5.769685,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -2913,7 +2929,7 @@
           },
           {
             "score_per_letter": -8.48525376,
-            "z": 5.767917,
+            "z": 5.768153,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2929,7 +2945,7 @@
           },
           {
             "score_per_letter": -8.485752479,
-            "z": 5.765391,
+            "z": 5.765626,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -2950,7 +2966,9 @@
         "machine": "swiss_k_army_1941",
         "message": "XFEDT",
         "letters": 97,
-        "settings_evaluated": 405794688,
+        "settings_scored": 405794688,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
         "schedules_per_order": [
           148,
           148,
@@ -2960,15 +2978,15 @@
           148
         ],
         "score_distribution": {
-          "mean_score_per_letter": -9.610592631,
-          "sd_score_per_letter": 0.206994092,
+          "mean_score_per_letter": -9.610592697,
+          "sd_score_per_letter": 0.206946524,
           "max_score_per_letter": -8.363114715,
-          "top_z": 6.026635
+          "top_z": 6.028021
         },
         "top_candidates": [
           {
             "score_per_letter": -8.363114715,
-            "z": 6.026635,
+            "z": 6.028021,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -2984,7 +3002,7 @@
           },
           {
             "score_per_letter": -8.372018906,
-            "z": 5.983619,
+            "z": 5.984994,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -3000,7 +3018,7 @@
           },
           {
             "score_per_letter": -8.401454019,
-            "z": 5.841416,
+            "z": 5.842759,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -3016,7 +3034,7 @@
           },
           {
             "score_per_letter": -8.416337893,
-            "z": 5.769511,
+            "z": 5.770838,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -3032,7 +3050,7 @@
           },
           {
             "score_per_letter": -8.416459119,
-            "z": 5.768926,
+            "z": 5.770252,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -3048,7 +3066,7 @@
           },
           {
             "score_per_letter": -8.416459119,
-            "z": 5.768926,
+            "z": 5.770252,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -3064,7 +3082,7 @@
           },
           {
             "score_per_letter": -8.421476214,
-            "z": 5.744688,
+            "z": 5.746008,
             "rotor_order_left_to_right": [
               "I",
               "III",
@@ -3080,7 +3098,7 @@
           },
           {
             "score_per_letter": -8.421645383,
-            "z": 5.74387,
+            "z": 5.745191,
             "rotor_order_left_to_right": [
               "III",
               "I",
@@ -3096,7 +3114,7 @@
           },
           {
             "score_per_letter": -8.424281936,
-            "z": 5.731133,
+            "z": 5.732451,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -3112,7 +3130,7 @@
           },
           {
             "score_per_letter": -8.42547591,
-            "z": 5.725365,
+            "z": 5.726681,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -3128,7 +3146,7 @@
           },
           {
             "score_per_letter": -8.429304756,
-            "z": 5.706868,
+            "z": 5.70818,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -3144,7 +3162,7 @@
           },
           {
             "score_per_letter": -8.429304756,
-            "z": 5.706868,
+            "z": 5.70818,
             "rotor_order_left_to_right": [
               "III",
               "II",
@@ -3160,7 +3178,7 @@
           },
           {
             "score_per_letter": -8.42964699,
-            "z": 5.705214,
+            "z": 5.706526,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -3176,7 +3194,7 @@
           },
           {
             "score_per_letter": -8.430533824,
-            "z": 5.70093,
+            "z": 5.702241,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -3192,7 +3210,7 @@
           },
           {
             "score_per_letter": -8.430660031,
-            "z": 5.70032,
+            "z": 5.701631,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -3208,7 +3226,7 @@
           },
           {
             "score_per_letter": -8.430660031,
-            "z": 5.70032,
+            "z": 5.701631,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -3224,7 +3242,7 @@
           },
           {
             "score_per_letter": -8.437313241,
-            "z": 5.668178,
+            "z": 5.669481,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -3240,7 +3258,7 @@
           },
           {
             "score_per_letter": -8.43766451,
-            "z": 5.666481,
+            "z": 5.667784,
             "rotor_order_left_to_right": [
               "II",
               "I",
@@ -3256,7 +3274,7 @@
           },
           {
             "score_per_letter": -8.439943407,
-            "z": 5.655472,
+            "z": 5.656772,
             "rotor_order_left_to_right": [
               "II",
               "III",
@@ -3272,7 +3290,7 @@
           },
           {
             "score_per_letter": -8.443545918,
-            "z": 5.638068,
+            "z": 5.639364,
             "rotor_order_left_to_right": [
               "I",
               "II",
@@ -3303,8 +3321,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 18.096,
-        "z_min": 16.805
+        "z_median": 18.099,
+        "z_min": 16.808
       },
       {
         "machine": "railway_enigma",
@@ -3317,8 +3335,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 13.769,
-        "z_min": 8.635
+        "z_median": 13.771,
+        "z_min": 8.637
       },
       {
         "machine": "railway_enigma",
@@ -3331,8 +3349,8 @@
           0.9722,
           0.9991
         ],
-        "z_median": 12.962,
-        "z_min": 7.724
+        "z_median": 12.964,
+        "z_min": 7.725
       },
       {
         "machine": "railway_enigma",
@@ -3345,8 +3363,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 14.666,
-        "z_min": 12.906
+        "z_median": 14.665,
+        "z_min": 12.904
       },
       {
         "machine": "railway_enigma",
@@ -3373,7 +3391,7 @@
           0.8391,
           0.9262
         ],
-        "z_median": 10.717,
+        "z_median": 10.716,
         "z_min": 6.384
       },
       {
@@ -3387,8 +3405,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 13.852,
-        "z_min": 12.123
+        "z_median": 13.851,
+        "z_min": 12.122
       },
       {
         "machine": "railway_enigma",
@@ -3402,7 +3420,7 @@
           0.88
         ],
         "z_median": 10.535,
-        "z_min": 6.138
+        "z_min": 6.137
       },
       {
         "machine": "railway_enigma",
@@ -3416,7 +3434,7 @@
           0.8843
         ],
         "z_median": 10.313,
-        "z_min": 6.094
+        "z_min": 6.093
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3429,8 +3447,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 18.295,
-        "z_min": 16.796
+        "z_median": 18.294,
+        "z_min": 16.795
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3443,8 +3461,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 14.009,
-        "z_min": 9.069
+        "z_median": 14.008,
+        "z_min": 9.068
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3457,7 +3475,7 @@
           0.9812,
           1.0
         ],
-        "z_median": 13.812,
+        "z_median": 13.811,
         "z_min": 8.181
       },
       {
@@ -3471,8 +3489,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 14.478,
-        "z_min": 12.892
+        "z_median": 14.476,
+        "z_min": 12.89
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3485,8 +3503,8 @@
           0.8622,
           0.9423
         ],
-        "z_median": 11.438,
-        "z_min": 6.398
+        "z_median": 11.437,
+        "z_min": 6.397
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3499,8 +3517,8 @@
           0.8277,
           0.918
         ],
-        "z_median": 10.908,
-        "z_min": 6.67
+        "z_median": 10.906,
+        "z_min": 6.669
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3513,8 +3531,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 13.903,
-        "z_min": 12.256
+        "z_median": 13.906,
+        "z_min": 12.258
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3527,8 +3545,8 @@
           0.8107,
           0.9055
         ],
-        "z_median": 10.425,
-        "z_min": 5.815
+        "z_median": 10.428,
+        "z_min": 5.816
       },
       {
         "machine": "swiss_k_unmodified",
@@ -3541,8 +3559,8 @@
           0.7829,
           0.8843
         ],
-        "z_median": 10.328,
-        "z_min": 6.174
+        "z_median": 10.331,
+        "z_min": 6.175
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3555,8 +3573,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 18.334,
-        "z_min": 16.822
+        "z_median": 18.333,
+        "z_min": 16.821
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3569,8 +3587,8 @@
           0.9722,
           0.9991
         ],
-        "z_median": 13.788,
-        "z_min": 7.898
+        "z_median": 13.787,
+        "z_min": 7.897
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3583,8 +3601,8 @@
           0.9722,
           0.9991
         ],
-        "z_median": 13.271,
-        "z_min": 7.943
+        "z_median": 13.27,
+        "z_min": 7.942
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3597,8 +3615,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 14.564,
-        "z_min": 12.942
+        "z_median": 14.565,
+        "z_min": 12.943
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3611,8 +3629,8 @@
           0.88,
           0.954
         ],
-        "z_median": 11.617,
-        "z_min": 6.466
+        "z_median": 11.618,
+        "z_min": 6.467
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3639,8 +3657,8 @@
           0.9812,
           1.0
         ],
-        "z_median": 13.86,
-        "z_min": 12.166
+        "z_median": 13.864,
+        "z_min": 12.168
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3653,8 +3671,8 @@
           0.8277,
           0.918
         ],
-        "z_median": 10.494,
-        "z_min": 5.89
+        "z_median": 10.497,
+        "z_min": 5.892
       },
       {
         "machine": "swiss_k_army_1941",
@@ -3667,8 +3685,8 @@
           0.7609,
           0.8671
         ],
-        "z_median": 10.482,
-        "z_min": 5.906
+        "z_median": 10.484,
+        "z_min": 5.908
       }
     ],
     "predictions": [
@@ -3711,8 +3729,8 @@
         "statement": "If nothing is detected, every sweep's top z lies between 5.0 and 7.5, the noise maximum of four to six hundred million settings.",
         "decides_hypothesis": false,
         "observed": {
-          "minimum": 6.026635,
-          "maximum": 6.535157
+          "minimum": 6.028021,
+          "maximum": 6.536538
         },
         "passed": true
       }
