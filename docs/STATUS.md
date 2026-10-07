@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-06
+Updated: 2026-10-07
 
 ## Current state
 
@@ -59,7 +59,11 @@ draws afterwards (`phase1-joint-power-v1`) it is 0.825, and 0.875 clean and
 0.40 with one indel once the neighbouring right positions are in the slice
 (`phase1-joint-power-v2-middle-past-notch`). It is **null**: no retained candidate is
 companion-confirmed (best z 4.47 against a threshold of 6), and the sweep's top
-score is the expected noise maximum. See
+score is the expected noise maximum. A split-point climb, which searches the
+position of one dropped or inserted letter, was then calibrated on the same
+planted draws (`phase1-split-point-power-v1`, 2026-10-07). It fell short of both
+preregistered deciding thresholds and is dropped, so the complete-ring-rule
+sweep is the next Phase 1 preregistration. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
@@ -217,7 +221,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 216 tests passed locally on 2026-10-06,
+- `python3 -m unittest discover -q`: 234 tests passed locally on 2026-10-07,
   with numpy installed; without it the five batched-climb tests skip. A test
   checks that `engine: auto` falls back to the reference climb and
   `engine: batched` fails loudly when numpy is missing.
@@ -323,26 +327,29 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-Phase 1 next: calibrate the **split-point climb** that `phase1-middle-complete-power-v1`
-selected. It is built (`stecker_split.py`): it searches the position of one dropped
-or inserted letter inside every plugboard evaluation, and in the 10-worker sweep
-it costs 2.89 times the windowed climb v3 used (about 49 host-hours projected for
-a sweep, against 153 for the complete ring rule), after candidate blocking
-halved a first measurement of 6.1. On 60 development draws at the true
-setting it recovered 65% against 23% for the whole-message climb and 27% for the
-windowed one, and 71% against 4% and 14% with the indel in the middle third. That is a stecker-stage figure.
-`phase1-split-point-power-v1` is preregistered, not run (about 20 to 30
-minutes): it reruns the control's draws and asks what the climb detects among the
-keys both past-notch climbs miss, then which sweep pays more per host-hour at a
-prior q = 0.2 on one dropped or inserted letter (unmeasured). Run it, then
-`scripts/split_power.py`. The control found that the complete rule recovers
-59.6% of the clean keys the past-notch climbs miss and the middle-third indels
-only 20.3%, where an oracle that undoes the indel recovers 70.3%. The same run
-puts v2's whole-message climb at 79.0% on clean draws and v3's windowed climb at
-42.5% with one indel, below the 88.8% and 56.3% of the earlier 80-draw run, so the
-two nulls multiply the odds of a standard reading by about 0.14 ungarbled and
-0.48 with one indel, not 0.09 and 0.43. Both candidates assume wheels I to V as
-wired, which the cited paper's authors doubt for Batch C.
+Phase 1 next: preregister the **complete-ring-rule sweep** of BYQMZ (the
+`middle_complete` ring rule with v3's W = 117 climb, about 246.8 million
+settings, about 153 host-hours at v3's rate) with a checkpointed run, stating
+its measured conditional rate as its power: 0.46 at a prior q = 0.2 of one
+dropped or inserted letter, given a standard reading and v2 and v3 null (0.55 at
+q = 0.05, 0.37 at q = 0.5). The preregistered rule of
+`phase1-split-point-power-v1` chose it. That control ran on 2026-10-07 and
+refuted both of the split-point climb's deciding predictions: among one-indel
+draws both past-notch climbs miss, the climb detected 44.1% with the indel in the
+middle third (52 of 118; S1 needed 45%, two draws more) and 24.3% elsewhere (18
+of 74; S2 needed 30%), against 20.3% and 44.6% for the complete rule and 70.3%
+and 52.7% for an oracle. So the split-point climb is dropped. The rule overrode
+the yield model, which favours the split-point sweep at every prior (0.0059
+against 0.0030 conditional detections per host-hour at q = 0.2) because it costs
+2.89 times v3 against 9; the complete rule has the higher absolute probability
+(0.46 against 0.29). Running the split-point sweep first would be a deviation
+from the preregistered rule and is the maintainer's call. See
+[Phase 1 history](phase1-experiment-history.md#result-run-2026-10-07). The
+reference arms reproduced `phase1-middle-complete-power-v1` on every draw, so
+the two nulls still multiply the odds of a standard reading by about 0.14
+ungarbled and 0.48 with one indel. Both candidates assume wheels I to V as
+wired, which the cited paper's authors doubt for Batch C; the sweep would spend
+about nine times either completed sweep's host-hours on that assumption.
 
 A **crib-driven Bombe** would eliminate the plugboard algebraically through
 crib-derived menus instead of searching it, the historically correct answer to

@@ -1,0 +1,312 @@
+{
+  "draws": {
+    "clean": 400,
+    "indel": 400
+  },
+  "past_notch_arms_differing_from_the_control": {
+    "past_notch_whole": 0,
+    "past_notch_w117": 0
+  },
+  "missed_by_both_reference_arms": {
+    "clean": 57,
+    "indel_middle_third": 118,
+    "indel_elsewhere": 74
+  },
+  "missed_fraction": {
+    "clean": 0.1425,
+    "indel": 0.48
+  },
+  "detection_among_missed": {
+    "clean": {
+      "past_notch_whole": {
+        "detected": 0,
+        "n": 57,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0631
+        ]
+      },
+      "past_notch_w117": {
+        "detected": 0,
+        "n": 57,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0631
+        ]
+      },
+      "oracle_past_notch": {
+        "detected": 0,
+        "n": 57,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0631
+        ]
+      },
+      "split": {
+        "detected": 13,
+        "n": 57,
+        "rate": 0.22807017543859648,
+        "interval_95": [
+          0.1384,
+          0.3521
+        ]
+      },
+      "complete_whole": {
+        "detected": 44,
+        "n": 57,
+        "rate": 0.7719298245614035,
+        "interval_95": [
+          0.6479,
+          0.8616
+        ]
+      },
+      "complete_w117": {
+        "detected": 34,
+        "n": 57,
+        "rate": 0.5964912280701754,
+        "interval_95": [
+          0.467,
+          0.7138
+        ]
+      }
+    },
+    "indel_middle_third": {
+      "past_notch_whole": {
+        "detected": 0,
+        "n": 118,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0315
+        ]
+      },
+      "past_notch_w117": {
+        "detected": 0,
+        "n": 118,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0315
+        ]
+      },
+      "oracle_past_notch": {
+        "detected": 83,
+        "n": 118,
+        "rate": 0.7033898305084746,
+        "interval_95": [
+          0.6156,
+          0.7783
+        ]
+      },
+      "split": {
+        "detected": 52,
+        "n": 118,
+        "rate": 0.4406779661016949,
+        "interval_95": [
+          0.3544,
+          0.5307
+        ]
+      },
+      "complete_whole": {
+        "detected": 6,
+        "n": 118,
+        "rate": 0.05084745762711865,
+        "interval_95": [
+          0.0235,
+          0.1065
+        ]
+      },
+      "complete_w117": {
+        "detected": 24,
+        "n": 118,
+        "rate": 0.2033898305084746,
+        "interval_95": [
+          0.1407,
+          0.2848
+        ]
+      }
+    },
+    "indel_elsewhere": {
+      "past_notch_whole": {
+        "detected": 0,
+        "n": 74,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0494
+        ]
+      },
+      "past_notch_w117": {
+        "detected": 0,
+        "n": 74,
+        "rate": 0.0,
+        "interval_95": [
+          0.0,
+          0.0494
+        ]
+      },
+      "oracle_past_notch": {
+        "detected": 39,
+        "n": 74,
+        "rate": 0.527027027027027,
+        "interval_95": [
+          0.4148,
+          0.6366
+        ]
+      },
+      "split": {
+        "detected": 18,
+        "n": 74,
+        "rate": 0.24324324324324326,
+        "interval_95": [
+          0.1598,
+          0.3521
+        ]
+      },
+      "complete_whole": {
+        "detected": 37,
+        "n": 74,
+        "rate": 0.5,
+        "interval_95": [
+          0.3889,
+          0.6111
+        ]
+      },
+      "complete_w117": {
+        "detected": 33,
+        "n": 74,
+        "rate": 0.44594594594594594,
+        "interval_95": [
+          0.3382,
+          0.5591
+        ]
+      }
+    }
+  },
+  "either_candidate_among_missed_exploratory": {
+    "clean": {
+      "detected": 40,
+      "n": 57,
+      "rate": 0.7017543859649122,
+      "interval_95": [
+        0.5734,
+        0.8047
+      ]
+    },
+    "indel_middle_third": {
+      "detected": 64,
+      "n": 118,
+      "rate": 0.5423728813559322,
+      "interval_95": [
+        0.4526,
+        0.6295
+      ]
+    },
+    "indel_elsewhere": {
+      "detected": 43,
+      "n": 74,
+      "rate": 0.581081081081081,
+      "interval_95": [
+        0.4674,
+        0.6868
+      ]
+    }
+  },
+  "predictions": [
+    {
+      "id": "S1",
+      "stratum_size": 118,
+      "rate": 0.4406779661016949,
+      "threshold": 0.45,
+      "kind": "rate_at_least",
+      "verdict": "refuted"
+    },
+    {
+      "id": "S2",
+      "stratum_size": 74,
+      "rate": 0.24324324324324326,
+      "threshold": 0.3,
+      "kind": "rate_at_least",
+      "verdict": "refuted"
+    },
+    {
+      "id": "S3",
+      "stratum_size": 57,
+      "rate": 0.22807017543859648,
+      "threshold": 0.4,
+      "kind": "rate_at_most",
+      "verdict": "held"
+    }
+  ],
+  "yield_by_fault_prior": {
+    "0.05": {
+      "complete": {
+        "probability": 0.5513725490196079,
+        "host_hours": 152.54999999999998,
+        "per_host_hour": 0.0036143726582734048
+      },
+      "split": {
+        "probability": 0.24862745098039213,
+        "host_hours": 48.9855,
+        "per_host_hour": 0.005075531554855868
+      },
+      "better_per_host_hour": "split"
+    },
+    "0.1": {
+      "complete": {
+        "probability": 0.5148936170212766,
+        "host_hours": 152.54999999999998,
+        "per_host_hour": 0.003375244949336458
+      },
+      "split": {
+        "probability": 0.2652482269503546,
+        "host_hours": 48.9855,
+        "per_host_hour": 0.005414831469523728
+      },
+      "better_per_host_hour": "split"
+    },
+    "0.2": {
+      "complete": {
+        "probability": 0.4595238095238095,
+        "host_hours": 152.54999999999998,
+        "per_host_hour": 0.003012283248271449
+      },
+      "split": {
+        "probability": 0.29047619047619044,
+        "host_hours": 48.9855,
+        "per_host_hour": 0.005929840268573158
+      },
+      "better_per_host_hour": "split"
+    },
+    "0.35": {
+      "complete": {
+        "probability": 0.40335731414868103,
+        "host_hours": 152.54999999999998,
+        "per_host_hour": 0.002644099076687519
+      },
+      "split": {
+        "probability": 0.3160671462829736,
+        "host_hours": 48.9855,
+        "per_host_hour": 0.006452259266170063
+      },
+      "better_per_host_hour": "split"
+    },
+    "0.5": {
+      "complete": {
+        "probability": 0.3654618473895582,
+        "host_hours": 152.54999999999998,
+        "per_host_hour": 0.0023956856597152298
+      },
+      "split": {
+        "probability": 0.33333333333333337,
+        "host_hours": 48.9855,
+        "per_host_hour": 0.006804734734428216
+      },
+      "better_per_host_hour": "split"
+    }
+  },
+  "next_step_per_decision_rule": "complete_sweep"
+}
