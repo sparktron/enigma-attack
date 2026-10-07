@@ -67,6 +67,46 @@
         "results[].dates[].evaluations"
       ]
     },
+    "artifacts/phase3-unsteckered-sweep-v1.json": {
+      "runner": [
+        "phase3_sweep.py",
+        "--config",
+        "experiments/phase3-unsteckered-sweep-v1/config.json",
+        "--jobs",
+        "10"
+      ],
+      "claim_paths": [
+        "schema",
+        "mode",
+        "status",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.*",
+        "preflight.passed",
+        "preflight.kernel_parity.machines.*.failures",
+        "positive_controls.passed",
+        "positive_controls.evaluated[].machine",
+        "positive_controls.evaluated[].top_plaintext_exact",
+        "positive_controls.evaluated[].top_z",
+        "result.threshold_z",
+        "result.sweeps[].machine",
+        "result.sweeps[].message",
+        "result.sweeps[].settings_scored",
+        "result.sweeps[].settings_represented",
+        "result.sweeps[].schedules_per_order",
+        "result.sweeps[].score_distribution.*",
+        "result.sweeps[].detected",
+        "result.detections",
+        "result.power[].machine",
+        "result.power[].message",
+        "result.power[].fault",
+        "result.power[].detected",
+        "result.power[].rate",
+        "result.predictions[].id",
+        "result.predictions[].passed"
+      ],
+      "long_running": "Three complete control sweeps and nine target sweeps, 4.1 to 6.0 x 10^8 settings each, every one deciphered and scored: 1,157 seconds (19 minutes) wall-clock and about 2.9 CPU-hours on 10 workers when recorded from a clean checkout at 4d09ab0, more than the artifact job should spend three times. The kernel, the schedule deduplication, the planting and the gates are covered by tests/test_variant_sweep.py, and every run re-checks the kernel against enigma.py before any sweep."
+    },
     "artifacts/phase4-joint-machine-smoke.v2.json": {
       "runner": [
         "phase4.py",

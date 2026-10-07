@@ -23,6 +23,7 @@ enigma-phase5 = "phase5:main"
 enigma-phase6 = "phase6:main"
 enigma-phase7 = "phase7:main"
 enigma-phase1-stecker = "phase1_stecker:main"
+enigma-phase3-sweep = "phase3_sweep:main"
 
 [tool.setuptools]
 py-modules = [
@@ -33,6 +34,7 @@ py-modules = [
     "phase1_stecker",
     "phase2",
     "phase3",
+    "phase3_sweep",
     "phase4",
     "phase5",
     "phase6",
@@ -51,6 +53,7 @@ py-modules = [
     "stecker_split",
     "stecker_sweeps",
     "stecker_traffic",
+    "variant_sweep",
 ]
 
 [tool.setuptools.data-files]
@@ -61,6 +64,7 @@ py-modules = [
 "share/enigma-attack/experiments/phase1-body-direct-sweep-v1" = ["experiments/phase1-body-direct-sweep-v1/config.json"]
 "share/enigma-attack/experiments/phase1-end-to-end-power-v1" = ["experiments/phase1-end-to-end-power-v1/config.json"]
 "share/enigma-attack/experiments/phase1-body-direct-sweep-v2" = ["experiments/phase1-body-direct-sweep-v2/config.json"]
+"share/enigma-attack/experiments/phase3-unsteckered-sweep-v1" = ["experiments/phase3-unsteckered-sweep-v1/config.json"]
 "share/enigma-attack/experiments/phase4-joint-machine-smoke-v1" = ["experiments/phase4-joint-machine-smoke-v1/config.json"]
 "share/enigma-attack/experiments/phase4-joint-machine-smoke-v2" = ["experiments/phase4-joint-machine-smoke-v2/config.json"]
 "share/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v1" = ["experiments/phase6-qtxma-double-transposition-smoke-v1/config.json"]

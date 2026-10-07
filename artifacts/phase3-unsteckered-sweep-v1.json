@@ -1,0 +1,3751 @@
+{
+  "schema": "enigma-attack.phase3-sweep-result/v1",
+  "experiment_id": "phase3-unsteckered-sweep-v1",
+  "mode": "unsteckered_body_direct_sweep",
+  "status": "complete",
+  "accepted_break": false,
+  "hypothesis": "At least one of BYQMZ, FKQLZ and XFEDT (1941-09-30) was enciphered, as one continuous body from some start, on one of the three catalogued unsteckered Enigma-family machines with the wirings, notches, entry wheels and reflectors in variants.json: the Reichsbahn (railway) Enigma, the Swiss K, or the Swiss K with the 1941 Swiss Army stepping. A complete body-direct sweep of that machine on that message then ranks first a setting whose whole-message score is at least z = 8 above the sweep's own score distribution.",
+  "refuted_by": "No (machine, message) sweep reaches top z >= 8. The power this null has is measured after the sweeps on planted draws shaped like each target and judged against that target's own distribution (power.method); the prediction is at least 0.95 for an ungarbled message on every machine and target. With one dropped or inserted letter only part of the message deciphers under any one key, and the power is lower and reported. A null excludes these three machines with these wirings for ungarbled messages; it says nothing about machines with undocumented wiring, about the commercial Enigma D or K, about the Abwehr Enigma G, or about any machine with a plugboard.",
+  "started_at": "2026-10-07T16:13:13.209701+00:00",
+  "completed_at": "2026-10-07T16:32:29.936308+00:00",
+  "duration_seconds": 1156.727,
+  "configuration": {
+    "path": "experiments/phase3-unsteckered-sweep-v1/config.json",
+    "sha256": "15ada2df9a5ac062d731dd079356752726aad137615c64e7030c869eddcfd33d",
+    "arguments": [
+      "--jobs",
+      "10"
+    ]
+  },
+  "code": {
+    "source": "git_checkout",
+    "commit": "4d09ab003ef363fb81fd7d1d62bce5a69fd4d473",
+    "branch": "claude/phase3-unsteckered-sweep",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase3.py": "85ed8e0b298182944db501d214087256fd21dc107a1587e57ce35d94ee7e578e",
+      "phase3_sweep.py": "6c2a49702c6d148de72d64e206d82b55989ecb57a33e82426306cd0df34d50fe",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "020247785edde8a8ef845c61260e398dc3bd7ede1b46bd0c4461a993b937a30d",
+      "stecker_climb.py": "35f8781aee10b62c649d5dfb88ec0b2bd96a69c7abfceaef95c31e8e876178c4",
+      "stecker_power.py": "0755c24b3789483837dae5a7bf771f3794fddf014037b06e5b45e06cb5bfeede",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "d72c5b78b61818f5e407b14616205490c98e4082ba55dd2396a9eae7a95ac980",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "a0772515cd0772c04bda4d7d6387f2daffc3ebf41924941095bc4f1290d184d9",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
+      "variant_sweep.py": "7dd90205067e6f5aeb381ef7a34d291da77f2098ad40e90194fabd3ddb5f2496"
+    }
+  },
+  "environment": {
+    "python": "3.10.12",
+    "numpy": "2.2.6",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cpu_count": 20,
+    "jobs": 10
+  },
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "catalog_sha256": "0f4e4baa89732982bb84d80f95afdeee81bab65a47077974a0d31303e38a556f",
+    "bigram_counts_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
+    "trigram_counts_sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+  },
+  "preflight": {
+    "kernel_parity": {
+      "passed": true,
+      "length": 60,
+      "seed": 20261007,
+      "machines": {
+        "railway_enigma": {
+          "samples": 12,
+          "failures": 0
+        },
+        "swiss_k_unmodified": {
+          "samples": 12,
+          "failures": 0
+        },
+        "swiss_k_army_1941": {
+          "samples": 12,
+          "failures": 0
+        }
+      },
+      "method": "Random wheel order, rings, window start and reflector position, a random body with one masked letter. The grid kernel's letter at the key's cell, the reference machine at the cell's representative key, and the kernel's total score must equal enigma.EnigmaMachine and FastNgramScorer.score_indices exactly."
+    },
+    "passed": true
+  },
+  "positive_controls": {
+    "evaluated": [
+      {
+        "machine": "railway_enigma",
+        "length": 97,
+        "planted_order": [
+          "II",
+          "I",
+          "III"
+        ],
+        "planted_key": {
+          "rings": "BOH",
+          "positions": "EIC",
+          "reflector_position": "W"
+        },
+        "top_candidate": {
+          "rotor_order_left_to_right": [
+            "II",
+            "I",
+            "III"
+          ],
+          "rings": "XGH",
+          "positions": "AAC",
+          "reflector_position": "W",
+          "score_per_letter": -6.711414649,
+          "z": 13.948804
+        },
+        "top_plaintext_exact": true,
+        "top_z": 13.948804,
+        "score_distribution": {
+          "mean_score_per_letter": -9.593060081,
+          "sd_score_per_letter": 0.206587272,
+          "max_score_per_letter": -6.711414649,
+          "top_z": 13.948804
+        },
+        "passed": true
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "length": 97,
+        "planted_order": [
+          "II",
+          "I",
+          "III"
+        ],
+        "planted_key": {
+          "rings": "ZVW",
+          "positions": "GND",
+          "reflector_position": "S"
+        },
+        "top_candidate": {
+          "rotor_order_left_to_right": [
+            "II",
+            "I",
+            "III"
+          ],
+          "rings": "TIW",
+          "positions": "AAD",
+          "reflector_position": "S",
+          "score_per_letter": -6.633257556,
+          "z": 14.360585
+        },
+        "top_plaintext_exact": true,
+        "top_z": 14.360585,
+        "score_distribution": {
+          "mean_score_per_letter": -9.600845013,
+          "sd_score_per_letter": 0.206648085,
+          "max_score_per_letter": -6.633257556,
+          "top_z": 14.360585
+        },
+        "passed": true
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "length": 97,
+        "planted_order": [
+          "II",
+          "III",
+          "I"
+        ],
+        "planted_key": {
+          "rings": "AML",
+          "positions": "HHJ",
+          "reflector_position": "O"
+        },
+        "top_candidate": {
+          "rotor_order_left_to_right": [
+            "II",
+            "III",
+            "I"
+          ],
+          "rings": "YMC",
+          "positions": "EHA",
+          "reflector_position": "N",
+          "score_per_letter": -6.482213729,
+          "z": 14.959564
+        },
+        "top_plaintext_exact": true,
+        "top_z": 14.959564,
+        "score_distribution": {
+          "mean_score_per_letter": -9.58993122,
+          "sd_score_per_letter": 0.207741184,
+          "max_score_per_letter": -6.482213729,
+          "top_z": 14.959564
+        },
+        "passed": true
+      }
+    ],
+    "seconds": 242.758,
+    "passed": true,
+    "criterion": "The complete sweep of the planted message's machine ranks first a key whose reference decryption is the planted plaintext exactly, at z at least the detection threshold.",
+    "gate": "A failed control makes zero target-search calls."
+  },
+  "result": {
+    "formulation": "body_direct_unsteckered",
+    "threshold_z": 8.0,
+    "timing": {
+      "seconds": 873.03,
+      "tasks": 54,
+      "jobs": 10
+    },
+    "sweeps": [
+      {
+        "machine": "railway_enigma",
+        "message": "BYQMZ",
+        "letters": 166,
+        "settings_scored": 597724608,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          218,
+          218,
+          218,
+          218,
+          218,
+          218
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.586583507,
+          "sd_score_per_letter": 0.157565535,
+          "max_score_per_letter": -8.627448414,
+          "top_z": 6.087214
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.627448414,
+            "z": 6.087214,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YIL",
+            "positions": "AVG",
+            "reflector_position": "M",
+            "offsets": "CNV",
+            "schedule": 120,
+            "plaintext": "TRMECFIXWMXFZBGWKTRNFHISQECB?CBFWRIRMVANEZOXXXPLDNDJAFXAECWXMXAUENGXILSONMTAHYHELLANJIGTEQGOMERXXPFTLNDFESXAFDNZOZOEQZWSOWOTHIVEHYSOXCNGXMEOQEIBAANGQYQSROUBLMFBSILXOXN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.635465916,
+            "z": 6.03633,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YIM",
+            "positions": "AVH",
+            "reflector_position": "M",
+            "offsets": "CNV",
+            "schedule": 121,
+            "plaintext": "TRMECFZXWMXFZBGWKTRNFHISQECB?CBFLRIRMVANEZOXXXPLDNDJAFXAECWNMXAUENGXILSONMTAHYHELLANDIGTEQGOMERXXPFTLNDFESXAFDVZOZOEQZWSOWOTHIVEHYSOXCNGGMEOQEIBAANGQYQSROUBLMFBSIAXOXN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.64516163,
+            "z": 5.974796,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YIN",
+            "positions": "AVI",
+            "reflector_position": "M",
+            "offsets": "CNV",
+            "schedule": 122,
+            "plaintext": "TRMECOZXWMXFZBGWKTRNFHISQECB?CBELRIRMVANEZOXXXPLDNDJAFXAELLNMXAUENGXILSONMTAHYHELLACDIGTEQGOMERXXPFTLNDFESXAFQVZOZOEQZWSOWOTHIVEHYSOXCNTGMEOQEIBAANGQYQSROUBLMFBSPAXOXN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.670933842,
+            "z": 5.811231,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "VDC",
+            "positions": "AVC",
+            "reflector_position": "T",
+            "offsets": "FSA",
+            "schedule": 116,
+            "plaintext": "RRORGEGFRFLITSTHIEPKSAHURNUL?JBRSDOXFRIUYEPYTIKPHNOADXVPATSGRXNANOUNLKUESSEIHVBSTTZSSUUSOJSBXKEZWIOQWKNIIZOIQOHZOLNBEGRQSTDCOHFEKKFDEPEKXDNVRNZEWFUVVDWIEVPJEGERRIEEQGV",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.674220792,
+            "z": 5.79037,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NQJ",
+            "positions": "AKJ",
+            "reflector_position": "F",
+            "offsets": "NUA",
+            "schedule": 123,
+            "plaintext": "PZMDRAFMNKOISTZEBWUJARFXBXLJ?DIHFZIHZVFJSVHLSJBKEDJGUNEHCHRBMHATIXZTLKIQEVEIDEROTFUQXQDSQGHPXLTXUGJOBMPAUPMCVRKLSSHMPRSNELCUCHZMTONWARNIXORCMEITXWANNAJZONRYDROLLIIEXAO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.678353291,
+            "z": 5.764143,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NQB",
+            "positions": "AHB",
+            "reflector_position": "Y",
+            "offsets": "NRA",
+            "schedule": 37,
+            "plaintext": "VADAOCLTFWUGAQEIXFGSUSYTIITQ?PKELQKQDXEXOSERRUHAOYSUNRXRXFRKFECIEGARTAFIEARYULZXVLPFEWZOPMOWCUJSKYQSQRCXEHXOMVJXKXCHEWIRRJBSDDIEQDVQZSGEMYFERGLIDRERDXZAITONXXXEIPJYPXI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.683867715,
+            "z": 5.729145,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "YOW",
+            "positions": "AYN",
+            "reflector_position": "O",
+            "offsets": "CKR",
+            "schedule": 179,
+            "plaintext": "IKOFWXURQXUKVTMCKYGHZNPQANZD?OWOQHKGLGDZRXCFZFBEYTUKEDANHILXOGNFSOSGASSHXHEHYKEMRHTHNIGLIPXXCHETXDOOWVERBAQAMAEDSHANAXYYRXRAHFRRYPWMAIGRBQRAEELHCNTINMPSMZRXUHIAMATETUD",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.685173679,
+            "z": 5.720857,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "IJD",
+            "positions": "ACB",
+            "reflector_position": "Y",
+            "offsets": "STY",
+            "schedule": 53,
+            "plaintext": "JEIFBQXDKQZDCESGNSBOFRIDNKTR?HEHZDPQEQZNMCKBISXBEQRVOUFXUTNISPXNWZUENDDVSTMRIQTUMDSQGAMDNGYECGDCNYBODOYCFTKDUJAFXEWGKMNMELSQXVJLXHRHXVCIDRPYKNUZXWFSXPRSENGKNRSXNIMALII",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.685225927,
+            "z": 5.720525,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "QGC",
+            "positions": "ABH",
+            "reflector_position": "S",
+            "offsets": "KVF",
+            "schedule": 33,
+            "plaintext": "LTXPSHARGTOPUNQYURCTYSLEXGON?WWNHMLZYQELAROZWONSFYODMESVCWVRALUELEGKNSSTPGYAVKHYELXFVISQGWIFEIZPSSFLIHUVMXLDAFKORXMSDIERXGTZXMOVGFBONVCFENMAQUNIRFLLJASPNZPCIOYNPRDZWXI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.688840994,
+            "z": 5.697582,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "ALG",
+            "positions": "ASR",
+            "reflector_position": "J",
+            "offsets": "AHL",
+            "schedule": 53,
+            "plaintext": "DWKXDYRXFKREACDSVIBTAZQULBXT?XRTZDQLSHEOXRVOXGEPLEGPUEWCMEEPAEQZZDGLDILUEGEWIRGOMLRULDURLGRIEITAQGXKSZCRRLIGBBQTWIJNICIQVAFPDVVETRIJBYBUGFQLFSISPZLAISAYETRXMARWILTRIEM",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.69242462,
+            "z": 5.674838,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "BWV",
+            "positions": "AXG",
+            "reflector_position": "X",
+            "offsets": "ZBL",
+            "schedule": 158,
+            "plaintext": "RFUEFIVXFFRPPRDSDERMKIONMVDK?ROZRQYMROFADASYUTCRBCKDIVFLUHLSARCFHBNDOUONAPWMEDOIQAGQMUURIYLXBSBEQZGMGHOIQNKKLFBSTLFURNKMEIEQTIWOSAGTYNFOXGENDNLANMSLGTRNGUROGPGYEHDSQKD",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.695680486,
+            "z": 5.654174,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "COV",
+            "positions": "AAW",
+            "reflector_position": "B",
+            "offsets": "YMB",
+            "schedule": 22,
+            "plaintext": "ALSMNSHIEDZXFGMZNLLULKLPRKZD?GEWHKWXRPUPIQIEXKHOLYDPTDLIENRZGIRBEIHZDAKZAKIWRXGMETEPQYTIFCLAWANYWMANOVAZRSAZXSXSZMWDDNGRXSHVXAYONBSIEDETRURGKTITENEILUJNISKYRZQMPBZWOSH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.695680486,
+            "z": 5.654174,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "DCV",
+            "positions": "ANW",
+            "reflector_position": "B",
+            "offsets": "XLB",
+            "schedule": 214,
+            "plaintext": "ALSMNSHIEDZXFGMZNLLULKLPRKZD?GEWHKWXRPUPIQIEXKHOLYDPTDLIENRZGIRBEIHZDAKZAKIWRXGMETEPQYTIFCLAWANYWMANOVAZRSAZXSXSZMWDDNGRXSHVXAYONBSIEDETRURGKTITENEILUJNISKYRZQMPBZWOSH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.699222405,
+            "z": 5.631695,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "OEI",
+            "positions": "AYL",
+            "reflector_position": "G",
+            "offsets": "MUD",
+            "schedule": 177,
+            "plaintext": "UPANENCHIEFUIOEAWCYRUSVNWDJV?LXNUKLMEDDRLANDQXYDXKXJNSUFDYGCENNGLTPSJGNKEMOSITTDOIATJMRDFZFFXHEANFNIWDSUSDWNAXWTENBEVFEILGXOSLEIXOFTMIPPEGXMTRBNIGNGKKWSUPHXHXHDCUHLXUN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.700861143,
+            "z": 5.621295,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "EBU",
+            "positions": "ABU",
+            "reflector_position": "H",
+            "offsets": "WAA",
+            "schedule": 46,
+            "plaintext": "TRXAMKRJEKDRQISLTVESEDOLTNQB?UUFHFXWPZASNDDSBTLFATRAXTLIDXXNUJXYALEWBTRIGMQKBWNULZXPIWLAADOMWUEGJUYIZJKFSTTJEQSUZNYUNANABXLRFUUNXGOADQPBALIEDMBAJANRVIBUGXZWKXIMMAGXVUM",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.702990202,
+            "z": 5.607783,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NQL",
+            "positions": "AKL",
+            "reflector_position": "F",
+            "offsets": "NUA",
+            "schedule": 125,
+            "plaintext": "PZMDRAFMNKOISEGEBWUJARFXBXLJ?DIHFZIHZVFMJVHLSJBKEDJGUNEHCHRBMHATIKXILKIQEVEIDEROTFUQXQDSQGHPYLTXUGJOBMPAUPMCVRKLSSHMPFSNELCUCHZMTONWARNIXORCMEISCWANNAJZONRYDROLLIIEXAO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.70378777,
+            "z": 5.602721,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "JLA",
+            "positions": "AXX",
+            "reflector_position": "F",
+            "offsets": "RMX",
+            "schedule": 189,
+            "plaintext": "XJCATRRXSTZTQSQWDNFSXSUEMUUL?GSLIFXEZSEDBFTRABOFDNOHITBECSVOUNAEXMBIEWVULLOXZUNKWYYXMELTYQUBIATNSQBAPQBPKPZYKUBCMFRIQFETLWIFZTCIJADPQAZARGFLPEGSFISTCSHZEGEIHSKBPGRTUCJ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.703885393,
+            "z": 5.602101,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "YOV",
+            "positions": "AYM",
+            "reflector_position": "O",
+            "offsets": "CKR",
+            "schedule": 178,
+            "plaintext": "IKOFWXURQXUNVTMCKYGHZNPQANZD?OWOQHKGLJDZRXCFZFBEYTUKEDANHILXOGNASOSGASSHXHEHYKEMRHTHNIGLIUXXCHETXDOOWVERBAQAMAEDSHABAXYYRXRAHFRRYPWMAIGRBQRAEEOHCNTINMPSMZRXUHIAMATETUD",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.704381884,
+            "z": 5.59895,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "EJQ",
+            "positions": "AIE",
+            "reflector_position": "Z",
+            "offsets": "WZO",
+            "schedule": 66,
+            "plaintext": "XEFEQAGXPRLZSDIDTBZNXDASLRSD?ESTAAGQKMXBYJGOWIRRFEIDPMDYTYXMLEMBWCZFKATFWPTRTTROCPZINDMOMHLXDVBARRNXMMNIGRMZTRKROSKFXMILEAGOTXWBAYOCXSXMASERACOCHIFNROTESNXMMBHLMKOTCSB",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.705335342,
+            "z": 5.592899,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "YHB",
+            "positions": "ATV",
+            "reflector_position": "H",
+            "offsets": "CMU",
+            "schedule": 83,
+            "plaintext": "LBTVFGLZXHKVYWIFSAQSDASFLEZS?GLDDGSROORXMLQRDRSCEUCPWNFJAMHRSSMKIXRGANLALSSFINBIMXERAJFEMELNPOXTLGEGWGEIGSGSSEHEECMDYSDJEIXAMBMDJBMDUEPLNXKDXHSCFONILJJYUBUXUEZLHIQNOXD",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "FKQLZ",
+        "letters": 107,
+        "settings_scored": 433213248,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          158,
+          158,
+          158,
+          158,
+          158,
+          158
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.623165502,
+          "sd_score_per_letter": 0.19762457,
+          "max_score_per_letter": -8.422701882,
+          "top_z": 6.074465
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.422701882,
+            "z": 6.074465,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "WVW",
+            "positions": "AEP",
+            "reflector_position": "C",
+            "offsets": "EJT",
+            "schedule": 119,
+            "plaintext": "FZSWCHFRPASFUWSUFMOGUGGMGERUSANKDELERAZPENXSKLROAHLYZDEMUEESVOPRUJULSTUIPYXPGKLFZSJOEEISNGCDETETIFOELIERYFZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.422701882,
+            "z": 6.074465,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "VVW",
+            "positions": "AFP",
+            "reflector_position": "C",
+            "offsets": "FKT",
+            "schedule": 145,
+            "plaintext": "FZSWCHFRPASFUWSUFMOGUGGMGERUSANKDELERAZPENXSKLROAHLYZDEMUEESVOPRUJULSTUIPYXPGKLFZSJOEEISNGCDETETIFOELIERYFZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.435827831,
+            "z": 6.008047,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "YKU",
+            "positions": "ABR",
+            "reflector_position": "M",
+            "offsets": "CRX",
+            "schedule": 43,
+            "plaintext": "GUCICXIAUWGRLILCFDTANSQMISOFEGDOVERTNGDANUMISINIOUSJEQSMOQONKRXUTYHLOVEAVNRWATSINSJTWONDZUTERCSASHKXFJASSBY",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.438954668,
+            "z": 5.992225,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "NJF",
+            "positions": "AWD",
+            "reflector_position": "Q",
+            "offsets": "NNY",
+            "schedule": 83,
+            "plaintext": "SRMXNFTXUNSTSANMEEQFIIXTRRSVBEUNRKXKWSTWOXSGANMBOSVLFKIFOZWULMTLHBENSCURBIWALLSGVMKTTXKOENGWDUTEXGIKQHQRQHO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.441702168,
+            "z": 5.978322,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "YKS",
+            "positions": "ABP",
+            "reflector_position": "M",
+            "offsets": "CRX",
+            "schedule": 41,
+            "plaintext": "GUCICXIAUWGRLILCFDTANSMVISOFEGDOVERTNGDANUMISINIKGSJEQSMOQONKRXUTYHLOVEAVNZKLTSINSJTWONDZUTERCSASHKXRFASSBY",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.445229354,
+            "z": 5.960474,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "PDD",
+            "positions": "AXP",
+            "reflector_position": "K",
+            "offsets": "LUM",
+            "schedule": 121,
+            "plaintext": "WBWVPSTNXZXRGGURMRROEWLSENWKOEOIAQNETDORHKISOQWSAMMNRVTAYERRDIZAXFUNGSMGKMIIHXSZARUNGNTXTOOILOEIESLVNKROFUF",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.45088703,
+            "z": 5.931846,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "OIS",
+            "positions": "AMV",
+            "reflector_position": "K",
+            "offsets": "MED",
+            "schedule": 127,
+            "plaintext": "OEMENENXENXYFFMEHFXJKDFWUCBNXSTRXJXFEDPQZKOSCTMIQTOMBGSPJQRERDOEQUEZEKMIVSPOFKIVSSORHHAEBSQRANNALISKZPZXTPI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.465752621,
+            "z": 5.856624,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "VSD",
+            "positions": "ALB",
+            "reflector_position": "W",
+            "offsets": "FTY",
+            "schedule": 81,
+            "plaintext": "SPUDOVVUEBSDRWEKLTNMBCBRNNRFNKRGAKUBRPIBEANGFKTDEHAJACWJJKMPANOXWRYXGESQRWKXVEXFGOPORDIXEEUDTFKFKLNEUGERXIV",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.466977909,
+            "z": 5.850424,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "WVX",
+            "positions": "AEQ",
+            "reflector_position": "C",
+            "offsets": "EJT",
+            "schedule": 120,
+            "plaintext": "FZSWCHFRRASFUWSUFMOGUGGMGERUSANKDESERAZPENXSKLROAHLYZDEMUEESXOPRUJULSTUIPYXPGKLFZSJOEEVSNGCDETETIFOELIERYFZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.466977909,
+            "z": 5.850424,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "VVX",
+            "positions": "AFQ",
+            "reflector_position": "C",
+            "offsets": "FKT",
+            "schedule": 146,
+            "plaintext": "FZSWCHFRRASFUWSUFMOGUGGMGERUSANKDESERAZPENXSKLROAHLYZDEMUEESXOPRUJULSTUIPYXPGKLFZSJOEEVSNGCDETETIFOELIERYFZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.472513253,
+            "z": 5.822415,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "AKH",
+            "positions": "AAC",
+            "reflector_position": "C",
+            "offsets": "AQV",
+            "schedule": 2,
+            "plaintext": "WFKGUPESBEIEVBZGXSXONFTNURUTLEQSGHXANDSUAGFAENZKVEONIXWRQUXWLWBWMXDORMCWUEXDFFZKSQEEINKOTZIKOQFVRKWSEIERUZO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.472513253,
+            "z": 5.822415,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "BJH",
+            "positions": "AYC",
+            "reflector_position": "C",
+            "offsets": "ZPV",
+            "schedule": 134,
+            "plaintext": "WFKGUPESBEIEVBZGXSXONFTNURUTLEQSGHXANDSUAGFAENZKVEONIXWRQUXWLWBWMXDORMCWUEXDFFZKSQEEINKOTZIKOQFVRKWSEIERUZO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.474269545,
+            "z": 5.813528,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "HLK",
+            "positions": "ACI",
+            "reflector_position": "X",
+            "offsets": "TRY",
+            "schedule": 60,
+            "plaintext": "TAUQLEVEHFREGSVKGDZEARTFMMERNSQNZBELNNUNKWZIVQLHXEGITTJEAQIEROYXDOVNXAOKSTDBJRAQAHRLLRINXMYUFXDCGBUSFLHBIAI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.474709142,
+            "z": 5.811304,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "BHQ",
+            "positions": "AAV",
+            "reflector_position": "E",
+            "offsets": "ZTF",
+            "schedule": 21,
+            "plaintext": "IOUZBNINDROZCENONISQCTRAZNIRPJJMANKOWANWYIOUQEIGUQORTEVDBEWXCZTZXFXSTERGDKSPRGNHORXVBSTISHENBLCQSHVOLCHNHSX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.47530597,
+            "z": 5.808284,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YWH",
+            "positions": "AWB",
+            "reflector_position": "Y",
+            "offsets": "CAU",
+            "schedule": 81,
+            "plaintext": "IPPUAMHZHCMINNROZWGOBARINQNJNGEFBITFRIGSEKTTTQTBFXDXDEARZEXXAXSGTSFDNGZQEWSETMVXEIZBEFSPROOZEBBRXUOPQSFJITB",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.477962569,
+            "z": 5.794841,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "MOC",
+            "positions": "ACH",
+            "reflector_position": "B",
+            "offsets": "OOF",
+            "schedule": 59,
+            "plaintext": "XEAUCEXLRTDBABRZVINIROZVPZUVBXHIXXRYRWIXAULPSLAJOVPVEXVVYTEXZTSAQSVITXSXCANGRANJGKRLIMASTXSRUUSONVIKAREIEZO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.478270461,
+            "z": 5.793283,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "RAF",
+            "positions": "AVY",
+            "reflector_position": "N",
+            "offsets": "JVT",
+            "schedule": 78,
+            "plaintext": "HUROUQSELLTAKCXEANRGNFHXEIESHTAGRKETRTVEYIRUAZQPLMIIAXGXHERGUXDYHJKASOWXEBEDBUTMRAQTXEGHTKQRVVELXAXLMVTRTTO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.482254092,
+            "z": 5.773125,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "DNK",
+            "positions": "AMV",
+            "reflector_position": "F",
+            "offsets": "XZL",
+            "schedule": 127,
+            "plaintext": "ZIMINLIPKUUISIECQUSMZGDSVEEBVODYYMECSMEMPAZFOXNNPZTRUONSJLTRUTUCHARBERFOMUOEZDSUSJEINIEQOAIQAJNHATSEDHOGEBE",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.482412049,
+            "z": 5.772326,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "WHA",
+            "positions": "AKT",
+            "reflector_position": "F",
+            "offsets": "EDT",
+            "schedule": 73,
+            "plaintext": "JUKBKUPXSVARXNMEDUXVZEHADRNZQSEQKONYNKOESQRXDEINEMIVERLISTWXGESCDGVOEYIDXZISIBIENGZIAOVHDILWZEMSFBVEJKSOXNY",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.486803946,
+            "z": 5.750103,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "HKN",
+            "positions": "AVG",
+            "reflector_position": "X",
+            "offsets": "TLT",
+            "schedule": 60,
+            "plaintext": "TERORNRUCNCYXRODLUEGMHMXOQESSUJSITZULTKLYQKXTRUMGONZWASMUTTARUBERREETJNSAKSRPYGMTJDOZZKTBNTFOPAKERTOTZABEEF",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "XFEDT",
+        "letters": 97,
+        "settings_scored": 405794688,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          148,
+          148,
+          148,
+          148,
+          148,
+          148
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.609740475,
+          "sd_score_per_letter": 0.207621131,
+          "max_score_per_letter": -8.259369113,
+          "top_z": 6.504017
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.259369113,
+            "z": 6.504017,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "KJH",
+            "positions": "AMU",
+            "reflector_position": "E",
+            "offsets": "QDN",
+            "schedule": 116,
+            "plaintext": "XIYERWECKMEKEWISTRHWOAQSTRKAMAAFBDEBLXUNXCNYDSFYTZULPOXELFOSCLUBNGERBABGNFTMGEMJINPOGFLIXTAHEGEBI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.270174491,
+            "z": 6.451973,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "IVE",
+            "positions": "AAO",
+            "reflector_position": "E",
+            "offsets": "SFK",
+            "schedule": 14,
+            "plaintext": "XEEMFOBNEGAUKTIMINSBLNXAELIHLMENSTZTELXVOUYOTOXOTBQAVEVKTEBXSGPAYXBNDAXCFEMZPMFZCGENINNIEXWOJRPXQ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.288393835,
+            "z": 6.36422,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "KJG",
+            "positions": "AMT",
+            "reflector_position": "E",
+            "offsets": "QDN",
+            "schedule": 115,
+            "plaintext": "XIYERWECKMTBEWISTRHWOAQSTRKAMAAFBDEBFXUNXCNYDSFYTZULPOXELFOSCLCBNGERBABGNFTMGEMJINPOGFLIDTAHEGEBI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.305190922,
+            "z": 6.283318,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ILT",
+            "positions": "ACL",
+            "reflector_position": "N",
+            "offsets": "SRS",
+            "schedule": 63,
+            "plaintext": "EARDUNWBNZENTOHPTXUSTZBENYSXROASNOBEXWDILYGANAPEGVYDJNBIARLKFSEXMCNRRANSINSHLFLLZRVOVWSLLGTXKHTXH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.309998237,
+            "z": 6.260164,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "KJI",
+            "positions": "AMV",
+            "reflector_position": "E",
+            "offsets": "QDN",
+            "schedule": 117,
+            "plaintext": "XIYERWECKXCKEWISTRHWOAQSTRKAMAAFBDECLXUNXCNYDSFYTZULPOXELFOSCMUBNGERBABGNFTMGEMJINPOGFLTXTAHEGEBI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.318491356,
+            "z": 6.219257,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "BDI",
+            "positions": "AXB",
+            "reflector_position": "H",
+            "offsets": "ZUT",
+            "schedule": 97,
+            "plaintext": "ISPSCQQYEMMETWFKIERSAYICJKXSDEFZEKGDENXEHZXUKOCUQDINDELTEMRINIDUEQLXZOTTSRDFZZCXKURLEFFKTARTQSSEG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.326555421,
+            "z": 6.180416,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ILS",
+            "positions": "ACK",
+            "reflector_position": "N",
+            "offsets": "SRS",
+            "schedule": 62,
+            "plaintext": "EARDUNWBNZENTOHPTXUSTZBENYSXNPASNOBEXWDILYGANAPEGVYDJNVIARLKFSEXMCNRRANSINSHLFLLGRVOVWSLLGTXKHTXH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.327821236,
+            "z": 6.17432,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "AFI",
+            "positions": "AAB",
+            "reflector_position": "H",
+            "offsets": "AVT",
+            "schedule": 1,
+            "plaintext": "AMZNCQQYEMMETWFKIERSAYICJKXSDEFZEKGDENXEHZXUKOCUQDINDELTEMRINIDUEQLXZOTTSRDFZZCXKURLEFFKTARTQSSEG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.327821236,
+            "z": 6.17432,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "BEI",
+            "positions": "AYB",
+            "reflector_position": "H",
+            "offsets": "ZUT",
+            "schedule": 123,
+            "plaintext": "AMZNCQQYEMMETWFKIERSAYICJKXSDEFZEKGDENXEHZXUKOCUQDINDELTEMRINIDUEQLXZOTTSRDFZZCXKURLEFFKTARTQSSEG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.334185414,
+            "z": 6.143667,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "KJF",
+            "positions": "AMS",
+            "reflector_position": "E",
+            "offsets": "QDN",
+            "schedule": 114,
+            "plaintext": "XIYERWECKMTUBWISTRHWOAQSTRKAMAAFBDEBFLUNXCNYDSFYTZULPOXELFOSCLCUNGERBABGNFTMGEMJINPOGFLIDFAHEGEBI",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.348987009,
+            "z": 6.072375,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "QHO",
+            "positions": "ABH",
+            "reflector_position": "D",
+            "offsets": "KUT",
+            "schedule": 33,
+            "plaintext": "FKAXAIKWOFZWZETEMENNGXLKALXIHERFKLOKSSIXNMAIDIEIZEKFZTZTRAUQHVITTAMCMBJEJOWZRYIBRBETWRXDKSONRLXOR",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.358336079,
+            "z": 6.027346,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "JZH",
+            "positions": "ADM",
+            "reflector_position": "Z",
+            "offsets": "REF",
+            "schedule": 90,
+            "plaintext": "LUBEEHXMOAQFIFLXNRYINYJNKHXENRZTRANOEZROWATLYTOEJGURDWFJASEXZEYKFFOXGERTTERDRJIYSQEZLKCUENXRVQTXP",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.366250826,
+            "z": 5.989225,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "JAE",
+            "positions": "AEO",
+            "reflector_position": "E",
+            "offsets": "REK",
+            "schedule": 118,
+            "plaintext": "XEEMFOBNEGAUKTIMINSBLNXAELIHLMENSTZTELXVOUYOTOXOTBQAVEVKTEBXSGPAYXBNDAXCFEMZPMFZCGENINNIEXCIZJPSH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.366250826,
+            "z": 5.989225,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "IAE",
+            "positions": "AFO",
+            "reflector_position": "E",
+            "offsets": "SFK",
+            "schedule": 137,
+            "plaintext": "XEEMFOBNEGAUKTIMINSBLNXAELIHLMENSTZTELXVOUYOTOXOTBQAVEVKTEBXSGPAYXBNDAXCFEMZPMFZCGENINNIEXCIZJPSH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.374706539,
+            "z": 5.948498,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "FFZ",
+            "positions": "ADS",
+            "reflector_position": "G",
+            "offsets": "VYT",
+            "schedule": 96,
+            "plaintext": "ALSXYFORTHSXYWSTERFKUKKJENNRXJSVOAVCQQXFRGERILKISRVRZDNSAECLNXZRXUFXLIQVNKZBRINOPFERPANLDKERXRRSZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.374783563,
+            "z": 5.948127,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "FFW",
+            "positions": "AJK",
+            "reflector_position": "B",
+            "offsets": "VEO",
+            "schedule": 29,
+            "plaintext": "CCEFAMRDYLVXSCSOUEOLXCZWESODTBENAXRDEGAKLERSGLIAUQFUBJTITKYRWTGDRNTIESKWUWFLDXHIGASORZYNORRYYTTIG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.381026276,
+            "z": 5.918059,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ILR",
+            "positions": "ACJ",
+            "reflector_position": "N",
+            "offsets": "SRS",
+            "schedule": 61,
+            "plaintext": "EARXUNWBNZENTOHPTXUSTZBENYSXNNWSNOBEXWDILYGANAPEGVYDJNVPARLKFSEXMCNRRANSINSHLFLLGDVOVWSLLGTXKHTXH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.385933972,
+            "z": 5.894422,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "FLN",
+            "positions": "AMY",
+            "reflector_position": "R",
+            "offsets": "VBL",
+            "schedule": 120,
+            "plaintext": "XMYBORPPRXDMUEYENSTBEHVRDLPHAUSIMXMEHAMLTDOYXALSONFXIGSUUGLSHAZASZZKKHODTTFEGOEPOSXBEXFRLTNMEZGUZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.390171475,
+            "z": 5.874012,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "MEP",
+            "positions": "ACI",
+            "reflector_position": "F",
+            "offsets": "OYT",
+            "schedule": 60,
+            "plaintext": "MQRNBIERBGXOQTJVSXNFLJTLAESHLVRBUBEASASETREREHXHARVRSIGUPITROKXGRQUEQSUXVJMXXIRNAOVTLFDUORBEGERDK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.392734875,
+            "z": 5.861665,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "CJC",
+            "positions": "AXW",
+            "reflector_position": "Y",
+            "offsets": "YOU",
+            "schedule": 118,
+            "plaintext": "EKTAXOKUEHXELLKXEANGZKOIRSTTENXMTSGINNKEJVRTUBTADQUSBOIZGUUUBEDHZYXEEXOKHGOEKXWXERVOTTBLMXLGOSHMH",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "BYQMZ",
+        "letters": 166,
+        "settings_scored": 597724608,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          218,
+          218,
+          218,
+          218,
+          218,
+          218
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.586386097,
+          "sd_score_per_letter": 0.157332628,
+          "max_score_per_letter": -8.582124642,
+          "top_z": 6.383046
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.582124642,
+            "z": 6.383046,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFV",
+            "positions": "AUC",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 90,
+            "plaintext": "GRSMNMDRVAMGAPZWYGOHCEXRIGXZ?UEPFZSIHVTDEWOWEFKXAADESWLNAPQLLANNUFRRVNIAJGELORWEILTSNSWEYAWISJRVHFXHYQENWABXZPBSXINZVLHRRHNEYTXHUNSFUNXDEDNOFFTGEEYTNRXHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.593580594,
+            "z": 6.310233,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFS",
+            "positions": "AUZ",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 113,
+            "plaintext": "GRSMNMDRVAMTJNZWYGOHCEXRIGXZ?UEPFZSIHNHBEWOWEFKXAADESWLNAPQLLANJNNRRVNIAJGELORWEILTSNSWEYRQVEJRVHFXHYQENWABXZPBSXINFDCHRRHNEYTXHUNSFUNXDEDNOFGQUEEYTNRXHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.604959263,
+            "z": 6.23791,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFT",
+            "positions": "AUA",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 88,
+            "plaintext": "GRSMNMDRVAMTJPZWYGOHCEXRIGXZ?UEPFZSIHNHDEWOWEFKXAADESWLNAPQLLANJNFRRVNIAJGELORWEILTSNSWEYRQSSJRVHFXHYQENWABXZPBSXINFDLHRRHNEYTXHUNSFUNXDEDNOFGQGEEYTNRXHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.606582243,
+            "z": 6.227595,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFU",
+            "positions": "AUB",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 89,
+            "plaintext": "GRSMNMDRVAMTAPZWYGOHCEXRIGXZ?UEPFZSIHNTDEWOWEFKXAADESWLNAPQLLANJUFRRVNIAJGELORWEILTSNSWEYRIISJRVHFXHYQENWABXZPBSXINFVLHRRHNEYTXHUNSFUNXDEDNOFGTGEEYTNRXHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.607054715,
+            "z": 6.224592,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ELV",
+            "positions": "AEM",
+            "reflector_position": "L",
+            "offsets": "WTR",
+            "schedule": 116,
+            "plaintext": "UANTHPFIELTMHTYOEJPUHZPASINV?NLRSAAYYAFDTSZWLEWOQAZVELLBSOLSEBNMPPOLJRSPTUESIQONNERAEXMNLANKYJEURXFOYUHGDMSXBYNCBXYFFLERDZBUAMICZACINITIAURISISQANFACPQNIQAEAGERXMXSYNN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.607054715,
+            "z": 6.224592,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "DLV",
+            "positions": "AFM",
+            "reflector_position": "L",
+            "offsets": "XUR",
+            "schedule": 142,
+            "plaintext": "UANTHPFIELTMHTYOEJPUHZPASINV?NLRSAAYYAFDTSZWLEWOQAZVELLBSOLSEBNMPPOLJRSPTUESIQONNERAEXMNLANKYJEURXFOYUHGDMSXBYNCBXYFFLERDZBUAMICZACINITIAURISISQANFACPQNIQAEAGERXMXSYNN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.614925918,
+            "z": 6.174563,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "EJV",
+            "positions": "ACM",
+            "reflector_position": "L",
+            "offsets": "WTR",
+            "schedule": 64,
+            "plaintext": "ZIGABZJSXICBHHIQAXGWVBLAOZQA?DCQNGNXSOTDTSZWLEWOQAZVELLBSOLSEBNMPPOLJRSPTUESIQONNERAEXMNLANKYJEURXFOYUHGDMSXBYNCBXYFFLERDZBUAMICZACINITIAURISISQANFACPQNIQAEAGERXMXSYNN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.616496606,
+            "z": 6.164579,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFO",
+            "positions": "AUV",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 109,
+            "plaintext": "GRSMNMDRVAMTJNFESVOHCEXRIGXZ?UEPFZSIHNHBVOYHEFKXAADESWLNAPQLLANJNNGLWUIAJGELORWEILTSNSWEYRQVRIYBUFXHYQENWABXZPBSXINFDCLNDYNEYTXHUNSFUNXDEDNOFGQUXVWINRXHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.621360287,
+            "z": 6.133666,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFL",
+            "positions": "AUS",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 106,
+            "plaintext": "GRSMNMDRVAMTJNFESVLSZEXRIGXZ?UEPFZSIHNHBVOYHPYRXAADESWLNAPQLLANJNNGLWUHUMGELORWEILTSNSWEYRQVRIYBJRZUYQENWABXZPBSXINFDCLNDYCEOTXHUNSFUNXDEDNOFGQUXVWIFTRHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.62267972,
+            "z": 6.12528,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "SER",
+            "positions": "ATY",
+            "reflector_position": "D",
+            "offsets": "IPH",
+            "schedule": 86,
+            "plaintext": "GAEBXPXUNFOKUIKAMLSKNARINXVS?ORJITHXAUEQARNYVRPRBEMUNXEMAXRZDNGLHEFBWOEMXGROFAZHOXETULOCLLUAAMMEOBADPEWLRAELAMQWLKRBTCKBMXBXUMXXRBWBHTEMTBCYLACALGDSZGHTXKYDPXALPAZAHER",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.628477609,
+            "z": 6.088429,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "EKV",
+            "positions": "ADM",
+            "reflector_position": "L",
+            "offsets": "WTR",
+            "schedule": 90,
+            "plaintext": "ZIGABZJSXICBHTYOEJPUHZPASINV?NLRSAAYYAFDTSZWLEWOQAZVELLBSOLSEBNMPPOLJRSPTUESIQONNERAEXMNLANKYJEURXFOYUHGDMSXBYNCBXYFFLERDZBUAMICZACINITIAURISISQANFACPQNIQAEAGERXMXSYNN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.636271199,
+            "z": 6.038893,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "SFR",
+            "positions": "AUY",
+            "reflector_position": "D",
+            "offsets": "IPH",
+            "schedule": 112,
+            "plaintext": "GAEBXPXUNFOKUIKAMLSKNARINXVS?ORJITHXAUEQARNYVRPRBEMUNXEMAXRZDNGLHEFBWOEMXGROFAZHOXETUNJUDAMSNBSSDUMKODIINGPZKRHWLKRBTCKBMXBXUMXXRBWBHTEMTBCYLACALGDSZGHTXKYDPXALPAZAHER",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.638190966,
+            "z": 6.026691,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ELT",
+            "positions": "AEK",
+            "reflector_position": "L",
+            "offsets": "WTR",
+            "schedule": 114,
+            "plaintext": "UANTHPFIELTMVDYOEJPUHZPASINV?NLRSAAYYAMITSZWLEWOQAZVELLBSOLSEBNMXNOLJRSPTUESIQONNERAEXMNLAWFYJEURXFOYUHGDMSXBYNCBXYFBRERDZBUAMICZACINITIAURISIGVANFACPQNIQAEAGERXMXSYNN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.638190966,
+            "z": 6.026691,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "DLT",
+            "positions": "AFK",
+            "reflector_position": "L",
+            "offsets": "XUR",
+            "schedule": 140,
+            "plaintext": "UANTHPFIELTMVDYOEJPUHZPASINV?NLRSAAYYAMITSZWLEWOQAZVELLBSOLSEBNMXNOLJRSPTUESIQONNERAEXMNLAWFYJEURXFOYUHGDMSXBYNCBXYFBRERDZBUAMICZACINITIAURISIGVANFACPQNIQAEAGERXMXSYNN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.642451447,
+            "z": 5.999612,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "SEO",
+            "positions": "ATV",
+            "reflector_position": "D",
+            "offsets": "IPH",
+            "schedule": 83,
+            "plaintext": "GAEBXPWJRFOKUIKAMLSKNARINXVS?ORJBCGXAUEQARNYVRPRBEMUNXEMAXXOHNGLHEFBWOEMXGROFAZHOXETIMICLLUAAMMEOBADPEWLRAELAMSZDDRBTCKBMXBXUMXXRBWBHTEMZCSYLACALGDSZGHTXKYDPXALPADENER",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.645431966,
+            "z": 5.980667,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "SEQ",
+            "positions": "ATX",
+            "reflector_position": "D",
+            "offsets": "IPH",
+            "schedule": 85,
+            "plaintext": "GAEBXPWUNFOKUIKAMLSKNARINXVS?ORJBTHXAUEQARNYVRPRBEMUNXEMAXXZDNGLHEFBWOEMXGROFAZHOXETILOCLLUAAMMEOBADPEWLRAELAMSKLKRBTCKBMXBXUMXXRBWBHTEMZBCYLACALGDSZGHTXKYDPXALPADAHER",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.645507781,
+            "z": 5.980186,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "SES",
+            "positions": "ATZ",
+            "reflector_position": "D",
+            "offsets": "IPH",
+            "schedule": 87,
+            "plaintext": "GAEBXMXUNFOKUIKAMLSKNARINXVS?ORQITHXAUEQARNYVRPRBEMUNXEMAFRZDNGLHEFBWOEMXGROFAZHOXEIULOCLLUAAMMEOBADPEWLRAELADHWLKRBTCKBMXBXUMXXRBWBHTEWTBCYLACALGDSZGHTXKYDPXALPFZAHER",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.646256799,
+            "z": 5.975425,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "XFK",
+            "positions": "AWH",
+            "reflector_position": "M",
+            "offsets": "DRX",
+            "schedule": 147,
+            "plaintext": "XNTXSHNNOENVEKWENMHKAEGAYFJG?ZXPNVQRSTOSYYKIFOAWSCSKNYLZANNSBSXQRXWXKUUYTIVGDSVVZOKLYXMBNNQSCXGEGPUMJENGUFLOCONNJZTIVXJCAESEAILAGLEUNDQGNMIECOLULXULKOOULLXXSKAITROJLUG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.656032771,
+            "z": 5.913289,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "NFP",
+            "positions": "AUW",
+            "reflector_position": "F",
+            "offsets": "NPH",
+            "schedule": 110,
+            "plaintext": "GRSMNMDRVAMTJNFESGOHCEXRIGXZ?UEPFZSIHNHBVOYWEFKXAADESWLNAPQLLANJNNGLWNIAJGELORWEILTSNSWEYRQVRIYPHFXHYQENWABXZPBSXINFDCLNDHNEYTXHUNSFUNXDEDNOFGQUXVWTNRXHTZNIXFHEGZLMALX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.666847406,
+            "z": 5.844552,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "XGK",
+            "positions": "AXH",
+            "reflector_position": "M",
+            "offsets": "DRX",
+            "schedule": 173,
+            "plaintext": "XNTXSHNNOENVEKWENMHKAEGAGRCH?GSVHUCFBKDFRBIURSOPJDSKNYLZANNSBSXQRXWXKUUYTIVGDSVVZOKLYXMBNNQSCXGEGPUMJENGUFLOCONNJZTIVXJCAESEAILAGLEUNDQGNMIECOLULXULKOOULLXXSKAITROJLUG",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "FKQLZ",
+        "letters": 107,
+        "settings_scored": 433213248,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          158,
+          158,
+          158,
+          158,
+          158,
+          158
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.622081984,
+          "sd_score_per_letter": 0.197622722,
+          "max_score_per_letter": -8.338649815,
+          "top_z": 6.494355
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.338649815,
+            "z": 6.494355,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJI",
+            "positions": "AWW",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 102,
+            "plaintext": "QIGRDBZNRPNFAWGAFOEXWENXSFLGXOLCHNNSEGSAZGSGLLISVONGMFNADEXAUYCMRUZLJHRSAMUSPZBOUIMXKMERSMSOANKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.369331872,
+            "z": 6.3391,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "GVD",
+            "positions": "ADI",
+            "reflector_position": "T",
+            "offsets": "UIF",
+            "schedule": 86,
+            "plaintext": "WLJNVXEINXAKNIIMARDUKNJXNROANZEYGBLLQLEFANBEXVAAUBBTBOJIETRXUORWXRHARZTSCSDTQMTMEHLINRFDROSZTEFNSZDAXNOMTOC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.383733204,
+            "z": 6.266227,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "GWD",
+            "positions": "AEI",
+            "reflector_position": "T",
+            "offsets": "UIF",
+            "schedule": 112,
+            "plaintext": "GAWMBBEINXAKNIIMARDUKNJXNROANZEYGBLLQLEFANBEXVAAUBBTBOJIETRXUORWXRHARZTSCSDTQMTMEHLINRFDROSZTEFNSZDAXNOMTOC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.383733204,
+            "z": 6.266227,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "FWD",
+            "positions": "AFI",
+            "reflector_position": "T",
+            "offsets": "VJF",
+            "schedule": 138,
+            "plaintext": "GAWMBBEINXAKNIIMARDUKNJXNROANZEYGBLLQLEFANBEXVAAUBBTBOJIETRXUORWXRHARZTSCSDTQMTMEHLINRFDROSZTEFNSZDAXNOMTOC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.41789224,
+            "z": 6.093377,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJJ",
+            "positions": "AWX",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 103,
+            "plaintext": "QIGRDBZZRPNFAWGAFOEXWENXSFLGXOLCHRSSEGSAZGSGLLISVONGMFNADEXGUYCMRUZLJHRSAMUSPZBOUIMXKPERSMSOANKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.439454309,
+            "z": 5.98427,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "UNW",
+            "positions": "AJS",
+            "reflector_position": "H",
+            "offsets": "GWW",
+            "schedule": 46,
+            "plaintext": "CZDOEFRQTAATPNWAEJOMLXPRDOEGELTASSSFANLLVXZPWININEBAEHVFEETZNHYXMOMPXRPYPEIZEUFIESRKAGYKREHERFSGXVPWTAMXPXC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.439509896,
+            "z": 5.983988,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "TZD",
+            "positions": "ALU",
+            "reflector_position": "X",
+            "offsets": "HMR",
+            "schedule": 100,
+            "plaintext": "QOSQSKHZAPTBNOTVQOYLLXCKVELALFSNDXBAVOMSFOTHRFANXSCWREINDVEMXZYWQAYNSFNAEINWANNURMAVOZZOSETEIVNKFDMFBFNXFNA",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.440925186,
+            "z": 5.976827,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJK",
+            "positions": "AWY",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 104,
+            "plaintext": "QIGRDBAZRPNFAWGAFOEXWENXSFLGXOLCHISSEGSAZGSGLLISVONGMFNADEYGUYCMRUZLJHRSAMUSPZBOUIMXOPERSMSOANKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.446960203,
+            "z": 5.946289,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "TZC",
+            "positions": "ALT",
+            "reflector_position": "X",
+            "offsets": "HMR",
+            "schedule": 99,
+            "plaintext": "QOSQSKHZAPOBNOTVQOYLLXCKVELALFSNDXBANOMSFOTHRFANXSCWREINDVEMXZLWQAYNSFNAEINWANNURMAVOZZOSETEIVNKFDMFBFNXFNA",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.453696711,
+            "z": 5.912201,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJE",
+            "positions": "AWS",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 98,
+            "plaintext": "QIGRDBZNJVOHAWGAFOEXWENXSFLGXOLCHNJUDEPAZGSGLLISVONGMFNADEXABROPRUZLJHRSAMUSPZBOUIMXKMQQVESOANKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.454570465,
+            "z": 5.90778,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJY",
+            "positions": "AWM",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 92,
+            "plaintext": "QIGRDBZNJVOHMFRPXIEXWENXSFLGXOLCHNJUDEEVBZTTBLISVONGMFNADEXABROPMFXUNFRSAMUSPZBOUIMXKMQQVEZRFWYXLANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.471913821,
+            "z": 5.82002,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJD",
+            "positions": "AWR",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 97,
+            "plaintext": "QIGRDBZNJVOHMWGAFOEXWENXSFLGXOLCHNJUDEETZGSGLLISVONGMFNADEXABROPMUZLJHRSAMUSPZBOUIMXKMQQVEZOANKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.479115199,
+            "z": 5.78358,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "EFZ",
+            "positions": "ALB",
+            "reflector_position": "G",
+            "offsets": "WGC",
+            "schedule": 81,
+            "plaintext": "AZIZXUOJXPQEYHSUEIPFAAKDKCFUESMAFIRIYSNEMLCSKIXXRDENSNKESDXSTDIDSTMEIFGKEMXDWJEDRUIDRNTZRKFARSIQEJSHWMZNDWO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.480467339,
+            "z": 5.776738,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "EFW",
+            "positions": "AKY",
+            "reflector_position": "G",
+            "offsets": "WFC",
+            "schedule": 78,
+            "plaintext": "AZIZXUOJXPQEYHSUEIPFAAKTEQFUESMAFIRIYSNEMLCSKIXXRYPPTNKESDXSTDIDSTMEIFGKEMXROTEDRUIDRNTZRKFARSIQEJSHWXSVDWO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.489125753,
+            "z": 5.732925,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "TZE",
+            "positions": "ALV",
+            "reflector_position": "X",
+            "offsets": "HMR",
+            "schedule": 101,
+            "plaintext": "QOSQSKHZASTBNOTVQOYLLXCKVELALFSNDXBEYOMSFOTHRFANXSCWREINDVEMXQYWQAYNSFNAEINWANNURMAVOZZBSETEIVNKFDMFBFNXFNA",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.490667536,
+            "z": 5.725123,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "GWC",
+            "positions": "AEH",
+            "reflector_position": "T",
+            "offsets": "UIF",
+            "schedule": 111,
+            "plaintext": "GAWMBSEINXAKNIIMARDUKNJXNROANZEQGBLLQLEFANBEXVAAUBBTBOJIECRXUORWXRHARZTSCSDTQMTMEHLNNRFDROSZTEFNSZDAXNOMTOC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.490667536,
+            "z": 5.725123,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "FWC",
+            "positions": "AFH",
+            "reflector_position": "T",
+            "offsets": "VJF",
+            "schedule": 137,
+            "plaintext": "GAWMBSEINXAKNIIMARDUKNJXNROANZEQGBLLQLEFANBEXVAAUBBTBOJIECRXUORWXRHARZTSCSDTQMTMEHLNNRFDROSZTEFNSZDAXNOMTOC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.491563649,
+            "z": 5.720589,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJC",
+            "positions": "AWQ",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 96,
+            "plaintext": "QIGRDBZNJVOHMFGAFOEXWENXSFLGXOLCHNJUDEEVIGSGLLISVONGMFNADEXABROPMFZLJHRSAMUSPZBOUIMXKMQQVEZRANKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.498782213,
+            "z": 5.684062,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZJB",
+            "positions": "AWP",
+            "reflector_position": "Q",
+            "offsets": "BNO",
+            "schedule": 95,
+            "plaintext": "QIGRDBZNJVOHMFRAFOEXWENXSFLGXOLCHNJUDEEVBUSGLLISVONGMFNADEXABROPMFXLJHRSAMUSPZBOUIMXKMQQVEZRFNKELANTXKMRGUS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.500112699,
+            "z": 5.677329,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "KIS",
+            "positions": "AAX",
+            "reflector_position": "A",
+            "offsets": "QSF",
+            "schedule": 23,
+            "plaintext": "LCBHOXDWMOHJAPKVYQEMVEEVEDETGBBMXESANAPAWXUAXXDBURKEIAOKPGEXFRGNSKOBQTQTKGXBXRYYAMRVISXTDENUEFINSJPGASIXWKX",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "XFEDT",
+        "letters": 97,
+        "settings_scored": 405794688,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          148,
+          148,
+          148,
+          148,
+          148,
+          148
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.61127798,
+          "sd_score_per_letter": 0.206497785,
+          "max_score_per_letter": -8.261497437,
+          "top_z": 6.536538
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.261497437,
+            "z": 6.536538,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "UHC",
+            "positions": "ACA",
+            "reflector_position": "K",
+            "offsets": "GVY",
+            "schedule": 52,
+            "plaintext": "MOUYYYYQTTNAMWFHANBALNWOXAZOBIPYVOXSSLLUENKVMONDXISIXXFKUXNRLIETEXMNDQPTAFXHPFLLERTOGSJORXJWARIRK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.354244516,
+            "z": 6.087394,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "LMV",
+            "positions": "AAY",
+            "reflector_position": "Y",
+            "offsets": "POD",
+            "schedule": 24,
+            "plaintext": "NXTTIKUNXERPUXIGEADIXOETNATIDHECGETMQDAEUERYNTONNEAKDNSETYJNLFZXUBMDRXLSLADYRXFDIUZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.354244516,
+            "z": 6.087394,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "MZV",
+            "positions": "ANY",
+            "reflector_position": "Y",
+            "offsets": "OOD",
+            "schedule": 146,
+            "plaintext": "NXTTIKUNXERPUXIGEADIXOETNATIDHECGETMQDAEUERYNTONNEAKDNSETYJNLFZXUBMDRXLSLADYRXFDIUZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.354919887,
+            "z": 6.084124,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "KZW",
+            "positions": "AEW",
+            "reflector_position": "F",
+            "offsets": "QFA",
+            "schedule": 126,
+            "plaintext": "NRLEUWVOQSEZNGATTIMMTVUWSYKXSTXQWENAOBSQLPSKIPUGLLINIREQYVONITERLUNNODLFSWBOBAVYROKASSRRUPPXHPCYN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.354919887,
+            "z": 6.084124,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "JZW",
+            "positions": "AFW",
+            "reflector_position": "F",
+            "offsets": "RGA",
+            "schedule": 145,
+            "plaintext": "NRLEUWVOQSEZNGATTIMMTVUWSYKXSTXQWENAOBSQLPSKIPUGLLINIREQYVONITERLUNNODLFSWBOBAVYROKASSRRUPPXHPCYN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.355995757,
+            "z": 6.078914,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "UHB",
+            "positions": "ACZ",
+            "reflector_position": "K",
+            "offsets": "GVY",
+            "schedule": 77,
+            "plaintext": "MOUYYYYQTTNAMRFHANBALNWOXAZOBIPYVOXSSLLEONKVMONDXISIXXFKUXNRLIETEBMNDQPTAFXHPFLLERTOGSJORXJMARIRK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.36223968,
+            "z": 6.048676,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "MZV",
+            "positions": "AMY",
+            "reflector_position": "Y",
+            "offsets": "OND",
+            "schedule": 120,
+            "plaintext": "YXTTIKUNXERPUXIGEADIXOETNATIDHECGETMQDAEUERYNTONNEAKDNSETYJNLFZXUBMDRXLSLADYRXFDIUZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.382769858,
+            "z": 5.949256,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "UHA",
+            "positions": "ACY",
+            "reflector_position": "K",
+            "offsets": "GVY",
+            "schedule": 76,
+            "plaintext": "MOUYYYYQTTNAMRJHANBALNWOXAZOBIPYVOXSSLLEXFKVMONDXISIXXFKUXNRLIETEBMNDQPTAFXHPFLLERTOGSJORXJMNRIRK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.397248037,
+            "z": 5.879143,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "UHD",
+            "positions": "ACB",
+            "reflector_position": "K",
+            "offsets": "GVY",
+            "schedule": 53,
+            "plaintext": "MOUYYYYQTTNAPWFHANBALNWOXAZOBIPYVOXSSLIKENKVMONDXISIXXFKUXNRLIETCXMNDQPTAFXHPFLLERTOGSJORXUWARIRK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.400521269,
+            "z": 5.863292,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "JAB",
+            "positions": "ACL",
+            "reflector_position": "B",
+            "offsets": "RCK",
+            "schedule": 63,
+            "plaintext": "LXFUEINZDINUNSGFXZTMBGSFVDUXMUEHELSTTYQIRKMEIMGRAGSWZWBVEDNATVGUMJAKZCWKAEBFTLAUTMZAUJOMTIAUGTRCE",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.404597734,
+            "z": 5.843551,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "YZN",
+            "positions": "AAS",
+            "reflector_position": "V",
+            "offsets": "CBF",
+            "schedule": 18,
+            "plaintext": "OFXMFYFXTERELIPRPOYTYHECWDRLEIDRETAHRTEXLEXLPPEFSOKNHOQZQZANEZOAHWXGEHRXKTJXLMXSCSTMPFNIEZAMAQQTT",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.404597734,
+            "z": 5.843551,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZYN",
+            "positions": "AYS",
+            "reflector_position": "V",
+            "offsets": "BAF",
+            "schedule": 140,
+            "plaintext": "OFXMFYFXTERELIPRPOYTYHECWDRLEIDRETAHRTEXLEXLPPEFSOKNHOQZQZANEZOAHWXGEHRXKTJXLMXSCSTMPFNIEZAMAQQTT",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.413732664,
+            "z": 5.799313,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "XQW",
+            "positions": "AAM",
+            "reflector_position": "S",
+            "offsets": "DKQ",
+            "schedule": 12,
+            "plaintext": "YTSPFXOHAWOWGXGXINZUHPSVIEWUNXIMMNETJWEBLDXFEDPACANRXLJAFSTGTDRATSVCWOXPSESKMRXTZTXZTAFEFADBPEFRS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.413732664,
+            "z": 5.799313,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "YEW",
+            "positions": "ANM",
+            "reflector_position": "S",
+            "offsets": "CJQ",
+            "schedule": 134,
+            "plaintext": "YTSPFXOHAWOWGXGXINZUHPSVIEWUNXIMMNETJWEBLDXFEDPACANRXLJAFSTGTDRATSVCWOXPSESKMRXTZTXZTAFEFADBPEFRS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.415848198,
+            "z": 5.789068,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "LMU",
+            "positions": "AAX",
+            "reflector_position": "Y",
+            "offsets": "POD",
+            "schedule": 23,
+            "plaintext": "KXTTIKUNXERPUXIGEADIXOETNATIDHECGETMQDAEUERYNTONNEAKBNSETYJNLFZXUBMDRXLSLADYRXUDIUZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.415848198,
+            "z": 5.789068,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "MAU",
+            "positions": "ANX",
+            "reflector_position": "Y",
+            "offsets": "OND",
+            "schedule": 145,
+            "plaintext": "KXTTIKUNXERPUXIGEADIXOETNATIDHECGETMQDAEUERYNTONNEAKBNSETYJNLFZXUBMDRXLSLADYRXUDIUZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.419038566,
+            "z": 5.773618,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "YTN",
+            "positions": "AUS",
+            "reflector_position": "V",
+            "offsets": "CBF",
+            "schedule": 36,
+            "plaintext": "OFXMFYFXTERELIPRPOYTYHECWDRLEIDRETAHRTEXLEXLPPEFSOKNHOQZQZANEZOAHWXGEHRXKTJXLMXSCSTMPFNIEZAHMUWWT",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.423265088,
+            "z": 5.753151,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "MZR",
+            "positions": "AMU",
+            "reflector_position": "Y",
+            "offsets": "OND",
+            "schedule": 116,
+            "plaintext": "VAXRSKUNXERPUXIGEADIXOETNATUYNECGETMQDAEUERYNTONNEAKBXBRTYJNLFZXUBMDRXLSLADYRXUCQLZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.431963639,
+            "z": 5.711027,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "OCV",
+            "positions": "ALJ",
+            "reflector_position": "N",
+            "offsets": "MJO",
+            "schedule": 79,
+            "plaintext": "MSAXKZOYSHXFBZMTZRLFTFVEXSGNHIEVIQLBEQRGEUNIMUHUWGEJMALSQESONEBNVXLUFTOPKBIEIFZIKIRAEIAGERORWTNPT",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.433336735,
+            "z": 5.704377,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "LMS",
+            "positions": "AAV",
+            "reflector_position": "Y",
+            "offsets": "POD",
+            "schedule": 21,
+            "plaintext": "KDITIKUNXERPUXIGEADIXOETNATUYHECGETMQDAEUERYNTONNEAKBXBETYJNLFZXUBMDRXLSLADYRXUCQUZZAXEVUTEIIFNBH",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "BYQMZ",
+        "letters": 166,
+        "settings_scored": 597724608,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          218,
+          218,
+          218,
+          218,
+          218,
+          218
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.585920986,
+          "sd_score_per_letter": 0.157577107,
+          "max_score_per_letter": -8.606960779,
+          "top_z": 6.212579
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.606960779,
+            "z": 6.212579,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "BTF",
+            "positions": "YTA",
+            "reflector_position": "G",
+            "offsets": "XAV",
+            "schedule": 185,
+            "plaintext": "HRWBBENBWYOPPQJWXARLLESULBLX?UWFSEIGEADHYOYYGAQSCAAOFQTUQNHKANMMVTBTSQNVTUAYGANNYRONSFLUADTMANNHSEJAGTTGKUYGERAGLEZORDIMLLUJTRJSHEHEWYJLZOSXGFBLLJANIDNERINRSHVARZNRUFU",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.611683427,
+            "z": 6.182608,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "KGU",
+            "positions": "WGA",
+            "reflector_position": "A",
+            "offsets": "MAG",
+            "schedule": 146,
+            "plaintext": "AUEDBSTALIZATLUKALDHEYXANTTT?BEMAQRSIYTEXOTTSMMEDTYGCVTPERSGFLTMHLNILODEWAINDXXNNPXZWQLYTVCRSBEVQFSGNFGOENOIQFLXSWFSLPADKCHYSHHBRVEXBEORDNUNOFMILAINDKEDNGNYGVIATKKWSQG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.620369891,
+            "z": 6.127483,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "JDO",
+            "positions": "TZA",
+            "reflector_position": "B",
+            "offsets": "KWM",
+            "schedule": 87,
+            "plaintext": "SRXDSOXDVRQOUMORUNFBDRXXTWOR?MXEMAEOQYTNUCAMDBVZIMOKLLXQUSMAXQXRAEIQVSZUNXDJTRAUMLACGPTIZSEHSUCGPSXCVEWCNURWXAQZVBSKLEEYEXMOBQRGPAETDYXWELDXMEFIJRUSORTAJMTAQKWTBPGTWAX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.6445128,
+            "z": 5.97427,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "PWK",
+            "positions": "MDA",
+            "reflector_position": "H",
+            "offsets": "XHQ",
+            "schedule": 169,
+            "plaintext": "JNVJBAFMSIHQHOSNEUIMSCHAQQBG?SPWXHEEPJECIUFHULDUENIVUQMMWRMYCWWGTMVIXWJCKMPMATFAINCZRDOXMXOEDVDAIBSXWOIEANXOTWTSZAOFBIILENDEBETNUHLEVLJYERUMIENDPGESESHNXUNEMBKKYTYYRXK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.650015658,
+            "z": 5.939348,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "KHU",
+            "positions": "WHA",
+            "reflector_position": "A",
+            "offsets": "MAG",
+            "schedule": 147,
+            "plaintext": "AUEDBSSALIZATLUKALDHEYXANTTT?BEMDORSIYTEXOTTSMMEDTYGCVTPERPGFLTMHLNILODEWAINDXXNNPXZOQLYTVCRSBEVQFSGNFGOENOIQFUXSWFSLPADKCHYSHHBRVEXBEORDNUNOFMILAINDKEDNGNYGVIATKAWSQG",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.664405602,
+            "z": 5.848028,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "CBH",
+            "positions": "AZA",
+            "reflector_position": "Y",
+            "offsets": "YYT",
+            "schedule": 25,
+            "plaintext": "BERETSTIEUNDMPVXMXGILAQVVUGH?VLQNESEBQULOXDWYUNHOFKBHEGETKLNSKWBRYHWCRDNSTHTOHWAONQBMVAOEJUWEZAMWGGITOAFDHEUHELARGSTXAJTAHTPPUXBZFXLAESQLSQFGELAPCGELEILOOXXBTAXGLOWLDE",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.664405602,
+            "z": 5.848028,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "QBH",
+            "positions": "NZA",
+            "reflector_position": "X",
+            "offsets": "XYT",
+            "schedule": 217,
+            "plaintext": "BERETSTIEUNDMPVXMXGILAQVVUGH?VLQNESEBQULOXDWYUNHOFKBHEGETKLNSKWBRYHWCRDNSTHTOHWAONQBMVAOEJUWEZAMWGGITOAFDHEUHELARGSTXAJTAHTPPUXBZFXLAESQLSQFGELAPCGELEILOOXXBTAXGLOWLDE",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.666121337,
+            "z": 5.83714,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "JEO",
+            "positions": "TAA",
+            "reflector_position": "B",
+            "offsets": "KWM",
+            "schedule": 62,
+            "plaintext": "SRXDSOXDVRQOUZORUNFBDRXXTWOR?MXEMAEOQYTMUCAMDBVZIMOKLLXQUSMAXQXRARIQVSZUNXDJTRAUMLACGPTIZSEPSUCGPSXCVEWCNURWXAQZVBSKLIRYEXMOBQRGPAETDYXWELDXMEFDJRUSORTAJMTAQKWTBPGTWAX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.667090747,
+            "z": 5.830988,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "CFR",
+            "positions": "LRA",
+            "reflector_position": "M",
+            "offsets": "JMJ",
+            "schedule": 157,
+            "plaintext": "TNNLQWAKORWXQPUGYLKLQMSPMZMP?FAXOQAROGPBJESEIMWKXPGITKODDENTHOXYYAGTTCEWBLHFSNNOERMPKEKLRXWEEXPHIXUREZWSDIMAGFWAEXITTMERUTXAXOIIBFFNUWGOISTNGQCKSHXWOIRSMHTMMALNGUBMBOL",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.667886392,
+            "z": 5.825939,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "JSE",
+            "positions": "BTA",
+            "reflector_position": "H",
+            "offsets": "SBW",
+            "schedule": 45,
+            "plaintext": "XUQPZSGXHPUNNNOIKYELESWXMOGW?LHJYCIEPMSASTEXUUWHEXKZTCBEAQNPMOXEISTQOLUXFNMMVFTXDNACPNDELKTUAPBIHOENQNOQKXBSGEXSMIGXLYYMIELTHWCGXFSBIMKZEFMPFDZESCNLAUELFLZZWGDVEHUTNMO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.668093422,
+            "z": 5.824625,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "CAH",
+            "positions": "AYA",
+            "reflector_position": "Y",
+            "offsets": "YYT",
+            "schedule": 24,
+            "plaintext": "BERETETIEUNDMPVXMXGILAQVVUGH?VLNNESEBQULOXDWYUNHOFKBHEGETKLNSKWBRYHWCRDNSTHTOHWAONQWMVAOEJUWEZAMWGGITOAFDHEUHULARGSTXAJTAHTPPUXBZFXLAESTLSQFGELAPCGELEILOOXXBTAXGAOWLDE",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.668093422,
+            "z": 5.824625,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "QAH",
+            "positions": "NYA",
+            "reflector_position": "X",
+            "offsets": "XYT",
+            "schedule": 216,
+            "plaintext": "BERETETIEUNDMPVXMXGILAQVVUGH?VLNNESEBQULOXDWYUNHOFKBHEGETKLNSKWBRYHWCRDNSTHTOHWAONQWMVAOEJUWEZAMWGGITOAFDHEUHULARGSTXAJTAHTPPUXBZFXLAESTLSQFGELAPCGELEILOOXXBTAXGAOWLDE",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.668164468,
+            "z": 5.824174,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "CPX",
+            "positions": "AFA",
+            "reflector_position": "E",
+            "offsets": "YQD",
+            "schedule": 5,
+            "plaintext": "IHJMSLFBWDERFNNLRGQLIFDANTXL?NRPANUDAXDSPUTSISCGNZOBZCNEWGETFYYGPYTLXPFFWXBBEZYTENDUDHQQVXDAZFUSXXYYGFTOYZUQQEHLBKUGKEERAGAFIDVEBAMMGRRONZZEUFXSFKXAXPAOTSIENCNNIQQRPRU",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.668164468,
+            "z": 5.824174,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "QPX",
+            "positions": "NFA",
+            "reflector_position": "D",
+            "offsets": "XQD",
+            "schedule": 197,
+            "plaintext": "IHJMSLFBWDERFNNLRGQLIFDANTXL?NRPANUDAXDSPUTSISCGNZOBZCNEWGETFYYGPYTLXPFFWXBBEZYTENDUDHQQVXDAZFUSXXYYGFTOYZUQQEHLBKUGKEERAGAFIDVEBAMMGRRONZZEUFXSFKXAXPAOTSIENCNNIQQRPRU",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.672903841,
+            "z": 5.794098,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ZGQ",
+            "positions": "IGA",
+            "reflector_position": "R",
+            "offsets": "JAK",
+            "schedule": 68,
+            "plaintext": "PUBMIESIWEACVVASFPSTAZCNFKLW?UTNNNEDSPRXWHOANDDJEHXBQEYEXELWBTBJVXWODUNADXAQAAGLXCBXMZPFNRJCIAGEXOABWXGLFTDTABSJEKMUFEIGVVAXVERZCHLNYKYNDNLDFRWYYAUGODETPUAEIRRFFQNORDO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.673972048,
+            "z": 5.787319,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "ZFQ",
+            "positions": "IFA",
+            "reflector_position": "R",
+            "offsets": "JAK",
+            "schedule": 67,
+            "plaintext": "PUBMIESIWEACVVASFPSTAZCNZKLW?UTNNNEDSPRXWHOANDDJEHHBQEYEXELWBTBJVXWODUNADXAQBAGLXCBXMZPFNRJCIAGEXOABWXELFTDTABSJEKMUFEIGVVAXVERZIDLNYKYNDNLDFRWYYAUGODETPULEIRRFFQNORDO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.676969712,
+            "z": 5.768295,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "WMW",
+            "positions": "SZA",
+            "reflector_position": "Q",
+            "offsets": "WNE",
+            "schedule": 61,
+            "plaintext": "KMMERQSVVSECVDUYROGNARAVGBQR?ZPSWUNDLXLYQFUTXAOAVBGVXNDINGGHFLTSWLXGXELDLITNRFFUHRMUAEXEUWEIMADVCHFDISNPBDNTLAEFNDBOJCTMIEBPERRGINEJWQRLCJGXFAZQLBESNAZYRXLTGENXMLLNOIK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.677147987,
+            "z": 5.767164,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "JRE",
+            "positions": "BSA",
+            "reflector_position": "H",
+            "offsets": "SBW",
+            "schedule": 44,
+            "plaintext": "XUQPZIGXHPUNNNOIKYELESWXMOGW?LHXYCIEPMSASTEXUUWHEXKZTCBEAAYPMOXEISTQOLUXFNMMVFTXDNAUPNDELKTUAPBIHOENQNOQKXBSGZXSMIGXLYYMIELTHWCGXFSBIMKYEFMPFDZESCNLAUELFLZZWGDVEYUTNMO",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.677215734,
+            "z": 5.766734,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "CWK",
+            "positions": "ADA",
+            "reflector_position": "I",
+            "offsets": "YHQ",
+            "schedule": 3,
+            "plaintext": "XOYTNYCAYADJUWTIWFEDERHAQQBG?SPWXHEEPJECIUFHULDUENIVUQMMWRMYCWWGTMVIXWJCKMPMATFAINCZRDOXMXOEDVDAIBSXWOIEANXOTWTSZAOFBIILENDEBETNUHLEVLJYERUMIENDPGESESHNXUNEMBKKYTYYRXK",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.677215734,
+            "z": 5.766734,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "QWK",
+            "positions": "NDA",
+            "reflector_position": "H",
+            "offsets": "XHQ",
+            "schedule": 195,
+            "plaintext": "XOYTNYCAYADJUWTIWFEDERHAQQBG?SPWXHEEPJECIUFHULDUENIVUQMMWRMYCWWGTMVIXWJCKMPMATFAINCZRDOXMXOEDVDAIBSXWOIEANXOTWTSZAOFBIILENDEBETNUHLEVLJYERUMIENDPGESESHNXUNEMBKKYTYYRXK",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "FKQLZ",
+        "letters": 107,
+        "settings_scored": 433213248,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          158,
+          158,
+          158,
+          158,
+          158,
+          158
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.623814815,
+          "sd_score_per_letter": 0.197387459,
+          "max_score_per_letter": -8.400312679,
+          "top_z": 6.19848
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.400312679,
+            "z": 6.19848,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "XPJ",
+            "positions": "LFA",
+            "reflector_position": "J",
+            "offsets": "OQR",
+            "schedule": 85,
+            "plaintext": "GYUZNUEAOETPGAFTONDZUFNXAOUUTNINMNFSXFUHEAMDXNSBEHXNTXABLITGLVMZDSXBFTUWTGQEULVXLLANOWEXRDOSQTCNMEHXUKBJXXW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.413628629,
+            "z": 6.131019,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "EES",
+            "positions": "DHA",
+            "reflector_position": "I",
+            "offsets": "ZDI",
+            "schedule": 85,
+            "plaintext": "KWDHXSKMLOEVQFKDIEZXRLSUARAPIETTEIYSUAPBOERMXDUUBILIXFNFEBRERNMEMLNUIMHXESIEDENDDRBRPGYNICHFBLRCAYETAEIANWZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.417837171,
+            "z": 6.109697,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "XMJ",
+            "positions": "LCA",
+            "reflector_position": "J",
+            "offsets": "OQR",
+            "schedule": 82,
+            "plaintext": "GYUZNUEAOETPGAFTONDHTLNXAOUUTNINMNFSXFUHEAMDXAELTHXNTXABLITGLVMZDSXBFTUMURQEULVXLLANOWEXRDOSQTCNMGEAUKBJXXW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.422279115,
+            "z": 6.087194,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "LAR",
+            "positions": "MHA",
+            "reflector_position": "D",
+            "offsets": "BHJ",
+            "schedule": 113,
+            "plaintext": "GZTUFNNENKFKOSJXABWUVEMZWDSWXEIQSXXFOXKDMZOROKURTXINVNITDMIPXOFXUCOTWSNHREINDHPLFEONXPWXZISSCCAPJMLUEDRUNAW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.425256727,
+            "z": 6.072109,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "FDS",
+            "positions": "EGA",
+            "reflector_position": "I",
+            "offsets": "ZDI",
+            "schedule": 110,
+            "plaintext": "QOUJAMDDRUJIKIQRPLZXRLSUARAPIETTEIYSUAPBOERPXDUUBILIXFNFEBRERNMEMLNUIUHXESIEDENDDRBRPGYNICHFBLRTAYETAEIANWZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.425256727,
+            "z": 6.072109,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "FDS",
+            "positions": "FGA",
+            "reflector_position": "J",
+            "offsets": "ADI",
+            "schedule": 136,
+            "plaintext": "QOUJAMDDRUJIKIQRPLZXRLSUARAPIETTEIYSUAPBOERPXDUUBILIXFNFEBRERNMEMLNUIUHXESIEDENDDRBRPGYNICHFBLRTAYETAEIANWZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.430495706,
+            "z": 6.045567,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "EDS",
+            "positions": "DGA",
+            "reflector_position": "I",
+            "offsets": "ZDI",
+            "schedule": 84,
+            "plaintext": "KWDHXSKMLOEVQFKDIVKXRLSUARAPIETTEIYSUAPBOERPXDUUBILIXFNFEBRERNMEMLNUIUHXESIEDENDDRBRPGYNICHFBLRTAYETAEIANWZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.436661728,
+            "z": 6.014329,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YUZ",
+            "positions": "DWA",
+            "reflector_position": "G",
+            "offsets": "FCB",
+            "schedule": 100,
+            "plaintext": "SSLFANRFGFCYSQSALFSMPFFZTUURAMIDABMQREGOQINTMNMQHEWGXLLETBEQFXGYWUZWBITACUFDQMERSHXSENDDENDNIEQELVIELUVIZSZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.44782046,
+            "z": 5.957797,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "XNJ",
+            "positions": "LDA",
+            "reflector_position": "J",
+            "offsets": "OQR",
+            "schedule": 83,
+            "plaintext": "GYUZNUEAOETPGAFTONDHTFNXAOUUTNINMNFSXFUHEAMDXAEIEHXNTXABLITGLVMZDSXBFTUMUGQEULVXLLANOWEXRDOSQTCNMGEXUKBJXXW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.450392232,
+            "z": 5.944768,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "KEF",
+            "positions": "JNA",
+            "reflector_position": "P",
+            "offsets": "ZJV",
+            "schedule": 41,
+            "plaintext": "HUETNHITHEYXNGERUENLENZDVTINLELKXNGETXBAXDCNTEIWRGSJCXARKWBXIKYRAENYNFMFTIDPIXONEILYNZZVDQCYIKMGEMDANSUANSD",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.452303477,
+            "z": 5.935085,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "QCZ",
+            "positions": "JYA",
+            "reflector_position": "N",
+            "offsets": "TWB",
+            "schedule": 52,
+            "plaintext": "UBGUPZUFDVNWANOILFUQRMTBTKWISINBVFTWUMQFWEPGTRBAKZSAIRQAYUTXPYXNIQTSSAMBITNIRANDAYXNZEINAUKIRWCOQTORTELNESA",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.460729009,
+            "z": 5.8924,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "QBZ",
+            "positions": "JXA",
+            "reflector_position": "N",
+            "offsets": "TWB",
+            "schedule": 51,
+            "plaintext": "XBGUPZUFDVNWANOILFUQRMTBTKXISINBVFTWUMQFWEPGTRBAKZSAARQAYUTXPYXNIQTSSAMBITNIRAXMAYXNZEINAUKIRWCOQTORTELNHSA",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.470339695,
+            "z": 5.84371,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "QDZ",
+            "positions": "KZA",
+            "reflector_position": "N",
+            "offsets": "UWB",
+            "schedule": 79,
+            "plaintext": "UBGUPZUFDVNWANOILFUQRMTBTJWISINBVFTWUMQFWEPGTRBAKZSSIRQAYUTXPYXNIQTSSAMBITNIRRUDAYXNZEINAUKIRWCOQTORTELDESA",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.472497941,
+            "z": 5.832776,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "ZJA",
+            "positions": "ESA",
+            "reflector_position": "F",
+            "offsets": "FJA",
+            "schedule": 122,
+            "plaintext": "NGSSBXENEOXXIZRGGJTXGPFORTJTPUUGENRDUAEHVYCAXBBEINEIKEADRZHEYZCSUTXVFEINYYPOMEHUNLDLAOXRFXENADNISEKOVQTMRTJ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.472497941,
+            "z": 5.832776,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "ZJA",
+            "positions": "FSA",
+            "reflector_position": "G",
+            "offsets": "GJA",
+            "schedule": 148,
+            "plaintext": "NGSSBXENEOXXIZRGGJTXGPFORTJTPUUGENRDUAEHVYCAXBBEINEIKEADRZHEYZCSUTXVFEINYYPOMEHUNLDLAOXRFXENADNISEKOVQTMRTJ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.484512679,
+            "z": 5.771907,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "TPH",
+            "positions": "XMA",
+            "reflector_position": "D",
+            "offsets": "EXT",
+            "schedule": 118,
+            "plaintext": "IDPVDKFHXDIQAEARERGGAENXBXMSPDLOJNESNNIGLIGETTRLLTTLXXDWBFTWTQFXVSXESGQKSSKUEWMRETRXATYMOHUIAINSLIDAXHXOXTS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.484640759,
+            "z": 5.771259,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "NUL",
+            "positions": "ALA",
+            "reflector_position": "N",
+            "offsets": "NRP",
+            "schedule": 11,
+            "plaintext": "LAWESOUNDDGVRDRHIIZLQNEWLZYGAEHNFRDAURIRFDYQSNMEIGWZRYZOZEDNWUOQELERIAXUMBEWETSAIHWYERMNAITENKXXBOHZEVBELXC",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.484951293,
+            "z": 5.769685,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "IUF",
+            "positions": "VLA",
+            "reflector_position": "Q",
+            "offsets": "NRV",
+            "schedule": 65,
+            "plaintext": "HIQPXMLWETEFERWINCGRCANBXYZTISKXFBFSTLKAMRQAXUHIXIPRIQABNQPXRJRGHRELIENXCSUPAKHRISYYKPBGDRSSETTMUTEQSQTAXNX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.48525376,
+            "z": 5.768153,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "ADS",
+            "positions": "AGA",
+            "reflector_position": "J",
+            "offsets": "ADI",
+            "schedule": 6,
+            "plaintext": "QOUJAMDDRUJIKIQRPLZXRLSUARAPIETTEIYSUAPBOERPXDUUBILIXFNFEBRERNMEMLNUIUHXESIEDENDDRBRPGYNICHFBLRTAHTSYAQUSBF",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.485752479,
+            "z": 5.765626,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "UJA",
+            "positions": "ASA",
+            "reflector_position": "G",
+            "offsets": "GJA",
+            "schedule": 18,
+            "plaintext": "NGSSBXENEOXXIZRGGJTXGPFORTJTPUUGENRDUAEHVYCAXBBEINEIKEADRZHEYZCSUTXVFEINYYPOMEHUNLDLAOXRFXENADNISEKOEESJKVD",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "XFEDT",
+        "letters": 97,
+        "settings_scored": 405794688,
+        "settings_represented": 48190861056,
+        "settings_note": "settings_scored distinct (schedule, offsets, reflector) settings were deciphered; the score distribution weights each by the number of window starts with its schedule, so it is over all settings_represented machine settings (wheel order, rings, window start, reflector position).",
+        "schedules_per_order": [
+          148,
+          148,
+          148,
+          148,
+          148,
+          148
+        ],
+        "score_distribution": {
+          "mean_score_per_letter": -9.610592697,
+          "sd_score_per_letter": 0.206946524,
+          "max_score_per_letter": -8.363114715,
+          "top_z": 6.028021
+        },
+        "top_candidates": [
+          {
+            "score_per_letter": -8.363114715,
+            "z": 6.028021,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "SPJ",
+            "positions": "CKA",
+            "reflector_position": "Q",
+            "offsets": "KVR",
+            "schedule": 62,
+            "plaintext": "RTERMUEHMGDMXPRETENNZENDOOMLITXBAHFFFGASORZXZSGWADXRXELDJSRPNZGKPZLZWAZNERFSZKQBVLROLEIBPXRXJRXDN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.372018906,
+            "z": 5.984994,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "ZHP",
+            "positions": "CFA",
+            "reflector_position": "L",
+            "offsets": "DYL",
+            "schedule": 57,
+            "plaintext": "RTRCAEEINKTAZUECNSZSCEVYIQGEHLAZSIVVPNRUJPUWCXZIXMARERAKRASUSTLHESEXSGOTXKBOMXDIEVIAKXSEKHATSYWRS",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.401454019,
+            "z": 5.842759,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "RPJ",
+            "positions": "BKA",
+            "reflector_position": "Q",
+            "offsets": "KVR",
+            "schedule": 36,
+            "plaintext": "RTERMUEHMGDMXPRETENNZENDOOMLITXBAHFFFGASOMPUNRZBPRSYKZMDPAKXUIFKSMAZWAZNERFSZKQBVLROLEIBPXRXJRXDN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.416337893,
+            "z": 5.770838,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "STJ",
+            "positions": "COA",
+            "reflector_position": "Q",
+            "offsets": "KVR",
+            "schedule": 66,
+            "plaintext": "RTERMUEHMGBDKBRETENNZENDOOMLITXBAHFFEQJXSRZXZSGWADXRXELDJSRPNZTDXHLZWAZNERFSZKQBVLROLEIBLXRYJRXDN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.416459119,
+            "z": 5.770252,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "UVV",
+            "positions": "AZA",
+            "reflector_position": "F",
+            "offsets": "GEF",
+            "schedule": 25,
+            "plaintext": "YANKLWDCXPNTXMDDBWBIENBNTJWLERUNTRUCNXWQXQODNNOYBHAGJBEBESTJHAXIAWOJNMTXLTEDBEXZEUJNAUSNEGUELITEW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.416459119,
+            "z": 5.770252,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "TVV",
+            "positions": "YZA",
+            "reflector_position": "E",
+            "offsets": "FEF",
+            "schedule": 147,
+            "plaintext": "YANKLWDCXPNTXMDDBWBIENBNTJWLERUNTRUCNXWQXQODNNOYBHAGJBEBESTJHAXIAWOJNMTXLTEDBEXZEUJNAUSNEGUELITEW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.421476214,
+            "z": 5.746008,
+            "rotor_order_left_to_right": [
+              "I",
+              "III",
+              "II"
+            ],
+            "rings": "TFM",
+            "positions": "UIA",
+            "reflector_position": "R",
+            "offsets": "BDO",
+            "schedule": 34,
+            "plaintext": "GNRTRAXELBESPUUHAYDSVPHACXMSGLLUWIRESEYBEISSCBUFGCIWCBTAXKARSTMHRBAJIDDINFVISXDORKFITGTSXQSYYYPIZ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.421645383,
+            "z": 5.745191,
+            "rotor_order_left_to_right": [
+              "III",
+              "I",
+              "II"
+            ],
+            "rings": "ZBS",
+            "positions": "MAA",
+            "reflector_position": "L",
+            "offsets": "NZI",
+            "schedule": 96,
+            "plaintext": "OLXSTBRNRWATDMRKENIXXDXSAUMTENSQTXGTPSUEILVXMSORVTROFSTFXPTKIKSSTYBNTYPPDAKOJFGAIAKSNZHXDGWKIMZDR",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.424281936,
+            "z": 5.732451,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "NZQ",
+            "positions": "XTA",
+            "reflector_position": "S",
+            "offsets": "KUK",
+            "schedule": 115,
+            "plaintext": "AUPPQKOEULUGTQNFXHOFOTSBNZZTBARTMMPFFPRFSWUMKNLQVISAEEUARYNDBFLISSEKEQSTEFIRRPSBTRIXAYDAXCEKEQXCH",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.42547591,
+            "z": 5.726681,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "PJF",
+            "positions": "DOA",
+            "reflector_position": "P",
+            "offsets": "OFV",
+            "schedule": 92,
+            "plaintext": "ENAOXSPBESDSBPEDSTBMKDXPAQXHUPLKJWTIDAGHJUNGONJGNAURSPQBEBEKXRNFIECKVUNHAZTDEMVKATGDIVUEDIENURTGQ",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.429304756,
+            "z": 5.70818,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "DCI",
+            "positions": "ATA",
+            "reflector_position": "N",
+            "offsets": "XRS",
+            "schedule": 19,
+            "plaintext": "OEDEMELYRIEDMBKSFKOLXRSSEXLIVMFCANTEIXNEMUBENUSRWNKUXXDSBOSIXHLKUDECHXNAXIRECMPXBDAPEAZZFHTIVAZIB",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.429304756,
+            "z": 5.70818,
+            "rotor_order_left_to_right": [
+              "III",
+              "II",
+              "I"
+            ],
+            "rings": "RCI",
+            "positions": "NTA",
+            "reflector_position": "M",
+            "offsets": "WRS",
+            "schedule": 141,
+            "plaintext": "OEDEMELYRIEDMBKSFKOLXRSSEXLIVMFCANTEIXNEMUBENUSRWNKUXXDSBOSIXHLKUDECHXNAXIRECMPXBDAPEAZZFHTIVAZIB",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.42964699,
+            "z": 5.706526,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "SQJ",
+            "positions": "CLA",
+            "reflector_position": "Q",
+            "offsets": "KVR",
+            "schedule": 63,
+            "plaintext": "RTERMUEHMGDMXBRETENNZENDOOMLITXBAHFFFGARSRZXZSGWADXRXELDJSRPNZGKPHLZWAZNERFSZKQBVLROLEIBPXRYJRXDN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.430533824,
+            "z": 5.702241,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "MFR",
+            "positions": "CGA",
+            "reflector_position": "T",
+            "offsets": "QBJ",
+            "schedule": 58,
+            "plaintext": "LUGMEYISMERSSKMKENBIDJWOXDRPWGQZFGETLCHLXXYFYDIXEMMXZUSNSGEFZXNKWBOWNORSXIEBENFGZUCOTRZXAERKGTJDW",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.430660031,
+            "z": 5.701631,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YBV",
+            "positions": "EWA",
+            "reflector_position": "E",
+            "offsets": "GVF",
+            "schedule": 126,
+            "plaintext": "RACFIXTZTNISYDPLKAXEXABIQVXETVIEKDWAFFXLBNSFEXNXERTZWSIOQTLXNRGCACEISQAFXGLMSCXESWFXWWVRSUSSOUEHL",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.430660031,
+            "z": 5.701631,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "YBV",
+            "positions": "FWA",
+            "reflector_position": "F",
+            "offsets": "HVF",
+            "schedule": 144,
+            "plaintext": "RACFIXTZTNISYDPLKAXEXABIQVXETVIEKDWAFFXLBNSFEXNXERTZWSIOQTLXNRGCACEISQAFXGLMSCXESWFXWWVRSUSSOUEHL",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.437313241,
+            "z": 5.669481,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "SRJ",
+            "positions": "CMA",
+            "reflector_position": "Q",
+            "offsets": "KVR",
+            "schedule": 64,
+            "plaintext": "RTERMUEHMGDMKBRETENNZENDOOMLITXBAHFFFGRXSRZXZSGWADXRXELDJSRPNZGKXHLZWAZNERFSZKQBVLROLEIBPXRYJRXDN",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.43766451,
+            "z": 5.667784,
+            "rotor_order_left_to_right": [
+              "II",
+              "I",
+              "III"
+            ],
+            "rings": "RBM",
+            "positions": "DJA",
+            "reflector_position": "A",
+            "offsets": "MIO",
+            "schedule": 87,
+            "plaintext": "YETCMOJMLBFNGGERUMIYQEFNAXAMRENOSNMIHRGUXMTTFDZEHRIQTIFHREGTFBOKLASJKXDPXTQVEXRBZNURDLEDEESBORMOP",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.439943407,
+            "z": 5.656772,
+            "rotor_order_left_to_right": [
+              "II",
+              "III",
+              "I"
+            ],
+            "rings": "TBV",
+            "positions": "AWA",
+            "reflector_position": "F",
+            "offsets": "HVF",
+            "schedule": 22,
+            "plaintext": "RACFIXTZTNISYDPLKAXEXABIQVXETVIEKDWAFFXLBNSFEXNXERTZWSIOQTLXNRGCACEISQAFXGLMSCXESWFXWWVRSUSSOUEHX",
+            "reference_reproduces_score": true
+          },
+          {
+            "score_per_letter": -8.443545918,
+            "z": 5.639364,
+            "rotor_order_left_to_right": [
+              "I",
+              "II",
+              "III"
+            ],
+            "rings": "SVV",
+            "positions": "XZA",
+            "reflector_position": "E",
+            "offsets": "FEF",
+            "schedule": 121,
+            "plaintext": "WSBOQHDCXPNTXMDDBWBIENBNTJWLERUNTRUCNXWQXQODNNOYBHAGJBEBESTJHAXIAWOJNMTXLTEDBEXZEUJNAUSNEGUELITEW",
+            "reference_reproduces_score": true
+          }
+        ],
+        "detected": false
+      }
+    ],
+    "detections": [],
+    "power": [
+      {
+        "machine": "railway_enigma",
+        "message": "BYQMZ",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 18.099,
+        "z_min": 16.808
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "BYQMZ",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 13.771,
+        "z_min": 8.637
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "BYQMZ",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 199,
+        "rate": 0.995,
+        "interval_95": [
+          0.9722,
+          0.9991
+        ],
+        "z_median": 12.964,
+        "z_min": 7.725
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "FKQLZ",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 14.665,
+        "z_min": 12.904
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "FKQLZ",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 176,
+        "rate": 0.88,
+        "interval_95": [
+          0.8277,
+          0.918
+        ],
+        "z_median": 10.804,
+        "z_min": 6.524
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "FKQLZ",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 178,
+        "rate": 0.89,
+        "interval_95": [
+          0.8391,
+          0.9262
+        ],
+        "z_median": 10.716,
+        "z_min": 6.384
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "XFEDT",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 13.851,
+        "z_min": 12.122
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "XFEDT",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 167,
+        "rate": 0.835,
+        "interval_95": [
+          0.7773,
+          0.88
+        ],
+        "z_median": 10.535,
+        "z_min": 6.137
+      },
+      {
+        "machine": "railway_enigma",
+        "message": "XFEDT",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 168,
+        "rate": 0.84,
+        "interval_95": [
+          0.7829,
+          0.8843
+        ],
+        "z_median": 10.313,
+        "z_min": 6.093
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "BYQMZ",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 18.294,
+        "z_min": 16.795
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "BYQMZ",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 14.008,
+        "z_min": 9.068
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "BYQMZ",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 13.811,
+        "z_min": 8.181
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "FKQLZ",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 14.476,
+        "z_min": 12.89
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "FKQLZ",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 182,
+        "rate": 0.91,
+        "interval_95": [
+          0.8622,
+          0.9423
+        ],
+        "z_median": 11.437,
+        "z_min": 6.397
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "FKQLZ",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 176,
+        "rate": 0.88,
+        "interval_95": [
+          0.8277,
+          0.918
+        ],
+        "z_median": 10.906,
+        "z_min": 6.669
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "XFEDT",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 13.906,
+        "z_min": 12.258
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "XFEDT",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 173,
+        "rate": 0.865,
+        "interval_95": [
+          0.8107,
+          0.9055
+        ],
+        "z_median": 10.428,
+        "z_min": 5.816
+      },
+      {
+        "machine": "swiss_k_unmodified",
+        "message": "XFEDT",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 168,
+        "rate": 0.84,
+        "interval_95": [
+          0.7829,
+          0.8843
+        ],
+        "z_median": 10.331,
+        "z_min": 6.175
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "BYQMZ",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 18.333,
+        "z_min": 16.821
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "BYQMZ",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 199,
+        "rate": 0.995,
+        "interval_95": [
+          0.9722,
+          0.9991
+        ],
+        "z_median": 13.787,
+        "z_min": 7.897
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "BYQMZ",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 199,
+        "rate": 0.995,
+        "interval_95": [
+          0.9722,
+          0.9991
+        ],
+        "z_median": 13.27,
+        "z_min": 7.942
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "FKQLZ",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 14.565,
+        "z_min": 12.943
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "FKQLZ",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 185,
+        "rate": 0.925,
+        "interval_95": [
+          0.88,
+          0.954
+        ],
+        "z_median": 11.618,
+        "z_min": 6.467
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "FKQLZ",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 167,
+        "rate": 0.835,
+        "interval_95": [
+          0.7773,
+          0.88
+        ],
+        "z_median": 10.707,
+        "z_min": 6.19
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "XFEDT",
+        "fault": "none",
+        "draws": 200,
+        "detected": 200,
+        "rate": 1.0,
+        "interval_95": [
+          0.9812,
+          1.0
+        ],
+        "z_median": 13.864,
+        "z_min": 12.168
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "XFEDT",
+        "fault": "deletion",
+        "draws": 200,
+        "detected": 176,
+        "rate": 0.88,
+        "interval_95": [
+          0.8277,
+          0.918
+        ],
+        "z_median": 10.497,
+        "z_min": 5.892
+      },
+      {
+        "machine": "swiss_k_army_1941",
+        "message": "XFEDT",
+        "fault": "insertion",
+        "draws": 200,
+        "detected": 164,
+        "rate": 0.82,
+        "interval_95": [
+          0.7609,
+          0.8671
+        ],
+        "z_median": 10.484,
+        "z_min": 5.908
+      }
+    ],
+    "predictions": [
+      {
+        "id": "unsteckered-detection",
+        "statement": "At least one (machine, message) sweep ranks first a setting at z >= 8.",
+        "decides_hypothesis": true,
+        "observed": [],
+        "passed": false
+      },
+      {
+        "id": "companion-detected",
+        "statement": "If a message is detected, the same machine also detects at least one other of the three, since they share a date and, per the cited paper, a radio network.",
+        "decides_hypothesis": false,
+        "observed": "no detection",
+        "passed": null
+      },
+      {
+        "id": "clean-power-at-least-95pct",
+        "statement": "Planted ungarbled draws are detected at least 95% of the time for every machine and target length.",
+        "decides_hypothesis": false,
+        "observed": {
+          "minimum": 1.0,
+          "by_sweep": {
+            "railway_enigma:BYQMZ": 1.0,
+            "railway_enigma:FKQLZ": 1.0,
+            "railway_enigma:XFEDT": 1.0,
+            "swiss_k_unmodified:BYQMZ": 1.0,
+            "swiss_k_unmodified:FKQLZ": 1.0,
+            "swiss_k_unmodified:XFEDT": 1.0,
+            "swiss_k_army_1941:BYQMZ": 1.0,
+            "swiss_k_army_1941:FKQLZ": 1.0,
+            "swiss_k_army_1941:XFEDT": 1.0
+          }
+        },
+        "passed": true
+      },
+      {
+        "id": "null-top-in-noise-band",
+        "statement": "If nothing is detected, every sweep's top z lies between 5.0 and 7.5, the noise maximum of four to six hundred million settings.",
+        "decides_hypothesis": false,
+        "observed": {
+          "minimum": 6.028021,
+          "maximum": 6.536538
+        },
+        "passed": true
+      }
+    ]
+  },
+  "limitations": [
+    "Only the three catalogued unsteckered machines are searched. The commercial Enigma D and K with their original wirings, the Abwehr Enigma G (geared stepping and a moving reflector), Enigma T, and any machine with rewired or undocumented wheels are outside it; the catalog records no sourced wiring for the first and the second is not modelled.",
+    "The wirings, notches, entry wheels and reflectors are the catalog's, from Hamer, Sullivan and Weierud's 'Enigma Variations'. The preflight checks the kernel against enigma.py, not enigma.py against history: an error in a catalogued wiring makes that machine's null uninformative.",
+    "Body-direct: the body is assumed to be one continuous encipherment from some start. No indicator procedure is assumed, which makes the search independent of one; a re-keying inside a message is not covered.",
+    "The statistic is the whole-message score. One dropped or inserted letter leaves only part of the message readable under any one key; its power is measured and lower. Two or more faults are not measured.",
+    "The scorer uses published 1941 German Army n-gram counts. A railway or Swiss message would be German (or, for Swiss traffic, possibly French or Italian) text of another register; an unsteckered true key scores far above noise on Army-style text, but the margin on other registers or languages is not measured.",
+    "Some starts at a notch double-step on the first keystroke into a state another start reaches directly; such settings decipher identically and are counted separately in the score distribution. Their share is small and moves the mean and standard deviation negligibly.",
+    "The detection threshold was set from development runs on random and planted bodies, not on the targets, and the noise tail beyond the observed maxima is not measured; Phase 1's sweeps saw maxima about 0.8 sd above a normal tail's expectation.",
+    "The historical priors are low: the catalog marks the railway Enigma low and the Swiss K very low for this corpus. The search is run because it is cheap and nearly conclusive for these machines, not because they are likely.",
+    "Constructed control plaintext, not authentic held-out traffic.",
+    "No result here is an accepted break: a detected key's plaintext still has to be read and reviewed before accepted_break could change."
+  ]
+}
