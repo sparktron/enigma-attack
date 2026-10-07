@@ -1304,6 +1304,120 @@ indel rate is 42.5% against 56.3%, 2.3 standard errors lower.
 
 ---
 
+## Split-point climb: build and benchmark (2026-10-06)
+
+Exploratory engineering and measurement, preregistered nowhere. It carries out
+the decision of [phase1-middle-complete-power-v1](#phase1-middle-complete-power-v1-preregistered):
+build a split-point climb and benchmark its cost before any sweep.
+
+What it is (`stecker_split.py`). One dropped or inserted letter at position p
+leaves the letters before it aligned with the swept setting and the letters
+after it aligned with the same machine one keystroke on (a dropped letter) or one
+back (an inserted one). The position table of a single setting holds those
+keystrokes, so the shifted setting needs no sweep of its own. The climb scores
+`max` over (clean, a dropped letter at p, an inserted letter at p) of the
+repaired message, with a mask at the fault, and climbs the plugboard against that
+best hypothesis, so the position is searched inside every evaluation. The
+n-gram phase scores every p with prefix and suffix sums; the
+index-of-coincidence phase, which a climb from the identity plugboard needs, scores a
+grid of 32 letters. Phases, move set and stopping rule are `BatchedClimber`'s.
+
+Fact: tests. The batched objectives equal a brute-force reference that scores
+every hypothesis through the existing scorer on a custom table and a masked
+body, to six places for the n-gram objective and nine for the coincidence
+objective, with the same best hypothesis, on clean, dropped-letter and
+inserted-letter messages and on a message that already carries masks. Existing
+power arms are bit-identical before and after the change (6 and 8 draws against
+the previous runner). A clean-wheel install needed `stecker_split` declared in
+`pyproject.toml`; the install test caught that.
+
+Fact: a design correction. A mask drops n-gram terms, every term is negative, and
+so a masked hypothesis beat the clean one at the true plugboard and a fault was
+placed near an end for nothing. Crediting each masked hypothesis the value of a
+term on wrong-setting text (-8.66, the control's climbed null mean per letter),
+one term for a dropped letter and two for an inserted one, removed the bias. A
+residual effect is expected and tested for: a fault hypothesis within about 10
+letters of an end swaps few correct terms for wrong ones, so the best of about
+330 noisy hypotheses sometimes wins there by chance.
+
+Fact: development result. 60 planted one-indel 167-letter draws from seeds not
+used by any control, climbed at the true setting (a stecker-stage measure, not
+a sweep): split 39 of 60 (65%), whole-message 14 of 60, W = 117 16 of 60. With
+the indel in letters 56 to 111: 20 of 28 against 1 and 4. Elsewhere: 19 of 32
+against 13 and 12. In the 7 successes among the first 12 of these draws it named the
+fault's kind correctly and placed it within 3 letters; the other 48 draws were
+not checked for that.
+
+Fact: cost. Single process, at the true setting, the split climb was 4.3 times the
+windowed climb (74 against 17 ms). In the 10-worker sweep first measured it was
+22.0 ms per setting against 3.59 for windowed, **6.1 times**, because its arrays,
+several megabytes per evaluation, do not fit a core's cache once every worker
+runs: a worker took 199 ms per climb against 67.5 ms alone. Processing the
+candidates 64 at a time changes no number and took it to 101 ms. Final,
+`scripts/benchmark_sweep.py --settings 6760 --jobs 10 --compare --split-grid 32
+--repeats 2`, interleaved on this host:
+
+| climb | ms per setting | against windowed | against whole message |
+|---|---:|---:|---:|
+| whole message | 2.90 | 0.80 | 1.00 |
+| W = 117 (v3's) | 3.62 | 1.00 | 1.25 |
+| **split point** | **10.44** | **2.89** | **3.59** |
+
+Applied to v3's 16.95 host-hours the ratio projects about 49 host-hours for a
+split-point sweep of the same 27.4 million settings, against about 153 for the
+complete rule. The benchmark's absolute rates include process start-up on a
+small slice (v3's real rate was 2.22 ms), so the ratio, not 10.44 ms, is the
+figure to carry. The 2.89 replaces the control's assumed multiplier of 4.
+
+Inference. The control's break-even said a split-point sweep beats the complete
+rule on cost at the nominal q = 0.2 if it costs less than 5.7 times v3, and at q =
+0.1 if it costs less than 3.0. At 2.9 it is under both. That says nothing yet
+about whether it detects what its oracle ceiling promises end to end; the
+development rates are a stecker-stage figure on a different set of draws.
+`phase1-split-point-power-v1` is preregistered to measure that and has not run.
+
+---
+
+## phase1-split-point-power-v1 (preregistered)
+
+Status: preregistered 2026-10-06; not run. Configuration:
+[experiments/phase1-split-point-power-v1/config.json](../experiments/phase1-split-point-power-v1/config.json),
+analysis `scripts/split_power.py`, both committed before any run.
+
+It reruns the control's 800 draws (same seed, so the same planted keys and
+faults) with the split-point climb as an arm, rerunning the two past-notch arms
+and the oracle so the artifact stands alone. The complete-rule outcomes come
+from the control's artifact; the script refuses to go on if any draw was
+planted differently and counts any past-notch arm that does not reproduce the
+control exactly.
+
+Hypothesis. The split-point climb detects at least 45% of the middle-third-indel
+draws both past-notch climbs miss (the control: complete rule 20.3%, oracle
+70.3%, 118 draws) and at least 30% of the elsewhere-indel ones (44.6% and 52.7%,
+74 draws), at about 2.9 times v3's cost against 9 for the complete rule. S1 and
+S2 decide it; S3 (at most 40% of the clean draws both miss, where the complete
+rule's 59.6% is ring coverage) and four marginal predictions refute only
+themselves.
+
+Decision rule, fixed now: both S1 and S2 refuted drops the climb and the
+complete-rule sweep is preregistered; otherwise the sweep with the higher
+conditional detection per host-hour at q = 0.2 is preregistered next, with its
+measured rate as its stated power. No sweep is run on this evidence.
+
+Disclosed in the configuration: the development result above, the three
+changes made after looking at development draws, and that the thresholds were
+chosen against the control's published complete-rule and oracle figures; the
+split-point climb itself had not been run on any of the control's draws.
+
+Run command, not run:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-split-point-power-v1/config.json --jobs 10
+python3 scripts/split_power.py
+```
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.

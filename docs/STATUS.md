@@ -323,24 +323,26 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-Phase 1 next: a **split-point climb** for an indel in BYQMZ's middle third,
-chosen by the preregistered rule of `phase1-middle-complete-power-v1`, which
-ran on 2026-10-06 (400 clean and 400 one-indel draws, 43 minutes, clean tree).
-Among planted keys that neither past-notch climb detects, the middle-complete
-rule recovers 59.6% of the clean ones but 20.3% of the middle-third-indel
-ones, where an oracle that undoes the indel recovers 70.3%. The rule needs the
-climb built and benchmarked before any sweep; its cost against the assumed 4
-times v3 decides it, and the choice flips to the complete-rule sweep (about 153
-host-hours, nine times v2) if the climb costs more than about 5.7 times v3 at a
-prior q of 0.2 on a dropped or inserted letter, or at q below about 0.14. Neither
-q nor the cost is measured. Each yields about 0.003 to 0.004 conditional
-detection per host-hour, against v3's 0.013. The same run puts v2's whole-message
-climb at 79.0% on clean draws and v3's windowed climb at 42.5% with one indel,
-below the 88.8% and 56.3% of the earlier 80-draw run, so the two nulls multiply
-the odds of a standard reading by about 0.14 ungarbled and 0.48 with one indel,
-not 0.09 and 0.43. The body-direct route at the past-notch rule is otherwise
-exhausted for BYQMZ. Both candidates assume wheels I to V as wired, which the
-cited paper's authors doubt for Batch C.
+Phase 1 next: calibrate the **split-point climb** that `phase1-middle-complete-power-v1`
+selected. It is built (`stecker_split.py`): it searches the position of one dropped
+or inserted letter inside every plugboard evaluation, and in the 10-worker sweep
+it costs 2.89 times the windowed climb v3 used (about 49 host-hours projected for
+a sweep, against 153 for the complete ring rule), after candidate blocking
+halved a first measurement of 6.1. On 60 development draws at the true
+setting it recovered 65% against 23% for the whole-message climb and 27% for the
+windowed one, and 71% against 4% and 14% with the indel in the middle third. That is a stecker-stage figure.
+`phase1-split-point-power-v1` is preregistered, not run (about 20 to 30
+minutes): it reruns the control's draws and asks what the climb detects among the
+keys both past-notch climbs miss, then which sweep pays more per host-hour at a
+prior q = 0.2 on one dropped or inserted letter (unmeasured). Run it, then
+`scripts/split_power.py`. The control found that the complete rule recovers
+59.6% of the clean keys the past-notch climbs miss and the middle-third indels
+only 20.3%, where an oracle that undoes the indel recovers 70.3%. The same run
+puts v2's whole-message climb at 79.0% on clean draws and v3's windowed climb at
+42.5% with one indel, below the 88.8% and 56.3% of the earlier 80-draw run, so the
+two nulls multiply the odds of a standard reading by about 0.14 ungarbled and
+0.48 with one indel, not 0.09 and 0.43. Both candidates assume wheels I to V as
+wired, which the cited paper's authors doubt for Batch C.
 
 A **crib-driven Bombe** would eliminate the plugboard algebraically through
 crib-derived menus instead of searching it, the historically correct answer to

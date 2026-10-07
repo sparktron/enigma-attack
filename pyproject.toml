@@ -48,6 +48,7 @@ py-modules = [
     "stecker_power",
     "stecker_scoring",
     "stecker_space",
+    "stecker_split",
     "stecker_sweeps",
     "stecker_traffic",
 ]
