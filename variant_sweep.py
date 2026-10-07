@@ -330,10 +330,18 @@ def sweep_order(
     combined: np.ndarray,
     keep: int,
 ) -> dict[str, Any]:
-    """Score every setting of one wheel order; keep the best and running statistics."""
+    """Score every setting of one wheel order; keep the best and running statistics.
+
+    Each distinct schedule is deciphered once, but the statistics are over
+    every machine setting: a schedule's scores count once for each window start
+    that produces it, between 26 and several hundred.  Deduplication cannot
+    change the maximum; without the weights it would change the mean and
+    standard deviation every z is measured against.
+    """
 
     letters = sum(1 for value in body if value >= 0)
     schedules = stepping_schedules(machine, order, len(body))
+    multiplicity = np.bincount(schedules.of_start, minlength=len(schedules))
     tables = order_tables(machine, order)
     statistics: tuple[int, float, float] = (0, 0.0, 0.0)
     best = -math.inf
@@ -341,8 +349,11 @@ def sweep_order(
     for schedule in range(len(schedules)):
         scores = score_grid(tables, schedules.counts[schedule], body, bigram, combined) / letters
         mean = float(scores.mean())
+        weight = int(multiplicity[schedule])
+        # Repeating a sample ``weight`` times keeps its mean and multiplies its
+        # count and its sum of squared deviations by ``weight``.
         statistics = merge_statistics(
-            statistics, (scores.size, mean, float(((scores - mean) ** 2).sum()))
+            statistics, (scores.size * weight, mean, weight * float(((scores - mean) ** 2).sum()))
         )
         best = max(best, float(scores.max()))
         top = np.argpartition(-scores, keep - 1)[:keep]
@@ -352,6 +363,7 @@ def sweep_order(
     return {
         "order": list(order),
         "schedules": len(schedules),
+        "scored": len(schedules) * GRID,
         "evaluated": statistics[0],
         "mean": statistics[1],
         "m2": statistics[2],

@@ -252,11 +252,13 @@ def sweep_messages(
         best = -math.inf
         pool: list[tuple[float, int, int, dict[str, Any]]] = []
         schedules = []
+        scored = 0
         for index, order in enumerate(machine.orders()):
             row = results[(pid, label, index)]
             statistics = merge_statistics(statistics, (row["evaluated"], row["mean"], row["m2"]))
             best = max(best, row["max"])
             schedules.append(row["schedules"])
+            scored += row["scored"]
             pool.extend(
                 (-cand["score_per_letter"], index, rank, {**cand, "rotor_order_left_to_right": list(order)})
                 for rank, cand in enumerate(row["top"])
@@ -289,7 +291,14 @@ def sweep_messages(
             "machine": pid,
             "message": label,
             "letters": sum(1 for value in body if value >= 0),
-            "settings_evaluated": count,
+            "settings_scored": scored,
+            "settings_represented": count,
+            "settings_note": (
+                "settings_scored distinct (schedule, offsets, reflector) settings were "
+                "deciphered; the score distribution weights each by the number of window "
+                "starts with its schedule, so it is over all settings_represented "
+                "machine settings (wheel order, rings, window start, reflector position)."
+            ),
             "schedules_per_order": schedules,
             "score_distribution": {
                 "mean_score_per_letter": round(mean, 9),

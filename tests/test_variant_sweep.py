@@ -86,7 +86,47 @@ class VariantSweepTests(unittest.TestCase):
         key = {k: top[k] for k in ("rings", "positions", "reflector_position")}
         decrypted = self.sweep.reference_decrypt(profile, planted["order"], key, planted["body"])
         self.assertEqual("".join(chr(65 + v) for v in decrypted), planted["plaintext"])
-        self.assertEqual(result["evaluated"], result["schedules"] * 26**4)
+        self.assertEqual(result["scored"], result["schedules"] * 26**4)
+        self.assertEqual(result["evaluated"], 26**3 * 26**4)
+
+    def test_the_statistics_are_over_every_window_start_not_every_schedule(self) -> None:
+        """Each schedule's scores count once per window start that produces it.
+
+        Checked against a two-pass weighted mean and variance computed
+        independently of the streaming merge, with the multiplicities counted
+        start by start.
+        """
+
+        from collections import Counter
+
+        from variant_sweep import order_tables, score_grid, stepping_schedules, sweep_order
+
+        machine, _ = self.machines["railway_enigma"]
+        order = machine.orders()[4]
+        generator = random.Random(8)
+        body = [generator.randrange(26) for _ in range(12)]
+        schedules = stepping_schedules(machine, order, len(body))
+        counted = Counter(int(s) for s in schedules.of_start)
+        self.assertGreater(len(set(counted.values())), 1, "the weights must actually differ")
+        tables = order_tables(machine, order)
+        letters = len(body)
+        per_schedule = [
+            score_grid(tables, schedules.counts[s], body, self.bigram, self.combined) / letters
+            for s in range(len(schedules))
+        ]
+        weights = np.array([counted[s] for s in range(len(schedules))], dtype=np.float64)
+        means = np.array([scores.mean() for scores in per_schedule])
+        mean = float((weights * means).sum() / weights.sum())
+        variance = float(
+            sum(w * ((scores - mean) ** 2).mean() for w, scores in zip(weights, per_schedule))
+            / weights.sum()
+        )
+        result = sweep_order(machine, order, body, self.bigram, self.combined, keep=1)
+        self.assertEqual(result["evaluated"], 26**7)
+        self.assertAlmostEqual(result["mean"], mean, places=10)
+        self.assertAlmostEqual(result["m2"] / result["evaluated"], variance, places=10)
+        unweighted = float(np.concatenate(per_schedule).mean())
+        self.assertNotAlmostEqual(result["mean"], unweighted, places=12)
 
     def test_a_faulted_plant_deciphers_head_and_tail_under_its_two_keys(self) -> None:
         machine, profile = self.machines["swiss_k_army_1941"]
