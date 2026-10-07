@@ -1,0 +1,118 @@
+{
+  "schema": "enigma-attack.phase3-sweep-config/v1",
+  "experiment_id": "phase3-unsteckered-sweep-v1",
+  "status": "preregistered 2026-10-07; not run",
+  "mode": "unsteckered_body_direct_sweep",
+  "output": "artifacts/phase3-unsteckered-sweep-v1.json",
+  "corpus": "corpus.json",
+  "catalog": "variants.json",
+  "profiles": [
+    "railway_enigma",
+    "swiss_k_unmodified",
+    "swiss_k_army_1941"
+  ],
+  "profiles_rationale": "Every catalogued profile without a plugboard except tirpitz_t, which the catalog marks excluded (built for the Japanese Navy and apparently never used operationally). A profile with a plugboard needs a stecker search and is Phase 1's problem; a machine with undocumented wiring cannot be enumerated at all.",
+  "target": {
+    "date": "1941-09-30",
+    "messages": [
+      "BYQMZ",
+      "FKQLZ",
+      "XFEDT"
+    ]
+  },
+  "target_rationale": "The three messages CryptoCellar still lists as unbroken. QTXMA and SZAEJ (1941-09-29) are left out: QTXMA has no D, F, G or U in 155 letters and SZAEJ none of D, F or U in 51. Any reflecting rotor machine emits every letter at close to 1/26, so neither is plausibly the output of any machine searched here (QTXMA is excluded on the same grounds by the Phase 5 conservation gate).",
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "control_plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+  "control_plaintext_source": "The constructed German Army-style plaintext of every Phase 1 power control (experiments/phase1-split-point-power-v1, end_to_end_power.plaintext), so that planted draws here are scored against text the scorer has not been tuned on any more than there.",
+  "kernel_parity": {
+    "seed": 20261007,
+    "samples": 12,
+    "length": 60
+  },
+  "positive_controls": {
+    "seed": 20261008,
+    "length": 97
+  },
+  "positive_controls_rationale": "One planted message per machine at 97 letters, the shortest target, swept completely by the same code the targets get. The control passes only if the first-ranked key's reference decryption is the planted plaintext exactly and its z reaches the detection threshold.",
+  "sweep": {
+    "keep": 20
+  },
+  "detection": {
+    "threshold_z": 8.0,
+    "statistic": "Whole-message n-gram score per letter (FastNgramScorer, published 1941 Army counts), standardized against the score distribution of every setting of that machine on that message. A (machine, message) is detected when its top setting reaches threshold_z.",
+    "rationale": "Chosen before any target was swept, from development runs on random and planted bodies (pre_run_facts.development): over one wheel order's 6.8 to 10 million settings the noise maximum was z 5.48 to 6.36 on random bodies, and a planted key's exact decryption scored z 14.1 and 14.5 at 97 letters. A full machine sweep has six orders and nine sweeps run, so the largest noise maximum is expected near 7; 8 leaves room above it and far below a true unsteckered key."
+  },
+  "power": {
+    "seed": 20261009,
+    "draws": 200,
+    "faults": [
+      "none",
+      "deletion",
+      "insertion"
+    ],
+    "method": "After the target sweeps: for each machine and target, planted draws with that target's length and masked positions, a random wheel order, rings, window start and reflector position, and a random window of the control plaintext. A faulted draw loses or gains one letter at a uniformly random interior position, so its head deciphers under one key and its tail under the key one keystroke away; the better of the two whole-message scores is taken. The draw counts as detected when that score's z against the target's own distribution reaches threshold_z. Both keys are in the sweep's space, so this is a lower bound on what the sweep would rank."
+  },
+  "hypothesis": "At least one of BYQMZ, FKQLZ and XFEDT (1941-09-30) was enciphered, as one continuous body from some start, on one of the three catalogued unsteckered Enigma-family machines with the wirings, notches, entry wheels and reflectors in variants.json: the Reichsbahn (railway) Enigma, the Swiss K, or the Swiss K with the 1941 Swiss Army stepping. A complete body-direct sweep of that machine on that message then ranks first a setting whose whole-message score is at least z = 8 above the sweep's own score distribution.",
+  "refuted_by": "No (machine, message) sweep reaches top z >= 8. The power this null has is measured after the sweeps on planted draws shaped like each target and judged against that target's own distribution (power.method); the prediction is at least 0.95 for an ungarbled message on every machine and target. With one dropped or inserted letter only part of the message deciphers under any one key, and the power is lower and reported. A null excludes these three machines with these wirings for ungarbled messages; it says nothing about machines with undocumented wiring, about the commercial Enigma D or K, about the Abwehr Enigma G, or about any machine with a plugboard.",
+  "predictions": [
+    {
+      "id": "unsteckered-detection",
+      "statement": "At least one (machine, message) sweep ranks first a setting at z >= 8.",
+      "kind": "any_detection",
+      "decides_hypothesis": true
+    },
+    {
+      "id": "companion-detected",
+      "statement": "If a message is detected, the same machine also detects at least one other of the three, since they share a date and, per the cited paper, a radio network.",
+      "kind": "companion_detection",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "clean-power-at-least-95pct",
+      "statement": "Planted ungarbled draws are detected at least 95% of the time for every machine and target length.",
+      "kind": "clean_power_at_least",
+      "value": 0.95,
+      "decides_hypothesis": false
+    },
+    {
+      "id": "null-top-in-noise-band",
+      "statement": "If nothing is detected, every sweep's top z lies between 5.0 and 7.5, the noise maximum of four to six hundred million settings.",
+      "kind": "null_top_z_between",
+      "value": [
+        5.0,
+        7.5
+      ],
+      "decides_hypothesis": false
+    }
+  ],
+  "limitations": [
+    "Only the three catalogued unsteckered machines are searched. The commercial Enigma D and K with their original wirings, the Abwehr Enigma G (geared stepping and a moving reflector), Enigma T, and any machine with rewired or undocumented wheels are outside it; the catalog records no sourced wiring for the first and the second is not modelled.",
+    "The wirings, notches, entry wheels and reflectors are the catalog's, from Hamer, Sullivan and Weierud's 'Enigma Variations'. The preflight checks the kernel against enigma.py, not enigma.py against history: an error in a catalogued wiring makes that machine's null uninformative.",
+    "Body-direct: the body is assumed to be one continuous encipherment from some start. No indicator procedure is assumed, which makes the search independent of one; a re-keying inside a message is not covered.",
+    "The statistic is the whole-message score. One dropped or inserted letter leaves only part of the message readable under any one key; its power is measured and lower. Two or more faults are not measured.",
+    "The scorer uses published 1941 German Army n-gram counts. A railway or Swiss message would be German (or, for Swiss traffic, possibly French or Italian) text of another register; an unsteckered true key scores far above noise on Army-style text, but the margin on other registers or languages is not measured.",
+    "Some starts at a notch double-step on the first keystroke into a state another start reaches directly; such settings decipher identically and are counted separately in the score distribution. Their share is small and moves the mean and standard deviation negligibly.",
+    "The detection threshold was set from development runs on random and planted bodies, not on the targets, and the noise tail beyond the observed maxima is not measured; Phase 1's sweeps saw maxima about 0.8 sd above a normal tail's expectation.",
+    "The historical priors are low: the catalog marks the railway Enigma low and the Swiss K very low for this corpus. The search is run because it is cheap and nearly conclusive for these machines, not because they are likely.",
+    "Constructed control plaintext, not authentic held-out traffic.",
+    "No result here is an accepted break: a detected key's plaintext still has to be read and reviewed before accepted_break could change."
+  ],
+  "pre_run_facts": {
+    "disclosure": "Everything below was measured before this configuration was committed, on random or planted bodies only. No target message was deciphered by this code before the run.",
+    "parity": "On random keys with a masked letter, the kernel's letters, the representative key's reference decryption and the kernel's scores equal enigma.EnigmaMachine and FastNgramScorer.score_indices exactly for all three machines.",
+    "development": "One wheel order swept on planted 97-letter bodies (development seed 777): the planted key ranked first at its exact score, z 14.14 (railway) and 14.46 (Swiss 1941). One wheel order on random bodies (seeds 9097 and 9167): noise maxima z 5.68, 6.22 (railway, 97), 5.48, 5.61 (railway, 167), 5.71, 5.85 (Swiss 1941, 97), 5.72, 6.36 (Swiss 1941, 167).",
+    "schedules": "218 distinct stepping schedules per wheel order at 167 letters for each machine.",
+    "throughput": "Scoring one left offset at a time keeps the arrays in cache: 0.14 s of wall time per 167-letter schedule with 8 workers, against 0.57 s for the whole grid at once."
+  },
+  "run_command": "python3 phase3_sweep.py --jobs 10",
+  "run_constraint": "Not run. Run from a clean tree after this configuration is committed, with numpy installed. Projected about 25 to 40 minutes on 10 workers, most of it the nine target sweeps and the three control sweeps."
+}

@@ -334,6 +334,17 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
+First, before any long Phase 1 run: **`phase3-unsteckered-sweep-v1`**,
+preregistered 2026-10-07 and not run (about 25 to 40 minutes on 10 workers).
+The cited paper's authors suspect differently wired wheels, and an unknown
+wiring cannot be recovered from three short messages, but the documented
+machines without a plugboard can be searched completely: the railway Enigma and
+both Swiss K variants, body-direct over BYQMZ, FKQLZ and XFEDT, every setting
+deciphered and scored, no hill-climb. A null closes those machines for an
+ungarbled message; a detection would make v4 moot. Run it with
+`python3 phase3_sweep.py --jobs 10` from a clean tree
+([preregistration](phase3-experiment-history.md#phase3-unsteckered-sweep-v1-preregistered)).
+
 Phase 1 next: run the **complete-ring-rule sweep** of BYQMZ,
 `phase1-body-direct-sweep-v4`, preregistered 2026-10-07 and not run. It is v3
 with the `middle_complete` ring rule: 246,767,040 settings, about 152 hours
