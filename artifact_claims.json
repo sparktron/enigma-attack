@@ -812,6 +812,35 @@
         "result.cells[].confirmed_given_power_detected"
       ]
     },
+    "artifacts/phase1-joint-power-v3-middle-complete-w117.json": {
+      "runner": [
+        "scripts/joint_power.py",
+        "--power",
+        "artifacts/phase1-middle-complete-power-v1.json",
+        "--power-config",
+        "experiments/phase1-middle-complete-power-v1/config.json",
+        "--arm",
+        "complete_w117",
+        "--experiment-id",
+        "phase1-joint-power-v3-middle-complete-w117"
+      ],
+      "claim_paths": [
+        "schema",
+        "preregistered",
+        "inputs.*",
+        "result.threshold_z",
+        "result.v2_retention_cutoff_score_per_letter",
+        "result.cells[].length",
+        "result.cells[].perturbation",
+        "result.cells[].draws",
+        "result.cells[].power_detected.count",
+        "result.cells[].companion_confirmed.count",
+        "result.cells[].power_detected_and_confirmed.count",
+        "result.cells[].confirmed_and_above_v2_retention_cutoff.count",
+        "result.cells[].confirmed_given_power_detected"
+      ],
+      "long_running": "800 draws, two companion scans of 17,576 starts each per draw: 417 seconds single-process when recorded from a clean checkout at 6dc6611, so the artifact job would spend about 21 minutes on it across drift and determinism. A second local run reproduced the committed result exactly. The script is covered by its two smaller declared runs (phase1-joint-power-v2-*), which CI does regenerate."
+    },
     "artifacts/phase1-body-direct-sweep-v3.json": {
       "runner": [
         "phase1_stecker.py",

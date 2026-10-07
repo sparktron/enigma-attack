@@ -1576,12 +1576,112 @@ Exploratory, not preregistered:
   next, with its measured conditional rate as its stated power: 0.460 at q =
   0.2, given a standard reading and v2 and v3 null. No sweep is run on this
   evidence; the sweep needs its own preregistration and a checkpointed run.
+  Done: [phase1-body-direct-sweep-v4](#phase1-body-direct-sweep-v4-preregistered).
 - Running the split-point sweep first instead, as the yield model would, is a
   deviation from the rule and needs the maintainer's explicit, disclosed
   decision.
 - `accepted_break` stays false.
 - Both candidates assume wheels I to V as wired, which the cited paper's
   authors doubt for Batch C.
+
+---
+
+## phase1-body-direct-sweep-v4 (preregistered)
+
+Status: preregistered 2026-10-07; not run. Configuration:
+[experiments/phase1-body-direct-sweep-v4/config.json](../experiments/phase1-body-direct-sweep-v4/config.json),
+committed before any run.
+
+Why this one. The rule of
+[phase1-split-point-power-v1](#result-run-2026-10-07) chose it once S1 and S2
+were both refuted. That rule did not consult the yield model, which favoured a
+split-point sweep per host-hour. The maintainer delegated the choice, and this
+follows the rule as written: it is the more powerful single sweep (0.46
+against 0.29 detection at q = 0.2), not the more efficient one.
+
+What changes from v3: only the ring rule, `middle_past_notch` to
+`middle_complete`. Message (BYQMZ), climb (W = 117, batched), retention (100),
+start axes, right-ring axis, companions (FKQLZ, XFEDT) and threshold (z ≥ 6)
+are v3's. The space is 246,767,040 settings, nine times v3's: at each middle
+offset, the start just past the notch and the eight from which the notch falls
+inside 167 letters. It contains v3's 27,418,560 settings exactly. They are swept
+again rather than skipped, so the sweep is the arm the control measured and its
+score distribution covers the whole space.
+
+Hypothesis. The three 1941-09-30 messages are Enigma I traffic (UKW-B, wheels
+I–V, ten pairs) under one daily key, and BYQMZ's key is one both past-notch
+sweeps could miss, most plausibly because it has no exact equivalent in their
+space, with or without one dropped or inserted letter. A complete sweep of the
+middle-complete space then retains a candidate that FKQLZ and XFEDT both
+confirm at best-start z ≥ 6.
+
+Refuted by: no retained candidate companion-confirmed.
+
+Stated power, conditional on v2 and v3 null (planted draws both past-notch
+climbs miss, from `phase1-middle-complete-power-v1`):
+
+| | clean, 57 | one indel, 192 | at q = 0.05 | q = 0.2 | q = 0.5 |
+|---|---:|---:|---:|---:|---:|
+| detected (the rule's stated power) | 34, 59.6% | 57, 29.7% | 0.551 | **0.460** | 0.365 |
+| detected and companion-confirmed | 33, 57.9% | 55, 28.6% | 0.535 | **0.445** | 0.353 |
+
+The joint row is from
+[artifacts/phase1-joint-power-v3-middle-complete-w117.json](../artifacts/phase1-joint-power-v3-middle-complete-w117.json):
+`scripts/joint_power.py`, unchanged, on the control's `complete_w117` arm, run
+2026-10-07 from a clean tree at `6dc6611` (7 minutes), after the split-point
+result and before this configuration. It is post hoc and preregistered nowhere,
+like the v2 and v3 joint figures. Its detection flags match the control's on all
+800 draws, and the companion check confirms 97% of detected draws in both
+cells. Within the indel row, 23 of 118 middle-third and 32 of 74 elsewhere are
+jointly found.
+
+So a null multiplies the remaining odds of a standard reading by about 0.56 at
+q = 0.2. That is a moderate test, not a decisive one.
+
+Predictions (in the configuration):
+
+- **companion-confirmed-candidate** (decides): at least one of the 100 retained
+  candidates is companion-confirmed.
+- confirmed-candidate-is-rank-one: a confirmed candidate is also rank 1 on BYQMZ.
+- confirmed-candidate-at-an-added-middle-start: a confirmed candidate's middle
+  start is one of the eight the complete rule adds. v3's settings are a subset
+  and the climb and companion check are deterministic, so a confirmed setting v3
+  swept would have been confirmed by v3.
+- retained-v3-settings-reproduce: every retained candidate at a setting v3
+  swept is one v3 retained, with the same plugboard and score within 1e-6. A
+  failure means the climb changed since `7ae72f8`.
+- null-top-near-expected-maximum: with no confirmation, the top score is
+  between z = 5.5 and 7.5 over all 246.8 million scores. v2 and v3 reached 6.03
+  and 6.22 over 27.4 million, and a normal tail adds about 0.4 for nine times as
+  many settings.
+
+Checked before committing (exploratory, not part of the record): a 108-setting
+slice of this rule (wheel order I-II-III, scratch output) ran through the
+runner. It passed the preflight and both positive controls, swept nine settings
+per start and right ring, and resumed both chunks from its checkpoint on a
+second invocation with identical candidates.
+
+Limits, in the configuration. One plaintext; a single indel only; "missed by
+both" is the planted stand-in for two null sweeps. The 6σ pooled-null threshold
+stands in for retention in the top 100 of 246.8 million scores. A normal null
+puts that cutoff near 4.9σ, but v2's and v3's maxima sat about 0.7σ above the
+normal expectation, so the far tail is heavier than normal and not measured. The
+companion calibration used past-notch candidates; the joint figure covers the
+complete rule's on planted draws. q is unmeasured. Everything assumes wheels I
+to V as wired, which the cited paper's authors doubt for Batch C. If they are
+right, the power is zero and a null says nothing about these messages.
+
+Cost. At v3's 2.22 ms per setting on 10 workers, about 152 hours (6.3 days) on
+an idle host. The 1,560 chunks hold 158,184 settings each, about an hour of one
+worker. The checkpoint under `build/` lets the sweep stop and resume; a resumed
+run repeats the gates and both confirmations, and its artifact times only the
+last invocation, so record each start, stop and resume here.
+
+Run command, not run:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 10
+```
 
 ---
 
