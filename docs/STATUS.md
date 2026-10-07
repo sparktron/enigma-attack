@@ -217,11 +217,15 @@ has already closed.
   authors' own failure may equally reflect messages too few and too short for
   their method (the CryptoCellar page says the same of the messages it lists),
   so this is a reason for doubt about the standard reading, not evidence
-  against it.
+  against it. The challenge page gives the authors' grounds: unfamiliar
+  operator names, unusual operator comments, and frequencies of 323, 568 and
+  716 kHz, lower than Army networks normally used. `phase3-unsteckered-sweep-v1`
+  has since closed the catalogued unplugged machines (railway Enigma, Swiss K)
+  for these messages; a wiring no catalogue records remains untestable.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 234 tests passed locally on 2026-10-07,
+- `python3 -m unittest discover -q`: 243 tests passed locally on 2026-10-07,
   with numpy installed; without it the five batched-climb tests skip. A test
   checks that `engine: auto` falls back to the reference climb and
   `engine: batched` fails loudly when numpy is missing.
@@ -263,6 +267,12 @@ has already closed.
   CI and passes drift and determinism locally; the joint artifact reproduced
   exactly on a second local run. The v4 sweep configuration was smoke-run on a
   108-setting slice through the runner, including a checkpoint resume.
+- `artifacts/phase3-unsteckered-sweep-v1.json` (1,017 s on 10 workers, clean
+  tree at `c3a9076`) is `long_running`; its claim paths were checked against
+  the artifact by hand. Every run re-checks the numpy kernel against
+  `enigma.py` and the scorer before any sweep, and `tests/test_variant_sweep.py`
+  covers the schedules, the kernel, planting and the gates. The runner needs
+  numpy (`pip install .[fast]`) and says so when it is missing.
 - The two sweep artifacts are declared `long_running` in `artifact_claims.json`
   and checked for existence only in CI: the indicator sweep costs about 4
   minutes single-core and the body-direct sweep about 17 minutes wall-clock on
@@ -334,16 +344,21 @@ IC-based stecker screening. Both are now closed on measurement grounds, not
 coverage grounds: the statistic and the hill-climb have zero power at a
 ten-pair stecker regardless of how much of the space is searched.
 
-First, before any long Phase 1 run: **`phase3-unsteckered-sweep-v1`**,
-preregistered 2026-10-07 and not run (about 25 to 40 minutes on 10 workers).
-The cited paper's authors suspect differently wired wheels, and an unknown
-wiring cannot be recovered from three short messages, but the documented
-machines without a plugboard can be searched completely: the railway Enigma and
-both Swiss K variants, body-direct over BYQMZ, FKQLZ and XFEDT, every setting
-deciphered and scored, no hill-climb. A null closes those machines for an
-ungarbled message; a detection would make v4 moot. Run it with
-`python3 phase3_sweep.py --jobs 10` from a clean tree
-([preregistration](phase3-experiment-history.md#phase3-unsteckered-sweep-v1-preregistered)).
+Done 2026-10-07, before any long Phase 1 run: **`phase3-unsteckered-sweep-v1`
+is null.** The cited paper's authors suspect differently wired wheels, and an
+unknown wiring cannot be recovered from three short messages. The documented
+machines without a plugboard, though, can be searched completely. The railway
+Enigma and both Swiss K variants were swept body-direct over BYQMZ, FKQLZ and
+XFEDT, with every setting deciphered and scored (4 to 6 × 10⁸ per machine and
+message, 17 minutes on 10 workers). No sweep came near the z ≥ 8 threshold (top
+z 6.03 to 6.54). Planted keys were detected 200 of 200 times on every machine and
+message, and 82% to 100% with one dropped or inserted letter. Those three
+machines are closed for these messages at the catalogued wirings
+([result](phase3-experiment-history.md#result-run-2026-10-07)). What is left of
+the authors' suspicion is a wiring no catalogue records, the commercial Enigma D
+or K (no sourced wiring here), the Abwehr G (not modelled), or reflector C with
+wheels I–V (its 1941 use is unsourced). Asking the authors what their 2003–04
+attempt covered is the cheapest next step on that question.
 
 Phase 1 next: run the **complete-ring-rule sweep** of BYQMZ,
 `phase1-body-direct-sweep-v4`, preregistered 2026-10-07 and not run. It is v3

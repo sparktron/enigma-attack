@@ -25,7 +25,8 @@ completely and cheaply, because with no plugboard there is nothing to climb.
 
 ## phase3-unsteckered-sweep-v1 (preregistered)
 
-Status: preregistered 2026-10-07; not run. Configuration:
+Status: preregistered 2026-10-07; **run 2026-10-07, null, see
+[Result](#result-run-2026-10-07)**. Configuration:
 [experiments/phase3-unsteckered-sweep-v1/config.json](../experiments/phase3-unsteckered-sweep-v1/config.json);
 runner `phase3_sweep.py`, kernel `variant_sweep.py`, tests
 `tests/test_variant_sweep.py`, all committed before any run.
@@ -117,3 +118,114 @@ Run command, not run:
 ```bash
 python3 phase3_sweep.py --jobs 10
 ```
+
+### Result (run 2026-10-07)
+
+Status: completed; hypothesis **not supported**. No machine detects any of the
+three messages. Three of the four predictions were scored: the deciding one
+failed, the power and noise-band predictions held, and the companion prediction
+does not apply.
+
+Run record: `phase3_sweep.py --jobs 10`, 2026-10-07 15:42:34 to 15:59:32 UTC,
+1,017 s by the runner's clock, about 2.6 CPU-hours, Python 3.10.12, numpy
+2.2.6, 10 workers on the i9-10900K. Code `c3a9076` on
+`claude/phase3-unsteckered-sweep`, **clean tree**. The host was lightly loaded
+(load average 1.8 at the start, an LM Studio server using about half a core);
+outcomes depend only on the seeds. Raw result:
+[artifacts/phase3-unsteckered-sweep-v1.json](../artifacts/phase3-unsteckered-sweep-v1.json)
+(long-running; its claim paths were checked against the artifact).
+
+Gates. Preflight: 12 random keys per machine, 0 mismatches. Positive controls,
+one planted 97-letter message per machine, each swept completely (179 s for the
+three):
+
+| machine | planted order | recovered | z |
+|---|---|---|---:|
+| railway | II-I-III | exact plaintext | 13.95 |
+| Swiss K | II-I-III | exact plaintext | 14.36 |
+| Swiss K, 1941 stepping | II-III-I | exact plaintext | 14.96 |
+
+The recovered keys differ from the planted ones in rings and window letters
+but decipher identically, as the parameterization says they must.
+
+#### Observed
+
+Every body-direct setting of each machine on each message, with the top of its
+score distribution (score per letter, published 1941 counts):
+
+| machine | message | settings | mean | sd | top z |
+|---|---|---:|---:|---:|---:|
+| railway | BYQMZ (166 read) | 597,724,608 | -9.587 | 0.158 | 6.09 |
+| railway | FKQLZ (107) | 433,213,248 | -9.623 | 0.198 | 6.08 |
+| railway | XFEDT (97) | 405,794,688 | -9.610 | 0.208 | 6.50 |
+| Swiss K | BYQMZ | 597,724,608 | -9.586 | 0.157 | 6.38 |
+| Swiss K | FKQLZ | 433,213,248 | -9.622 | 0.198 | 6.50 |
+| Swiss K | XFEDT | 405,794,688 | -9.611 | 0.207 | 6.54 |
+| Swiss K, 1941 | BYQMZ | 597,724,608 | -9.586 | 0.158 | 6.21 |
+| Swiss K, 1941 | FKQLZ | 433,213,248 | -9.624 | 0.197 | 6.20 |
+| Swiss K, 1941 | XFEDT | 405,794,688 | -9.611 | 0.207 | 6.03 |
+
+No sweep reaches z = 8; the largest top is 6.54. The top candidates' plaintexts
+are unreadable (for example `TRMECFIXWMXFZBGWKTRN...` for the railway Enigma on
+BYQMZ), and every reported top candidate's score was reproduced by `enigma.py`.
+
+Power, 200 planted draws per cell judged against that target's own
+distribution (95% Wilson intervals):
+
+| machine | message | clean | one deletion | one insertion |
+|---|---|---:|---:|---:|
+| railway | BYQMZ | 200/200 | 200/200 | 199/200 |
+| railway | FKQLZ | 200/200 | 176 (88%) | 178 (89%) |
+| railway | XFEDT | 200/200 | 167 (84%) | 168 (84%) |
+| Swiss K | BYQMZ | 200/200 | 200/200 | 200/200 |
+| Swiss K | FKQLZ | 200/200 | 182 (91%) | 176 (88%) |
+| Swiss K | XFEDT | 200/200 | 173 (87%) | 168 (84%) |
+| Swiss K, 1941 | BYQMZ | 200/200 | 199/200 | 199/200 |
+| Swiss K, 1941 | FKQLZ | 200/200 | 185 (93%) | 167 (84%) |
+| Swiss K, 1941 | XFEDT | 200/200 | 176 (88%) | 164 (82%) |
+
+Every clean cell's interval is [0.981, 1.0]; the weakest clean draw anywhere
+scored z 12.1. Every faulted cell's lower bound is at least 0.76.
+
+| id | prediction | observed | |
+|---|---|---|---|
+| **unsteckered-detection** | some (machine, message) reaches z ≥ 8 | none; top z 6.03 to 6.54 | **refuted** |
+| companion-detected | a detecting machine detects another message | no detection | not applicable |
+| clean-power-at-least-95pct | clean power ≥ 95% everywhere | 100% everywhere | held |
+| null-top-in-noise-band | with no detection, every top z in [5.0, 7.5] | 6.03 to 6.54 | held |
+
+#### Interpretation (inference)
+
+- Under the experiment's assumptions, none of the three catalogued unplugged
+  machines enciphered any of BYQMZ, FKQLZ or XFEDT. Those assumptions are the
+  catalogued wirings, one continuous body per message, at most one dropped or
+  inserted letter, and German plaintext. For an ungarbled message the
+  measured power is 1.0 (lower 95% bound 0.98) and the weakest planted key sat
+  about 4 sd above the threshold, so this is close to an exclusion, not a
+  modest test.
+- With one dropped or inserted letter it is still strong: at least 82% for
+  every machine and message, and 99.5% or more for BYQMZ. Together with the
+  shared date and network, a reading in which all three messages were sent on
+  one of these machines is excluded more firmly than any one message's figure
+  says.
+- The nine top scores sit where the development noise runs put them (6.0 to
+  6.5). Nothing in the distribution is unusual.
+- What this leaves of the paper's suspicion: an Enigma whose wheels are wired
+  differently from every catalogued machine, the commercial D or K with their
+  original wirings, the Abwehr G, a plugboard machine other than Phase 1's, or
+  a message with more than one fault. The first cannot be searched; the second
+  and third need sourced wirings and, for the G, a model of its stepping.
+- It does not bear on Phase 1. A steckered Enigma I with wheels I-V is outside
+  this search, and v4's power and preregistration are unchanged.
+
+#### Decision
+
+- The three catalogued unplugged machines are closed for these messages at the
+  catalog's wirings. Reopening them needs a reason to doubt a catalogued wiring
+  or a reason to expect several faults.
+- Cheap next steps on the same question, in order: ask the paper's authors what
+  their 2003-04 attempt covered and what the source documents say about the
+  network; add the commercial Enigma D and K only with sourced wirings; and
+  test reflector C with wheels I-V (a v2-shaped sweep, about 17 hours) only
+  once its 1941 use is sourced.
+- `accepted_break` stays false.
