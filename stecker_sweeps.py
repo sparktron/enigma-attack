@@ -32,7 +32,7 @@ from stecker_climb import (
     windowed_climb,
 )
 from stecker_scoring import FastNgramScorer, index_of_coincidence
-from stecker_space import RingRule, Setting
+from stecker_space import RingRule
 from stecker_traffic import Traffic
 
 
@@ -182,15 +182,19 @@ def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[
     )
 
 
-def _worker_chunk(task: tuple[int, str, tuple[str, ...], list[Setting], int]) -> dict[str, Any]:
+def _worker_chunk(
+    task: tuple[int, str, tuple[str, ...], list[tuple[int, int, int]], "RingRule", int],
+) -> dict[str, Any]:
     """Climb every setting of one chunk and return only what the merge needs.
 
     The result is the chunk's ``keep`` best settings and the running count, mean,
     sum of squared deviations and maximum of every score, so a chunk's memory and
     the size of what crosses the process boundary do not grow with the chunk.
+    The chunk's starts are expanded into settings here, in the worker.
     """
 
-    index, key, names, swept, keep = task
+    index, key, names, starts, rule, keep = task
+    swept = rule.settings(names, starts)
     scorer = _WORKER["scorer"]
     body = _WORKER["body"]
     settings = _WORKER["settings"]
@@ -291,26 +295,29 @@ def merge_score_statistics(
 
 
 def sweep_chunks(
-    rule: "RingRule",
     rotor_orders: Sequence[tuple[str, ...]],
     starts: Sequence[tuple[int, int, int]],
-) -> list[tuple[str, tuple[str, ...], list[Setting]]]:
+) -> list[tuple[str, tuple[str, ...], list[tuple[int, int, int]]]]:
     """Wheel order x middle start, in a fixed order.
 
     One chunk per wheel order leaves the last round of a pool with idle workers
     and loses a whole order to a crash.  Splitting each order by its middle axis
     gives 60 x 26 = 1,560 chunks for a full sweep, small enough to balance and to
     checkpoint, and a chunk is a pure function of its key.
+
+    A chunk holds its starts, not its settings; the worker expands them with
+    ``RingRule.settings``.  Expanded here, the 246.8 million settings of a
+    complete-rule sweep held about 47 GB in the parent before any worker ran.
     """
 
-    chunks: list[tuple[str, tuple[str, ...], list[Setting]]] = []
-    for names in rotor_orders:
-        groups: dict[int, list[tuple[int, int, int]]] = {}
-        for start in starts:
-            groups.setdefault(start[1], []).append(start)
-        for middle, group in groups.items():
-            chunks.append(("-".join(names) + f"/{middle}", names, rule.settings(names, group)))
-    return chunks
+    groups: dict[int, list[tuple[int, int, int]]] = {}
+    for start in starts:
+        groups.setdefault(start[1], []).append(start)
+    return [
+        ("-".join(names) + f"/{middle}", names, group)
+        for names in rotor_orders
+        for middle, group in groups.items()
+    ]
 
 
 def sweep_fingerprint(
@@ -451,7 +458,7 @@ def sweep_slice(
     )
     engine = resolve_engine(settings)
     keep = max(1, int(keep))
-    chunks = sweep_chunks(rule, rotor_orders, starts)
+    chunks = sweep_chunks(rotor_orders, starts)
     fingerprint = sweep_fingerprint(
         message.body, scorer_config, settings, rule, starts, keep, engine, reflector
     )
@@ -460,8 +467,8 @@ def sweep_slice(
         results.update(read_checkpoint(checkpoint, fingerprint))
     resumed = sum(1 for key, _, _ in chunks if key in results)
     pending = [
-        (index, key, names, swept, keep)
-        for index, (key, names, swept) in enumerate(chunks)
+        (index, key, names, group, rule, keep)
+        for index, (key, names, group) in enumerate(chunks)
         if key not in results
     ]
 
@@ -537,7 +544,7 @@ def sweep_slice(
         "chunks": len(chunks),
         "chunks_resumed_from_checkpoint": resumed,
         "chunks_run": len(pending),
-        "settings_run": sum(len(task[3]) for task in pending),
+        "settings_run": sum(rule.setting_count(names, group) for _, _, names, group, _, _ in pending),
         "checkpoint_fingerprint": fingerprint,
     }
     return ranked, evaluated, distribution, execution

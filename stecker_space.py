@@ -149,6 +149,12 @@ class RingRule:
                     )
         return out
 
+    def setting_count(self, names: Sequence[str], starts: Sequence[tuple[int, int, int]]) -> int:
+        """``len(self.settings(names, starts))`` without building the settings."""
+
+        phases = self.middle_phases(names[1])
+        return len(starts) * (1 if phases is None else len(phases)) * len(self.right_rings)
+
 
 def reducible_space_size(rule_name: str, length: int, wheel_set: Sequence[str]) -> int:
     """Settings a complete sweep of every wheel order would evaluate under a rule.

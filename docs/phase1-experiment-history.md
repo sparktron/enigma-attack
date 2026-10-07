@@ -1677,6 +1677,28 @@ worker. The checkpoint under `build/` lets the sweep stop and resume; a resumed
 run repeats the gates and both confirmations, and its artifact times only the
 last invocation, so record each start, stop and resume here.
 
+> **Amended 2026-10-07, before any chunk ran (engineering, no number changes).**
+> The first launch, from a clean tree at `fba1b74` (2026-10-07 22:31:15 UTC,
+> detached, 10 workers), was stopped at 22:37:58 UTC during start-up. No worker had
+> started, no checkpoint existed, and the log was empty. The parent process had
+> reached 8.5 GB and was growing while the host ran out of memory. The cause:
+> `sweep_chunks` expanded every chunk's settings into Python tuples in the parent
+> before the pool started, about 192 bytes per setting. That was 5.3 GB for v3's
+> 27.4 million settings and would be about 47 GB for this sweep's 246.8 million,
+> against 31 GB of RAM. The 108-setting pre-commit check above could not show
+> this.
+>
+> The fix gives each chunk its starts instead of its settings, and the worker
+> expands them with the same `RingRule.settings` call. `RingRule.setting_count`
+> gives `settings_run` without building them. The parent now holds about 0.5 MB for
+> the full chunk list. A complete-rule slice with this configuration's climb and
+> scorer (2 wheel orders, 12 starts, 5,616 settings, 4 workers) gives identical
+> retained candidates, score statistics, execution record, checkpoint lines and
+> checkpoint fingerprint under `fba1b74` and under the fix. A unit test checks that
+> expanded chunks equal the slice's settings in order, and that the count matches
+> for every ring rule. Nothing about the sweep's definition, predictions or stated
+> power changes.
+
 Run command, not run:
 
 ```bash

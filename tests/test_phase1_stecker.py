@@ -1016,13 +1016,30 @@ class SweepEngineTests(unittest.TestCase):
 
     def test_chunks_are_one_per_wheel_order_and_middle_start(self):
         rule = RingRule("held", (0, 0, 0), (0,), 167)
-        chunks = sweep_chunks(rule, self.ORDERS, self.STARTS)
+        chunks = sweep_chunks(self.ORDERS, self.STARTS)
         self.assertEqual(len(chunks), 6)
         self.assertEqual(len({key for key, _, _ in chunks}), 6)
-        self.assertEqual(sum(len(settings) for _, _, settings in chunks), 18)
+        self.assertEqual(sum(len(rule.settings(names, group)) for _, names, group in chunks), 18)
         orders = rotor_order_space("all_permutations", ["I", "II", "III", "IV", "V"])
-        full = sweep_chunks(rule, orders, [(0, m, 0) for m in range(26)])
+        full = sweep_chunks(orders, [(0, m, 0) for m in range(26)])
         self.assertEqual(len(full), 60 * 26)
+
+    def test_a_chunk_holds_its_starts_and_expands_to_the_same_settings(self):
+        # Every chunk's settings, in order, are the slice's settings in order:
+        # expanding in the worker changes where they are built, not what they are.
+        starts = [(left, middle, right) for left in range(3) for middle in range(26) for right in range(2)]
+        for rule in (
+            RingRule("held", (0, 0, 0), (0, 5), 167),
+            RingRule("middle_past_notch", (0, 0, 0), (0, 5), 167),
+            RingRule("middle_complete", (0, 0, 0), tuple(range(26)), 167),
+        ):
+            for names in self.ORDERS:
+                chunks = sweep_chunks([names], starts)
+                expanded = [setting for _, _, group in chunks for setting in rule.settings(names, group)]
+                # Chunks follow the middle axis in first-seen order, here 0 to 25.
+                self.assertEqual(expanded, rule.settings(names, sorted(starts, key=lambda start: start[1])))
+                for _, _, group in chunks:
+                    self.assertEqual(rule.setting_count(names, group), len(rule.settings(names, group)))
 
     def test_result_does_not_depend_on_the_worker_count(self):
         serial = self.sweep(jobs=1)
