@@ -372,6 +372,9 @@ by about 0.56. Run it with
 `python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 10`
 from a clean tree once its configuration is merged, and record every start, stop
 and resume ([preregistration](phase1-experiment-history.md#phase1-body-direct-sweep-v4-preregistered)).
+The first launch was stopped during start-up, before any chunk ran. The sweep
+expanded all 246.8 million settings in the parent process, about 47 GB. The
+worker now expands each chunk itself, with identical results on a test slice.
 The preregistered rule of `phase1-split-point-power-v1` chose it. The
 maintainer delegated the choice between that rule and the yield model below,
 and the rule was followed. That control ran on 2026-10-07 and refuted both of
