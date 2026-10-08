@@ -400,7 +400,8 @@ def run_body_direct_sweep(
                 # earlier version of this field named itself "core-hours"
                 # while actually reporting wall-clock hours at this
                 # parallelism, understating the true cost by the worker count.
-                relevant * per_setting * max(jobs, 1) / 3600,
+                # The cuda engine ignores ``jobs``: one process drives the GPU.
+                relevant * per_setting * (1 if execution["engine"] == "cuda" else max(jobs, 1)) / 3600,
                 1,
             ),
         },

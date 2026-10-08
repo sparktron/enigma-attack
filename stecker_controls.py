@@ -18,6 +18,7 @@ import phase1
 import phase7
 from provenance import sha256_text
 import stecker_batch
+import stecker_cuda
 from stecker_climb import body_direct_climb, climb_windows, windowed_climb
 from stecker_scoring import FastNgramScorer
 from stecker_sweeps import resolve_engine
@@ -378,29 +379,25 @@ def configured_windows(config: Mapping[str, Any]) -> list[dict[str, Any]]:
     return windows
 
 
-def batched_climb_parity_report(
-    config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
-) -> dict[str, Any]:
-    """Check the batched climb against the reference on seeded random settings.
+def parity_sample_size(config: Mapping[str, Any]) -> tuple[int, int]:
+    settings = config.get("batched_climb_parity", {})
+    return int(settings.get("seed", 20261003)), int(settings.get("samples", 24))
 
-    The reference climb is the definition; the batched one is an optimisation of
-    it, so the two have to end on the same plugboard after the same number of
-    evaluations.  Half the samples climb at a wrong setting, because a sweep is
-    almost entirely wrong settings, and some carry masked letters.
+
+def parity_cases(config: Mapping[str, Any], reflector: Sequence[int]):
+    """The seeded climb-parity cases: ``(body, order, rings, start, table)``.
+
+    Half climb at a wrong setting, because a sweep is almost entirely wrong
+    settings, and some carry masked letters.  The batched and cuda parity
+    reports draw the same cases from the same seed.
     """
 
-    settings = config.get("batched_climb_parity", {})
-    seed = int(settings.get("seed", 20261003))
-    samples = int(settings.get("samples", 24))
+    seed, samples = parity_sample_size(config)
     generator = random.Random(seed)
     wheels = list(config["machine"]["wheel_set"])
     source = "".join(
         normalize_plaintext(row["raw"]) for row in config["scorer_validation"]["plaintexts"]
     )
-    climb = config["climb"]
-    windows = configured_windows(config)
-    identical = same_evaluations = 0
-    windowed_identical = 0
     for case in range(samples):
         length = generator.randrange(60, min(167, len(source)) + 1)
         order = tuple(generator.sample(wheels, 3))
@@ -423,6 +420,26 @@ def batched_climb_parity_report(
         table = enigma_fast.position_permutations(
             [enigma_fast.rotor_tables(name) for name in order], rings, start, length, reflector
         )
+        yield body, order, rings, start, table
+
+
+def batched_climb_parity_report(
+    config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
+) -> dict[str, Any]:
+    """Check the batched climb against the reference on seeded random settings.
+
+    The reference climb is the definition; the batched one is an optimisation of
+    it, so the two have to end on the same plugboard after the same number of
+    evaluations.  Half the samples climb at a wrong setting, because a sweep is
+    almost entirely wrong settings, and some carry masked letters.
+    """
+
+    seed, samples = parity_sample_size(config)
+    climb = config["climb"]
+    windows = configured_windows(config)
+    identical = same_evaluations = 0
+    windowed_identical = 0
+    for body, order, rings, start, table in parity_cases(config, reflector):
         reference, _ = body_direct_climb(
             [Traffic("PARITY", (0, 0, 0), (0, 0, 0), tuple(body))],
             order, rings, [start], scorer, reflector, climb,
@@ -459,6 +476,73 @@ def batched_climb_parity_report(
     return report
 
 
+def cuda_climb_parity_report(
+    config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
+) -> dict[str, Any]:
+    """Check the cuda climb against the batched climb on the seeded parity cases.
+
+    The batched climb is the specification the GPU reproduces, so every case has
+    to end on the same plugboard after the same number of evaluations, with the
+    same score per letter and, windowed, the same window.  The GPU sums in the
+    batched climber's order, so the scores are expected to agree exactly; the
+    report records the worst difference and fails above 1e-9.
+    """
+
+    seed, samples = parity_sample_size(config)
+    climb = {key: value for key, value in config["climb"].items() if key != "window"}
+    windows = configured_windows(config)
+    identical = same_evaluations = 0
+    windowed_identical = 0
+    worst = 0.0
+    tolerance = 1e-9
+    for body, order, rings, start, table in parity_cases(config, reflector):
+        letters = sum(1 for value in body if value >= 0)
+        plugboard, evaluations = stecker_batch.BatchedClimber(
+            scorer.bigram, scorer.combined, body, climb
+        ).climb(table)
+        expected_score = scorer.score_decryption(table, body, plugboard) / letters
+        gpu = stecker_cuda.CudaClimber(scorer.bigram, scorer.combined, body, climb, reflector)
+        got_plugboard, got_evaluations, got_score, _ = gpu.climb_one(order, rings, start)
+        gpu.close()
+        worst = max(worst, abs(got_score - expected_score))
+        identical += got_plugboard == plugboard and abs(got_score - expected_score) <= tolerance
+        same_evaluations += got_evaluations == evaluations
+        for window in windows:
+            windowed = {**climb, "window": window}
+            climbers = [
+                stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body[first:stop], windowed)
+                for _, first, stop in climb_windows(len(body), window)
+            ]
+            expected = windowed_climb(table, body, scorer, windowed, climbers)
+            gpu = stecker_cuda.CudaClimber(scorer.bigram, scorer.combined, body, windowed, reflector)
+            got = gpu.climb_one(order, rings, start)
+            gpu.close()
+            worst = max(worst, abs(got[2] - expected[2]))
+            windowed_identical += (
+                got[0] == expected[0]
+                and got[1] == expected[1]
+                and got[3] == expected[3]
+                and abs(got[2] - expected[2]) <= tolerance
+            )
+    passed = identical == samples and same_evaluations == samples
+    report: dict[str, Any] = {
+        "seed": seed,
+        "samples": samples,
+        "reference": "stecker_batch.BatchedClimber",
+        "identical_final_plugboards": identical,
+        "identical_evaluation_counts": same_evaluations,
+        "worst_absolute_score_difference": worst,
+        "score_tolerance": tolerance,
+    }
+    if windows:
+        report["windows"] = windows
+        report["windowed_climbs_compared"] = samples * len(windows)
+        report["windowed_climbs_identical"] = windowed_identical
+        passed = passed and windowed_identical == samples * len(windows)
+    report["passed"] = passed
+    return report
+
+
 def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[str, Any]:
     simulator = phase1.published_vector_results()
     kernel = enigma_fast.parity_report(
@@ -484,12 +568,18 @@ def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[st
         "scorer_parity": scorer_parity,
         "scorer_discrimination": discrimination,
     }
-    if resolve_engine(config["climb"]) == "batched":
-        parity = batched_climb_parity_report(
-            config, scorer, enigma_fast.reflector_table(config["machine"]["reflector"])
-        )
+    engine = resolve_engine(config["climb"])
+    reflector = enigma_fast.reflector_table(config["machine"]["reflector"])
+    if engine in ("batched", "cuda"):
+        parity = batched_climb_parity_report(config, scorer, reflector)
         report["batched_climb_parity"] = parity
         checks["batched_climb_matches_reference"] = parity["passed"]
+    if engine == "cuda":
+        # The GPU reproduces the batched climb, which reproduces the reference;
+        # a mismatch on either link blocks the run before any target search.
+        gpu = cuda_climb_parity_report(config, scorer, reflector)
+        report["cuda_climb_parity"] = gpu
+        checks["cuda_climb_matches_batched"] = gpu["passed"]
     report["checks"] = checks
     report["passed"] = all(checks.values())
     return report

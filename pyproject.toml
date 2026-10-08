@@ -13,6 +13,10 @@ dependencies = []
 [project.optional-dependencies]
 # The batched stecker climb; without it the pure-Python climb runs unchanged.
 fast = ["numpy"]
+# The CUDA stecker climb (climb.engine "cuda"): numpy here, plus nvcc and an
+# NVIDIA driver on the host, which pip cannot install. The kernel is compiled
+# on first use; without them the engine reports itself unavailable.
+gpu = ["numpy"]
 
 [project.scripts]
 enigma-phase1 = "phase1:main"
@@ -47,6 +51,7 @@ py-modules = [
     "stecker_climb",
     "stecker_companion",
     "stecker_controls",
+    "stecker_cuda",
     "stecker_power",
     "stecker_scoring",
     "stecker_space",

@@ -1705,6 +1705,141 @@ Run command, not run:
 python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 10
 ```
 
+> **Run log, recorded 2026-10-08 (the run is unfinished).** Started 2026-10-07
+> 23:28:24 UTC from a clean tree at `31dfbcc`, detached, 10 workers, with this
+> configuration unchanged (engine `batched`). The checkpoint gets records only
+> once the preflight and both positive controls have passed, and it held 160 of
+> 1,560 chunks at 2026-10-08 17:48 UTC, about 9 an hour. Nothing has stopped or
+> resumed it. The [CUDA engine](#cuda-climb-engine-build-and-benchmark-2026-10-08)
+> built since then does not touch this run: its checkpoint fingerprint is
+> unchanged, which a test checks.
+
+---
+
+## CUDA climb engine: build and benchmark (2026-10-08)
+
+Exploratory engineering and measurement, preregistered nowhere. No experiment
+configuration changed. The running v4 sweep was neither stopped nor switched
+(see its run log above).
+
+What it is (`stecker_cuda.py`). A new climb engine, `climb.engine = "cuda"`, is
+an exact port of `BatchedClimber` for the whole-message and head-and-tail
+windowed climbs. It runs a whole sweep chunk in one call. Each CUDA thread block
+climbs one (setting, window) pair with 352 threads: 325 swap slots, 26 unplug
+slots and one for the current board. The block builds the setting's position
+table itself, by the stepping and composition of
+`enigma_fast.position_permutations`, which costs the CPU sweep a Python loop per
+setting. The table and the plugboard sit in shared memory. The move order, pair
+limit and evaluation count are `_candidates`'. The acceptance rule is exact
+without a serial scan over all ~335 scores. A move can replace the running best
+only if it beats every earlier score and the starting best plus the gain, because
+the running best never falls below either. So one warp finds those few moves
+with a prefix-maximum scan and applies the rule to them in order. `auto` never
+picks `cuda`. The split-point climb is refused with an error. Under `cuda` the
+preflight runs a new cuda-against-batched parity report as well as the existing
+batched-against-reference one. A mismatch in either blocks the run before any
+target search.
+
+Choice of build: the kernel is compiled by `nvcc` on first use and loaded with
+ctypes, not run as a CuPy `RawKernel`. The CUDA 12.8 toolchain was already on the
+host and CuPy was not installed, so ctypes adds no package. The kernel source is
+a string in `stecker_cuda.py`, so the provenance hash of imported modules covers
+it. The compiled library is cached under `~/.cache/enigma-attack/cuda`, keyed by
+source, nvcc version and flags. `pip install .[gpu]` adds only numpy. nvcc and
+the driver are host requirements, and without them the engine reports itself
+unavailable and the GPU tests skip.
+
+Fact: the scores are bit-identical, not merely close. numpy adds a row's terms by
+pairwise summation: eight accumulators, blocks of up to 128, larger blocks split
+at half rounded down to a multiple of eight. An emulation of that order matched
+`ndarray.sum(axis=1)` bit for bit on 124,124 random rows of 1 to 1,000 terms with
+numpy 2.2.6. The kernel adds its n-gram terms in that order in FP64, so every
+candidate score, and therefore every acceptance decision, is the batched
+climber's. The coincidence objective is integer counts and the same three
+floating-point operations. The window score repeats
+`FastNgramScorer.score_decryption`'s sequential sum. The chunk statistics repeat
+the sweep's streaming update in C, with floating-point contraction off.
+Measured differences are therefore 0.0, not a value under 1e-9.
+
+Fact: parity, against `BatchedClimber`, all on the 3090:
+
+| check | compared | identical |
+|---|---:|---:|
+| position tables against `position_permutations` (2,000 on wheels I–V, 1 to 299 letters; 480 in the tests on I–VIII, 1 to 399) | 2,480 settings | all |
+| v4's preflight samples (seed 20261005), whole message | 24 | 24 |
+| v4's preflight samples, W = 117 | 24 | 24 |
+| random settings, whole message: clean / masked / short bodies | 680 / 660 / 660 | all |
+| random settings, W = 117: clean / masked / short bodies | 680 / 660 / 660 | all |
+| v4 chunks recomputed from a checkpoint copy | 150 chunks, 23,727,600 settings | 150 records byte-identical |
+
+"Identical" means the same final plugboard, evaluation count and (windowed) the
+same window, with a score difference of exactly 0.0. The random run was
+`scripts/cuda_parity.py random --settings 2000 --seed 20261008` (114 s). It drew 3
+to 10 settings per body: the true setting first, the rest random. Clean and
+masked bodies are 150 to 167 letters; masked ones carry 1 to 8 masked letters,
+sometimes at position 0 or as a two-letter run. Short bodies are 30 to 139 letters,
+so W = 117 meets both the single-window fallback and overlapping windows. The
+chunk check was `scripts/cuda_parity.py chunks` over every record in a read-only
+copy of the running v4 checkpoint, taken at 150 chunks. Each record compared equal
+as JSON text: `evaluated`; the 100 `top` rows in order (setting, plugboard,
+window, evaluations, score); and mean, m2 and max. A test asserts that v4's
+fingerprint, recomputed from its configuration, equals the one on the
+checkpoint's first line, so the CPU sweep can still resume after this change.
+Another test asserts that a cuda chunk record equals the batched one as JSON
+text.
+
+Fact: the runner end to end. A scratch copy of v4's configuration set the engine
+to `cuda` and was cut to wheel order I-II-III and left start A: 26 chunks,
+158,184 settings. It passed every preflight check, including the new
+`cuda_climb_matches_batched` (24 of 24 samples, worst difference 0.0), and both
+positive controls. It swept in 1.29 s and wrote its checkpoint. A second
+invocation resumed all 26 chunks, ran none, and reported identical top
+candidates and score distribution. Each invocation took about 110 s in all,
+mostly CPU work that does not grow with the sweep: the preflight, the controls
+and the companion confirmation of the 100 retained candidates (about 80 s).
+
+Fact: cost. `scripts/benchmark_sweep.py --v4-chunks 12 --repeats 2
+--remaining-chunks 1400` timed whole v4 chunks: BYQMZ, v4's W = 117 climb and
+complete ring rule, 158,184 settings each. The 12 chunks spread over wheel orders
+and middle offsets, and each ran twice. The run was on 2026-10-08 at about 17:42
+UTC, on an RTX 3090 (driver 595.91, CUDA 12.8). LM Studio's model had been
+unloaded at the maintainer's request, and no other compute process held the GPU.
+The CPU v4 sweep was running on all 10 physical cores throughout.
+
+| engine | ms per setting | against batched on 10 CPU workers (2.22 ms, recorded) |
+|---|---:|---:|
+| **cuda** | **0.00741** (1.14 to 1.23 s per chunk) | **299×** |
+
+At that rate v4's 1,400 unfinished chunks take 0.46 h, against 137 h for the CPU
+at its recorded rate. A full 246,767,040-setting sweep takes 0.51 h against
+152 h. Each run adds the fixed CPU minutes above. An earlier three-chunk check,
+with LM Studio's model still loaded and idle, took 1.15 s per chunk, so the
+loaded model made no measurable difference while idle. The kernel uses 80
+registers and about 26 KB of shared memory per block, two blocks per SM. The
+display watchdog is on for this GPU, so a chunk call issues launches of 8,192
+settings. The benchmark's older planted-message path also accepts `--engines
+cuda`. Its chunks are 26 settings, so per-call overhead dominates there (0.32 ms
+per setting) and that figure is not the engine's rate.
+
+Inference. The engine changes the cost of a Phase 1 sweep from days of host time
+to under an hour. Its output cannot be told apart from the batched engine's on
+every comparison made: 23.7 million settings of the actual v4 sweep, plus 4,000
+random and 48 preflight climbs. A cuda run of v4 would therefore produce the
+same retained candidates, plugboards, scores and statistics. It would differ
+only in the engine field, the checkpoint fingerprint and the timings. That rests
+on parity measured on this host with numpy 2.2.6. The bit-exact agreement
+depends on numpy's summation order. A different numpy could change the batched
+scores in the last bits, which the preflight would catch as a failed check, not
+let through as a quiet difference. Whether to stop the running CPU sweep and
+redo it on the GPU is the maintainer's decision. Doing so is a disclosed
+deviation from v4's preregistered engine, and it restarts from zero because the
+engine is part of the fingerprint. This entry does not decide it.
+
+Limits. The split-point climb (`stecker_split.SplitClimber`) has no GPU port.
+Bodies are limited to 512 letters. One GPU climbs one chunk at a time, so under
+`cuda` the sweep ignores `--jobs`. The power control's single null climbs still
+use the batched climber when its arms ask for `cuda`.
+
 ---
 
 ## What Phase 1 now needs
