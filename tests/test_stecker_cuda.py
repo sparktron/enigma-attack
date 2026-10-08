@@ -27,6 +27,8 @@ V4_CONFIG = ROOT / "experiments/phase1-body-direct-sweep-v4/config.json"
 # (build/phase1-body-direct-sweep-v4.checkpoint.jsonl, copied read-only on
 # 2026-10-08 after 150 chunks; the sweep started from 31dfbcc).
 V4_CHECKPOINT_FINGERPRINT = "56cd4f962278e22c38dcac0cbade2d7aac8a3e5249a7e74673f1afcfae3e00d9"
+# The GPU run of 2026-10-08 (engine amended to cuda), from its checkpoint and artifact.
+V4_CUDA_FINGERPRINT = "a2cd6b4f1187f6742ed546ddf2b386deacbb17fdafe46cf9307d68386b2ab97f"
 GPU = stecker_cuda.available()
 WINDOW = {"kind": "head_tail", "letters": 117}
 
@@ -86,13 +88,19 @@ class EngineSelectionTests(unittest.TestCase):
         self.assertEqual(config["climb"]["engine"], "cuda")
         self.assertEqual(config["amendments"][0]["date"], "2026-10-08")
         self.assertEqual(v4_fingerprint("batched"), V4_CHECKPOINT_FINGERPRINT)
+        self.assertEqual(v4_fingerprint("cuda"), V4_CUDA_FINGERPRINT)
+        # A local checkpoint is from one of the two runs, whichever checkout this is.
         checkpoint = ROOT / "build/phase1-body-direct-sweep-v4.checkpoint.jsonl"
         if checkpoint.exists():
             with checkpoint.open(encoding="utf-8") as handle:
                 first = json.loads(handle.readline())
-            self.assertEqual(first["fingerprint"], V4_CHECKPOINT_FINGERPRINT)
-        # The engine is part of the identity: a GPU run never resumes a CPU checkpoint.
-        self.assertNotEqual(v4_fingerprint("cuda"), V4_CHECKPOINT_FINGERPRINT)
+            self.assertIn(first["fingerprint"], (V4_CHECKPOINT_FINGERPRINT, V4_CUDA_FINGERPRINT))
+        artifact = ROOT / "artifacts/phase1-body-direct-sweep-v4.json"
+        if artifact.exists():
+            recorded = json.loads(artifact.read_text(encoding="utf-8"))
+            self.assertEqual(
+                recorded["result"]["execution"]["checkpoint_fingerprint"], V4_CUDA_FINGERPRINT
+            )
 
 
 @unittest.skipUnless(stecker_batch.available(), "numpy is not installed")

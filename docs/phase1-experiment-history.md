@@ -1732,6 +1732,92 @@ python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/confi
 > `python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 1`
 > (the cuda engine ignores `--jobs`).
 
+### Result (GPU run 2026-10-08)
+
+Run: the maintainer launched it from a clean tree at `35c92d7` (branch
+`claude/phase1-cuda-engine`, the amendment commit). It ran from 2026-10-08
+22:52:30 to 23:25:33 UTC, 33 minutes in all, as one process on the RTX 3090.
+No other compute process was on the GPU. The CPU run of the same sweep kept
+running alongside on 10 cores. There was one invocation, with no stop or
+resume. The artifact is
+[artifacts/phase1-body-direct-sweep-v4.json](../artifacts/phase1-body-direct-sweep-v4.json).
+
+Acceptance condition (fixed in the amendment): **met.** The CPU run had
+finished 210 chunks when its checkpoint was copied (read-only, 23:25:54 UTC).
+All 210 records (33,218,640 settings) are identical to the GPU run's records for
+the same chunks, compared as JSON text without the fingerprint. None is missing
+or different.
+
+### Observed
+
+- Preflight: every check passed, including `cuda_climb_matches_batched` (24 of
+  24 whole-message and 24 of 24 W = 117 samples, worst score difference 0.0)
+  and `batched_climb_matches_reference`. Both positive controls passed.
+- Coverage: all 246,767,040 settings of the middle-complete space, in 1,560
+  chunks. The sweep took 1,859 s (7.5 µs per setting) and the companion
+  confirmation 90 s.
+- Score distribution over every setting (better of two windows): mean −8.2870,
+  sd 0.11475 per letter. The maximum is −7.5395 (z = 6.51), rank I-IV-II, rings
+  ABF, start THF. Rank 100 is −7.6347. All 100 retained candidates won on the
+  head window, as in v3 (BYQMZ's masked letter is in the head).
+- Companion confirmation: **none confirmed.** The best minimum over FKQLZ and
+  XFEDT is z = 4.69 at rank 65 (FKQLZ 4.96, XFEDT 4.69), against the threshold
+  of 6. v3's best was 4.64.
+- Indicator confirmation: 2 of 100 candidates have a compatible ring setting.
+  The best pooled date score is −9.00 per letter.
+- Duplicate settings, not anticipated in the preregistration. A start with the
+  middle wheel at its notch double-steps on the first keystroke. From then on it
+  is the start one letter later on both the left and middle wheels, which is the
+  just-past-notch setting v3 swept. The exception is when the right wheel also
+  starts at its notch: 1,906 of 2,000 random checks over 167 letters were
+  identical, against the 25 in 26 expected. So about 1 in 9.4 of the space's
+  settings exactly duplicate another. Among the retained, 12 candidates sit at a
+  notch start, and each has its duplicate, with the same plugboard and score,
+  also retained. The 100 rows are therefore 88 distinct machines.
+
+Predictions:
+
+| prediction | outcome |
+|---|---|
+| companion-confirmed-candidate (decides) | **failed**: no candidate confirmed |
+| confirmed-candidate-is-rank-one | does not apply |
+| confirmed-candidate-at-an-added-middle-start | does not apply |
+| retained-v3-settings-reproduce | **held**: the 12 retained at settings v3 swept are all v3-retained, with the same plugboard and score (rank 5 is v3's rank 1, −7.573383084) |
+| null-top-near-expected-maximum (z 5.5 to 7.5) | **held**: z = 6.51 |
+
+### Interpretation (inference)
+
+- The run is the preregistered sweep in every respect but the engine, and the
+  engine changed nothing measurable. The 210 CPU-run chunks the GPU run
+  reproduced exactly are 13% of the sweep, spread over the first wheel orders.
+- The three checks agree again: the top score is the noise maximum, the
+  companions see nothing, and the indicator sees nothing. The best companion z
+  (4.69) sits where v3's (4.64) did, below the calibration's 240-null maximum
+  of 4.60 plus what 100 more draws would add.
+- Weight of the null. The preregistered stated power puts this null's odds
+  multiplier at about 0.56 at q = 0.2. Combined with the v2 and v3 multipliers
+  of 0.14 ungarbled and 0.48 with one indel, all three nulls multiply the odds
+  of a standard Enigma I reading of BYQMZ by about 0.059 ungarbled (0.14 ×
+  0.421) and 0.34 with one indel (0.48 × 0.714). At q = 0.2 that is about 0.12.
+  The same caveats hold: one plaintext, a single indel, planted stand-ins for
+  the earlier nulls, and wheels I–V as wired.
+- The duplicates change no verdict. A duplicated setting is climbed twice to
+  the same result. It adds a little weight to those settings in the score
+  distribution, about 11% of settings, and costs retained slots: 12 of 100
+  here. A later complete-rule sweep could drop the notch start whenever the
+  right wheel is not also at its notch.
+
+### Decision
+
+v4 is null at its stated power. Phase 1's body-direct search of BYQMZ under
+the standard Enigma I reading has now covered the past-notch space twice (whole
+message and W = 117) and the complete space once, and none confirms. The CPU
+run of v4 was still running when this was recorded. Its finished chunks agree
+with this result, and whether to stop it is the maintainer's call. The cited
+paper's doubt about the wheel wiring for Batch C, the two-fault and
+other-machine cases, and the crib-driven Bombe (still without a crib prior)
+are what remain. Choosing among them is for a later entry.
+
 ---
 
 ## CUDA climb engine: build and benchmark (2026-10-08)
