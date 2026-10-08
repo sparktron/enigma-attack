@@ -1744,8 +1744,10 @@ Choice of build: the kernel is compiled by `nvcc` on first use and loaded with
 ctypes, not run as a CuPy `RawKernel`. The CUDA 12.8 toolchain was already on the
 host and CuPy was not installed, so ctypes adds no package. The kernel source is
 a string in `stecker_cuda.py`, so the provenance hash of imported modules covers
-it. The compiled library is cached under `~/.cache/enigma-attack/cuda`, keyed by
-source, nvcc version and flags. `pip install .[gpu]` adds only numpy. nvcc and
+it. The compiled library is built for the visible device's compute capability and
+cached under `~/.cache/enigma-attack/cuda`. The cache key covers the source, the
+nvcc version, the flags and that capability. On load, the library is checked to
+hold a kernel image for the device. `pip install .[gpu]` adds only numpy. nvcc and
 the driver are host requirements, and without them the engine reports itself
 unavailable and the GPU tests skip.
 

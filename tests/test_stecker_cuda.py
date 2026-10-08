@@ -156,6 +156,15 @@ class CudaEngineTests(unittest.TestCase):
                 )
                 self.assertEqual(table.tolist(), expected)
 
+    def test_the_library_cache_is_keyed_by_gpu_architecture(self):
+        nvcc = stecker_cuda._nvcc()
+        here = stecker_cuda.compute_capability()
+        ampere = stecker_cuda.library_path(nvcc, (8, 6))
+        turing = stecker_cuda.library_path(nvcc, (7, 5))
+        self.assertNotEqual(ampere, turing)
+        self.assertIn("sm75", turing.name)
+        self.assertIn(f"sm{here[0]}{here[1]}", stecker_cuda.library_path(nvcc, here).name)
+
     def test_settings_array_is_rule_settings_in_order(self):
         names = ("II", "V", "I")
         starts = [(left, middle, right) for left in (0, 9) for middle in (2, 17) for right in (4, 25)]

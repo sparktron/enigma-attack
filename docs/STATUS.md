@@ -229,7 +229,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 257 tests passed locally on 2026-10-08,
+- `python3 -m unittest discover -q`: 258 tests passed locally on 2026-10-08,
   with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
   batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
   GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that

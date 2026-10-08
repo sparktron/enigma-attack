@@ -31,9 +31,11 @@ and applies the rule to them in order.
 batched climber before any sweep that uses it, and the tests check the position
 tables against ``enigma_fast.position_permutations``.
 
-The kernel is compiled with ``nvcc`` on first use into a cache directory
-(``$ENIGMA_ATTACK_CUDA_CACHE``, else ``~/.cache/enigma-attack/cuda``) and loaded
-with ctypes; numpy is the only Python dependency (``pip install .[gpu]``).  An
+The kernel is compiled with ``nvcc`` on first use, for the architecture of the
+visible device, into a cache directory (``$ENIGMA_ATTACK_CUDA_CACHE``, else
+``~/.cache/enigma-attack/cuda``) keyed by source, toolchain, flags and that
+architecture, checked to have a kernel image for the device, and loaded with
+ctypes; numpy is the only Python dependency (``pip install .[gpu]``).  An
 nvcc-built library rather than a CuPy ``RawKernel``: the toolchain is already on
 the host, ctypes adds no package, and the kernel source sits in this module, so
 the provenance hash of the imported modules covers it.  Without numpy, nvcc or a
@@ -511,6 +513,15 @@ int ec_device_info(char* name, int size, int* exec_timeout) {
     return 0;
 }
 
+/* Fails (no kernel image for the device) when the library was built for
+   another GPU architecture, before any context or launch is attempted. */
+int ec_check_kernels(void) {
+    cudaFuncAttributes attributes;
+    CHECK("climb_kernel", cudaFuncGetAttributes(&attributes, climb_kernel));
+    CHECK("table_kernel", cudaFuncGetAttributes(&attributes, table_kernel));
+    return 0;
+}
+
 int ec_window_desc_size(void) { return (int)sizeof(WindowDesc); }
 int ec_climb_desc_size(void) { return (int)sizeof(ClimbDesc); }
 
@@ -679,17 +690,52 @@ def _nvcc() -> str | None:
 
 
 NVCC_FLAGS = (
-    "-O3", "-arch=native", "-shared", "-Xcompiler", "-fPIC,-ffp-contract=off",
+    "-O3", "-shared", "-Xcompiler", "-fPIC,-ffp-contract=off",
     "-fmad=false", "-prec-div=true", "-prec-sqrt=true",
 )
 
 
-def library_path(nvcc: str) -> pathlib.Path:
+def compute_capability() -> tuple[int, int]:
+    """Compute capability of CUDA device 0 as the runtime will see it.
+
+    Read through the driver API, so ``CUDA_VISIBLE_DEVICES`` is honoured the
+    same way the kernel library's runtime honours it.
+    """
+
+    try:
+        driver = ctypes.CDLL("libcuda.so.1")
+    except OSError as error:
+        raise RuntimeError(f"the CUDA driver library is not available ({error})") from error
+    device = ctypes.c_int()
+    major, minor = ctypes.c_int(), ctypes.c_int()
+    if driver.cuInit(0) != 0 or driver.cuDeviceGet(ctypes.byref(device), 0) != 0:
+        raise RuntimeError("no CUDA device is available")
+    # CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR and _MINOR.
+    if driver.cuDeviceGetAttribute(ctypes.byref(major), 75, device) != 0 or (
+        driver.cuDeviceGetAttribute(ctypes.byref(minor), 76, device) != 0
+    ):
+        raise RuntimeError("could not read the CUDA device's compute capability")
+    return major.value, minor.value
+
+
+def architecture_flags(capability: tuple[int, int]) -> tuple[str, ...]:
+    arch = f"{capability[0]}{capability[1]}"
+    return ("-gencode", f"arch=compute_{arch},code=sm_{arch}")
+
+
+def library_path(nvcc: str, capability: tuple[int, int]) -> pathlib.Path:
+    """The cached library for this source, toolchain, flags and GPU architecture.
+
+    The architecture is part of the key, so a cache shared between hosts or
+    devices of different generations never hands one the other's binary.
+    """
+
     version = subprocess.run([nvcc, "--version"], capture_output=True, text=True, check=True).stdout
+    flags = (*NVCC_FLAGS, *architecture_flags(capability))
     digest = hashlib.sha256(
-        "\0".join([CUDA_SOURCE, version, *NVCC_FLAGS]).encode("utf-8")
+        "\0".join([CUDA_SOURCE, version, *flags]).encode("utf-8")
     ).hexdigest()[:16]
-    return cache_directory() / f"stecker_cuda-{digest}.so"
+    return cache_directory() / f"stecker_cuda-sm{capability[0]}{capability[1]}-{digest}.so"
 
 
 def _load() -> Any:
@@ -704,14 +750,15 @@ def _load() -> Any:
         nvcc = _nvcc()
         if nvcc is None:
             raise RuntimeError("nvcc was not found on PATH or in /usr/local/cuda/bin")
-        target = library_path(nvcc)
+        capability = compute_capability()
+        target = library_path(nvcc, capability)
         if not target.exists():
             target.parent.mkdir(parents=True, exist_ok=True)
             source = target.with_suffix(".cu")
             source.write_text(CUDA_SOURCE, encoding="utf-8")
             partial = target.with_suffix(f".{os.getpid()}.tmp")
             completed = subprocess.run(
-                [nvcc, *NVCC_FLAGS, "-o", str(partial), str(source)],
+                [nvcc, *NVCC_FLAGS, *architecture_flags(capability), "-o", str(partial), str(source)],
                 capture_output=True, text=True,
             )
             if completed.returncode != 0:
@@ -720,6 +767,7 @@ def _load() -> Any:
         library = ctypes.CDLL(str(target))
         library.ec_last_error.restype = ctypes.c_char_p
         library.ec_device_count.restype = ctypes.c_int
+        library.ec_check_kernels.restype = ctypes.c_int
         library.ec_window_desc_size.restype = ctypes.c_int
         library.ec_climb_desc_size.restype = ctypes.c_int
         library.ec_create.argtypes = [
@@ -745,6 +793,10 @@ def _load() -> Any:
             raise RuntimeError("the kernel library's structure layout does not match this module")
         if library.ec_device_count() < 1:
             raise RuntimeError("no CUDA device is available")
+        if library.ec_check_kernels() != 0:
+            raise RuntimeError(
+                f"the kernel library does not run on this device: {library.ec_last_error().decode()}"
+            )
         _LIBRARY = library
     except (OSError, RuntimeError, subprocess.SubprocessError) as error:
         _LOAD_ERROR = str(error)
