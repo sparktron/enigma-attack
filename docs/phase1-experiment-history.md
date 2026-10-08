@@ -1714,6 +1714,24 @@ python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/confi
 > built since then does not touch this run: its checkpoint fingerprint is
 > unchanged, which a test checks.
 
+> **Amended 2026-10-08, before the GPU run: engine `batched` → `cuda` (a
+> disclosed deviation).** After the CUDA engine's build and benchmark, the
+> maintainer decided to rerun v4 on the GPU. The configuration's `climb.engine`
+> is now `cuda`, and its `amendments` field records the change. Nothing else
+> changes: message, space, ring rule, climb, retention, companions, threshold,
+> predictions and stated power are as preregistered. The deviation is expected
+> to change no number. The cuda engine gave byte-identical records on all 150
+> v4 chunks recomputed from the CPU checkpoint, and its preflight check against
+> the batched climber must pass before any target search. The engine is part of
+> the checkpoint fingerprint, so the GPU run starts from zero and does not read
+> the CPU checkpoint. When this was committed, the CPU run held 200 of 1,560
+> chunks and was still running; it was not stopped. Acceptance condition, fixed
+> here before the run: every chunk the CPU run finished must have a record
+> identical to the GPU run's for that chunk, apart from the fingerprint. Any
+> difference voids the GPU result. Run command:
+> `python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 1`
+> (the cuda engine ignores `--jobs`).
+
 ---
 
 ## CUDA climb engine: build and benchmark (2026-10-08)

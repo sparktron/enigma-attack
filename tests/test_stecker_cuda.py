@@ -42,6 +42,13 @@ def v4_message(config):
 
 
 def v4_fingerprint(engine):
+    """The fingerprint of v4 run with ``engine``.
+
+    The configuration was amended to ``cuda`` on 2026-10-08; the CPU run that
+    started before it ran the preregistered ``batched``, and its climb settings
+    differ from today's only in that field.
+    """
+
     config = stecker.load_config(V4_CONFIG)
     settings = config["body_direct_sweep"]
     message = v4_message(config)
@@ -52,7 +59,7 @@ def v4_fingerprint(engine):
         for right in resolve_axis(settings["start_right"])
     ]
     return sweep_fingerprint(
-        message.body, config["scorer"], config["climb"],
+        message.body, config["scorer"], {**config["climb"], "engine": engine},
         RingRule.from_config(settings, len(message.body)), starts, int(settings["keep"]),
         engine, enigma_fast.reflector_table(config["machine"]["reflector"]),
     )
@@ -76,8 +83,8 @@ class EngineSelectionTests(unittest.TestCase):
 
     def test_v4_fingerprint_is_unchanged_so_the_cpu_sweep_can_resume(self):
         config = stecker.load_config(V4_CONFIG)
-        if stecker_batch.available():
-            self.assertEqual(resolve_engine(config["climb"]), "batched")
+        self.assertEqual(config["climb"]["engine"], "cuda")
+        self.assertEqual(config["amendments"][0]["date"], "2026-10-08")
         self.assertEqual(v4_fingerprint("batched"), V4_CHECKPOINT_FINGERPRINT)
         checkpoint = ROOT / "build/phase1-body-direct-sweep-v4.checkpoint.jsonl"
         if checkpoint.exists():
