@@ -14,12 +14,15 @@ import enigma_fast
 import phase1_stecker as stecker
 import stecker_batch
 import stecker_cuda
+import stecker_split
+from enigma import EnigmaI
+from stecker_power import perturb_ciphertext
 from stecker_climb import climb_windows, windowed_climb
 from stecker_controls import cuda_climb_parity_report, run_preflight
 from stecker_scoring import FastNgramScorer
 from stecker_space import RingRule, resolve_axis, rotor_order_space
 from stecker_sweeps import _worker_chunk, _worker_init, resolve_engine, sweep_fingerprint, sweep_slice
-from stecker_traffic import Traffic, traffic_from_corpus
+from stecker_traffic import Traffic, normalize_plaintext, random_plugboard, traffic_from_corpus
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 V4_CONFIG = ROOT / "experiments/phase1-body-direct-sweep-v4/config.json"
@@ -79,9 +82,11 @@ class EngineSelectionTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 resolve_engine({"engine": "cuda"})
 
-    def test_cuda_refuses_the_split_point_climb(self):
-        with self.assertRaisesRegex(ValueError, "split-point"):
-            resolve_engine({"engine": "cuda", "split": {"ic_grid": 32}})
+    def test_cuda_takes_the_split_point_climb_but_not_with_a_window(self):
+        with mock.patch.object(stecker_cuda, "available", return_value=True):
+            self.assertEqual(resolve_engine({"engine": "cuda", "split": {"ic_grid": 32}}), "cuda")
+        with self.assertRaisesRegex(ValueError, "climb.window"):
+            resolve_engine({"engine": "cuda", "split": {"ic_grid": 32}, "window": WINDOW})
 
     def test_v4_fingerprint_is_unchanged_so_the_cpu_sweep_can_resume(self):
         config = stecker.load_config(V4_CONFIG)
@@ -279,6 +284,15 @@ class CudaEngineTests(unittest.TestCase):
         report = run_preflight(config, self.scorer)
         self.assertTrue(report["checks"]["batched_climb_matches_reference"])
         self.assertTrue(report["checks"]["cuda_climb_matches_batched"])
+        split_config = {
+            **config,
+            "climb": {**config["climb"], "split": {"ic_grid": 32, "block": 64, "mask_term": -8.66}},
+        }
+        split_config["climb"].pop("window")
+        split_report = cuda_climb_parity_report(split_config, self.scorer, self.reflector)
+        self.assertEqual(split_report["split_climbs_compared"], 3)
+        self.assertEqual(split_report["split_climbs_identical"], 3)
+        self.assertTrue(split_report["passed"])
         self.assertEqual(report["cuda_climb_parity"]["worst_absolute_score_difference"], 0.0)
         self.assertTrue(report["passed"])
 
@@ -295,15 +309,82 @@ class CudaEngineTests(unittest.TestCase):
 
     def test_the_cuda_engine_refuses_what_it_does_not_implement(self):
         body = list(v4_message(self.config).body)
-        with self.assertRaisesRegex(ValueError, "split-point"):
-            stecker_cuda.CudaClimber(
-                self.scorer.bigram, self.scorer.combined, body,
-                {**self.climb, "split": {"ic_grid": 32}}, self.reflector,
+        split = {**self.climb, "split": {"ic_grid": 32}}
+        self.assertIsInstance(
+            stecker_cuda.make_climber(self.scorer.bigram, self.scorer.combined, body, split, self.reflector),
+            stecker_cuda.CudaSplitClimber,
+        )
+        with self.assertRaises(ValueError):
+            stecker_cuda.CudaClimber(self.scorer.bigram, self.scorer.combined, body, split, self.reflector)
+        with self.assertRaises(ValueError):
+            stecker_cuda.CudaSplitClimber(
+                self.scorer.bigram, self.scorer.combined, body, {**split, "window": WINDOW}, self.reflector
+            )
+        with self.assertRaises(ValueError):
+            stecker_cuda.CudaSplitClimber(
+                self.scorer.bigram, self.scorer.combined, [1] * 300, split, self.reflector
             )
         with self.assertRaises(ValueError):
             stecker_cuda.CudaClimber(
                 self.scorer.bigram, self.scorer.combined, [-1] * 20 + [3], self.climb, self.reflector
             )
+
+    def test_split_climbs_match_the_batched_split_climb_exactly(self):
+        power = json.loads((ROOT / "experiments/phase1-split-point-power-v1/config.json").read_text(encoding="utf-8"))
+        plaintext = normalize_plaintext(power["end_to_end_power"]["plaintext"])
+        generator = random.Random(41)
+        mismatches = []
+        for case in range(12):
+            grid = (16, 32)[case % 2]
+            settings = {**self.climb, "split": {"ic_grid": grid, "block": 64, "mask_term": -8.66}}
+            order = tuple(generator.sample(["I", "II", "III", "IV", "V"], 3))
+            rings = [generator.randrange(26) for _ in range(3)]
+            start = [generator.randrange(26) for _ in range(3)]
+            length = generator.randrange(8, 60) if case % 3 == 2 else generator.randrange(120, 168)
+            ciphertext = EnigmaI(
+                rotors=order, rings="".join(chr(65 + v) for v in rings),
+                positions="".join(chr(65 + v) for v in start),
+                plugboard=random_plugboard(generator, 10),
+            ).crypt(plaintext[:length])
+            if case % 2:
+                ciphertext = perturb_ciphertext(ciphertext, "indel", generator)[0]
+            body = list(enigma_fast.text_to_indices(ciphertext))
+            if case % 4 == 3:
+                for position in generator.sample(range(len(body)), 3):
+                    body[position] = -1
+            cpu = stecker_split.SplitClimber(self.scorer.bigram, self.scorer.combined, body, settings)
+            gpu = stecker_cuda.CudaSplitClimber(
+                self.scorer.bigram, self.scorer.combined, body, settings, self.reflector
+            )
+            for k in range(3):
+                names, r, s = (order, rings, start) if k == 0 else (
+                    tuple(generator.sample(["I", "II", "III", "IV", "V"], 3)),
+                    [generator.randrange(26) for _ in range(3)],
+                    [generator.randrange(26) for _ in range(3)],
+                )
+                table = enigma_fast.position_permutations(
+                    [enigma_fast.rotor_tables(name) for name in names], r, s, len(body) + 1,
+                    self.reflector,
+                )
+                expected = cpu.climb(table)
+                got = gpu.climb_one(names, r, s)
+                if (got[0], got[1], got[2], tuple(got[3])) != (list(expected[0]), expected[1], expected[2], tuple(expected[3])):
+                    mismatches.append((case, k, got, expected))
+            gpu.close()
+        self.assertEqual(mismatches, [])
+
+    def test_a_cuda_split_sweep_slice_equals_the_batched_one(self):
+        message = Traffic("S", (0, 0, 0), (0, 0, 0), tuple(v4_message(self.config).body))
+        arguments = (
+            message, [("II", "I", "IV")], (0, 0, 0),
+            [(0, middle, right) for middle in (5, 18) for right in range(3)],
+            self.config["scorer"], self.reflector,
+        )
+        climb = {**self.climb, "split": {"ic_grid": 32, "block": 64, "mask_term": -8.66}}
+        batched = sweep_slice(*arguments, {**climb, "engine": "batched"}, 4, 1)
+        cuda = sweep_slice(*arguments, {**climb, "engine": "cuda"}, 4, 1)
+        self.assertEqual(cuda[:3], batched[:3])
+        self.assertIn("split", cuda[0][0])
 
 
 if __name__ == "__main__":

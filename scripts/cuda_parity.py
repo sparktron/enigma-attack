@@ -10,6 +10,13 @@ requires the same final plugboard, evaluation count, window and score:
 
     python3 scripts/cuda_parity.py random --settings 2000 --seed 20261008
 
+``split`` does the same for the split-point climb against
+``stecker_split.SplitClimber``, on clean bodies, bodies with one dropped or
+inserted letter (some also masked) and short bodies, and also requires the same
+hypothesis:
+
+    python3 scripts/cuda_parity.py split --settings 2000 --grid 32 --seed 20261009
+
 ``chunks`` recomputes finished chunks of a body-direct sweep from a copy of its
 checkpoint with the cuda engine and the sweep's own configuration, and compares
 each record field by field (the configuration's engine is replaced by cuda):
@@ -45,7 +52,9 @@ import phase1_stecker as stecker  # noqa: E402
 import stecker_batch  # noqa: E402
 import stecker_cuda  # noqa: E402
 from enigma import EnigmaI  # noqa: E402
+import stecker_split  # noqa: E402
 from stecker_climb import climb_windows, windowed_climb  # noqa: E402
+from stecker_power import perturb_ciphertext  # noqa: E402
 from stecker_scoring import FastNgramScorer  # noqa: E402
 from stecker_space import RingRule, resolve_axis, rotor_order_space  # noqa: E402
 from stecker_sweeps import _worker_chunk, _worker_init, sweep_chunks  # noqa: E402
@@ -159,6 +168,79 @@ def random_parity(arguments) -> dict:
         "settings_compared": total, "identical": identical, "cells": cells,
         "worst_absolute_score_difference": worst, "mismatches": mismatches,
         "seconds": round(time.monotonic() - started, 1), "passed": identical == total,
+    }
+
+
+def split_parity(arguments) -> dict:
+    config = stecker.load_config(V4)
+    scorer = FastNgramScorer(config["scorer"])
+    reflector = enigma_fast.reflector_table(config["machine"]["reflector"])
+    generator = random.Random(arguments.seed)
+    power = stecker.load_config(ROOT / "experiments/phase1-split-point-power-v1/config.json")
+    source = normalize_plaintext(power["end_to_end_power"]["plaintext"])
+    climb = {key: value for key, value in config["climb"].items() if key != "window"}
+    climb["split"] = {"ic_grid": arguments.grid, "block": 64, "mask_term": -8.66}
+    kinds = ("clean", "indel", "masked_indel", "short")
+    cells: dict[str, dict[str, int]] = {}
+    hypotheses: dict[str, int] = {}
+    worst = 0.0
+    mismatches = []
+    started = time.monotonic()
+    done = body_index = 0
+    while done < arguments.settings:
+        kind = kinds[body_index % len(kinds)]
+        body_index += 1
+        length = generator.randrange(8, 60) if kind == "short" else generator.randrange(140, 168)
+        offset = generator.randrange(0, len(source) - length)
+        order = tuple(generator.sample(WHEELS, 3))
+        rings = [generator.randrange(26) for _ in range(3)]
+        start = [generator.randrange(26) for _ in range(3)]
+        ciphertext = EnigmaI(
+            rotors=order,
+            rings="".join(chr(65 + value) for value in rings),
+            positions="".join(chr(65 + value) for value in start),
+            plugboard=random_plugboard(generator, 10),
+        ).crypt(source[offset:offset + length])
+        if kind != "clean" and (kind != "short" or generator.random() < 0.5):
+            ciphertext = perturb_ciphertext(ciphertext, "indel", generator)[0]
+        body = list(enigma_fast.text_to_indices(ciphertext))
+        if kind == "masked_indel":
+            for position in generator.sample(range(len(body)), generator.randrange(1, 6)):
+                body[position] = -1
+        rows = [(order, rings + start)] + [
+            (tuple(generator.sample(WHEELS, 3)), [generator.randrange(26) for _ in range(6)])
+            for _ in range(arguments.per_body - 1)
+        ]
+        cpu = stecker_split.SplitClimber(scorer.bigram, scorer.combined, body, climb)
+        gpu = stecker_cuda.CudaSplitClimber(scorer.bigram, scorer.combined, body, climb, reflector)
+        cell = cells.setdefault(kind, {"settings": 0, "identical": 0})
+        for names, row in rows:
+            table = enigma_fast.position_permutations(
+                [enigma_fast.rotor_tables(name) for name in names], row[:3], row[3:],
+                len(body) + 1, reflector,
+            )
+            expected = cpu.climb(table)
+            got = gpu.climb_one(names, row[:3], row[3:])
+            worst = max(worst, abs(got[2] - expected[2]))
+            same = (got[0], got[1], got[2], tuple(got[3])) == (
+                list(expected[0]), expected[1], expected[2], tuple(expected[3])
+            )
+            cell["settings"] += 1
+            cell["identical"] += same
+            hypotheses[expected[3][0]] = hypotheses.get(expected[3][0], 0) + 1
+            if not same and len(mismatches) < 10:
+                mismatches.append({"kind": kind, "body": body, "rotor_order": names, "setting": row,
+                                   "cuda": got, "batched": expected})
+        gpu.close()
+        done += len(rows)
+    total = sum(cell["settings"] for cell in cells.values())
+    identical = sum(cell["identical"] for cell in cells.values())
+    return {
+        "mode": "split", "seed": arguments.seed, "ic_grid": arguments.grid,
+        "settings_compared": total, "identical": identical, "cells": cells,
+        "final_hypotheses": hypotheses, "worst_absolute_score_difference": worst,
+        "mismatches": mismatches, "seconds": round(time.monotonic() - started, 1),
+        "passed": identical == total,
     }
 
 
@@ -281,6 +363,11 @@ def main(argv: list[str] | None = None) -> int:
     random_mode.add_argument("--settings", type=int, default=2000, help="settings per climb (whole, W = 117)")
     random_mode.add_argument("--per-body", type=int, default=20)
     random_mode.add_argument("--seed", type=int, default=20261008)
+    split_mode = commands.add_parser("split")
+    split_mode.add_argument("--settings", type=int, default=2000)
+    split_mode.add_argument("--per-body", type=int, default=10)
+    split_mode.add_argument("--grid", type=int, default=32)
+    split_mode.add_argument("--seed", type=int, default=20261009)
     chunk_mode = commands.add_parser("chunks")
     chunk_mode.add_argument("--config", default=str(V4))
     chunk_mode.add_argument("--checkpoint", required=True)
@@ -288,7 +375,7 @@ def main(argv: list[str] | None = None) -> int:
     compare_mode = commands.add_parser("compare")
     compare_mode.add_argument("--reference", required=True, help="the checkpoint whose chunks are checked")
     compare_mode.add_argument("--candidate", required=True, help="the checkpoint they are checked against")
-    for command in (random_mode, chunk_mode, compare_mode):
+    for command in (random_mode, split_mode, chunk_mode, compare_mode):
         command.add_argument("--output", default=None, help="write the JSON report here")
     arguments = parser.parse_args(argv)
     if arguments.mode == "compare":
@@ -300,7 +387,7 @@ def main(argv: list[str] | None = None) -> int:
     if not stecker_cuda.available():
         print(f"cuda engine unavailable: {stecker_cuda.unavailable_reason()}", file=sys.stderr)
         return 2
-    report = random_parity(arguments) if arguments.mode == "random" else chunk_parity(arguments)
+    report = {"random": random_parity, "split": split_parity, "chunks": chunk_parity}[arguments.mode](arguments)
     report["device"] = stecker_cuda.device_info()
     text = json.dumps(report, indent=2)
     if arguments.output:

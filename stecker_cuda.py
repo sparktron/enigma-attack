@@ -41,9 +41,9 @@ the host, ctypes adds no package, and the kernel source sits in this module, so
 the provenance hash of the imported modules covers it.  Without numpy, nvcc or a
 CUDA device ``available()`` is false and nothing else changes.
 
-Scope: the whole-message and head-and-tail windowed climbs with the
-``index_of_coincidence`` and ``ngram`` phases.  The split-point climb
-(``stecker_split.SplitClimber``) is not implemented and is refused.
+Scope: the whole-message, head-and-tail windowed and split-point
+(``stecker_split.SplitClimber``, :class:`CudaSplitClimber`) climbs with the
+``index_of_coincidence`` and ``ngram`` phases.
 """
 
 from __future__ import annotations
@@ -294,6 +294,39 @@ __device__ void build_table(const unsigned char* rotors, unsigned int notch_midd
     __syncthreads();
 }
 
+/* The batched climber's acceptance rule, run by one warp: the move chosen is the
+   last that clears the running best by more than the gain.  Only a score above
+   every earlier score and above best + gain can clear it (the running best
+   never falls below either), so a prefix-maximum scan flags those few and the
+   rule is applied to them in order. */
+__device__ void choose(const double* scores, double best, double min_gain, int lane,
+                       int* s_chosen, double* s_running) {
+    double gate = best + min_gain;
+    double carry = -INFINITY, running = best;
+    int chosen = -1;
+    for (int start = 0; start < CURRENT_SLOT; start += 32) {
+        int j = start + lane;
+        double v = j < CURRENT_SLOT ? scores[j] : -INFINITY;
+        double inclusive = v;
+        for (int o = 1; o < 32; o <<= 1) {
+            double t = __shfl_up_sync(FULL, inclusive, o);
+            if (lane >= o) inclusive = fmax(inclusive, t);
+        }
+        double before = __shfl_up_sync(FULL, inclusive, 1);
+        if (lane == 0) before = -INFINITY;
+        before = fmax(before, carry);
+        unsigned int flagged = __ballot_sync(FULL, v > before && v > gate);
+        while (flagged) {
+            int l = __ffs(flagged) - 1;
+            flagged &= flagged - 1;
+            double s = __shfl_sync(FULL, v, l);
+            if (s > running + min_gain) { running = s; chosen = start + l; }
+        }
+        carry = fmax(carry, __shfl_sync(FULL, inclusive, 31));
+    }
+    if (lane == 0) { *s_chosen = chosen; *s_running = running; }
+}
+
 struct Shared {
     unsigned char* table;
     signed char* cipher;
@@ -382,32 +415,7 @@ climb_kernel(ClimbDesc climb, const WindowDesc* windows, const double* bigram,
             if (first_pass) { best = s_current; evaluations += 1; }
             evaluations += candidates;
 
-            if (warp == 0) {
-                double gate = best + climb.min_gain;
-                double carry = -INFINITY, running = best;
-                int chosen = -1;
-                for (int start = 0; start < CURRENT_SLOT; start += 32) {
-                    int j = start + lane;
-                    double v = j < CURRENT_SLOT ? sh.scores[j] : -INFINITY;
-                    double inclusive = v;
-                    for (int o = 1; o < 32; o <<= 1) {
-                        double t = __shfl_up_sync(FULL, inclusive, o);
-                        if (lane >= o) inclusive = fmax(inclusive, t);
-                    }
-                    double before = __shfl_up_sync(FULL, inclusive, 1);
-                    if (lane == 0) before = -INFINITY;
-                    before = fmax(before, carry);
-                    unsigned int flagged = __ballot_sync(FULL, v > before && v > gate);
-                    while (flagged) {
-                        int l = __ffs(flagged) - 1;
-                        flagged &= flagged - 1;
-                        double s = __shfl_sync(FULL, v, l);
-                        if (s > running + climb.min_gain) { running = s; chosen = start + l; }
-                    }
-                    carry = fmax(carry, __shfl_sync(FULL, inclusive, 31));
-                }
-                if (lane == 0) { s_chosen = chosen; s_running = running; }
-            }
+            if (warp == 0) choose(sh.scores, best, climb.min_gain, lane, &s_chosen, &s_running);
             __syncthreads();
             int chosen = s_chosen;
             if (chosen < 0) break;
@@ -467,6 +475,283 @@ __global__ void table_kernel(const unsigned char* rotors, unsigned int notch_mid
                 smem + 6 * 676 + 26, out + (long long)blockIdx.x * length * 26);
 }
 
+/* ---------------------------------------------------------------------------
+   The split-point climb (stecker_split.SplitClimber), on n + 1 table rows.
+   --------------------------------------------------------------------------- */
+
+#define MAX_SPLIT 255
+#define SPLIT_WORDS 14       /* two 26-letter count vectors, a byte a count */
+#define GATE_BIGRAM_ONLY 1
+#define GATE_TRIGRAM 2
+#define GATE_BIGRAM_ANY 4
+
+struct SplitDesc {
+    int length, letters, grid, segments;
+    double mask_term;
+    signed char cipher[MAX_SPLIT + 1];
+    unsigned char gate[MAX_SPLIT + 1];
+};
+
+struct SplitStreams {
+    const unsigned char* cur;
+    const unsigned char* table;
+    const signed char* cipher;
+    int n;
+    Move m;
+    /* The three alignments of position t: the head (row t), after a dropped
+       letter (row t + 1, at most n) and after an inserted one (row t - 1, at least 0). */
+    __device__ __forceinline__ void letters(int t, int& h, int& d, int& i) const {
+        int x = board_at(cur, m, cipher[t]);
+        h = board_at(cur, m, table[t * 26 + x]);
+        int rd = t + 1 < n ? t + 1 : n;
+        int ri = t > 0 ? t - 1 : 0;
+        d = board_at(cur, m, table[rd * 26 + x]);
+        i = board_at(cur, m, table[ri * 26 + x]);
+    }
+};
+
+/* The term the scorer adds at t for one stream (SplitClimber._contributions'
+   chain), or nothing; a2 and a1 are the stream's letters at t - 2 and t - 1. */
+__device__ __forceinline__ bool chain_term(int g, int a2, int a1, int a0, const double* bigram,
+                                           const double* combined, double& term) {
+    if (g & GATE_BIGRAM_ONLY) { term = __ldg(&bigram[a1 * 26 + a0]); return true; }
+    if (g & GATE_TRIGRAM) { term = __ldg(&combined[a2 * 676 + a1 * 26 + a0]); return true; }
+    return false;
+}
+
+/* SplitClimber._ngram_hypotheses for one board, in numpy's arithmetic: prefix
+   sums are sequential (cumsum), a suffix is total - prefix, and a hypothesis is
+   ((prefix_head + bigram_any) + suffix) + mask.  Returns the clean score and
+   the best deletion and insertion values; with exact set, each value includes
+   its mask and the first position of each maximum is reported (the final
+   best_hypothesis); without it the mask is added to the maxima afterwards,
+   which rounding's monotonicity makes the same maximum. */
+__device__ void split_hypotheses(const SplitStreams& st, const unsigned char* gate,
+                                 const double* bigram, const double* combined, double mask,
+                                 bool exact, double& clean, double& best_d, int& at_d,
+                                 double& best_i, int& at_i) {
+    int n = st.n;
+    double total_d = 0.0, total_i = 0.0;
+    int d1 = 0, d2 = 0, i1 = 0, i2 = 0;
+    for (int t = 0; t < n; ++t) {
+        int h, d, i;
+        if (st.cipher[t] >= 0) st.letters(t, h, d, i); else { h = d = i = 0; }
+        int g = gate[t];
+        double term;
+        if (chain_term(g, d2, d1, d, bigram, combined, term)) total_d += term;
+        if (chain_term(g, i2, i1, i, bigram, combined, term)) total_i += term;
+        d2 = d1; d1 = d; i2 = i1; i1 = i;
+    }
+    double ph = 0.0, pd = 0.0, pi = 0.0;     /* P_head[t], P_del[t], P_ins[t] */
+    double ph1 = 0.0, ph2 = 0.0;             /* P_head[t - 1], P_head[t - 2] */
+    double mask_d = mask, mask_i = 2.0 * mask;
+    best_d = -INFINITY; best_i = -INFINITY; at_d = 0; at_i = 0;
+    int h1 = 0, h2 = 0;
+    d1 = d2 = i1 = i2 = 0;
+    for (int t = 0; t < n; ++t) {
+        int h, d, i;
+        if (st.cipher[t] >= 0) st.letters(t, h, d, i); else { h = d = i = 0; }
+        int g = gate[t];
+        double term;
+        double nh = ph, nd = pd, ni = pi;
+        if (chain_term(g, h2, h1, h, bigram, combined, term)) nh = ph + term;
+        if (chain_term(g, d2, d1, d, bigram, combined, term)) nd = pd + term;
+        if (chain_term(g, i2, i1, i, bigram, combined, term)) ni = pi + term;
+        bool any = g & GATE_BIGRAM_ANY;
+        if (t >= 2) {                         /* a dropped letter at p = t - 1 */
+            double v = ph1;
+            if (any) v = v + __ldg(&bigram[d1 * 26 + d]);
+            v = v + (total_d - nd);
+            if (exact) v = v + mask_d;
+            if (v > best_d) { best_d = v; at_d = t - 1; }
+        }
+        if (t >= 3) {                         /* an inserted letter at p = t - 2 */
+            double v = ph2;
+            if (any) v = v + __ldg(&bigram[i1 * 26 + i]);
+            v = v + (total_i - ni);
+            if (exact) v = v + mask_i;
+            if (v > best_i) { best_i = v; at_i = t - 2; }
+        }
+        ph2 = ph1; ph1 = ph; ph = nh; pd = nd; pi = ni;
+        h2 = h1; h1 = h; d2 = d1; d1 = d; i2 = i1; i1 = i;
+    }
+    clean = ph;
+    /* p = n - 1 and p = n - 2: the bigram and the suffix are numpy's padding zeros. */
+    double v = ph1 + 0.0;
+    v = v + 0.0;
+    if (exact) v = v + mask_d;
+    if (v > best_d) { best_d = v; at_d = n - 1; }
+    v = ph2 + 0.0;
+    v = v + 0.0;
+    if (exact) v = v + mask_i;
+    if (v > best_i) { best_i = v; at_i = n - 2; }
+    if (!exact) { best_d = best_d + mask_d; best_i = best_i + mask_i; }
+}
+
+__device__ __forceinline__ int square_sum(const unsigned int* v) {
+    int s = 0;
+    for (int w = 0; w < 7; ++w) {
+        unsigned int x = v[w * NSLOT];
+        for (int b = 0; b < 4; ++b) { int c = (x >> (8 * b)) & 0xff; s += c * c; }
+    }
+    return s;
+}
+
+/* SplitClimber._coincidence for one board: the best sum of squared counts over
+   the clean text and, at every grid boundary, the head before it with the
+   shifted stream after it; then the batched climber's three float operations. */
+__device__ double split_coincidence(const SplitStreams& st, const SplitDesc& sd,
+                                    unsigned int* counts) {
+    int n = st.n;
+    unsigned int* a = counts;                 /* mixed counts after a dropped letter */
+    unsigned int* b = counts + 7 * NSLOT;     /* mixed counts after an inserted one */
+    for (int w = 0; w < 7; ++w) { a[w * NSLOT] = 0u; b[w * NSLOT] = 0u; }
+    for (int t = 0; t < n; ++t) {
+        if (st.cipher[t] < 0) continue;
+        int h, d, i;
+        st.letters(t, h, d, i);
+        a[(h >> 2) * NSLOT] += 1u << ((h & 3) * 8);
+    }
+    int best = square_sum(a);
+    if (sd.segments >= 2) {
+        for (int w = 0; w < 7; ++w) a[w * NSLOT] = 0u;
+        for (int t = 0; t < n; ++t) {
+            if (st.cipher[t] < 0) continue;
+            int h, d, i;
+            st.letters(t, h, d, i);
+            a[(d >> 2) * NSLOT] += 1u << ((d & 3) * 8);
+            b[(i >> 2) * NSLOT] += 1u << ((i & 3) * 8);
+        }
+        int last = (sd.segments - 1) * sd.grid;
+        for (int t = 0; t < last; ++t) {
+            if (st.cipher[t] >= 0) {
+                int h, d, i;
+                st.letters(t, h, d, i);
+                a[(h >> 2) * NSLOT] += 1u << ((h & 3) * 8);
+                a[(d >> 2) * NSLOT] -= 1u << ((d & 3) * 8);
+                b[(h >> 2) * NSLOT] += 1u << ((h & 3) * 8);
+                b[(i >> 2) * NSLOT] -= 1u << ((i & 3) * 8);
+            }
+            if ((t + 1) % sd.grid == 0) {
+                int sa = square_sum(a), sb = square_sum(b);
+                if (sa > best) best = sa;
+                if (sb > best) best = sb;
+            }
+        }
+    }
+    long long letters = sd.letters;
+    double coincidence = (double)(best - letters) / (double)(letters * (letters - 1));
+    coincidence = coincidence * (double)n;
+    return coincidence / (double)letters;
+}
+
+__global__ void __launch_bounds__(NSLOT, 2)
+split_kernel(ClimbDesc climb, const SplitDesc* desc, const double* bigram,
+             const double* combined, const unsigned char* rotors, unsigned int notch_middle,
+             unsigned int notch_right, const unsigned char* settings, int base, int count,
+             unsigned char* out_board, int* out_evals, double* out_score, int* out_kind,
+             int* out_position) {
+    extern __shared__ __align__(16) unsigned char smem[];
+    __shared__ unsigned char cur[32];
+    __shared__ unsigned char next[32];
+    __shared__ int s_chosen, s_pairs;
+    __shared__ double s_running, s_current;
+
+    int item = base + blockIdx.x;
+    if (item >= count) return;
+    const SplitDesc& sd = *desc;
+    int n = sd.length;
+    int tid = threadIdx.x, lane = tid & 31, warp = tid >> 5;
+    double* scores = (double*)smem;
+    unsigned int* counts = (unsigned int*)(smem + NSLOT * sizeof(double));
+    unsigned char* table = smem + NSLOT * sizeof(double) + SPLIT_WORDS * NSLOT * sizeof(unsigned int);
+    signed char* cipher = (signed char*)(table + (n + 1) * 26);
+    unsigned char* gate = (unsigned char*)(cipher + n);
+
+    unsigned char* scratch = (unsigned char*)counts;
+    load_rotors(rotors, scratch);
+    for (int i = tid; i < n; i += NSLOT) { cipher[i] = sd.cipher[i]; gate[i] = sd.gate[i]; }
+    if (tid < 32) cur[tid] = tid < 26 ? tid : 0;
+    if (tid == 0) s_pairs = 0;
+    __syncthreads();
+    build_table(scratch, notch_middle, notch_right, settings + 6 * (long long)item, 0, n + 1,
+                scratch + 6 * 676 + 26, table);
+
+    unsigned int* my_counts = counts + tid;
+    double best = 0.0;
+    int evaluations = 0;
+    for (int ph = 0; ph < climb.nphases; ++ph) {
+        int objective = climb.phases[ph];
+        if (climb.max_passes <= 0) { evaluations += 1; continue; }
+        bool first_pass = true;
+        for (int pass = 0; pass < climb.max_passes; ++pass) {
+            SplitStreams st;
+            st.cur = cur; st.table = table; st.cipher = cipher; st.n = n;
+            bool valid = move_of(tid, cur, s_pairs, climb.max_pairs, st.m);
+            if (tid == CURRENT_SLOT) valid = first_pass;
+            double score = -INFINITY;
+            if (valid) {
+                if (objective == 0) {
+                    score = split_coincidence(st, sd, my_counts);
+                } else {
+                    double clean, best_d, best_i;
+                    int at_d, at_i;
+                    split_hypotheses(st, gate, bigram, combined, sd.mask_term, false, clean,
+                                     best_d, at_d, best_i, at_i);
+                    score = fmax(clean, fmax(best_d, best_i));
+                }
+            }
+            if (tid < CURRENT_SLOT) scores[tid] = score;
+            else if (first_pass) s_current = score;
+            int candidates = __syncthreads_count(valid && tid < CURRENT_SLOT);
+            if (first_pass) { best = s_current; evaluations += 1; }
+            evaluations += candidates;
+            if (warp == 0) choose(scores, best, climb.min_gain, lane, &s_chosen, &s_running);
+            __syncthreads();
+            int chosen = s_chosen;
+            if (chosen < 0) break;
+            if (tid < 26) {
+                Move m;
+                move_of(chosen, cur, s_pairs, climb.max_pairs, m);
+                next[tid] = board_at(cur, m, tid);
+            }
+            best = s_running;
+            __syncthreads();
+            if (tid < 26) cur[tid] = next[tid];
+            __syncthreads();
+            if (warp == 0) {
+                unsigned int plugged = __ballot_sync(FULL, lane < 26 && cur[lane] > lane);
+                if (lane == 0) s_pairs = __popc(plugged);
+            }
+            __syncthreads();
+            first_pass = false;
+        }
+        __syncthreads();
+    }
+
+    if (tid < 26) out_board[(long long)item * 26 + tid] = cur[tid];
+    if (tid == 0) {
+        /* SplitClimber.best_hypothesis: clean first, then the first deletion
+           maximum, then the first insertion maximum, each only if strictly better. */
+        SplitStreams st;
+        st.cur = cur; st.table = table; st.cipher = cipher; st.n = n;
+        st.m.a0 = st.m.a1 = st.m.a2 = st.m.a3 = NONE;
+        st.m.b0 = st.m.b1 = st.m.b2 = st.m.b3 = NONE;
+        double clean, best_d, best_i;
+        int at_d, at_i;
+        split_hypotheses(st, gate, bigram, combined, sd.mask_term, true, clean, best_d, at_d,
+                         best_i, at_i);
+        double top = clean;
+        int kind = 0, position = 0;
+        if (best_d > top) { top = best_d; kind = 1; position = at_d; }
+        if (best_i > top) { top = best_i; kind = 2; position = at_i; }
+        out_evals[item] = evaluations;
+        out_score[item] = top / (double)sd.letters;
+        out_kind[item] = kind;
+        out_position[item] = position;
+    }
+}
+
 static char g_error[512];
 
 static int fail(const char* what, cudaError_t err) {
@@ -519,6 +804,7 @@ int ec_check_kernels(void) {
     cudaFuncAttributes attributes;
     CHECK("climb_kernel", cudaFuncGetAttributes(&attributes, climb_kernel));
     CHECK("table_kernel", cudaFuncGetAttributes(&attributes, table_kernel));
+    CHECK("split_kernel", cudaFuncGetAttributes(&attributes, split_kernel));
     return 0;
 }
 
@@ -592,6 +878,100 @@ int ec_run(void* handle, const unsigned char* rotors, unsigned int notch_middle,
     return 0;
 }
 
+static size_t split_shared(int n) {
+    return NSLOT * sizeof(double) + SPLIT_WORDS * NSLOT * sizeof(unsigned int) + (n + 1) * 26 + 2 * n;
+}
+
+struct SplitContext {
+    ClimbDesc climb;
+    SplitDesc* desc;
+    int length;
+    double* bigram;
+    double* combined;
+    unsigned char* rotors;
+    unsigned char* settings;
+    unsigned char* board;
+    int* evals;
+    double* score;
+    int* kind;
+    int* position;
+    size_t capacity;
+    size_t shared_bytes;
+};
+
+int ec_split_desc_size(void) { return (int)sizeof(SplitDesc); }
+
+int ec_split_create(const ClimbDesc* climb, const SplitDesc* desc, const double* bigram,
+                    const double* combined, void** handle) {
+    unsigned char first[NPAIRS], second[NPAIRS];
+    int k = 0;
+    for (int a = 0; a < 26; ++a)
+        for (int b = a + 1; b < 26; ++b) { first[k] = a; second[k] = b; ++k; }
+    CHECK("cudaMemcpyToSymbol", cudaMemcpyToSymbol(c_first, first, NPAIRS));
+    CHECK("cudaMemcpyToSymbol", cudaMemcpyToSymbol(c_second, second, NPAIRS));
+    SplitContext* ctx = (SplitContext*)calloc(1, sizeof(SplitContext));
+    if (!ctx) { snprintf(g_error, sizeof g_error, "out of host memory"); return -1; }
+    ctx->climb = *climb;
+    ctx->length = desc->length;
+    ctx->shared_bytes = split_shared(desc->length);
+    CHECK("cudaMalloc", cudaMalloc(&ctx->desc, sizeof(SplitDesc)));
+    CHECK("cudaMemcpy", cudaMemcpy(ctx->desc, desc, sizeof(SplitDesc), cudaMemcpyHostToDevice));
+    CHECK("cudaMalloc", cudaMalloc(&ctx->bigram, 676 * sizeof(double)));
+    CHECK("cudaMalloc", cudaMalloc(&ctx->combined, 17576 * sizeof(double)));
+    CHECK("cudaMemcpy", cudaMemcpy(ctx->bigram, bigram, 676 * sizeof(double), cudaMemcpyHostToDevice));
+    CHECK("cudaMemcpy", cudaMemcpy(ctx->combined, combined, 17576 * sizeof(double), cudaMemcpyHostToDevice));
+    CHECK("cudaMalloc", cudaMalloc(&ctx->rotors, 6 * 676 + 26));
+    CHECK("cudaFuncSetAttribute", cudaFuncSetAttribute(split_kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, (int)ctx->shared_bytes));
+    *handle = ctx;
+    return 0;
+}
+
+int ec_split_run(void* handle, const unsigned char* rotors, unsigned int notch_middle,
+                 unsigned int notch_right, const unsigned char* settings, int count, int batch,
+                 unsigned char* board, int* evals, double* score, int* kind, int* position) {
+    SplitContext* ctx = (SplitContext*)handle;
+    if (count <= 0) return 0;
+    if ((size_t)count > ctx->capacity) {
+        cudaFree(ctx->settings); cudaFree(ctx->board); cudaFree(ctx->evals);
+        cudaFree(ctx->score); cudaFree(ctx->kind); cudaFree(ctx->position);
+        ctx->capacity = 0;
+        CHECK("cudaMalloc", cudaMalloc(&ctx->settings, 6 * (size_t)count));
+        CHECK("cudaMalloc", cudaMalloc(&ctx->board, 26 * (size_t)count));
+        CHECK("cudaMalloc", cudaMalloc(&ctx->evals, sizeof(int) * (size_t)count));
+        CHECK("cudaMalloc", cudaMalloc(&ctx->score, sizeof(double) * (size_t)count));
+        CHECK("cudaMalloc", cudaMalloc(&ctx->kind, sizeof(int) * (size_t)count));
+        CHECK("cudaMalloc", cudaMalloc(&ctx->position, sizeof(int) * (size_t)count));
+        ctx->capacity = count;
+    }
+    CHECK("cudaMemcpy", cudaMemcpy(ctx->rotors, rotors, 6 * 676 + 26, cudaMemcpyHostToDevice));
+    CHECK("cudaMemcpy", cudaMemcpy(ctx->settings, settings, 6 * (size_t)count, cudaMemcpyHostToDevice));
+    if (batch <= 0) batch = count;
+    for (int base = 0; base < count; base += batch) {
+        int n = count - base < batch ? count - base : batch;
+        split_kernel<<<n, NSLOT, ctx->shared_bytes>>>(
+            ctx->climb, ctx->desc, ctx->bigram, ctx->combined, ctx->rotors, notch_middle,
+            notch_right, ctx->settings, base, count, ctx->board, ctx->evals, ctx->score,
+            ctx->kind, ctx->position);
+        CHECK("split_kernel launch", cudaGetLastError());
+    }
+    CHECK("split_kernel", cudaDeviceSynchronize());
+    CHECK("cudaMemcpy", cudaMemcpy(board, ctx->board, 26 * (size_t)count, cudaMemcpyDeviceToHost));
+    CHECK("cudaMemcpy", cudaMemcpy(evals, ctx->evals, sizeof(int) * (size_t)count, cudaMemcpyDeviceToHost));
+    CHECK("cudaMemcpy", cudaMemcpy(score, ctx->score, sizeof(double) * (size_t)count, cudaMemcpyDeviceToHost));
+    CHECK("cudaMemcpy", cudaMemcpy(kind, ctx->kind, sizeof(int) * (size_t)count, cudaMemcpyDeviceToHost));
+    CHECK("cudaMemcpy", cudaMemcpy(position, ctx->position, sizeof(int) * (size_t)count, cudaMemcpyDeviceToHost));
+    return 0;
+}
+
+void ec_split_destroy(void* handle) {
+    SplitContext* ctx = (SplitContext*)handle;
+    if (!ctx) return;
+    cudaFree(ctx->desc); cudaFree(ctx->bigram); cudaFree(ctx->combined); cudaFree(ctx->rotors);
+    cudaFree(ctx->settings); cudaFree(ctx->board); cudaFree(ctx->evals); cudaFree(ctx->score);
+    cudaFree(ctx->kind); cudaFree(ctx->position);
+    free(ctx);
+}
+
 void ec_destroy(void* handle) {
     Context* ctx = (Context*)handle;
     if (!ctx) return;
@@ -652,6 +1032,21 @@ class _WindowDesc(ctypes.Structure):
         ("cipher", ctypes.c_byte * MAX_LENGTH),
         ("tripos", ctypes.c_ushort * MAX_LENGTH),
         ("bipos", ctypes.c_ushort * MAX_LENGTH),
+    ]
+
+
+MAX_SPLIT = 255
+
+
+class _SplitDesc(ctypes.Structure):
+    _fields_ = [
+        ("length", ctypes.c_int),
+        ("letters", ctypes.c_int),
+        ("grid", ctypes.c_int),
+        ("segments", ctypes.c_int),
+        ("mask_term", ctypes.c_double),
+        ("cipher", ctypes.c_byte * (MAX_SPLIT + 1)),
+        ("gate", ctypes.c_ubyte * (MAX_SPLIT + 1)),
     ]
 
 
@@ -780,6 +1175,18 @@ def _load() -> Any:
         ]
         library.ec_destroy.argtypes = [ctypes.c_void_p]
         library.ec_destroy.restype = None
+        library.ec_split_desc_size.restype = ctypes.c_int
+        library.ec_split_create.argtypes = [
+            ctypes.POINTER(_ClimbDesc), ctypes.POINTER(_SplitDesc),
+            ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_void_p),
+        ]
+        library.ec_split_run.argtypes = [
+            ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint, ctypes.c_void_p,
+            ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+            ctypes.c_void_p, ctypes.c_void_p,
+        ]
+        library.ec_split_destroy.argtypes = [ctypes.c_void_p]
+        library.ec_split_destroy.restype = None
         library.ec_tables.argtypes = [
             ctypes.c_void_p, ctypes.c_uint, ctypes.c_uint, ctypes.c_void_p, ctypes.c_int,
             ctypes.c_int, ctypes.c_void_p,
@@ -789,7 +1196,7 @@ def _load() -> Any:
         library.ec_device_info.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
         if library.ec_window_desc_size() != ctypes.sizeof(_WindowDesc) or (
             library.ec_climb_desc_size() != ctypes.sizeof(_ClimbDesc)
-        ):
+        ) or library.ec_split_desc_size() != ctypes.sizeof(_SplitDesc):
             raise RuntimeError("the kernel library's structure layout does not match this module")
         if library.ec_device_count() < 1:
             raise RuntimeError("no CUDA device is available")
@@ -943,10 +1350,7 @@ class CudaClimber:
     ) -> None:
         library = _require()
         if settings.get("split") is not None:
-            raise ValueError(
-                "the cuda engine does not implement the split-point climb "
-                "(stecker_split.SplitClimber); use climb.engine 'batched'"
-            )
+            raise ValueError("a split-point climb is CudaSplitClimber's; see make_climber")
         phases = list(settings["phases"])
         if not phases or len(phases) > MAX_PHASES:
             raise ValueError(f"the cuda engine runs 1 to {MAX_PHASES} climb phases, not {len(phases)}")
@@ -1090,25 +1494,203 @@ class CudaClimber:
         """The chunk record fields ``stecker_sweeps._worker_chunk`` returns, for these settings."""
 
         boards, evaluations, scores, winner = self.climb_settings(names, settings)
-        count = len(scores)
-        _, mean, m2 = welford(scores)
-        best = float(scores.max()) if count else -float("inf")
-        order = np.lexsort((np.arange(count), -scores))[:keep]
-        top = []
-        for local in order.tolist():
-            plugboard = [int(x) for x in boards[local]]
-            row = settings[local]
-            top.append(
-                {
-                    "local": local,
-                    "score_per_letter": float(scores[local]),
-                    "rotor_order": list(names),
-                    "rings": [int(x) for x in row[:3]],
-                    "start": [int(x) for x in row[3:]],
-                    "plugboard": plugboard,
-                    "plugboard_pairs": sum(1 for x in range(26) if plugboard[x] > x),
-                    "evaluations": int(evaluations[local]),
-                    **({"window": self.windows[int(winner[local])][0]} if self.windowed else {}),
-                }
-            )
-        return {"evaluated": count, "mean": mean, "m2": m2, "max": best, "top": top}
+        return chunk_record(
+            names, settings, keep, boards, evaluations, scores,
+            (lambda local: {"window": self.windows[int(winner[local])][0]}) if self.windowed else None,
+        )
+
+
+def chunk_record(
+    names: Sequence[str],
+    settings: "np.ndarray",
+    keep: int,
+    boards: "np.ndarray",
+    evaluations: "np.ndarray",
+    scores: "np.ndarray",
+    extra: Any = None,
+) -> dict[str, Any]:
+    """A chunk's record as the CPU sweep builds it: streaming statistics and the top rows.
+
+    The statistics repeat the sweep's update in its order and arithmetic, and the
+    top rows are its heap's: highest score first, an earlier setting first on a tie.
+    ``extra(local)`` adds a row's engine-specific fields (window or hypothesis).
+    """
+
+    count = len(scores)
+    _, mean, m2 = welford(scores)
+    best = float(scores.max()) if count else -float("inf")
+    order = np.lexsort((np.arange(count), -scores))[:keep]
+    top = []
+    for local in order.tolist():
+        plugboard = [int(x) for x in boards[local]]
+        row = settings[local]
+        top.append(
+            {
+                "local": local,
+                "score_per_letter": float(scores[local]),
+                "rotor_order": list(names),
+                "rings": [int(x) for x in row[:3]],
+                "start": [int(x) for x in row[3:]],
+                "plugboard": plugboard,
+                "plugboard_pairs": sum(1 for x in range(26) if plugboard[x] > x),
+                "evaluations": int(evaluations[local]),
+                **(extra(local) if extra is not None else {}),
+            }
+        )
+    return {"evaluated": count, "mean": mean, "m2": m2, "max": best, "top": top}
+
+
+HYPOTHESIS_KINDS = ("clean", "deletion", "insertion")
+
+
+class CudaSplitClimber:
+    """``stecker_split.SplitClimber``'s climb over one message, for many settings at once.
+
+    Each setting's table has ``n + 1`` rows, built on the GPU.  The n-gram
+    objective repeats SplitClimber's arithmetic: three aligned decryptions,
+    sequential prefix sums, suffixes as total minus prefix, and each hypothesis
+    as ((prefix + bigram) + suffix) + mask.  The coincidence objective is exact
+    integer counts on the grid's boundaries.  The returned score and hypothesis
+    are ``best_hypothesis``'s.  Bodies of 4 to 255 letters.
+    """
+
+    def __init__(
+        self,
+        bigram: Sequence[float],
+        combined: Sequence[float],
+        body: Sequence[int],
+        settings: Mapping[str, Any],
+        reflector: Sequence[int],
+    ) -> None:
+        library = _require()
+        split = settings.get("split")
+        if split is None:
+            raise ValueError("CudaSplitClimber needs climb.split")
+        if settings.get("window") is not None:
+            raise ValueError("climb.split cannot be combined with climb.window")
+        phases = list(settings["phases"])
+        if not phases or len(phases) > MAX_PHASES:
+            raise ValueError(f"the cuda engine runs 1 to {MAX_PHASES} climb phases, not {len(phases)}")
+        for phase in phases:
+            if phase not in OBJECTIVES:
+                raise ValueError(f"unknown climb objective: {phase!r}")
+        n = len(body)
+        if not 4 <= n <= MAX_SPLIT:
+            raise ValueError(f"the cuda split-point climb takes bodies of 4 to {MAX_SPLIT} letters, not {n}")
+        valid = [value >= 0 for value in body]
+        letters = sum(valid)
+        if letters < 2:
+            raise ValueError("the split-point climb needs two scorable letters")
+        grid = int(split.get("ic_grid", 16))
+        if grid < 2:
+            raise ValueError(f"split.ic_grid must be at least 2, not {grid}")
+        self.body = list(body)
+        self.reflector = list(reflector)
+        descriptor = _SplitDesc()
+        descriptor.length = n
+        descriptor.letters = letters
+        descriptor.grid = grid
+        descriptor.segments = -(-n // grid)
+        descriptor.mask_term = float(split.get("mask_term", -8.66))
+        descriptor.cipher[:n] = [value if value >= 0 else -1 for value in body]
+        gates = []
+        for t in range(n):
+            previous = t >= 1 and valid[t - 1]
+            before = t >= 2 and valid[t - 2]
+            gate = 0
+            if valid[t] and previous and not before:
+                gate |= 1  # bigram only: the second letter of a run
+            if valid[t] and previous and before:
+                gate |= 2  # trigram
+            if valid[t] and previous:
+                gate |= 4  # a bigram ends here whatever precedes it
+            gates.append(gate)
+        descriptor.gate[:n] = gates
+        climb = _ClimbDesc()
+        climb.nphases = len(phases)
+        climb.phases[: len(phases)] = [OBJECTIVES[phase] for phase in phases]
+        climb.max_pairs = int(settings["max_pairs"])
+        climb.max_passes = int(settings["max_passes"])
+        climb.min_gain = float(settings["minimum_gain"])
+        climb.nwin = 1
+        climb.maxlen = n + 1
+        self._bigram = np.ascontiguousarray(bigram, dtype=np.float64)
+        self._combined = np.ascontiguousarray(combined, dtype=np.float64)
+        if self._bigram.shape != (676,) or self._combined.shape != (17576,):
+            raise ValueError("the n-gram tables must hold 676 and 17,576 entries")
+        handle = ctypes.c_void_p()
+        _check(library.ec_split_create(
+            ctypes.byref(climb), ctypes.byref(descriptor), self._bigram.ctypes.data,
+            self._combined.ctypes.data, ctypes.byref(handle),
+        ))
+        self._handle = handle
+        self._library = library
+
+    def close(self) -> None:
+        if getattr(self, "_handle", None):
+            self._library.ec_split_destroy(self._handle)
+            self._handle = None
+
+    def __del__(self) -> None:  # pragma: no cover - interpreter shutdown order varies
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    def climb_settings(self, names: Sequence[str], settings: "np.ndarray"):
+        """Plugboards, evaluations, scores per letter, hypothesis kinds and positions."""
+
+        rotors, middle, right = rotor_bytes(names, self.reflector)
+        rows = np.ascontiguousarray(np.asarray(settings, dtype=np.uint8).reshape(-1, 6))
+        count = len(rows)
+        boards = np.empty((count, 26), dtype=np.uint8)
+        evaluations = np.empty(count, dtype=np.int32)
+        scores = np.empty(count, dtype=np.float64)
+        kinds = np.empty(count, dtype=np.int32)
+        positions = np.empty(count, dtype=np.int32)
+        if count:
+            _check(self._library.ec_split_run(
+                self._handle, rotors, middle, right, rows.ctypes.data, count, LAUNCH_BATCH,
+                boards.ctypes.data, evaluations.ctypes.data, scores.ctypes.data,
+                kinds.ctypes.data, positions.ctypes.data,
+            ))
+        return boards.astype(np.int64), evaluations.astype(np.int64), scores, kinds, positions
+
+    @staticmethod
+    def hypothesis(kind: int, position: int) -> tuple[str, int | None]:
+        return (HYPOTHESIS_KINDS[kind], None if kind == 0 else int(position))
+
+    def climb_one(
+        self, names: Sequence[str], rings: Sequence[int], start: Sequence[int]
+    ) -> tuple[list[int], int, float, tuple[str, int | None]]:
+        """One setting, as ``SplitClimber.climb`` returns it."""
+
+        boards, evaluations, scores, kinds, positions = self.climb_settings(
+            names, np.asarray([list(rings) + list(start)])
+        )
+        return (
+            [int(x) for x in boards[0]],
+            int(evaluations[0]),
+            float(scores[0]),
+            self.hypothesis(int(kinds[0]), int(positions[0])),
+        )
+
+    def chunk(self, names: Sequence[str], settings: "np.ndarray", keep: int) -> dict[str, Any]:
+        boards, evaluations, scores, kinds, positions = self.climb_settings(names, settings)
+        return chunk_record(
+            names, settings, keep, boards, evaluations, scores,
+            lambda local: {"split": list(self.hypothesis(int(kinds[local]), int(positions[local])))},
+        )
+
+
+def make_climber(
+    bigram: Sequence[float],
+    combined: Sequence[float],
+    body: Sequence[int],
+    settings: Mapping[str, Any],
+    reflector: Sequence[int],
+):
+    """The GPU climber a configuration asks for: split-point or whole/windowed."""
+
+    cls = CudaSplitClimber if settings.get("split") is not None else CudaClimber
+    return cls(bigram, combined, body, settings, reflector)

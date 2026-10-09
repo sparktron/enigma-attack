@@ -130,8 +130,8 @@ def resolve_engine(settings: Mapping[str, Any]) -> str:
     so no existing configuration changes engine.  ``batched`` demands numpy and
     ``cuda`` demands a working GPU build (``stecker_cuda``); both fail loudly
     without it, because quietly running the slower climb on a sweep sized for
-    the faster one is how a run goes unfinished.  ``cuda`` does not implement the
-    split-point climb and refuses a configuration that asks for one.
+    the faster one is how a run goes unfinished.  ``cuda`` runs the whole-message,
+    windowed and split-point climbs.
     """
 
     engine = settings.get("engine", "reference")
@@ -145,11 +145,8 @@ def resolve_engine(settings: Mapping[str, Any]) -> str:
             "install it or use 'auto' or 'reference'"
         )
     if engine == "cuda":
-        if settings.get("split") is not None:
-            raise ValueError(
-                "climb.engine 'cuda' does not implement the split-point climb "
-                "(climb.split, stecker_split.SplitClimber); use 'batched'"
-            )
+        if settings.get("split") is not None and settings.get("window") is not None:
+            raise ValueError("climb.split cannot be combined with climb.window")
         if not stecker_cuda.available():
             raise RuntimeError(
                 "climb.engine is 'cuda' but the GPU climb is unavailable "
@@ -178,17 +175,19 @@ def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[
     # The GPU climbs a whole chunk per call and builds its own position tables,
     # so it replaces every per-setting climber below.
     _WORKER["cuda_climber"] = (
-        stecker_cuda.CudaClimber(scorer.bigram, scorer.combined, body, settings, reflector)
+        stecker_cuda.make_climber(scorer.bigram, scorer.combined, body, settings, reflector)
         if engine == "cuda"
         else None
     )
     window = settings.get("window")
     split = settings.get("split")
-    if split is not None and (window is not None or not batched):
-        raise ValueError("climb.split needs the batched engine and cannot be combined with climb.window")
+    if split is not None and (window is not None or engine not in ("batched", "cuda")):
+        raise ValueError(
+            "climb.split needs the batched or cuda engine and cannot be combined with climb.window"
+        )
     _WORKER["split_climber"] = (
         stecker_split.SplitClimber(scorer.bigram, scorer.combined, body, settings)
-        if split is not None
+        if split is not None and batched
         else None
     )
     _WORKER["climber"] = (

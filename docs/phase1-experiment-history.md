@@ -1958,6 +1958,90 @@ Bodies are limited to 512 letters. One GPU climbs one chunk at a time, so under
 `cuda` the sweep ignores `--jobs`. The power control's single null climbs still
 use the batched climber when its arms ask for `cuda`.
 
+> **Update, 2026-10-09.** The split-point climb now has a GPU port; see
+> [below](#cuda-split-point-climb-build-and-parity-2026-10-09).
+
+---
+
+## CUDA split-point climb: build and parity (2026-10-09)
+
+Exploratory engineering, preregistered nowhere. It is the first step of the plan
+recorded after v4's null. The three nulls leave a standard reading's odds at
+about 0.059 ungarbled but 0.34 with one dropped or inserted letter. The
+split-point climb is the method aimed at that case, and the GPU removes the cost
+argument that dropped it. Nothing is decided about running it; that needs its
+power re-measured and a preregistration.
+
+What it is. `stecker_cuda.CudaSplitClimber` ports
+`stecker_split.SplitClimber` and runs whenever `climb.engine = "cuda"` and
+`climb.split` is set. That combination used to be refused. Each block climbs one
+setting on a position table of n + 1 rows, built on the GPU. The move set,
+acceptance rule and evaluation count are the windowed engine's. Both objectives
+are reproduced exactly:
+
+- **n-gram.** Each candidate decrypts three aligned streams: the head on row t,
+  the stream after a dropped letter on row t + 1, and the stream after an
+  inserted one on row t − 1. The kernel repeats numpy's arithmetic: sequential
+  prefix sums (`cumsum`), each suffix as total minus prefix, and each hypothesis
+  as ((prefix + bigram) + suffix) + mask. That needs each stream's total
+  first, so a candidate costs two passes. During the climb only the best value
+  matters, so the mask is added once to the maximum rather than to every
+  position. Rounding is monotone, so that gives the same maximum. The final
+  `best_hypothesis` adds it per position and keeps numpy's first-maximum
+  tie-break.
+- **Index of coincidence.** Exact integer counts. The two mixed count vectors
+  are updated as the boundary moves across the grid, then put through the
+  batched climber's three floating-point operations.
+
+The preflight, when the engine is `cuda` and a configuration declares a split
+(in `climb` or in a power arm), also checks the split climb against
+`SplitClimber` on its seeded cases, hypothesis included. Bodies are limited to
+4 to 255 letters, because the counts are bytes.
+
+Fact: parity, against `SplitClimber`, on the 3090:
+
+| check | compared | identical |
+|---|---:|---:|
+| random settings, grid 32 (`scripts/cuda_parity.py split --settings 2000 --seed 20261009`): clean / one indel / one indel + 1–5 masks / short (8–59 letters) | 500 / 500 / 500 / 500 | all |
+| random settings, grid 16 (`--settings 500 --seed 20261010`) | 500 | all |
+| development checks, grids 16 and 32, 6 to 167 letters | 744 | all |
+| BYQMZ sweep slice, complete ring rule, grid 32: 10 wheel orders × middle offset 7 × left 0–3 × all right positions and rings, batched (10 CPU workers) against cuda | 10 chunks, 243,360 settings | 10 chunk records identical; ranked candidates and score distribution identical |
+
+"Identical" means the same final plugboard, evaluation count, hypothesis (kind
+and position) and score per letter, with a worst difference of exactly 0.0.
+The sweep slice's two checkpoints were compared with
+`scripts/cuda_parity.py compare`. Each body in the random checks was climbed at
+its true setting and at nine random ones. The final
+hypotheses over the 2,000 were 1,012 deletions, 981 insertions and 7 clean.
+That is a property of the climb, the same on both engines: a masked hypothesis
+usually wins on wrong-setting text, as the residual effect noted in the
+split-point build entry predicts.
+
+Fact: cost. `scripts/benchmark_sweep.py --v4-chunks 12 --split-grid 32` timed
+12 v4-shaped chunks: BYQMZ, the complete ring rule, v4's climb without its
+window plus `split.ic_grid` 32, 158,184 settings each. It took 0.02849 ms per
+setting, 4.53 to 4.55 s a chunk, 3.8 times the windowed GPU climb. The run was
+on 2026-10-09 at 00:49 UTC on the RTX 3090, with no other compute process on the
+GPU. The batched CPU comparison was running on 10 cores at the time. A complete
+246,767,040-setting split sweep would therefore take 1.95 h. The CPU figure is
+derived, not measured here: the recorded split-to-windowed ratio of 2.89 times
+v3's 2.22 ms gives 6.42 ms per setting on 10 workers, about 440 h, so the GPU is
+about 225 times faster. The sweep slice above measured the CPU directly: 2,871 s
+on 10 workers for 243,360 settings, 11.80 ms per setting, against 7.4 s on the
+GPU (0.0303 ms), 390 times. That slice holds only 10 chunks of 24,336 settings,
+one per worker, so the CPU figure includes no tail effects but is a small
+sample. The kernel uses 69 registers per thread.
+
+Inference. A complete split-point sweep of BYQMZ is now a two-hour job. What
+decides whether to run one is its power conditional on v2, v3 and v4 being
+null. That power is unmeasured. The split-point control
+(`phase1-split-point-power-v1`) measured the climb conditional on the
+past-notch arms missing, not on v4's complete rule also missing. That is the
+next measurement, and with the GPU a control's sweeps cost minutes.
+
+Limits. Bodies of 4 to 255 letters. Power-control null climbs and companion
+checks still run on the CPU.
+
 ---
 
 ## What Phase 1 now needs
