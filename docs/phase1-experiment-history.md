@@ -1705,6 +1705,259 @@ Run command, not run:
 python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 10
 ```
 
+> **Run log, recorded 2026-10-08 (the run is unfinished).** Started 2026-10-07
+> 23:28:24 UTC from a clean tree at `31dfbcc`, detached, 10 workers, with this
+> configuration unchanged (engine `batched`). The checkpoint gets records only
+> once the preflight and both positive controls have passed, and it held 160 of
+> 1,560 chunks at 2026-10-08 17:48 UTC, about 9 an hour. Nothing has stopped or
+> resumed it. The [CUDA engine](#cuda-climb-engine-build-and-benchmark-2026-10-08)
+> built since then does not touch this run: its checkpoint fingerprint is
+> unchanged, which a test checks.
+
+> **Amended 2026-10-08, before the GPU run: engine `batched` → `cuda` (a
+> disclosed deviation).** After the CUDA engine's build and benchmark, the
+> maintainer decided to rerun v4 on the GPU. The configuration's `climb.engine`
+> is now `cuda`, and its `amendments` field records the change. Nothing else
+> changes: message, space, ring rule, climb, retention, companions, threshold,
+> predictions and stated power are as preregistered. The deviation is expected
+> to change no number. The cuda engine gave byte-identical records on all 150
+> v4 chunks recomputed from the CPU checkpoint, and its preflight check against
+> the batched climber must pass before any target search. The engine is part of
+> the checkpoint fingerprint, so the GPU run starts from zero and does not read
+> the CPU checkpoint. When this was committed, the CPU run held 200 of 1,560
+> chunks and was still running; it was not stopped. Acceptance condition, fixed
+> here before the run: every chunk the CPU run finished must have a record
+> identical to the GPU run's for that chunk, apart from the fingerprint. Any
+> difference voids the GPU result. Run command:
+> `python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 1`
+> (the cuda engine ignores `--jobs`).
+
+### Result (GPU run 2026-10-08)
+
+Run: the maintainer launched it from a clean tree at `35c92d7` (branch
+`claude/phase1-cuda-engine`, the amendment commit). It ran from 2026-10-08
+22:52:30 to 23:25:33 UTC, 33 minutes in all, as one process on the RTX 3090.
+No other compute process was on the GPU. The CPU run of the same sweep kept
+running alongside on 10 cores. There was one invocation, with no stop or
+resume. The artifact is
+[artifacts/phase1-body-direct-sweep-v4.json](../artifacts/phase1-body-direct-sweep-v4.json).
+
+Acceptance condition (fixed in the amendment): **met.** The CPU run had
+finished 210 chunks when its checkpoint was copied (read-only, 23:25:54 UTC).
+All 210 records (33,218,640 settings) are identical to the GPU run's records for
+the same chunks, compared as JSON text without the fingerprint. None is missing
+or different.
+
+### Observed
+
+- Preflight: every check passed, including `cuda_climb_matches_batched` (24 of
+  24 whole-message and 24 of 24 W = 117 samples, worst score difference 0.0)
+  and `batched_climb_matches_reference`. Both positive controls passed.
+- Coverage: all 246,767,040 settings of the middle-complete space, in 1,560
+  chunks. The sweep took 1,859 s (7.5 µs per setting) and the companion
+  confirmation 90 s.
+- Score distribution over every setting (better of two windows): mean −8.2870,
+  sd 0.11475 per letter. The maximum is −7.5395 (z = 6.51), rank I-IV-II, rings
+  ABF, start THF. Rank 100 is −7.6347. All 100 retained candidates won on the
+  head window, as in v3 (BYQMZ's masked letter is in the head).
+- Companion confirmation: **none confirmed.** The best minimum over FKQLZ and
+  XFEDT is z = 4.69 at rank 65 (FKQLZ 4.96, XFEDT 4.69), against the threshold
+  of 6. v3's best was 4.64.
+- Indicator confirmation: 2 of 100 candidates have a compatible ring setting.
+  The best pooled date score is −9.00 per letter.
+- Duplicate settings, not anticipated in the preregistration. A start with the
+  middle wheel at its notch double-steps on the first keystroke. From then on it
+  is the start one letter later on both the left and middle wheels, which is the
+  just-past-notch setting v3 swept. The exception is when the right wheel also
+  starts at its notch: 1,906 of 2,000 random checks over 167 letters were
+  identical, against the 25 in 26 expected. So about 1 in 9.4 of the space's
+  settings exactly duplicate another. Among the retained, 12 candidates sit at a
+  notch start, and each has its duplicate, with the same plugboard and score,
+  also retained. The 100 rows are therefore 88 distinct machines.
+
+Predictions:
+
+| prediction | outcome |
+|---|---|
+| companion-confirmed-candidate (decides) | **failed**: no candidate confirmed |
+| confirmed-candidate-is-rank-one | does not apply |
+| confirmed-candidate-at-an-added-middle-start | does not apply |
+| retained-v3-settings-reproduce | **held**: the 12 retained at settings v3 swept are all v3-retained, with the same plugboard and score (rank 5 is v3's rank 1, −7.573383084) |
+| null-top-near-expected-maximum (z 5.5 to 7.5) | **held**: z = 6.51 |
+
+### Interpretation (inference)
+
+- The run is the preregistered sweep in every respect but the engine, and the
+  engine changed nothing measurable. The 210 CPU-run chunks the GPU run
+  reproduced exactly are 13% of the sweep, spread over the first wheel orders.
+- The three checks agree again: the top score is the noise maximum, the
+  companions see nothing, and the indicator sees nothing. The best companion z
+  (4.69) sits where v3's (4.64) did, below the calibration's 240-null maximum
+  of 4.60 plus what 100 more draws would add.
+- Weight of the null. The preregistered stated power puts this null's odds
+  multiplier at about 0.56 at q = 0.2. Combined with the v2 and v3 multipliers
+  of 0.14 ungarbled and 0.48 with one indel, all three nulls multiply the odds
+  of a standard Enigma I reading of BYQMZ by about 0.059 ungarbled (0.14 ×
+  0.421) and 0.34 with one indel (0.48 × 0.714). At q = 0.2 that is about 0.12.
+  The same caveats hold: one plaintext, a single indel, planted stand-ins for
+  the earlier nulls, and wheels I–V as wired.
+- The duplicates change no verdict. A duplicated setting is climbed twice to
+  the same result. It adds a little weight to those settings in the score
+  distribution, about 11% of settings, and costs retained slots: 12 of 100
+  here. A later complete-rule sweep could drop the notch start whenever the
+  right wheel is not also at its notch.
+
+### Decision
+
+v4 is null at its stated power. Phase 1's body-direct search of BYQMZ under
+the standard Enigma I reading has now covered the past-notch space twice (whole
+message and W = 117) and the complete space once, and none confirms.
+
+> **CPU run stopped, 2026-10-09 00:23:18 UTC (maintainer's decision).** The
+> CPU run of v4 (engine `batched`, PID 930616, started 2026-10-07 23:28:24 UTC
+> from `31dfbcc`) was stopped with SIGTERM to its process group. It had
+> finished 220 of 1,560 chunks. Its checkpoint ends on a complete record and
+> was kept unchanged, so the run could resume from `31dfbcc`. **All 220 chunk
+> records (34,800,480 settings) are identical to the GPU run's.** The per-chunk
+> record hashes and statistics of that comparison are in
+> [data/phase1/v4-cpu-gpu-chunk-comparison.json](../data/phase1/v4-cpu-gpu-chunk-comparison.json)
+> (`scripts/cuda_parity.py compare`). Both checkpoints are kept, uncommitted,
+> in the main checkout's `build/`: the CPU run's at its configured path, the
+> GPU run's as `phase1-body-direct-sweep-v4.gpu-cuda.checkpoint.jsonl`, with
+> their sha256 in that file. The CPU run wrote no artifact; the GPU run's is
+> the record. The cited
+paper's doubt about the wheel wiring for Batch C, the two-fault and
+other-machine cases, and the crib-driven Bombe (still without a crib prior)
+are what remain. Choosing among them is for a later entry.
+
+---
+
+## CUDA climb engine: build and benchmark (2026-10-08)
+
+Exploratory engineering and measurement, preregistered nowhere. No experiment
+configuration changed. The running v4 sweep was neither stopped nor switched
+(see its run log above).
+
+What it is (`stecker_cuda.py`). A new climb engine, `climb.engine = "cuda"`, is
+an exact port of `BatchedClimber` for the whole-message and head-and-tail
+windowed climbs. It runs a whole sweep chunk in one call. Each CUDA thread block
+climbs one (setting, window) pair with 352 threads: 325 swap slots, 26 unplug
+slots and one for the current board. The block builds the setting's position
+table itself, by the stepping and composition of
+`enigma_fast.position_permutations`, which costs the CPU sweep a Python loop per
+setting. The table and the plugboard sit in shared memory. The move order, pair
+limit and evaluation count are `_candidates`'. The acceptance rule is exact
+without a serial scan over all ~335 scores. A move can replace the running best
+only if it beats every earlier score and the starting best plus the gain, because
+the running best never falls below either. So one warp finds those few moves
+with a prefix-maximum scan and applies the rule to them in order. `auto` never
+picks `cuda`. The split-point climb is refused with an error. Under `cuda` the
+preflight runs a new cuda-against-batched parity report as well as the existing
+batched-against-reference one. A mismatch in either blocks the run before any
+target search.
+
+Choice of build: the kernel is compiled by `nvcc` on first use and loaded with
+ctypes, not run as a CuPy `RawKernel`. The CUDA 12.8 toolchain was already on the
+host and CuPy was not installed, so ctypes adds no package. The kernel source is
+a string in `stecker_cuda.py`, so the provenance hash of imported modules covers
+it. The compiled library is built for the visible device's compute capability and
+cached under `~/.cache/enigma-attack/cuda`. The cache key covers the source, the
+nvcc version, the flags and that capability. On load, the library is checked to
+hold a kernel image for the device. `pip install .[gpu]` adds only numpy. nvcc and
+the driver are host requirements, and without them the engine reports itself
+unavailable and the GPU tests skip.
+
+Fact: the scores are bit-identical, not merely close. numpy adds a row's terms by
+pairwise summation: eight accumulators, blocks of up to 128, larger blocks split
+at half rounded down to a multiple of eight. An emulation of that order matched
+`ndarray.sum(axis=1)` bit for bit on 124,124 random rows of 1 to 1,000 terms with
+numpy 2.2.6. The kernel adds its n-gram terms in that order in FP64, so every
+candidate score, and therefore every acceptance decision, is the batched
+climber's. The coincidence objective is integer counts and the same three
+floating-point operations. The window score repeats
+`FastNgramScorer.score_decryption`'s sequential sum. The chunk statistics repeat
+the sweep's streaming update in C, with floating-point contraction off.
+Measured differences are therefore 0.0, not a value under 1e-9.
+
+Fact: parity, against `BatchedClimber`, all on the 3090:
+
+| check | compared | identical |
+|---|---:|---:|
+| position tables against `position_permutations` (2,000 on wheels I–V, 1 to 299 letters; 480 in the tests on I–VIII, 1 to 399) | 2,480 settings | all |
+| v4's preflight samples (seed 20261005), whole message | 24 | 24 |
+| v4's preflight samples, W = 117 | 24 | 24 |
+| random settings, whole message: clean / masked / short bodies | 680 / 660 / 660 | all |
+| random settings, W = 117: clean / masked / short bodies | 680 / 660 / 660 | all |
+| v4 chunks recomputed from a checkpoint copy | 150 chunks, 23,727,600 settings | 150 records byte-identical |
+
+"Identical" means the same final plugboard, evaluation count and (windowed) the
+same window, with a score difference of exactly 0.0. The random run was
+`scripts/cuda_parity.py random --settings 2000 --seed 20261008` (114 s). It drew 3
+to 10 settings per body: the true setting first, the rest random. Clean and
+masked bodies are 150 to 167 letters; masked ones carry 1 to 8 masked letters,
+sometimes at position 0 or as a two-letter run. Short bodies are 30 to 139 letters,
+so W = 117 meets both the single-window fallback and overlapping windows. The
+chunk check was `scripts/cuda_parity.py chunks` over every record in a read-only
+copy of the running v4 checkpoint, taken at 150 chunks. Each record compared equal
+as JSON text: `evaluated`; the 100 `top` rows in order (setting, plugboard,
+window, evaluations, score); and mean, m2 and max. A test asserts that v4's
+fingerprint, recomputed from its configuration, equals the one on the
+checkpoint's first line, so the CPU sweep can still resume after this change.
+Another test asserts that a cuda chunk record equals the batched one as JSON
+text.
+
+Fact: the runner end to end. A scratch copy of v4's configuration set the engine
+to `cuda` and was cut to wheel order I-II-III and left start A: 26 chunks,
+158,184 settings. It passed every preflight check, including the new
+`cuda_climb_matches_batched` (24 of 24 samples, worst difference 0.0), and both
+positive controls. It swept in 1.29 s and wrote its checkpoint. A second
+invocation resumed all 26 chunks, ran none, and reported identical top
+candidates and score distribution. Each invocation took about 110 s in all,
+mostly CPU work that does not grow with the sweep: the preflight, the controls
+and the companion confirmation of the 100 retained candidates (about 80 s).
+
+Fact: cost. `scripts/benchmark_sweep.py --v4-chunks 12 --repeats 2
+--remaining-chunks 1400` timed whole v4 chunks: BYQMZ, v4's W = 117 climb and
+complete ring rule, 158,184 settings each. The 12 chunks spread over wheel orders
+and middle offsets, and each ran twice. The run was on 2026-10-08 at about 17:42
+UTC, on an RTX 3090 (driver 595.91, CUDA 12.8). LM Studio's model had been
+unloaded at the maintainer's request, and no other compute process held the GPU.
+The CPU v4 sweep was running on all 10 physical cores throughout.
+
+| engine | ms per setting | against batched on 10 CPU workers (2.22 ms, recorded) |
+|---|---:|---:|
+| **cuda** | **0.00741** (1.14 to 1.23 s per chunk) | **299×** |
+
+At that rate v4's 1,400 unfinished chunks take 0.46 h, against 137 h for the CPU
+at its recorded rate. A full 246,767,040-setting sweep takes 0.51 h against
+152 h. Each run adds the fixed CPU minutes above. An earlier three-chunk check,
+with LM Studio's model still loaded and idle, took 1.15 s per chunk, so the
+loaded model made no measurable difference while idle. The kernel uses 80
+registers and about 26 KB of shared memory per block, two blocks per SM. The
+display watchdog is on for this GPU, so a chunk call issues launches of 8,192
+settings. The benchmark's older planted-message path also accepts `--engines
+cuda`. Its chunks are 26 settings, so per-call overhead dominates there (0.32 ms
+per setting) and that figure is not the engine's rate.
+
+Inference. The engine changes the cost of a Phase 1 sweep from days of host time
+to under an hour. Its output cannot be told apart from the batched engine's on
+every comparison made: 23.7 million settings of the actual v4 sweep, plus 4,000
+random and 48 preflight climbs. A cuda run of v4 would therefore produce the
+same retained candidates, plugboards, scores and statistics. It would differ
+only in the engine field, the checkpoint fingerprint and the timings. That rests
+on parity measured on this host with numpy 2.2.6. The bit-exact agreement
+depends on numpy's summation order. A different numpy could change the batched
+scores in the last bits, which the preflight would catch as a failed check, not
+let through as a quiet difference. Whether to stop the running CPU sweep and
+redo it on the GPU is the maintainer's decision. Doing so is a disclosed
+deviation from v4's preregistered engine, and it restarts from zero because the
+engine is part of the fingerprint. This entry does not decide it.
+
+Limits. The split-point climb (`stecker_split.SplitClimber`) has no GPU port.
+Bodies are limited to 512 letters. One GPU climbs one chunk at a time, so under
+`cuda` the sweep ignores `--jobs`. The power control's single null climbs still
+use the batched climber when its arms ask for `cuda`.
+
 ---
 
 ## What Phase 1 now needs

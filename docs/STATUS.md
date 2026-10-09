@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-07
+Updated: 2026-10-08
 
 ## Current state
 
@@ -63,7 +63,16 @@ score is the expected noise maximum. A split-point climb, which searches the
 position of one dropped or inserted letter, was then calibrated on the same
 planted draws (`phase1-split-point-power-v1`, 2026-10-07). It fell short of both
 preregistered deciding thresholds and is dropped, so the complete-ring-rule
-sweep (`phase1-body-direct-sweep-v4`) is preregistered next, not yet run. See
+sweep (`phase1-body-direct-sweep-v4`) was preregistered next, and it is
+**null**. It covered all 246.8 million settings, and no retained candidate was
+companion-confirmed (best z 4.69 against 6). Its top score is the noise maximum
+(z 6.51). It ran on 2026-10-08 in 33 minutes on the GPU. Its engine was amended
+from `batched` to `cuda` before the run as a disclosed deviation, after the
+CUDA engine was shown to reproduce the batched climb bit for bit. All 220
+chunks of a concurrent CPU run of the same sweep, stopped afterwards, matched
+exactly. The three nulls
+together multiply the odds of a standard reading of BYQMZ by about 0.12 at
+q = 0.2 (0.059 ungarbled, 0.34 with one indel). See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
@@ -225,11 +234,16 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 243 tests passed locally on 2026-10-07,
-  with numpy installed; without it the five batched-climb tests skip. A test
-  checks that `engine: auto` falls back to the reference climb and
-  `engine: batched` fails loudly when numpy is missing.
-- `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built. A clean
+- `python3 -m unittest discover -q`: 258 tests passed locally on 2026-10-08,
+  with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
+  batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
+  GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that
+  `engine: auto` falls back to the reference climb and `engine: batched` fails
+  loudly when numpy is missing. Others check that `auto` never picks `cuda`, that
+  `cuda` fails loudly without a GPU build, and that v4's checkpoint fingerprint
+  is unchanged.
+- `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built on
+  2026-10-08, with `stecker_cuda.py` and the `gpu` extra. A clean
   virtual environment outside the checkout resolves its inputs from the
   installed share directory and its default outputs under the current working
   directory; `enigma-phase7` loads the corpus, both frequency tables and the
@@ -267,6 +281,11 @@ has already closed.
   CI and passes drift and determinism locally; the joint artifact reproduced
   exactly on a second local run. The v4 sweep configuration was smoke-run on a
   108-setting slice through the runner, including a checkpoint resume.
+- `artifacts/phase1-body-direct-sweep-v4.json` (33 minutes on the RTX 3090 with
+  the cuda engine, clean tree at `35c92d7`) is `long_running`. Its 27 claim
+  paths were checked against the artifact, and its configuration hash matches
+  the committed configuration. Its 210 chunks shared with the concurrent CPU run
+  are identical to that run's records.
 - `artifacts/phase3-unsteckered-sweep-v1.json` (1,157 s on 10 workers, clean
   tree at `4d09ab0`, after a review fix to its null weighting) is `long_running`; its claim paths were checked against
   the artifact by hand. Every run re-checks the numpy kernel against
@@ -360,18 +379,46 @@ or K (no sourced wiring here), the Abwehr G (not modelled), or reflector C with
 wheels I–V (its 1941 use is unsourced). Asking the authors what their 2003–04
 attempt covered is the cheapest next step on that question.
 
-Phase 1 next: run the **complete-ring-rule sweep** of BYQMZ,
-`phase1-body-direct-sweep-v4`, preregistered 2026-10-07 and not run. It is v3
+Phase 1: **`phase1-body-direct-sweep-v4` is done and null**
+([result](phase1-experiment-history.md#result-gpu-run-2026-10-08)). It ran on
+the GPU from `35c92d7`, 2026-10-08 22:52 to 23:25 UTC, with every preflight
+check and both positive controls passing. The deciding prediction failed. The
+two checkable side predictions held: the 12 candidates at settings v3 swept
+reproduce v3's, and the top z of 6.51 lies in the stated 5.5 to 7.5. One thing
+the preregistration missed: a start with the middle wheel at its notch duplicates
+the just-past-notch setting exactly unless the right wheel also starts at its
+notch. So about 1 in 9.4 settings are duplicates, and the 100 retained rows are
+88 distinct machines. That changes no verdict. A CPU run of the same sweep
+(engine `batched`, started 2026-10-07 23:28:24 UTC from `31dfbcc`) was stopped
+on the maintainer's decision at 2026-10-09 00:23:18 UTC with 220 chunks done.
+All 220 are identical to the GPU run's records
+(`data/phase1/v4-cpu-gpu-chunk-comparison.json`), and both checkpoints are kept
+in `build/`. What comes next in Phase 1 is not yet chosen.
+
+**CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
+(`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
+windowed climbs on the GPU. Its scores are the batched climber's bit for bit,
+because it sums in numpy's pairwise order. It matched on 150 recomputed v4 chunks
+(23.7 million settings, byte-identical records), 4,000 random climbs and v4's 48
+preflight climbs. On the RTX 3090 it takes 0.00741 ms per setting, 299 times the
+2.22 ms of 10 CPU workers. A full v4-sized sweep takes 0.51 h and v4's
+unfinished chunks 0.46 h, against about 137 h more on the CPU. `auto` never
+selects it, the split-point climb is refused, and under `cuda` the preflight also
+checks it against the batched climb. The maintainer chose to rerun v4 on it,
+with the engine amended before the run as a disclosed deviation; the result is
+above ([build and benchmark](phase1-experiment-history.md#cuda-climb-engine-build-and-benchmark-2026-10-08)).
+
+The v4 sweep is v3
 with the `middle_complete` ring rule: 246,767,040 settings, about 152 hours
 (6.3 days) on 10 workers of an otherwise idle host, checkpointed in 1,560
 chunks so it can stop and resume. Its stated power, given a standard reading
 and v2 and v3 null, is 0.46 detection and 0.445 detection with companion
 confirmation at a prior q = 0.2 of one dropped or inserted letter (0.535 at q =
 0.05, 0.353 at q = 0.5), so a null would multiply the odds of a standard reading
-by about 0.56. Run it with
+by about 0.56. It runs with
 `python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v4/config.json --jobs 10`
-from a clean tree once its configuration is merged, and record every start, stop
-and resume ([preregistration](phase1-experiment-history.md#phase1-body-direct-sweep-v4-preregistered)).
+from a clean tree; record every start, stop and resume
+([preregistration](phase1-experiment-history.md#phase1-body-direct-sweep-v4-preregistered)).
 The first launch was stopped during start-up, before any chunk ran. The sweep
 expanded all 246.8 million settings in the parent process, about 47 GB. The
 worker now expands each chunk itself, with identical results on a test slice.

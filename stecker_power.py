@@ -269,7 +269,9 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
                 )
                 for _, first, stop in climb_windows(len(body), climb["window"])
             ]
-            if resolve_engine(climb) == "batched"
+            # The cuda engine climbs sweeps; single null climbs take the batched
+            # climber it is checked against.
+            if resolve_engine(climb) in ("batched", "cuda")
             else None
         )
     null_scores: list[float] = []

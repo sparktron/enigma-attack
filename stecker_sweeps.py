@@ -24,6 +24,7 @@ import enigma_fast
 from phase7 import resolve_path
 from provenance import sha256_file, sha256_text
 import stecker_batch
+import stecker_cuda
 import stecker_split
 from stecker_climb import (
     climb_windows,
@@ -117,17 +118,20 @@ def indicator_ic_sweep(
 
 _WORKER: dict[str, Any] = {}
 
-CLIMB_ENGINES = ("reference", "batched", "auto")
+CLIMB_ENGINES = ("reference", "batched", "auto", "cuda")
 
 
 def resolve_engine(settings: Mapping[str, Any]) -> str:
-    """The climb implementation a configuration runs: ``reference`` or ``batched``.
+    """The climb implementation a configuration runs: ``reference``, ``batched`` or ``cuda``.
 
     ``reference`` is the pure-Python climb and is the default, so a configuration
     that says nothing behaves as it always did.  ``auto`` takes the batched climb
-    when numpy is installed and the reference otherwise.  ``batched`` demands
-    numpy and fails loudly without it, because quietly running the slower climb
-    on a sweep sized for the faster one is how a run goes unfinished.
+    when numpy is installed and the reference otherwise; it never picks ``cuda``,
+    so no existing configuration changes engine.  ``batched`` demands numpy and
+    ``cuda`` demands a working GPU build (``stecker_cuda``); both fail loudly
+    without it, because quietly running the slower climb on a sweep sized for
+    the faster one is how a run goes unfinished.  ``cuda`` does not implement the
+    split-point climb and refuses a configuration that asks for one.
     """
 
     engine = settings.get("engine", "reference")
@@ -140,6 +144,17 @@ def resolve_engine(settings: Mapping[str, Any]) -> str:
             "climb.engine is 'batched' but numpy is not installed; "
             "install it or use 'auto' or 'reference'"
         )
+    if engine == "cuda":
+        if settings.get("split") is not None:
+            raise ValueError(
+                "climb.engine 'cuda' does not implement the split-point climb "
+                "(climb.split, stecker_split.SplitClimber); use 'batched'"
+            )
+        if not stecker_cuda.available():
+            raise RuntimeError(
+                "climb.engine is 'cuda' but the GPU climb is unavailable "
+                f"({stecker_cuda.unavailable_reason()}); use 'batched'"
+            )
     return engine
 
 
@@ -155,7 +170,18 @@ def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[
     _WORKER["settings"] = settings
     _WORKER["reflector"] = reflector
     scorer = _WORKER["scorer"]
-    batched = resolve_engine(settings) == "batched"
+    engine = resolve_engine(settings)
+    batched = engine == "batched"
+    previous = _WORKER.pop("cuda_climber", None)
+    if previous is not None:
+        previous.close()
+    # The GPU climbs a whole chunk per call and builds its own position tables,
+    # so it replaces every per-setting climber below.
+    _WORKER["cuda_climber"] = (
+        stecker_cuda.CudaClimber(scorer.bigram, scorer.combined, body, settings, reflector)
+        if engine == "cuda"
+        else None
+    )
     window = settings.get("window")
     split = settings.get("split")
     if split is not None and (window is not None or not batched):
@@ -194,6 +220,15 @@ def _worker_chunk(
     """
 
     index, key, names, starts, rule, keep = task
+    cuda_climber = _WORKER.get("cuda_climber")
+    if cuda_climber is not None:
+        # One call climbs the whole chunk; the record has the CPU path's fields,
+        # order and arithmetic (``CudaClimber.chunk``).
+        return {
+            "index": index,
+            "key": key,
+            **cuda_climber.chunk(names, stecker_cuda.settings_array(rule, names, starts), keep),
+        }
     swept = rule.settings(names, starts)
     scorer = _WORKER["scorer"]
     body = _WORKER["body"]
@@ -488,7 +523,8 @@ def sweep_slice(
         initargs = (
             dict(scorer_config), list(message.body), dict(settings), list(reflector),
         )
-        if jobs > 1 and pending:
+        # One GPU climbs a chunk at a time; worker processes would only queue on it.
+        if jobs > 1 and pending and engine != "cuda":
             with futures.ProcessPoolExecutor(
                 max_workers=jobs, initializer=_worker_init, initargs=initargs
             ) as pool:
