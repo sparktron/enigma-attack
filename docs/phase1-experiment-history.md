@@ -2209,6 +2209,30 @@ measured on these draws first and stated beside it, as for v3 and v4. That
 comes before the sweep's configuration is written. Nothing has been swept on
 this evidence.
 
+> **Joint rate measured, 2026-10-09 (the step the rule requires).** The
+> maintainer ran `scripts/joint_power.py`, unchanged, on the `split_complete`
+> arm from a clean tree at `9de3417`
+> ([artifacts/phase1-joint-power-v4-split-complete.json](../artifacts/phase1-joint-power-v4-split-complete.json),
+> 369 s). It ran the companion check (FKQLZ- and XFEDT-length companions, z ≥ 6)
+> on every draw's top candidate. Its detection flags match this run's on all 800
+> draws. Over all draws, 340 of 351 clean detections (96.9%) and 302 of 306
+> one-indel detections (98.7%) are companion-confirmed. Joined read-only with the
+> strata above (exploratory arithmetic, preregistered nowhere), detected and
+> confirmed among the draws all three reference arms miss:
+>
+> | stratum | detected and confirmed |
+> |---|---:|
+> | one indel, pooled | 68 of 111, 61.3% (52–70%) |
+> | one indel, middle third | 54 of 84, 64.3% |
+> | one indel, elsewhere | 14 of 27, 51.9% |
+> | clean | 8 of 20, 40% (22–61%) |
+>
+> So the joint conditional rate of a complete split-point sweep is 0.448 at
+> q = 0.05, 0.481 at 0.1, **0.524 at 0.2**, 0.559 at 0.35 and 0.580 at 0.5,
+> against 0.529 for detection alone at q = 0.2. The artifact's
+> `v2_retention_cutoff` fields compare against v2's whole-message score scale
+> and mean nothing for this arm.
+
 ---
 
 ## What Phase 1 now needs

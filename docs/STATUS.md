@@ -408,9 +408,11 @@ split climb detects 69 of 111 (62%, 95% interval 53–71%) against a bar of 30%.
 It still detects 87.8% of clean draws, against 88.8% for v4's climb. A complete
 split-point sweep of BYQMZ would detect about 0.53 of the keys left at q = 0.2
 (0.45 to 0.59 over q = 0.05 to 0.5). The rule therefore calls for that sweep to be
-preregistered next, about 2 GPU hours. First comes the companion check's joint
-rate on these draws, to state beside the power, as for v3 and v4
-([result](phase1-experiment-history.md#result-run-2026-10-09)).
+preregistered next, about 2 GPU hours. The companion check's joint rate,
+measured on the same draws as the rule requires, is 68 of those 111 (61.3%), or
+0.524 at q = 0.2 with confirmation
+([result](phase1-experiment-history.md#result-run-2026-10-09)). The sweep's
+configuration is the next thing to write.
 In parallel, ask the cited paper's authors what their attempt covered; whether
 the wheels are differently wired decides whether any of this can work.
 
