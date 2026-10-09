@@ -234,7 +234,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 260 tests passed locally on 2026-10-09,
+- `python3 -m unittest discover -q`: 263 tests passed locally on 2026-10-09,
   with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
   batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
   GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that
@@ -401,10 +401,18 @@ climb now runs on the GPU (`CudaSplitClimber`, 2026-10-09). It reproduces
 `SplitClimber` exactly on 2,500 random climbs and a 10-chunk BYQMZ sweep slice,
 at 0.0285 ms per setting, so a complete split-point sweep takes about 2 hours
 ([build and parity](phase1-experiment-history.md#cuda-split-point-climb-build-and-parity-2026-10-09)).
-Its power conditional on v2, v3 and v4 all being null is unmeasured. Measure
-that before preregistering any sweep. In parallel, ask the cited paper's
-authors what their attempt covered; whether the wheels are differently wired
-decides whether any of this can work.
+`phase1-split-point-power-v2` (run 2026-10-09, 12 minutes) measured its power
+given that v2, v3 and v4 are all null. **Its deciding prediction held.** Among
+the one-indel planted keys all three completed climbs miss, the complete-rule
+split climb detects 69 of 111 (62%, 95% interval 53–71%) against a bar of 30%.
+It still detects 87.8% of clean draws, against 88.8% for v4's climb. A complete
+split-point sweep of BYQMZ would detect about 0.53 of the keys left at q = 0.2
+(0.45 to 0.59 over q = 0.05 to 0.5). The rule therefore calls for that sweep to be
+preregistered next, about 2 GPU hours. First comes the companion check's joint
+rate on these draws, to state beside the power, as for v3 and v4
+([result](phase1-experiment-history.md#result-run-2026-10-09)).
+In parallel, ask the cited paper's authors what their attempt covered; whether
+the wheels are differently wired decides whether any of this can work.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
