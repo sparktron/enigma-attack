@@ -68,8 +68,9 @@ sweep (`phase1-body-direct-sweep-v4`) was preregistered next, and it is
 companion-confirmed (best z 4.69 against 6). Its top score is the noise maximum
 (z 6.51). It ran on 2026-10-08 in 33 minutes on the GPU. Its engine was amended
 from `batched` to `cuda` before the run as a disclosed deviation, after the
-CUDA engine was shown to reproduce the batched climb bit for bit. 210 chunks of
-a concurrent CPU run of the same sweep matched exactly. The three nulls
+CUDA engine was shown to reproduce the batched climb bit for bit. All 220
+chunks of a concurrent CPU run of the same sweep, stopped afterwards, matched
+exactly. The three nulls
 together multiply the odds of a standard reading of BYQMZ by about 0.12 at
 q = 0.2 (0.059 ungarbled, 0.34 with one indel). See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
@@ -387,11 +388,12 @@ reproduce v3's, and the top z of 6.51 lies in the stated 5.5 to 7.5. One thing
 the preregistration missed: a start with the middle wheel at its notch duplicates
 the just-past-notch setting exactly unless the right wheel also starts at its
 notch. So about 1 in 9.4 settings are duplicates, and the 100 retained rows are
-88 distinct machines. That changes no verdict. A CPU run of the same sweep (engine
-`batched`, started 2026-10-07 23:28:24 UTC from `31dfbcc`, PID 930616) was still
-running when this was recorded, with 210 chunks done, all identical to the GPU
-run's. Whether to stop it is the maintainer's call. What comes next in Phase 1
-is not yet chosen.
+88 distinct machines. That changes no verdict. A CPU run of the same sweep
+(engine `batched`, started 2026-10-07 23:28:24 UTC from `31dfbcc`) was stopped
+on the maintainer's decision at 2026-10-09 00:23:18 UTC with 220 chunks done.
+All 220 are identical to the GPU run's records
+(`data/phase1/v4-cpu-gpu-chunk-comparison.json`), and both checkpoints are kept
+in `build/`. What comes next in Phase 1 is not yet chosen.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and

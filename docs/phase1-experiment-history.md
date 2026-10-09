@@ -1811,9 +1811,21 @@ Predictions:
 
 v4 is null at its stated power. Phase 1's body-direct search of BYQMZ under
 the standard Enigma I reading has now covered the past-notch space twice (whole
-message and W = 117) and the complete space once, and none confirms. The CPU
-run of v4 was still running when this was recorded. Its finished chunks agree
-with this result, and whether to stop it is the maintainer's call. The cited
+message and W = 117) and the complete space once, and none confirms.
+
+> **CPU run stopped, 2026-10-09 00:23:18 UTC (maintainer's decision).** The
+> CPU run of v4 (engine `batched`, PID 930616, started 2026-10-07 23:28:24 UTC
+> from `31dfbcc`) was stopped with SIGTERM to its process group. It had
+> finished 220 of 1,560 chunks. Its checkpoint ends on a complete record and
+> was kept unchanged, so the run could resume from `31dfbcc`. **All 220 chunk
+> records (34,800,480 settings) are identical to the GPU run's.** The per-chunk
+> record hashes and statistics of that comparison are in
+> [data/phase1/v4-cpu-gpu-chunk-comparison.json](../data/phase1/v4-cpu-gpu-chunk-comparison.json)
+> (`scripts/cuda_parity.py compare`). Both checkpoints are kept, uncommitted,
+> in the main checkout's `build/`: the CPU run's at its configured path, the
+> GPU run's as `phase1-body-direct-sweep-v4.gpu-cuda.checkpoint.jsonl`, with
+> their sha256 in that file. The CPU run wrote no artifact; the GPU run's is
+> the record. The cited
 paper's doubt about the wheel wiring for Batch C, the two-fault and
 other-machine cases, and the crib-driven Bombe (still without a crib prior)
 are what remain. Choosing among them is for a later entry.

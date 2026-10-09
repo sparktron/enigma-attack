@@ -16,6 +16,14 @@ each record field by field (the configuration's engine is replaced by cuda):
 
     python3 scripts/cuda_parity.py chunks --config experiments/phase1-body-direct-sweep-v4/config.json \\
         --checkpoint copy-of-checkpoint.jsonl --chunks 3
+
+``compare`` needs no GPU: it compares two finished checkpoints of the same
+sweep run with different engines (a CPU run and a GPU run), chunk by chunk,
+as JSON text without the fingerprint, and records each chunk's hash and
+statistics so the comparison can be checked later against either file:
+
+    python3 scripts/cuda_parity.py compare --reference cpu.checkpoint.jsonl \\
+        --candidate gpu.checkpoint.jsonl --output comparison.json
 """
 
 from __future__ import annotations
@@ -212,6 +220,60 @@ def chunk_parity(arguments) -> dict:
     }
 
 
+def read_records(path: pathlib.Path) -> tuple[dict, str]:
+    import hashlib
+
+    records = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:  # a final line cut off by a stop
+            continue
+        records[record["key"]] = record
+    return records, hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def record_digest(record: dict) -> str:
+    import hashlib
+
+    body = {key: value for key, value in record.items() if key != "fingerprint"}
+    return hashlib.sha256(json.dumps(body, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def compare_checkpoints(arguments) -> dict:
+    reference, reference_sha = read_records(pathlib.Path(arguments.reference))
+    candidate, candidate_sha = read_records(pathlib.Path(arguments.candidate))
+    rows = []
+    for key, record in sorted(reference.items(), key=lambda item: item[1]["index"]):
+        other = candidate.get(key)
+        rows.append({
+            "key": key,
+            "index": record["index"],
+            "evaluated": record["evaluated"],
+            "mean": record["mean"],
+            "m2": record["m2"],
+            "max": record["max"],
+            "record_sha256": record_digest(record),
+            "identical": other is not None and record_digest(other) == record_digest(record),
+        })
+    return {
+        "mode": "compare",
+        "comparison": "each reference chunk record against the candidate's record for the same chunk, "
+                      "as canonical JSON without the checkpoint fingerprint",
+        "reference": {"path": arguments.reference, "sha256": reference_sha, "chunks": len(reference),
+                      "fingerprints": sorted({r["fingerprint"] for r in reference.values()})},
+        "candidate": {"path": arguments.candidate, "sha256": candidate_sha, "chunks": len(candidate),
+                      "fingerprints": sorted({r["fingerprint"] for r in candidate.values()})},
+        "chunks_compared": len(rows),
+        "settings_compared": sum(row["evaluated"] for row in rows),
+        "chunks_identical": sum(row["identical"] for row in rows),
+        "rows": rows,
+        "passed": all(row["identical"] for row in rows),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     commands = parser.add_subparsers(dest="mode", required=True)
@@ -223,9 +285,18 @@ def main(argv: list[str] | None = None) -> int:
     chunk_mode.add_argument("--config", default=str(V4))
     chunk_mode.add_argument("--checkpoint", required=True)
     chunk_mode.add_argument("--chunks", type=int, default=0, help="first N records (0: all)")
-    for command in (random_mode, chunk_mode):
+    compare_mode = commands.add_parser("compare")
+    compare_mode.add_argument("--reference", required=True, help="the checkpoint whose chunks are checked")
+    compare_mode.add_argument("--candidate", required=True, help="the checkpoint they are checked against")
+    for command in (random_mode, chunk_mode, compare_mode):
         command.add_argument("--output", default=None, help="write the JSON report here")
     arguments = parser.parse_args(argv)
+    if arguments.mode == "compare":
+        report = compare_checkpoints(arguments)
+        if arguments.output:
+            pathlib.Path(arguments.output).write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+        print(json.dumps({k: v for k, v in report.items() if k != "rows"}, indent=2))
+        return 0 if report["passed"] else 1
     if not stecker_cuda.available():
         print(f"cuda engine unavailable: {stecker_cuda.unavailable_reason()}", file=sys.stderr)
         return 2
