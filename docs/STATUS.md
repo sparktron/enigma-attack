@@ -401,15 +401,16 @@ climb now runs on the GPU (`CudaSplitClimber`, 2026-10-09). It reproduces
 `SplitClimber` exactly on 2,500 random climbs and a 10-chunk BYQMZ sweep slice,
 at 0.0285 ms per setting, so a complete split-point sweep takes about 2 hours
 ([build and parity](phase1-experiment-history.md#cuda-split-point-climb-build-and-parity-2026-10-09)).
-Its power given that v2, v3 and v4 are all null is measured by
-`phase1-split-point-power-v2`, preregistered 2026-10-09 and not yet run: about
-11 minutes with
-`python3 phase1_stecker.py --config experiments/phase1-split-point-power-v2/config.json --jobs 4`,
-then `python3 scripts/split_power_v2.py`. If it detects at least 30% of the
-one-indel planted keys all three completed climbs miss, a complete split-point
-sweep of BYQMZ is preregistered next; otherwise the standard-reading search of
-BYQMZ stops at three nulls
-([preregistration](phase1-experiment-history.md#phase1-split-point-power-v2-preregistered)).
+`phase1-split-point-power-v2` (run 2026-10-09, 12 minutes) measured its power
+given that v2, v3 and v4 are all null. **Its deciding prediction held.** Among
+the one-indel planted keys all three completed climbs miss, the complete-rule
+split climb detects 69 of 111 (62%, 95% interval 53–71%) against a bar of 30%.
+It still detects 87.8% of clean draws, against 88.8% for v4's climb. A complete
+split-point sweep of BYQMZ would detect about 0.53 of the keys left at q = 0.2
+(0.45 to 0.59 over q = 0.05 to 0.5). The rule therefore calls for that sweep to be
+preregistered next, about 2 GPU hours. First comes the companion check's joint
+rate on these draws, to state beside the power, as for v3 and v4
+([result](phase1-experiment-history.md#result-run-2026-10-09)).
 In parallel, ask the cited paper's authors what their attempt covered; whether
 the wheels are differently wired decides whether any of this can work.
 

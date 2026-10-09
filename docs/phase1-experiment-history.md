@@ -2046,7 +2046,7 @@ checks still run on the CPU.
 
 ## phase1-split-point-power-v2 (preregistered)
 
-Status: preregistered 2026-10-09; not run. Configuration:
+Status: preregistered 2026-10-09; run 2026-10-09, T1 held ([result](#result-run-2026-10-09)). Configuration:
 [experiments/phase1-split-point-power-v2/config.json](../experiments/phase1-split-point-power-v2/config.json),
 with its analysis script `scripts/split_power_v2.py`, committed before any run.
 
@@ -2129,6 +2129,85 @@ Run command, not run:
 python3 phase1_stecker.py --config experiments/phase1-split-point-power-v2/config.json --jobs 4
 python3 scripts/split_power_v2.py --output artifacts/phase1-split-point-power-v2-analysis.json
 ```
+
+### Result (run 2026-10-09)
+
+Run: the maintainer launched it from a clean tree at `28548d0` (the
+preregistration commit) with `--jobs 4`, and it ran from 05:32:25 to 05:44:12 UTC
+2026-10-09. The 800 draws took 685 s on four spawned workers and the RTX 3090.
+LM Studio's llama-server was loaded during the run (18 GB of VRAM); nothing here
+depends on its being idle. The artifact is
+[artifacts/phase1-split-point-power-v2.json](../artifacts/phase1-split-point-power-v2.json),
+and the analysis
+[artifacts/phase1-split-point-power-v2-analysis.json](../artifacts/phase1-split-point-power-v2-analysis.json),
+from `scripts/split_power_v2.py` unchanged.
+
+### Observed
+
+- Preflight: every check passed, including `cuda_climb_matches_batched` (24 of
+  24 split and 24 of 24 windowed climbs identical, worst score difference 0.0).
+  Both positive controls passed.
+- Detection over all draws:
+
+| arm | clean (400) | one indel (400) |
+|---|---:|---:|
+| past_notch_whole (v2's climb) | 303, 75.8% | 153, 38.3% |
+| past_notch_w117 (v3's) | 294, 73.5% | 200, 50.0% |
+| complete_w117 (v4's) | 355, 88.8% | 272, 68.0% |
+| split_past_notch (v1's split arm) | 262, 65.5% | 211, 52.8% |
+| **split_complete** | **351, 87.8%** | **306, 76.5%** |
+
+- The runner's three predictions held. The whole-message arm on clean draws
+  scored 75.8% against at least 72%. The W = 117 arm on indel draws scored
+  50.0% against at least 35%. The complete split arm exceeded the past-notch
+  split arm on indel draws by 23.8 points, against at least 0.
+- Missed by all three reference arms: 20 clean draws (5.0%) and 111 one-indel
+  draws (27.8%; 84 with the fault in letters 56 to 111, 27 elsewhere).
+- Detection among them, with 95% intervals:
+
+| stratum | split_complete | split_past_notch |
+|---|---:|---:|
+| **one indel, pooled (deciding)** | **69 of 111, 62.2% (53–71%)** | 41 of 111, 36.9% (29–46%) |
+| one indel, middle third | 55 of 84, 65.5% (55–75%) | 36 of 84, 42.9% |
+| one indel, elsewhere | 14 of 27, 51.9% (34–69%) | 5 of 27, 18.5% |
+| clean | 8 of 20, 40% (22–61%) | 2 of 20, 10% |
+
+- **T1 held** (62.2% against at least 30%) and T2 held (+25.2 points). The
+  script's decision: `preregister_complete_split_sweep`.
+- Conditional detection of a complete split-point sweep, given a standard
+  reading and v2, v3 and v4 null: 0.450 at q = 0.05, 0.485 at 0.1, **0.529 at
+  0.2**, 0.566 at 0.35 and 0.588 at 0.5. It is detection only, without the
+  companion check.
+
+### Interpretation (inference)
+
+- The complete-rule split climb finds most of the garbled keys the three
+  completed sweeps leave behind, about twice v4's 29.7% on the comparable cases.
+  Its gain over v1's past-notch split arm (62% against 37%) comes from the ring
+  coverage the complete rule adds. v1's arm, on these fresh draws, gives 36.9%,
+  the same as the post hoc 37% on the old draws, so the old draws were not
+  unusual.
+- On clean draws the split climb gives up very little: 87.8% against 88.8% for
+  v4's climb. The penalty v1 measured for searching the position (65.5% against
+  75.8% here) is mostly a past-notch effect. So a complete split-point sweep is
+  close to a superset of v4 on clean messages, as well as much stronger with
+  one indel.
+- If such a sweep is null, the odds multiplier of a standard reading would fall
+  from about 0.12 after three nulls to about 0.054 at q = 0.2 (0.12 × (1 −
+  0.529)). That is about 0.13 with one indel and, from a 20-draw clean
+  stratum, about 0.035 ungarbled. Those are planted-draw figures with the usual
+  stand-ins (pooled nulls for the sweeps, one plaintext, a single fault, wheels
+  I–V as wired), and without the companion check.
+
+### Decision
+
+Per the preregistered rule, a complete split-point sweep of BYQMZ (the
+middle-complete space, `climb.split` as `split_complete`, engine cuda, about 2
+GPU hours) is preregistered next, with this run's conditional detection as its
+stated power. The rule also requires the companion check's joint rate to be
+measured on these draws first and stated beside it, as for v3 and v4. That
+comes before the sweep's configuration is written. Nothing has been swept on
+this evidence.
 
 ---
 
