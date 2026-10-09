@@ -2044,6 +2044,94 @@ checks still run on the CPU.
 
 ---
 
+## phase1-split-point-power-v2 (preregistered)
+
+Status: preregistered 2026-10-09; not run. Configuration:
+[experiments/phase1-split-point-power-v2/config.json](../experiments/phase1-split-point-power-v2/config.json),
+with its analysis script `scripts/split_power_v2.py`, committed before any run.
+
+Why this one. v4 is null, and with v2 and v3 the three nulls leave a standard
+reading of BYQMZ at odds multipliers of about 0.059 ungarbled and 0.34 with one
+dropped or inserted letter. The open case is a garbled message. The split-point
+climb searches the position of one such fault and now runs on the GPU, so a
+complete split-point sweep costs about 2 hours. Cost no longer decides anything.
+What decides is whether such a sweep would find keys the three completed sweeps
+miss. `phase1-split-point-power-v1` measured that only over the past-notch rule
+and only given that the two past-notch climbs miss.
+
+Design. Planted keys as in v1: one 167-letter plaintext, ten pairs, 400 draws
+clean and 400 with one random dropped or inserted letter, each draw swept over
+its own neighbourhood. The seed is new (20261109), so no draw has been seen by
+any earlier analysis. There are five arms:
+
+- `past_notch_whole`, `past_notch_w117` and `complete_w117`: the climbs of v2,
+  v3 and v4. A draw none of them detects stands in for a key all three sweeps
+  would miss.
+- `split_complete`: the candidate sweep's climb over the space it would search
+  (middle-complete rule, `ic_grid` 32, mask credit −8.66).
+- `split_past_notch`: v1's split arm, rerun on these draws as the link to v1's
+  numbers.
+
+Every arm runs on the cuda engine. The preflight checks all of them against the
+batched climbers before any draw, and the workers are spawned.
+
+Hypothesis: among one-indel draws missed by all three reference arms,
+`split_complete` detects at least 30%.
+
+Predictions:
+
+- **T1** (decides, scored by `scripts/split_power_v2.py` on a stratum of at
+  least 25 draws): `split_complete` detects at least 30% of the one-indel draws
+  missed by all three reference arms. The bar is v4's own conditional detection
+  on one-indel draws (57 of 192, 29.7%): a further sweep is worth
+  preregistering if it adds at least what the last one added on the cases left
+  most open.
+- T2: on those draws, `split_complete` detects at least as many as
+  `split_past_notch`.
+- Runner sanity checks: the whole-message past-notch arm detects at least 72%
+  of clean draws, and the W = 117 past-notch arm at least 35% of indel draws.
+  The earlier controls measured 79.0% and 42.5%; each bar is about three
+  standard errors lower.
+
+Decision rule. If T1 holds, a complete split-point sweep of BYQMZ is
+preregistered next, with this run's conditional detection as its stated
+power. The script reports that power at q = 0.05 to 0.5, nominal 0.2. The
+companion check's joint rate is measured on these draws before that
+preregistration and stated beside it, as for v3 and v4. If T1 is refuted, no
+split-point sweep is run on this evidence. The standard-reading search of BYQMZ
+then stops at three nulls, and the next question is the wheel wiring. If fewer
+than 25 indel draws are missed by all three arms, nothing is decided.
+
+Known before writing it (in `pre_run_facts`). On the 800 draws v1 shares with
+`phase1-middle-complete-power-v1`, joined read-only on 2026-10-09, v1's
+past-notch split arm detected 50 of the 135 one-indel draws missed by all three
+reference arms (37%) and 6 of 23 such clean draws. That post hoc figure is the
+reason for a new seed rather than a reason to expect a pass. It is a different
+arm, on draws that informed earlier choices.
+
+Checked before committing (exploratory, not part of the record): 3 and then 8
+draws a cell through the runner with scratch output. Every preflight check
+passed, including 24 of 24 split and 24 of 24 windowed climbs identical between
+cuda and batched. Four spawned workers gave draws identical to one process, at
+about 0.8 s a draw, which puts the full run at about 11 minutes.
+
+Limits are in the configuration. The main ones:
+
+- Missed by all three reference arms stands in for three null sweeps.
+- Only a single fault is modelled.
+- The rate is detection only, without the companion check.
+- One plaintext.
+- Wheels I–V are assumed as wired.
+
+Run command, not run:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-split-point-power-v2/config.json --jobs 4
+python3 scripts/split_power_v2.py --output artifacts/phase1-split-point-power-v2-analysis.json
+```
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.

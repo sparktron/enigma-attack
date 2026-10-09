@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import concurrent.futures as futures
+import multiprocessing
 import math
 import random
 import statistics
@@ -391,8 +392,16 @@ def run_end_to_end_power(
     tasks = [(index, draw) for index in range(len(cells)) for draw in range(draws)]
     started = time.monotonic()
     if jobs > 1:
+        # CUDA does not survive fork once the parent has used it (the preflight
+        # does), so under the cuda engine the workers are spawned.
+        context = (
+            multiprocessing.get_context("spawn")
+            if resolve_engine(config["climb"]) == "cuda"
+            else None
+        )
         with futures.ProcessPoolExecutor(
-            max_workers=jobs, initializer=_power_init, initargs=(dict(config),)
+            max_workers=jobs, initializer=_power_init, initargs=(dict(config),),
+            mp_context=context,
         ) as pool:
             # ``map`` preserves input order, so the record does not depend on
             # which worker finished first.

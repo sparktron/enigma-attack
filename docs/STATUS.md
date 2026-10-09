@@ -234,7 +234,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 260 tests passed locally on 2026-10-09,
+- `python3 -m unittest discover -q`: 263 tests passed locally on 2026-10-09,
   with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
   batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
   GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that
@@ -401,10 +401,17 @@ climb now runs on the GPU (`CudaSplitClimber`, 2026-10-09). It reproduces
 `SplitClimber` exactly on 2,500 random climbs and a 10-chunk BYQMZ sweep slice,
 at 0.0285 ms per setting, so a complete split-point sweep takes about 2 hours
 ([build and parity](phase1-experiment-history.md#cuda-split-point-climb-build-and-parity-2026-10-09)).
-Its power conditional on v2, v3 and v4 all being null is unmeasured. Measure
-that before preregistering any sweep. In parallel, ask the cited paper's
-authors what their attempt covered; whether the wheels are differently wired
-decides whether any of this can work.
+Its power given that v2, v3 and v4 are all null is measured by
+`phase1-split-point-power-v2`, preregistered 2026-10-09 and not yet run: about
+11 minutes with
+`python3 phase1_stecker.py --config experiments/phase1-split-point-power-v2/config.json --jobs 4`,
+then `python3 scripts/split_power_v2.py`. If it detects at least 30% of the
+one-indel planted keys all three completed climbs miss, a complete split-point
+sweep of BYQMZ is preregistered next; otherwise the standard-reading search of
+BYQMZ stops at three nulls
+([preregistration](phase1-experiment-history.md#phase1-split-point-power-v2-preregistered)).
+In parallel, ask the cited paper's authors what their attempt covered; whether
+the wheels are differently wired decides whether any of this can work.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
