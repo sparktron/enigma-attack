@@ -234,7 +234,7 @@ has already closed.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 258 tests passed locally on 2026-10-08,
+- `python3 -m unittest discover -q`: 260 tests passed locally on 2026-10-09,
   with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
   batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
   GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that
@@ -393,7 +393,18 @@ notch. So about 1 in 9.4 settings are duplicates, and the 100 retained rows are
 on the maintainer's decision at 2026-10-09 00:23:18 UTC with 220 chunks done.
 All 220 are identical to the GPU run's records
 (`data/phase1/v4-cpu-gpu-chunk-comparison.json`), and both checkpoints are kept
-in `build/`. What comes next in Phase 1 is not yet chosen.
+in `build/`.
+
+Next in Phase 1: the cases v4 leaves most open are messages with one dropped or
+inserted letter (odds multiplier 0.34, against 0.059 ungarbled). The split-point
+climb now runs on the GPU (`CudaSplitClimber`, 2026-10-09). It reproduces
+`SplitClimber` exactly on 2,500 random climbs and a 10-chunk BYQMZ sweep slice,
+at 0.0285 ms per setting, so a complete split-point sweep takes about 2 hours
+([build and parity](phase1-experiment-history.md#cuda-split-point-climb-build-and-parity-2026-10-09)).
+Its power conditional on v2, v3 and v4 all being null is unmeasured. Measure
+that before preregistering any sweep. In parallel, ask the cited paper's
+authors what their attempt covered; whether the wheels are differently wired
+decides whether any of this can work.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and

@@ -12,13 +12,15 @@ per setting, and checks that the engines return the same retained candidates.
     python3 scripts/benchmark_sweep.py --settings 6760 --jobs 10 --compare --split-grid 32 --repeats 2
     python3 scripts/benchmark_sweep.py --settings 6760 --engines cuda --window 117
     python3 scripts/benchmark_sweep.py --v4-chunks 4 --remaining-chunks 1410
+    python3 scripts/benchmark_sweep.py --v4-chunks 12 --split-grid 32
 
 ``--v4-chunks`` times whole chunks of ``phase1-body-direct-sweep-v4`` itself (BYQMZ,
 its W = 117 climb and complete ring rule, 158,184 settings a chunk), spread over
 the wheel orders, with the cuda engine by default, and projects the remaining
 chunks and a full 246,767,040-setting sweep from the measured rate.  The CPU
 comparison is the recorded batched figure (``--cpu-ms``), not a new
-multi-worker run.
+multi-worker run.  With ``--split-grid`` the chunks are climbed with the
+split-point climb (v4's climb without its window, plus ``climb.split``) instead.
 
 ``--settings`` is rounded up to a whole number of wheel orders (676 settings each).
 
@@ -78,13 +80,18 @@ def benchmark_v4_chunks(arguments) -> int:
     full = reducible_space_size(rule.name, rule.length, config["machine"]["wheel_set"])
     reflector = enigma_fast.reflector_table(config["machine"]["reflector"])
     engines = arguments.engines or ["cuda"]
+    climb = dict(config["climb"])
+    if arguments.split_grid is not None:
+        climb.pop("window", None)
+        climb["split"] = {"ic_grid": arguments.split_grid, "block": 64, "mask_term": -8.66}
+        print(f"climb: split point, ic_grid {arguments.split_grid}")
     if "cuda" in engines:
         info = stecker_cuda.device_info()
         print(f"device: {info['name']}, kernel watchdog {'on' if info['kernel_exec_timeout'] else 'off'}")
     for engine in engines:
         began = time.monotonic()
         _worker_init(dict(config["scorer"]), list(message.body),
-                     {**config["climb"], "engine": engine}, list(reflector))
+                     {**climb, "engine": engine}, list(reflector))
         setup = time.monotonic() - began
         total_seconds = 0.0
         total_settings = 0

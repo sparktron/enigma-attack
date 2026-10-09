@@ -19,6 +19,7 @@ import phase7
 from provenance import sha256_text
 import stecker_batch
 import stecker_cuda
+import stecker_split
 from stecker_climb import body_direct_climb, climb_windows, windowed_climb
 from stecker_scoring import FastNgramScorer
 from stecker_sweeps import resolve_engine
@@ -423,6 +424,19 @@ def parity_cases(config: Mapping[str, Any], reflector: Sequence[int]):
         yield body, order, rings, start, table
 
 
+def configured_splits(config: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Every split-point climb a configuration can run, in first-mention order."""
+
+    splits: list[dict[str, Any]] = []
+    candidates = [config["climb"].get("split")] + [
+        arm.get("split") for arm in config.get("end_to_end_power", {}).get("arms", [])
+    ]
+    for split in candidates:
+        if split is not None and dict(split) not in splits:
+            splits.append(dict(split))
+    return splits
+
+
 def batched_climb_parity_report(
     config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int]
 ) -> dict[str, Any]:
@@ -483,13 +497,15 @@ def cuda_climb_parity_report(
 
     The batched climb is the specification the GPU reproduces, so every case has
     to end on the same plugboard after the same number of evaluations, with the
-    same score per letter and, windowed, the same window.  The GPU sums in the
-    batched climber's order, so the scores are expected to agree exactly; the
-    report records the worst difference and fails above 1e-9.
+    same score per letter and, windowed, the same window.  A split-point climb
+    the configuration declares is checked against ``stecker_split.SplitClimber``
+    the same way, hypothesis included.  The GPU sums in the batched climbers'
+    order, so the scores are expected to agree exactly; the report records the
+    worst difference and fails above 1e-9.
     """
 
     seed, samples = parity_sample_size(config)
-    climb = {key: value for key, value in config["climb"].items() if key != "window"}
+    climb = {key: value for key, value in config["climb"].items() if key not in ("window", "split")}
     windows = configured_windows(config)
     identical = same_evaluations = 0
     windowed_identical = 0
@@ -539,6 +555,39 @@ def cuda_climb_parity_report(
         report["windowed_climbs_compared"] = samples * len(windows)
         report["windowed_climbs_identical"] = windowed_identical
         passed = passed and windowed_identical == samples * len(windows)
+    splits = configured_splits(config)
+    if splits:
+        # The split-point climb against stecker_split.SplitClimber, on the same
+        # cases, with its n + 1 row table: plugboard, evaluations, score per
+        # letter and hypothesis.
+        split_identical = 0
+        for body, order, rings, start, _ in parity_cases(config, reflector):
+            table = enigma_fast.position_permutations(
+                [enigma_fast.rotor_tables(name) for name in order], rings, start, len(body) + 1,
+                reflector,
+            )
+            for split in splits:
+                climbed = {**climb, "split": split}
+                expected = stecker_split.SplitClimber(
+                    scorer.bigram, scorer.combined, body, climbed
+                ).climb(table)
+                gpu = stecker_cuda.CudaSplitClimber(
+                    scorer.bigram, scorer.combined, body, climbed, reflector
+                )
+                got = gpu.climb_one(order, rings, start)
+                gpu.close()
+                worst = max(worst, abs(got[2] - expected[2]))
+                split_identical += (
+                    got[0] == list(expected[0])
+                    and got[1] == expected[1]
+                    and tuple(got[3]) == tuple(expected[3])
+                    and abs(got[2] - expected[2]) <= tolerance
+                )
+        report["splits"] = splits
+        report["split_climbs_compared"] = samples * len(splits)
+        report["split_climbs_identical"] = split_identical
+        report["worst_absolute_score_difference"] = worst
+        passed = passed and split_identical == samples * len(splits)
     report["passed"] = passed
     return report
 
