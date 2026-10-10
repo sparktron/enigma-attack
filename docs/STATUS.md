@@ -70,9 +70,13 @@ companion-confirmed (best z 4.69 against 6). Its top score is the noise maximum
 from `batched` to `cuda` before the run as a disclosed deviation, after the
 CUDA engine was shown to reproduce the batched climb bit for bit. All 220
 chunks of a concurrent CPU run of the same sweep, stopped afterwards, matched
-exactly. The three nulls
-together multiply the odds of a standard reading of BYQMZ by about 0.12 at
-q = 0.2 (0.059 ungarbled, 0.34 with one indel). See
+exactly. A fourth sweep, the
+complete split-point sweep (`phase1-body-direct-sweep-v5`, 2026-10-10), searches
+the position of one dropped or inserted letter inside every climb. It is **null**
+too: no retained candidate is companion-confirmed (best z 4.84 against 6), and its
+top score is the noise maximum (z 6.15). The four nulls together multiply the
+odds of a standard reading of BYQMZ by about 0.055 at q = 0.2 (0.035 ungarbled,
+0.13 with one indel). See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
@@ -395,32 +399,24 @@ All 220 are identical to the GPU run's records
 (`data/phase1/v4-cpu-gpu-chunk-comparison.json`), and both checkpoints are kept
 in `build/`.
 
-Next in Phase 1: the cases v4 leaves most open are messages with one dropped or
-inserted letter (odds multiplier 0.34, against 0.059 ungarbled). The split-point
-climb now runs on the GPU (`CudaSplitClimber`, 2026-10-09). It reproduces
-`SplitClimber` exactly on 2,500 random climbs and a 10-chunk BYQMZ sweep slice,
-at 0.0285 ms per setting, so a complete split-point sweep takes about 2 hours
-([build and parity](phase1-experiment-history.md#cuda-split-point-climb-build-and-parity-2026-10-09)).
-`phase1-split-point-power-v2` (run 2026-10-09, 12 minutes) measured its power
-given that v2, v3 and v4 are all null. **Its deciding prediction held.** Among
-the one-indel planted keys all three completed climbs miss, the complete-rule
-split climb detects 69 of 111 (62%, 95% interval 53–71%) against a bar of 30%.
-It still detects 87.8% of clean draws, against 88.8% for v4's climb. A complete
-split-point sweep of BYQMZ would detect about 0.53 of the keys left at q = 0.2
-(0.45 to 0.59 over q = 0.05 to 0.5). The rule therefore calls for that sweep to be
-preregistered next, about 2 GPU hours. The companion check's joint rate,
-measured on the same draws as the rule requires, is 68 of those 111 (61.3%), or
-0.524 at q = 0.2 with confirmation
-([result](phase1-experiment-history.md#result-run-2026-10-09)).
-**`phase1-body-direct-sweep-v5`**, that sweep, is preregistered 2026-10-09 and
-not run. It is v4 with the split-point climb in place of the windowed one, about
-2 GPU hours, and a null would bring the odds of a standard reading of BYQMZ to
-about 0.055. Run it with
-`python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v5/config.json --jobs 1`
-from a clean tree
-([preregistration](phase1-experiment-history.md#phase1-body-direct-sweep-v5-preregistered)).
-In parallel, ask the cited paper's authors what their attempt covered; whether
-the wheels are differently wired decides whether any of this can work.
+Phase 1, 2026-10-10: **`phase1-body-direct-sweep-v5` is done and null**
+([result](phase1-experiment-history.md#result-run-2026-10-10)). It is v4 with the
+split-point climb in place of the windowed one, run on the GPU from `0de0c54` in
+1 h 56 min (one invocation, 246,767,040 settings, 1,560 chunks). Every
+preflight check and both positive controls passed. The deciding prediction
+failed: no candidate is companion-confirmed, and the best minimum z is 4.84
+(rank 33) against 6. The null-top prediction held (top z 6.15, in 5.5 to 7.5).
+All 100 retained candidates re-climb identically on the CPU `SplitClimber`. The
+stated power given v2 to v4 null was 0.524 detected and confirmed at q = 0.2,
+so this null takes the odds of a standard Enigma I reading of BYQMZ to about
+0.055 (0.035 ungarbled, 0.13 with one indel). The standard-reading search of BYQMZ
+is now exhausted for what these climbs can see: one plaintext, at most one dropped
+or inserted letter, wheels I to V as wired. What is left is the wheel-wiring
+question the cited paper raises for Batch C, then two faults or a substituted
+letter, other machines, and the crib-driven Bombe. Choosing among them, or
+stopping, is the maintainer's. Asking the paper's authors (Weierud, Sullivan)
+what their 2003 to 2004 attempt covered is still the cheapest step on the wiring
+question.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and

@@ -1049,6 +1049,44 @@
         "result.top_candidates[].companion_confirmation.confirmed"
       ],
       "long_running": "246,767,040 converged windowed stecker climbs: 31 minutes of sweep (33 in all) on an RTX 3090 with the cuda engine, or about 152 hours on 10 CPU workers with the batched engine; either is far beyond the artifact job and needs a GPU or a week. The run was one invocation from a clean checkout at 35c92d7, the commit that amended the engine to cuda; 210 chunks of the concurrent CPU run were identical to it. The cuda engine's parity with the batched climb is covered by tests/test_stecker_cuda.py, which skips without a GPU."
+    },
+    "artifacts/phase1-body-direct-sweep-v5.json": {
+      "runner": [
+        "phase1_stecker.py",
+        "--config",
+        "experiments/phase1-body-direct-sweep-v5/config.json"
+      ],
+      "claim_paths": [
+        "schema",
+        "mode",
+        "status",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.corpus_sha256",
+        "preflight.passed",
+        "positive_controls.passed",
+        "result.evaluated_settings",
+        "result.ring_rule",
+        "result.coverage.reducible_space_settings",
+        "result.coverage.fraction_searched",
+        "result.score_distribution_over_slice.max_score_per_letter",
+        "result.score_distribution_over_slice.top_z_score",
+        "result.companion_confirmation.threshold_z",
+        "result.companion_confirmation.confirmed_candidate_ranks",
+        "result.companion_confirmation.best_min_best_z",
+        "result.indicator_confirmation.best_pooled_score_per_letter",
+        "result.indicator_confirmation.candidates_with_a_compatible_ring_setting",
+        "result.top_candidates[].rank",
+        "result.top_candidates[].score_per_letter",
+        "result.top_candidates[].rotor_order_left_to_right",
+        "result.top_candidates[].rings",
+        "result.top_candidates[].start_position",
+        "result.top_candidates[].plugboard",
+        "result.top_candidates[].split",
+        "result.top_candidates[].companion_confirmation.min_best_z",
+        "result.top_candidates[].companion_confirmation.confirmed"
+      ],
+      "long_running": "246,767,040 converged split-point stecker climbs: 6,945 s of sweep (1.93 hours; 1 h 56 min 37 s in all) on an RTX 3090 with the cuda engine, one invocation from a clean checkout at 0de0c54 (2026-10-10). The same sweep on 10 CPU workers would take about 810 hours at the 11.80 ms per setting measured on the 10-chunk slice, so it needs a GPU. The cuda split climb's parity with SplitClimber is covered by tests/test_stecker_cuda.py, which skips without a GPU, and all 100 retained candidates were re-climbed on the CPU with SplitClimber and matched."
     }
   },
   "provenance_note": "Source-file hashes and git provenance are deliberately not claim paths. They change whenever the code changes, including for edits with no effect on the result, so gating on them would make the check fire on every commit and train reviewers to ignore it. Input-data hashes are claim paths, because a changed input means a different experiment."
