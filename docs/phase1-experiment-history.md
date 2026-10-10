@@ -2237,7 +2237,9 @@ this evidence.
 
 ## phase1-body-direct-sweep-v5 (preregistered)
 
-Status: preregistered 2026-10-09; not run. Configuration:
+Status: preregistered 2026-10-09; run 2026-10-10, **null** ([result](#result-run-2026-10-10)).
+The configuration's own `status` field was left as committed, because its hash
+is a claimed path of the artifact. Configuration:
 [experiments/phase1-body-direct-sweep-v5/config.json](../experiments/phase1-body-direct-sweep-v5/config.json),
 committed before any run.
 
@@ -2315,11 +2317,95 @@ Cost: about 1.95 hours of sweep on the RTX 3090 at the measured 0.0285 ms per
 setting, plus a few minutes of CPU gates and confirmations. It checkpoints in
 1,560 chunks.
 
-Run command, not run:
+Run command:
 
 ```bash
 python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v5/config.json --jobs 1
 ```
+
+### Result (run 2026-10-10)
+
+Run: the maintainer launched it from a clean tree at `0de0c54` (master, with
+pull requests 21 to 23 merged), as one process on the RTX 3090. It ran from
+2026-10-10 05:12:50 to 07:09:27 UTC, 1 h 56 min 37 s in all. There was one
+invocation, with no stop or resume (1,560 chunks run, none from the checkpoint).
+The NVIDIA kernel module and user-space libraries were both 595.99.02 after the
+machine's reboot at 05:08 UTC, which cleared a kernel-module/library version
+mismatch (595.91 against 595.99) seen on 2026-10-09. 15 of 15 GPU tests passed on that driver before the launch. After the
+run, `nvidia-smi` listed no compute process and no `llama-server` was running;
+whether LM Studio held VRAM during the run was not recorded. The artifact is
+[artifacts/phase1-body-direct-sweep-v5.json](../artifacts/phase1-body-direct-sweep-v5.json).
+
+### Observed
+
+- Preflight: every check passed, including `cuda_climb_matches_batched` (and so
+  the 24 of 24 split climbs identical to `SplitClimber`). Both positive controls
+  passed.
+- Coverage: all 246,767,040 settings of the middle-complete space, in 1,560
+  chunks. The sweep took 6,945 s (0.0281 ms per setting, against 0.0285 ms in
+  the build benchmark) and the companion confirmation 42 s.
+- Score distribution over every setting: mean −8.5040, sd 0.11443 per letter.
+  The maximum is −7.8004 (z = 6.15): wheels III-II-I, rings AHP, start CDA, a
+  deletion at 132. Rank 100 is −7.9301. The 100 retained are 53 deletions and 47
+  insertions, and 84 distinct machines (the notch-start duplicates v4 found).
+- Companion confirmation: **none confirmed.** The best minimum over FKQLZ and
+  XFEDT is z = 4.84 at rank 33 (wheels IV-V-I, rings ARM, start DUB, a deletion at
+  141; FKQLZ 4.95, XFEDT 4.84), against the threshold of 6. Rank 1's is 4.34. Of
+  the 100, 3 exceed 4.6 and none exceeds 5. The mean of the 100 minima is 4.05.
+  The calibration's nulls had a median near 3.98 and a maximum of 4.60 over 200
+  random draws (4.54 over 40 corpus draws).
+- Indicator confirmation: no candidate has a compatible ring setting. The best
+  pooled date score is −9.36 per letter.
+- Cross-check against the CPU, run afterwards and not part of the preregistered
+  procedure: all 100 retained candidates were re-climbed from their reported
+  wheel order, rings and start with `SplitClimber`. All 100 have the same
+  plugboard, the same fault and position, and a score within the artifact's
+  nine-decimal rounding (worst difference 5.0 × 10⁻¹⁰).
+
+Predictions:
+
+| prediction | outcome |
+|---|---|
+| companion-confirmed-candidate (decides) | **failed**: no candidate confirmed |
+| confirmed-candidate-is-rank-one | does not apply |
+| confirmed-candidate-names-a-fault | does not apply |
+| null-top-near-expected-maximum (z 5.5 to 7.5) | **held**: z = 6.15 |
+
+### Interpretation (inference)
+
+- The run is the preregistered sweep. The top score is at the noise maximum for
+  246.8 million scores (v4's was z 6.51 over the same count), and the
+  companions and the indicator see nothing in the retained 100.
+- The best companion z (4.84) is the highest of the four companion-checked
+  sweeps (v2 4.47, v3 4.64, v4 4.69). It is above the calibration's 200-draw
+  maximum of 4.60, but it is the maximum over 100 retained candidates and
+  1.2 below the threshold. Three candidates above 4.6 out of 100 is consistent
+  with a null tail slightly heavier than the calibration's; it is not what a
+  correct key looks like, which the calibration puts at z ≥ 6 on both
+  companions. No candidate stands apart from the rest.
+- Weight of the null. The preregistered stated power gives this null an odds
+  multiplier of about 0.48 at q = 0.2 (0.524 detected and confirmed). Taking
+  the four nulls together, the odds of a standard Enigma I reading of BYQMZ fall
+  to about 0.055 (0.035 ungarbled, from a 20-draw stratum, and 0.13 with one
+  indel), as the configuration stated. The caveats are those stated: one
+  plaintext, at most one dropped or inserted letter, planted stand-ins for the
+  earlier nulls, and wheels I to V as wired. Nothing here tests two faults, a
+  substituted letter, other reflectors, other wheel wirings, Naval wheels or other
+  indicator procedures.
+- This is the first sweep whose climb searches the fault, and it found no
+  fault-bearing key. If BYQMZ carries one indel and a standard key, the stated
+  power puts the chance of missing it at about 0.38 to 0.39 (1 − 0.613).
+
+### Decision
+
+v5 is null at its stated power. Phase 1's body-direct search of BYQMZ under the
+standard Enigma I reading has now covered the past-notch space twice, the
+complete space with the windowed climb, and the complete space with the
+split-point climb, and none confirms. The record does not preregister anything
+further. What remains is the case the cited paper raises, that the wheels are
+wired differently for Batch C, then two faults or a substituted letter, other
+machines, and the crib-driven Bombe. Choosing among them, and whether to stop
+the standard-reading search here, is the maintainer's decision.
 
 ---
 
