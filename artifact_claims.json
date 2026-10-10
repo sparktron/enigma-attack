@@ -796,6 +796,72 @@
         "next_step_per_decision_rule"
       ]
     },
+    "artifacts/phase1-split-point-power-v2.json": {
+      "runner": [
+        "phase1_stecker.py",
+        "--config",
+        "experiments/phase1-split-point-power-v2/config.json",
+        "--jobs",
+        "4"
+      ],
+      "claim_paths": [
+        "schema",
+        "mode",
+        "status",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.corpus_sha256",
+        "inputs.bigram_counts_sha256",
+        "inputs.trigram_counts_sha256",
+        "preflight.passed",
+        "positive_controls.passed",
+        "result.formulation",
+        "result.seed",
+        "result.draws_per_cell",
+        "result.detection_z",
+        "result.coverage_by_rule.*",
+        "result.findings.headline_arm",
+        "result.findings.end_to_end_detection_rate_at_target_scale",
+        "result.findings.end_to_end_detection_interval_95",
+        "result.findings.single_indel_detection_rate_at_target_length",
+        "result.cells[].length",
+        "result.cells[].perturbation",
+        "result.cells[].null.detection_threshold_score_per_letter",
+        "result.cells[].arms[].arm",
+        "result.cells[].arms[].detected",
+        "result.cells[].arms[].detection_rate",
+        "result.cells[].arms[].plugboard_recovered_by_top_candidate",
+        "result.cells[].arms[].measured_exact_equivalent_rate",
+        "result.cells[].arms[].analytic_exact_key_coverage",
+        "result.predictions[].id",
+        "result.predictions[].observed",
+        "result.predictions[].passed",
+        "preflight.batched_climb_parity.windowed_climbs_identical",
+        "result.cells[].arms[].null.detection_threshold_score_per_letter",
+        "preflight.cuda_climb_parity.split_climbs_identical",
+        "preflight.cuda_climb_parity.windowed_climbs_identical"
+      ],
+      "long_running": "800 planted-key draws over five arms on the cuda engine (45 settings per draw for the past-notch arms, 405 for the complete-rule arms) plus null climbs on the CPU: 685 seconds of draws (about 12 minutes in all) on 4 spawned workers and the RTX 3090, from a clean checkout at 28548d0. It needs nvcc and a CUDA device, which the artifact job does not have. The engine's parity with the batched climbers is covered by tests/test_stecker_cuda.py and checked by every run's preflight."
+    },
+    "artifacts/phase1-split-point-power-v2-analysis.json": {
+      "runner": [
+        "scripts/split_power_v2.py"
+      ],
+      "claim_paths": [
+        "draws.*",
+        "missed_by_every_reference_arm.*",
+        "missed_fraction.*",
+        "detection_among_missed.*.*.detected",
+        "detection_among_missed.*.*.n",
+        "predictions[].id",
+        "predictions[].stratum_size",
+        "predictions[].observed",
+        "predictions[].verdict",
+        "headline_rates_among_missed.*",
+        "conditional_detection_by_fault_prior.*",
+        "next_step_per_decision_rule"
+      ]
+    },
     "artifacts/phase1-joint-power-v2-middle-past-notch.json": {
       "runner": [
         "scripts/joint_power.py",
@@ -880,6 +946,35 @@
         "result.cells[].confirmed_given_power_detected"
       ],
       "long_running": "800 draws, two companion scans of 17,576 starts each per draw: 417 seconds single-process when recorded from a clean checkout at 6dc6611, so the artifact job would spend about 21 minutes on it across drift and determinism. A second local run reproduced the committed result exactly. The script is covered by its two smaller declared runs (phase1-joint-power-v2-*), which CI does regenerate."
+    },
+    "artifacts/phase1-joint-power-v4-split-complete.json": {
+      "runner": [
+        "scripts/joint_power.py",
+        "--power",
+        "artifacts/phase1-split-point-power-v2.json",
+        "--power-config",
+        "experiments/phase1-split-point-power-v2/config.json",
+        "--arm",
+        "split_complete",
+        "--experiment-id",
+        "phase1-joint-power-v4-split-complete"
+      ],
+      "claim_paths": [
+        "schema",
+        "preregistered",
+        "inputs.*",
+        "result.threshold_z",
+        "result.v2_retention_cutoff_score_per_letter",
+        "result.cells[].length",
+        "result.cells[].perturbation",
+        "result.cells[].draws",
+        "result.cells[].power_detected.count",
+        "result.cells[].companion_confirmed.count",
+        "result.cells[].power_detected_and_confirmed.count",
+        "result.cells[].confirmed_and_above_v2_retention_cutoff.count",
+        "result.cells[].confirmed_given_power_detected"
+      ],
+      "long_running": "800 draws, two companion scans of 17,576 starts each per draw: 369 seconds single-process when recorded from a clean checkout at 9de3417 (2026-10-09), so the artifact job would spend about 20 minutes on it across drift and determinism. joint_power.py is unchanged and its two smaller declared runs (phase1-joint-power-v2-*) are regenerated by CI. Its v2_retention_cutoff fields compare against v2's whole-message score scale and mean nothing for a split-point arm."
     },
     "artifacts/phase1-body-direct-sweep-v3.json": {
       "runner": [
