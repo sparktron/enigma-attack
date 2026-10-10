@@ -418,19 +418,20 @@ stopping, is the maintainer's. Asking the paper's authors (Weierud, Sullivan)
 what their 2003 to 2004 attempt covered is still the cheapest step on the wiring
 question.
 
-Next in Phase 1, 2026-10-10: before building another climb, **`phase1-fault-power-v1`**
-(preregistered, not run) measures how much of two fault kinds the four sweeps'
-climbs already cover: one substituted letter and two dropped or inserted letters,
-400 planted draws each, about 20 minutes on the GPU. Its fixed rule chooses
-between costing a substitution-tolerant or a two-split climb and a joint
-confirmation step before any stop (detection bounds confirmed power from above)
-([preregistration](phase1-experiment-history.md#phase1-fault-power-v1-preregistered)).
-Run it, then the analysis, from a clean tree:
-
-```bash
-python3 phase1_stecker.py --config experiments/phase1-fault-power-v1/config.json --jobs 4
-python3 scripts/fault_power_v1.py
-```
+Phase 1, 2026-10-10 (later): **`phase1-fault-power-v1` is done**
+([result](phase1-experiment-history.md#result-run-2026-10-10-1)). It planted 400
+draws each of a clean message, one substituted letter and two dropped or inserted
+letters, and asked how much of each the four sweeps' climbs cover. A substituted
+letter is covered as well as a clean message (97.5% of draws detected by some
+sweep arm, S1 held). Two indels are covered less: 65.0% detected by some arm
+(D1 refuted; my guess was 30 to 45%), and 56.3% detected and companion-confirmed
+by the v5 climb alone. The odds multiplier the four nulls leave is 0.025 to 0.12
+for a substituted letter and 0.35 to 0.44 for two indels, against 0.13 for one.
+The rule's provisional branch ran the joint confirmation; it decides no stop.
+Whether to close the standard-reading search of BYQMZ, or to cost a two-split
+climb for the least probable garble, is the maintainer's. My recommendation is to
+close it and spend the effort on the wheel-wiring question the cited paper
+raises: ask Weierud and Sullivan what their 2003 to 2004 attempt covered.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
