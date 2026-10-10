@@ -418,6 +418,20 @@ stopping, is the maintainer's. Asking the paper's authors (Weierud, Sullivan)
 what their 2003 to 2004 attempt covered is still the cheapest step on the wiring
 question.
 
+Next in Phase 1, 2026-10-10: before building another climb, **`phase1-fault-power-v1`**
+(preregistered, not run) measures how much of two fault kinds the four sweeps'
+climbs already cover: one substituted letter and two dropped or inserted letters,
+400 planted draws each, about 20 minutes on the GPU. Its fixed rule chooses
+between stopping the standard-reading search and costing a substitution-tolerant
+or a two-split climb
+([preregistration](phase1-experiment-history.md#phase1-fault-power-v1-preregistered)).
+Run it, then the analysis, from a clean tree:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-fault-power-v1/config.json --jobs 4
+python3 scripts/fault_power_v1.py
+```
+
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
 windowed climbs on the GPU. Its scores are the batched climber's bit for bit,

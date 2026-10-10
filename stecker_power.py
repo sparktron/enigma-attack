@@ -44,25 +44,50 @@ def wilson_interval(successes: int, trials: int, z: float = 1.96) -> list[float]
     return [round(max(0.0, centre - margin), 4), round(min(1.0, centre + margin), 4)]
 
 
+def _one_indel(ciphertext: str, generator: random.Random) -> tuple[str, dict[str, Any]]:
+    position = generator.randrange(1, len(ciphertext) - 1)
+    if generator.random() < 0.5:
+        return (
+            ciphertext[:position] + ciphertext[position + 1 :],
+            {"kind": "deletion", "position": position},
+        )
+    letter = chr(65 + generator.randrange(26))
+    return (
+        ciphertext[:position] + letter + ciphertext[position:],
+        {"kind": "insertion", "position": position, "letter": letter},
+    )
+
+
 def perturb_ciphertext(
     ciphertext: str, kind: str, generator: random.Random
 ) -> tuple[str, dict[str, Any]]:
-    """A transcription fault: none, or one letter dropped or inserted."""
+    """A transcription fault: none, one letter dropped or inserted, one letter
+    substituted, or two independent dropped or inserted letters.
+
+    ``indel`` draws exactly what it drew before the other kinds existed, so
+    every configuration written for it reproduces. ``double_indel`` applies two
+    ``indel`` faults in turn, the second at a position of the already faulted
+    text, and records both in ``faults``; its ``position`` is the first fault's.
+    ``substitution`` replaces the letter at a random position with a different
+    one, so the length is unchanged.
+    """
 
     if kind == "none":
         return ciphertext, {"kind": "none"}
     if kind == "indel":
-        position = generator.randrange(1, len(ciphertext) - 1)
-        if generator.random() < 0.5:
-            return (
-                ciphertext[:position] + ciphertext[position + 1 :],
-                {"kind": "deletion", "position": position},
-            )
-        letter = chr(65 + generator.randrange(26))
+        return _one_indel(ciphertext, generator)
+    if kind == "substitution":
+        position = generator.randrange(0, len(ciphertext))
+        was = ciphertext[position]
+        letter = chr(65 + (ord(was) - 65 + 1 + generator.randrange(25)) % 26)
         return (
-            ciphertext[:position] + letter + ciphertext[position:],
-            {"kind": "insertion", "position": position, "letter": letter},
+            ciphertext[:position] + letter + ciphertext[position + 1 :],
+            {"kind": "substitution", "position": position, "letter": letter, "was": was},
         )
+    if kind == "double_indel":
+        first_text, first = _one_indel(ciphertext, generator)
+        second_text, second = _one_indel(first_text, generator)
+        return second_text, {"kind": "double_indel", "position": first["position"], "faults": [first, second]}
     raise ValueError(f"unknown perturbation: {kind!r}")
 
 
@@ -76,6 +101,8 @@ def repair_fault(ciphertext: str, perturbation: Mapping[str, Any]) -> str:
     that searched the fault's position could achieve, from above.
     """
 
+    if perturbation["kind"] in ("substitution", "double_indel"):
+        raise ValueError(f"no oracle repair is defined for {perturbation['kind']!r}")
     position = perturbation.get("position")
     if perturbation["kind"] == "deletion":
         return ciphertext[:position] + "?" + ciphertext[position:]

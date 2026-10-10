@@ -1,0 +1,375 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "cuda"
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261004,
+    "samples": 24
+  },
+  "experiment_id": "phase1-fault-power-v1",
+  "status": "preregistered 2026-10-10; not run",
+  "mode": "end_to_end_power",
+  "output": "artifacts/phase1-fault-power-v1.json",
+  "hypothesis": "The four completed BYQMZ sweeps' climbs (the whole-message and W = 117 middle-past-notch climbs of v2 and v3, the W = 117 middle-complete climb of v4, and the complete split-point climb of v5), taken together, cover one substituted letter but not two dropped or inserted letters. Covered means at least one of the four planted-key stand-in arms detects the draw. For one substituted letter the union detects at least 60% (S1). For two independent dropped or inserted letters the union detects less than 50% (D1), which would make a two-split climb the next engineering step.",
+  "refuted_by": "S1 refuted: the union of the four arms detects less than 60% of substitution draws, scored by scripts/fault_power_v1.py (at least 100 draws; fewer is not estimable). D1 refuted: the union detects 50% or more of double-indel draws, so two faults are already covered and the standard-reading search can stop. Each refutes only itself; the runner's marginal predictions refute only themselves.",
+  "end_to_end_power": {
+    "rationale": "phase1-body-direct-sweep-v5 is null and, with v2 to v4, leaves the odds of a standard reading of BYQMZ at about 0.055 at q = 0.2. That figure rests on a single dropped or inserted letter being the only fault. A real garble could be a substituted letter or two dropped or inserted letters, and no completed run measured either. This run plants each on the v2 slice and arms and measures how much of each the four sweeps' climbs cover, on fresh draws. It decides whether the nulls already speak to those cases, in which case the standard-reading search can stop, or whether a substitution-tolerant or a two-split climb is the next thing to build.",
+    "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
+    "seed": 20261110,
+    "draws": 400,
+    "stecker_pairs": 10,
+    "cells": [
+      {
+        "length": 167,
+        "perturbation": "none"
+      },
+      {
+        "length": 167,
+        "perturbation": "substitution"
+      },
+      {
+        "length": 167,
+        "perturbation": "double_indel"
+      }
+    ],
+    "left_neighbours": 1,
+    "middle_neighbours": 2,
+    "right_neighbours": 1,
+    "null_trials": 8,
+    "detection_z": 6.0,
+    "target_length": 167,
+    "headline_arm": "split_complete",
+    "arms": [
+      {
+        "id": "past_notch_whole",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted"
+      },
+      {
+        "id": "past_notch_w117",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      },
+      {
+        "id": "complete_w117",
+        "ring_rule": "middle_complete",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      },
+      {
+        "id": "split_past_notch",
+        "ring_rule": "middle_past_notch",
+        "right_ring": "planted",
+        "split": {
+          "ic_grid": 32,
+          "block": 64,
+          "mask_term": -8.66
+        }
+      },
+      {
+        "id": "split_complete",
+        "ring_rule": "middle_complete",
+        "right_ring": "planted",
+        "split": {
+          "ic_grid": 32,
+          "block": 64,
+          "mask_term": -8.66
+        }
+      }
+    ],
+    "predictions": [
+      {
+        "id": "split-complete-clean-near-v2",
+        "statement": "The complete-rule split arm detects at least 80% of unperturbed draws (87.8% on phase1-split-point-power-v2's draws; about two standard errors lower). A shortfall would mean these draws are not comparable.",
+        "kind": "rate_at_least",
+        "cell": 0,
+        "arm": "split_complete",
+        "value": 0.8
+      },
+      {
+        "id": "split-complete-substitution",
+        "statement": "The complete-rule split arm alone detects at least 60% of single-substitution draws.",
+        "kind": "rate_at_least",
+        "cell": 1,
+        "arm": "split_complete",
+        "value": 0.6
+      },
+      {
+        "id": "split-complete-double-indel-not-below-w117",
+        "statement": "Over double-indel draws the complete-rule split arm detects at least as many as the complete W = 117 arm: it can place one of the two faults.",
+        "kind": "rate_gain_at_least",
+        "cell": 2,
+        "arm": "split_complete",
+        "over": "complete_w117",
+        "value": 0.0
+      }
+    ],
+    "right_neighbours_rationale": "The tail window decrypts cleanly only at the setting one keystroke away from the planted one (the right position one further for a deletion, one back for an insertion). A complete sweep enumerates every right position, so it always visits that setting; the slice includes the planted right position and both neighbours for every arm, so the whole-message arm is measured on the same slice as the windowed ones. v1 swept the planted right position only, so this whole-message arm is a re-measurement on a wider slice, not a replication of v1's number.",
+    "arm_rationale": "past_notch_whole, past_notch_w117 and complete_w117 are the climbs of sweeps v2, v3 and v4; a draw none of them detects stands in for a key all three sweeps would miss. split_complete is the candidate sweep's climb over the space a complete split-point sweep would search. split_past_notch is v1's split arm, rerun on these draws as the link to v1's numbers. All arms run on the cuda engine; the preflight checks every one of them against the batched climbers before any draw.",
+    "pre_run_facts": {
+      "disclosure": "Known before this configuration was written, and shaping its thresholds. None of it is a result of this run.",
+      "earlier_rates": "phase1-split-point-power-v2 measured the complete-rule split arm at 87.8% of clean and 76.5% of single-indel draws (400 draws per cell, seed 20261109). No run has measured a substituted letter or two dropped or inserted letters against any arm.",
+      "expectations": "The thresholds are the author's guesses before any measurement: a substituted letter costs a few n-grams, so the union should sit near the clean figure (guess 80% or more, bar 60%); two faults leave a single split point at best half the message aligned, so the union should be well under the single-indel figure (guess 30% to 45%, bar below 50%).",
+      "engine": "The perturbation kinds are new in stecker_power.py; the indel kind is unchanged and a unit test pins its draws against the original algorithm.",
+      "smoke_run": "Before committing, this configuration was smoke-run once with draws cut to 6 per cell and scratch output (37 s, --jobs 2). It passed every preflight check. Those are draws 0 to 5 of each cell of this run, same seed, so the full run recomputes them. Through scripts/fault_power_v1.py the union of the four sweep arms detected 6 of 6 clean, 5 of 6 substitution and 6 of 6 double-indel draws. That is far above the guess for double indels; with six draws it is weak evidence, and no threshold or arm was changed after seeing it."
+    },
+    "fault_analysis": {
+      "script": "scripts/fault_power_v1.py",
+      "status": "The script is committed with this configuration and unit-tested on synthetic draws; it has not seen a result.",
+      "sweep_arms": [
+        "past_notch_whole",
+        "past_notch_w117",
+        "complete_w117",
+        "split_complete"
+      ],
+      "sweep_meaning": "The planted-key stand-ins for sweeps v2, v3, v4 and v5. A draw is covered when any of them detects it, recomputed from each draw's top candidate and each arm's own threshold as the runner does. One minus the covered fraction is the odds multiplier the four nulls leave for a key with that fault.",
+      "cells": {
+        "clean": 0,
+        "substitution": 1,
+        "double_indel": 2
+      },
+      "minimum_draws": 100,
+      "substitution_prediction": "S1",
+      "double_indel_prediction": "D1",
+      "predictions": [
+        {
+          "id": "S1",
+          "cell": "substitution",
+          "kind": "rate_at_least",
+          "value": 0.6,
+          "statement": "The union of the four sweep arms detects at least 60% of single-substitution draws. Deciding."
+        },
+        {
+          "id": "D1",
+          "cell": "double_indel",
+          "kind": "rate_below",
+          "value": 0.5,
+          "statement": "The union of the four sweep arms detects less than 50% of double-indel draws. Deciding."
+        }
+      ],
+      "decision_rule": {
+        "S1 held, D1 held": "cost a two-split climb (a separate build and power control; nothing is preregistered by this run)",
+        "S1 held, D1 refuted": "stop the standard-reading search: both fault kinds are covered",
+        "S1 refuted, D1 held": "cost a substitution-tolerant climb and a two-split climb",
+        "S1 refuted, D1 refuted": "cost a substitution-tolerant climb"
+      }
+    }
+  },
+  "run_command": "python3 phase1_stecker.py --config experiments/phase1-fault-power-v1/config.json --jobs 4",
+  "run_constraint": "Not run. Run from a clean tree after this configuration, scripts/fault_power_v1.py and the substitution and double_indel fault kinds of stecker_power.py are committed, with nvcc and the GPU available (the climbs run on the cuda engine; the workers are spawned). Then python3 scripts/fault_power_v1.py.",
+  "limitations": [
+    "The slice is the planted key's own neighbourhood: the planted wheel order, left offsets within one of the planted, middle offsets within two, and the planted right wheel. Every other wheel order and distant start is absent, so a detection is a detection against that neighbourhood and a pooled wrong-setting null, not against 2.7e7 settings. The detection threshold is set at 6 null standard deviations to stand in for the extreme value of that many draws, and that substitution assumes the null is close to normal.",
+    "The right wheel's ring and position are taken at the planted values (or, for the AAA arm, at the planted right offset with ring A). That is the one axis the full sweep enumerates exactly, so it always visits those values, but the experiment does not test it.",
+    "One plaintext prefix at one length is used for every draw. The draws vary the key, not the text, so a text that scores unusually well or badly under the published counts moves every rate together.",
+    "The null is the climb's score at randomly drawn wrong settings of the same message. It is pooled over the cell's draws, eight per draw, and is a reference distribution rather than a sample of the space a sweep would see.",
+    "The indel cell drops or inserts one random letter at a uniformly random interior position. Real garbles can be several letters, can fall in the first or last few letters, or can be a transposition; this measures the single-letter case only.",
+    "Constructed plaintext enciphered by the reference machine, not authentic held-out traffic with an authentic daily key.",
+    "The right wheel's position is swept over the planted value and its two neighbours, so the slice holds the setting one keystroke away that the tail window needs. Under the middle-past-notch rule the middle wheel's phase is fixed, so when the planted machine's first keystroke steps its middle wheel the shifted setting is not exactly reachable; the measurement includes that loss rather than assuming it away.",
+    "Each windowed arm is compared with its own pooled null, the same windowed climb at the same wrong settings, because the better of two shorter windows is distributed differently from a whole-message score. The 6-sigma threshold stands in for the extreme of a full sweep in which every setting contributes the better of two windows, which is twice as many scores as the whole-message sweep and assumes the windowed null is also near normal.",
+    "'Missed by both past-notch arms' stands in for 'v2 and v3 both null'. The real sweeps compare a candidate against a score distribution over 27.4 million settings; this control compares against a pooled null of wrong settings, as every earlier power control did. The joint figures in phase1-body-direct-sweep-v3 (73 of 80 clean) were measured the same way.",
+    "The missed set is defined by outcomes on the same draws that then measure the complete arms, so a complete arm that fails for a reason the past-notch arms share (the same unlucky plugboard) is under-counted among the missed, and one that succeeds by retrying a different equivalent setting is over-counted. Neither effect is estimated.",
+    "400 draws per cell leave about 36 clean missed draws and about 100 middle-third indel missed draws, if the rates of the earlier controls hold. A rate in a stratum of 36 has a 95% interval about 0.3 wide. The thresholds are set with that in mind and the strata sizes are reported.",
+    "Only a single dropped or inserted letter is modelled, with the head-and-tail argument of phase1-windowed-climb-power-v1. Two faults, a substituted letter, or a fault in the first or last letters behave differently.",
+    "Every figure assumes UKW-B, wheels I-V as wired and the 1940+ indicator procedure. The cited paper's authors suspect Batch C used differently wired wheels; if so, no planted-key power here applies to it.",
+    "The split-point climb judges a hypothesis by an n-gram score from which the junction terms are dropped and a fixed credit added. The credit, -8.66 per term, is the wrong-setting null mean per letter measured in the control and applies to a message with masks of its own only approximately; BYQMZ carries one masked letter at position 28 and the planted draws carry none.",
+    "The split arm is judged against its own null, the same climb at the same wrong settings as the pooled null, because the best of about 330 hypotheses is distributed differently from a single score. The 6-sigma threshold assumes that null is near normal.",
+    "The oracle arm is judged against its own null, as amended in the control, and is the ceiling for any split-point climb: it is handed the fault's position and kind.",
+    "q, the prior probability of an indel, is not measured and the nominal 0.2 is arbitrary. The yields at every reported q are printed.",
+    "Only a single dropped or inserted letter is modelled. The split-point climb has one fault hypothesis; two faults are not searched.",
+    "'Missed by all three reference arms' stands in for 'v2, v3 and v4 all null'. The real sweeps compare against score distributions over 27.4 and 246.8 million settings; this control, like every earlier one, compares against a pooled null of wrong settings.",
+    "The missed set is defined on the same draws that measure the split arms, so a failure the split climb shares with the reference climbs (an unlucky plugboard) is under-counted among the missed draws. It is not estimated.",
+    "Detection only. The companion confirmation is not part of this run; its joint rate is to be measured afterwards on these draws, as for v3 and v4.",
+    "If the rates of the earlier draws hold, about 135 one-indel and 23 clean draws are missed by all three arms: enough for the deciding indel stratum (a 95% interval about 0.16 wide), not for the clean one.",
+    "Detection here is the climb's top candidate recovering the planted plugboard at a score above the arm's own threshold. It is not companion confirmation, which the real sweeps also require and which scripts/joint_power.py measures afterwards if the result warrants it.",
+    "The two faults of a double-indel draw are independent and uniformly placed, so some pairs are far apart and some adjacent; real garbles may cluster. A substituted letter is uniform over the other 25 letters at a uniform position, including the first and last.",
+    "The union of four arms on one draw is a stand-in for four separate sweeps, each of which sees its own wrong-setting score distribution over 27 to 247 million settings. It carries the same pooled-null approximation as every earlier control here."
+  ]
+}
