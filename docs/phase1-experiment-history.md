@@ -2409,6 +2409,65 @@ the standard-reading search here, is the maintainer's decision.
 
 ---
 
+## phase1-fault-power-v1 (preregistered)
+
+Status: preregistered 2026-10-10; not run. Configuration:
+[experiments/phase1-fault-power-v1/config.json](../experiments/phase1-fault-power-v1/config.json),
+with its analysis script `scripts/fault_power_v1.py`, committed before any run.
+
+Why this one. v5 is null, which takes the odds of a standard reading of BYQMZ to
+about 0.055 at q = 0.2. That figure assumes the only fault a message can carry is
+one dropped or inserted letter. Nothing completed has measured a substituted
+letter or two dropped or inserted letters against any of the four climbs. Before
+building another climb or preregistering another sweep, this asks how much of
+each the four sweeps already cover. The answer decides between stopping the
+standard-reading search and building a substitution-tolerant or a two-split
+climb.
+
+Design. The v2 slice, arms and seed discipline, on a new seed (20261110): one
+167-letter plaintext, ten pairs, 400 draws in each of three cells (clean, one
+substituted letter, two independent dropped or inserted letters), each swept over
+its own neighbourhood. The five arms are v2's. Four of them stand in for the
+sweeps: `past_notch_whole` (v2), `past_notch_w117` (v3), `complete_w117` (v4) and
+`split_complete` (v5). A draw is *covered* when any of those four detects it, and
+one minus the covered fraction is the odds multiplier the four nulls leave for a
+key with that fault. `stecker_power.perturb_ciphertext` gains the two fault kinds;
+the `indel` draws are unchanged and a unit test pins them against the original
+algorithm.
+
+Predictions, with the author's guesses disclosed in the configuration:
+
+| id | statement | decides |
+|---|---|---|
+| S1 | the union detects at least 60% of substitution draws | yes |
+| D1 | the union detects less than 50% of double-indel draws | yes |
+| runner | `split_complete` detects at least 80% of clean draws; at least 60% of substitution draws; at least as many double-indel draws as `complete_w117` | no |
+
+Decision rule, fixed now. S1 held and D1 held: cost a two-split climb. S1 held
+and D1 refuted: stop the standard-reading search, since both kinds are covered.
+S1 refuted and D1 held: cost both new climbs. S1 refuted and D1 refuted: cost a
+substitution-tolerant climb. A deciding cell under 100 draws is not estimable.
+Nothing further is preregistered by this run.
+
+Disclosed. A 6-draw smoke run of this configuration (draws 0 to 5 of each cell,
+scratch output) found the union covering 6 of 6 clean, 5 of 6 substitution and 6
+of 6 double-indel draws, against a guess of 30% to 45% for double indels. It is
+weak evidence and nothing was changed after it. The full run recomputes those
+draws.
+
+Cost: about 20 minutes on the RTX 3090 (v2's 800 draws took 12 minutes).
+Detection here is not companion confirmation; `scripts/joint_power.py` measures
+that afterwards if the result calls for it.
+
+Run command, not run:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-fault-power-v1/config.json --jobs 4
+python3 scripts/fault_power_v1.py
+```
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.
