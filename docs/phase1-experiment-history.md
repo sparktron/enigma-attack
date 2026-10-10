@@ -2552,6 +2552,77 @@ result of this run.
 
 ---
 
+## Closing the standard-reading search of BYQMZ (2026-10-10)
+
+Status: a decision record, not an experiment. Nothing was run and nothing is
+preregistered. The decision is the maintainer's, made 2026-10-10 after
+[phase1-fault-power-v1](#result-run-2026-10-10-1).
+
+### Facts
+
+- Four sweeps of BYQMZ under the standard reading (Enigma I, reflector B, wheels
+  I to V as wired, ten pairs) are complete and null: v2 and v3 (middle-past-notch,
+  whole message and W = 117), v4 (middle-complete, W = 117) and v5 (middle-complete,
+  split-point). Each retained 100 candidates and none was companion-confirmed.
+  The best companion z across them is 4.84, against a threshold of 6.
+- The planted-key stand-ins for those four climbs, taken together, detect by
+  fault kind (400 draws each, one plaintext of 167 letters): 98.3% of clean
+  messages, 97.5% with one substituted letter, 65.0% with two independent dropped
+  or inserted letters. Companion confirmation was measured for the v5 climb alone
+  (86.5%, 88.0%, 56.3%). The one-indel figure is from phase1-split-point-power-v2.
+- The odds multiplier the four nulls leave, by kind of message (bounds, because the
+  union's confirmed rate was not measured; the upper figure uses the v5 climb's
+  confirmed rate alone):
+
+| message | multiplier left |
+|---|---|
+| clean | 0.018 to 0.135 |
+| one dropped or inserted letter | 0.13 |
+| one substituted letter | 0.025 to 0.12 |
+| two dropped or inserted letters | 0.35 to 0.44 |
+
+### Interpretation (inference)
+
+- The multiplier for a whole hypothesis is the prior-weighted sum of those rows,
+  and the prior over fault kinds is not measured. Under an illustrative prior of
+  70% clean, 20% one indel, 5% substitution and 5% two indels, the four nulls
+  leave a multiplier of about 0.06 to 0.15. The two-indel row contributes 0.018
+  to 0.022 of that (15% to 31%), so even a climb that found every two-indel key
+  would lower the multiplier by at most about 0.02. If two faults were instead as
+  likely as 20%, the row would contribute 0.07 to 0.09 (45% to 65% of a
+  multiplier of 0.11 to 0.19), and the case for a two-split climb would be much
+  stronger. The closure therefore rests on two-fault messages being rare, which
+  is an assumption and not a measurement.
+- A two-split climb is a large port: the hypothesis grid goes from one position
+  and kind to a pair, about the square of the single-split grid, on top of the
+  exact-parity work the split port needed.
+
+### Decision (maintainer, 2026-10-10)
+
+The standard-reading search of BYQMZ is closed. No further sweep of BYQMZ under
+wheels I to V as wired, reflector B and ten pairs is planned, and no two-split
+climb is to be built unless a reason below reopens it.
+
+What the closure covers: one plaintext (BYQMZ, 167 letters), a clean message or at
+most two transcription faults (dropped, inserted or substituted letters, placed
+independently), the 246.8 million middle-complete settings, and the companion
+check at z ≥ 6 against FKQLZ and XFEDT.
+
+What it does not cover: any wiring other than wheels I to V as published, other
+reflectors, other machines, FKQLZ or XFEDT searched on their own, faults that are
+clustered or more than two, and transposition. The cited paper's doubt about the
+wheel wiring for Batch C is untouched by it, and every null above would be
+silent about a different wiring.
+
+What would reopen it: a reply from the paper's authors, or a source, naming a
+wiring or machine that can be added at a sourced wiring (about two GPU hours per
+wheel set or reflector with the existing split-point climb); evidence that garbles
+in this batch are multi-letter; or a reason to put more than a few percent of the
+prior on two independent faults. The question to the authors was sent
+2026-10-10.
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.
