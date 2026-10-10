@@ -411,8 +411,14 @@ split-point sweep of BYQMZ would detect about 0.53 of the keys left at q = 0.2
 preregistered next, about 2 GPU hours. The companion check's joint rate,
 measured on the same draws as the rule requires, is 68 of those 111 (61.3%), or
 0.524 at q = 0.2 with confirmation
-([result](phase1-experiment-history.md#result-run-2026-10-09)). The sweep's
-configuration is the next thing to write.
+([result](phase1-experiment-history.md#result-run-2026-10-09)).
+**`phase1-body-direct-sweep-v5`**, that sweep, is preregistered 2026-10-09 and
+not run. It is v4 with the split-point climb in place of the windowed one, about
+2 GPU hours, and a null would bring the odds of a standard reading of BYQMZ to
+about 0.055. Run it with
+`python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v5/config.json --jobs 1`
+from a clean tree
+([preregistration](phase1-experiment-history.md#phase1-body-direct-sweep-v5-preregistered)).
 In parallel, ask the cited paper's authors what their attempt covered; whether
 the wheels are differently wired decides whether any of this can work.
 

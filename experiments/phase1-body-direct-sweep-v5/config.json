@@ -1,0 +1,280 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "cuda",
+    "split": {
+      "ic_grid": 32,
+      "block": 64,
+      "mask_term": -8.66
+    },
+    "split_rationale": "The split_complete arm of phase1-split-point-power-v2 exactly: stecker_split.SplitClimber's objective (the best of the clean message, a dropped letter at each position and an inserted letter at each position), an index-of-coincidence grid of 32 letters, candidates 64 at a time (no effect on any number), and a credit of -8.66 per dropped n-gram term. Run by stecker_cuda.CudaSplitClimber, which reproduces SplitClimber bit for bit; the preflight checks it against SplitClimber before any search."
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The controls are constructed or independently solved plaintexts, not authentic held-out Army traffic with an authentic daily key.",
+    "The messages behind the published 1941 n-gram counts are not enumerated, so overlap between the authentic control plaintexts and the scorer's training data cannot be ruled out. The constructed control exists to bound that risk, not to remove it.",
+    "The positive controls are body-direct and are handed the true wheel order, ring setting and start positions. They certify the stecker stage at the target lengths and say nothing about the rotor enumeration, which the sweeps and calibrations cover separately.",
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure. A different reflector, a Naval wheel or a different indicator convention is outside every space searched here.",
+    "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
+    "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
+    "The middle-complete space has an exact equivalent for every daily key at 167 letters (rule_key_coverage 1.0). A key is still found only if the climb converges at one of its equivalents and scores into the top 100 of nine times as many settings as v3 searched; the stated power measures the first on planted draws and stands in for the second with a pooled null.",
+    "The companion calibration (phase1-companion-calibration-v1) was measured with middle-past-notch candidates. Under middle_complete a candidate's middle ring can put the notch inside a companion, and the companion check presents the candidate's rings as reported, so a companion whose true left wheel steps at a different letter is deciphered exactly only up to that letter. The joint figure in refuted_by includes that case at its natural rate on planted draws.",
+    "No result here is an accepted break: a confirmed candidate's plaintext still has to be read and reviewed before accepted_break could change.",
+    "The prior q of one dropped or inserted letter is unmeasured. q = 0.2 is the value phase1-middle-complete-power-v1 declared; the stated power at other q is given in refuted_by so another belief can be applied without a rerun.",
+    "The cited paper (Sullivan and Weierud 2005, footnote 42) places Batch C on a different radio network and its authors suspect differently wired wheels. Every figure here assumes wheels I-V as wired; if that is wrong the power is zero and a null says nothing about these messages.",
+    "The stated power is measured on planted single-indel and clean 167-letter draws through the complete rule's parameterization in the planted key's neighbourhood (phase1-split-point-power-v2, fresh seed 20261109), judged by a 6-sigma threshold over the split climb's own pooled wrong-setting null. The real sweep compares a candidate with the scores of 246.8 million settings; the far tail of that null is not measured, as for v2 to v4.",
+    "The power is conditional on v2, v3 and v4 all null, with 'missed by all three reference climbs' on planted draws standing in for the three sweeps being null: one plaintext, a single fault only, 400 draws per cell, and strata of 111 one-indel and 20 clean draws. The clean stratum is too small to state a rate tightly (8 of 20, 95% interval 22-61%).",
+    "The split-point climb models one dropped or inserted letter. Two faults, a substituted letter or a transposition are not searched, and a fault within about ten letters of either end is placed there by chance on wrong-setting text, which the mask credit corrects only on average.",
+    "The mask credit of -8.66 per dropped n-gram term was measured on wrong-setting text of the earlier controls and applies to BYQMZ's own masked letter (position 28) only approximately; the planted draws carry no masks.",
+    "A candidate is reported at the setting that deciphers the letters before the fault. Its hypothesis (kind and position) is reported beside it; the companion check uses only the candidate's wheel order, rings and plugboard, so it does not depend on the hypothesis.",
+    "The sweep's scores are the best hypothesis' n-gram score per letter with mask credits, not on the scale of v2's whole-message or v3's and v4's windowed scores; the indicator confirmation compares a pooled date score with this score and is reported but not used. The companion check alone decides.",
+    "About 1 in 9.4 settings exactly duplicates another (v4's finding). Duplicates are climbed to identical results and weigh slightly more in the score distribution; they can occupy retention slots, as 12 of v4's 100 did."
+  ],
+  "experiment_id": "phase1-body-direct-sweep-v5",
+  "mode": "body_direct_sweep",
+  "output": "artifacts/phase1-body-direct-sweep-v5.json",
+  "hypothesis": "BYQMZ, FKQLZ and XFEDT of 1941-09-30 are Enigma I traffic (UKW-B, wheels I-V, ten stecker pairs) under one daily key, and BYQMZ's key is one the three completed sweeps (v2 and v3, middle-past-notch; v4, middle-complete) could all miss, most plausibly because BYQMZ carries one dropped or inserted letter. A complete sweep of the middle-complete space (246,767,040 settings) with the split-point climb, which searches the position and kind of one such fault inside every evaluation, then retains at least one candidate that the companion-body confirmation accepts: FKQLZ and XFEDT each deciphered at all 17,576 starts under the candidate's wheel order, rings and plugboard, both best starts at z >= 6.",
+  "refuted_by": "No retained candidate companion-confirmed. Stated power, fixed by the preregistered rule of phase1-split-point-power-v2 (T1 held, 2026-10-09): among planted draws all three reference climbs miss (the climbs of v2, v3 and v4), the split_complete climb detects 69 of 111 one-indel (62.2%) and 8 of 20 clean (40%); detected and companion-confirmed, measured on the same draws with scripts/joint_power.py (artifacts/phase1-joint-power-v4-split-complete.json, post hoc as for v3 and v4): 68 of 111 (61.3%) and 8 of 20 (40%). The conditional rate given a standard reading and v2, v3 and v4 null is 0.529 detected and 0.524 detected and confirmed at a prior q = 0.2 of one dropped or inserted letter (confirmed: 0.448 at q = 0.05, 0.481 at 0.1, 0.559 at 0.35, 0.580 at 0.5). So a null multiplies the remaining odds of a standard reading by about 0.48 at q = 0.2, taking the four nulls together to about 0.055 (0.035 ungarbled, from a 20-draw stratum, and 0.13 with one indel). Nothing here tests two faults, a substituted letter, other reflectors, other wheel wirings, Naval wheels, other indicator procedures or non-Enigma systems.",
+  "target": {
+    "date": "1941-09-30",
+    "messages": [
+      "BYQMZ",
+      "FKQLZ",
+      "XFEDT"
+    ]
+  },
+  "body_direct_sweep": {
+    "message": "BYQMZ",
+    "rings": "AAA",
+    "start_left": "all",
+    "start_middle": "all",
+    "start_right": "all",
+    "keep": 100,
+    "rationale": "Chosen by the preregistered decision rule of phase1-split-point-power-v2, whose deciding prediction T1 held: the complete-rule split-point climb detects 62.2% of the one-indel planted keys the climbs of v2, v3 and v4 all miss, against a bar of 30%. Same message, space (middle_complete, every wheel order, left and middle offset, right position and right ring), retention, companions and threshold as v4; the climb changes from the W = 117 windowed climb to the split-point climb, run on the GPU. The space keeps the notch-start settings that v4 found exactly duplicate a past-notch setting unless the right wheel also starts at its notch (about 1 in 9.4 settings): they are the space phase1-split-point-power-v2 measured, a duplicate is climbed to the identical result, and an exact tie keeps the earlier setting, so the stated power applies without an argument about the space. Projected cost at the measured 0.0285 ms per setting: about 1.95 hours of sweep on the RTX 3090, plus a few minutes of CPU gates and confirmations.",
+    "ring_rule": "middle_complete",
+    "right_ring": "all",
+    "checkpoint": "build/phase1-body-direct-sweep-v5.checkpoint.jsonl",
+    "companion_confirmation": {
+      "companions": [
+        "FKQLZ",
+        "XFEDT"
+      ],
+      "threshold_z": 6.0,
+      "calibration": "artifacts/phase1-companion-calibration-v1.json"
+    }
+  },
+  "predictions": [
+    {
+      "id": "companion-confirmed-candidate",
+      "statement": "At least one of the 100 retained candidates is companion-confirmed (min over FKQLZ and XFEDT of best-start z >= 6).",
+      "decides_hypothesis": true
+    },
+    {
+      "id": "confirmed-candidate-is-rank-one",
+      "statement": "If a candidate is confirmed, it is also the sweep's rank-1 candidate on BYQMZ alone.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "confirmed-candidate-names-a-fault",
+      "statement": "If a candidate is confirmed, its best hypothesis is a dropped or inserted letter, not the clean message. On the planted draws all three earlier climbs miss, about two thirds of the confirmed keys at q = 0.2 are one-indel draws (0.2 x 0.278 x 0.613 against 0.8 x 0.05 x 0.40).",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "null-top-near-expected-maximum",
+      "statement": "If no candidate is confirmed, the sweep's top score lies between z = 5.5 and z = 7.5 over the distribution of all 246,767,040 settings' scores (v4: 6.51 over the same count of windowed scores), i.e. at the noise maximum.",
+      "decides_hypothesis": false
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261005,
+    "samples": 24
+  },
+  "status": "preregistered 2026-10-09; not run",
+  "pre_run_facts": {
+    "disclosure": "Everything below was known before this run and shaped this configuration. None of it is a result of this sweep.",
+    "choice": "phase1-split-point-power-v2's T1 held on 2026-10-09 (69 of 111, 62.2%, against 30%), and its rule chose this sweep. The joint companion rate (artifacts/phase1-joint-power-v4-split-complete.json) was measured afterwards on the same draws by scripts/joint_power.py, unchanged, as the rule required.",
+    "target_data_already_seen": "Parts of exactly this sweep were run on BYQMZ during engine work, before this configuration, and are disclosed here: a 243,360-setting slice (10 wheel orders x middle offset 7 x left offsets 0-3, all right positions and rings; 0.1% of the space) run with both engines for parity on 2026-10-09, whose top candidate scored -7.9616 per letter (z 4.74 within the slice, hypothesis a deletion at 63), and 14 full chunks (2.2 million settings, 0.9%) run for timing, of which only two chunks' top rows were printed (-7.9639 and -7.9980 per letter, both insertions). No companion check was run on any of them, and nothing else from them was examined. The sweep recomputes them. Before committing, a smoke run of this configuration cut to wheel order I-II-III and left offset A (26 chunks, 158,184 settings, 0.06%) went through the runner twice, with retention 5 and scratch output. It passed every preflight check (24 of 24 split climbs identical to SplitClimber) and both positive controls, resumed all 26 chunks on the second invocation with identical candidates and score distribution, and companion-checked its 5 retained candidates: none confirmed, best min z 4.18.",
+    "duplicates": "v4 found that a notch start duplicates a past-notch setting unless the right wheel also starts at its notch. They are kept, so that the space is the one the stated power was measured on."
+  },
+  "run_command": "python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v5/config.json --jobs 1",
+  "run_constraint": "Not run. Run from a clean tree after this configuration is committed, with nvcc and the GPU available; the cuda engine ignores --jobs. The checkpoint under build/ (git-ignored; do not clean it while the sweep is unfinished) lets it be stopped and resumed by rerunning the same command. A resumed run repeats the preflight, the positive controls and both confirmations, and its artifact's timing fields cover only the last invocation, so record every start, stop and resume in the history."
+}

@@ -2235,6 +2235,94 @@ this evidence.
 
 ---
 
+## phase1-body-direct-sweep-v5 (preregistered)
+
+Status: preregistered 2026-10-09; not run. Configuration:
+[experiments/phase1-body-direct-sweep-v5/config.json](../experiments/phase1-body-direct-sweep-v5/config.json),
+committed before any run.
+
+Why this one. The rule of
+[phase1-split-point-power-v2](#result-run-2026-10-09) chose it once T1 held.
+Among one-indel planted keys the climbs of v2, v3 and v4 all miss, the
+complete-rule split-point climb detects 62.2%, against a bar of 30%.
+
+What changes from v4: only the climb. The W = 117 windowed climb becomes the
+split-point climb, `split_complete` of the control exactly (`ic_grid` 32, mask
+credit −8.66), run by `CudaSplitClimber` on the GPU. The message (BYQMZ), the
+space (the middle-complete rule, 246,767,040 settings), retention (100),
+companions (FKQLZ and XFEDT) and threshold (z ≥ 6) are v4's. The duplicate
+notch-start settings v4 found are kept, so the space is exactly the one whose
+power was measured. A duplicate is climbed to the identical result, and an
+exact tie keeps the earlier setting.
+
+Hypothesis. The three messages are Enigma I traffic under one daily key, and
+BYQMZ's key is one v2, v3 and v4 could all miss, most plausibly because BYQMZ
+carries one dropped or inserted letter. A complete split-point sweep then
+retains a candidate that FKQLZ and XFEDT both confirm at best-start z ≥ 6.
+
+Refuted by: no retained candidate companion-confirmed.
+
+Stated power, conditional on v2, v3 and v4 null (planted draws all three
+reference climbs miss, `phase1-split-point-power-v2`; the joint row from
+`artifacts/phase1-joint-power-v4-split-complete.json`):
+
+| | clean, 20 | one indel, 111 | q = 0.05 | q = 0.2 | q = 0.5 |
+|---|---:|---:|---:|---:|---:|
+| detected | 8, 40% | 69, 62.2% | 0.450 | **0.529** | 0.588 |
+| detected and companion-confirmed | 8, 40% | 68, 61.3% | 0.448 | **0.524** | 0.580 |
+
+So a null multiplies the remaining odds of a standard reading by about 0.48 at
+q = 0.2. With the earlier nulls that comes to about 0.055 in all: 0.035
+ungarbled, from a 20-draw stratum, and 0.13 with one indel.
+
+Predictions (in the configuration):
+
+- **companion-confirmed-candidate** (decides): at least one of the 100 retained
+  candidates is companion-confirmed.
+- confirmed-candidate-is-rank-one: a confirmed candidate is also rank 1 on BYQMZ.
+- confirmed-candidate-names-a-fault: a confirmed candidate's best hypothesis
+  is a dropped or inserted letter, which is about two thirds of the expected
+  confirmations at q = 0.2.
+- null-top-near-expected-maximum: with no confirmation, the top score lies
+  between z = 5.5 and 7.5 over all 246.8 million scores. v4 reached 6.51.
+
+Target data already seen, before this configuration, in engine work and the
+smoke run below:
+
+- a 243,360-setting parity slice of exactly this sweep (0.1%), top −7.9616 (z
+  4.74 within the slice);
+- 14 full chunks timed for the benchmark (0.9%), of which two top rows were
+  printed;
+- the smoke run's 158,184 settings.
+
+Only the smoke run's five candidates were companion-checked: none confirmed,
+best 4.18. The configuration's `pre_run_facts` record all of it. The sweep
+recomputes these settings.
+
+Checked before committing (exploratory, not part of the record): the smoke run
+above. That is this configuration cut to wheel order I-II-III and left offset A
+(26 chunks), retention 5, scratch output, run twice. It passed every preflight
+check, including 24 of 24 split climbs identical to `SplitClimber`, and both
+positive controls. It swept the slice in 4.4 s. The second invocation resumed
+all 26 chunks with identical candidates and score distribution.
+
+Limits, in the configuration. One plaintext and one fault only. The pooled
+null stands in for 246.8 million scores, and the clean stratum is 20 draws.
+The mask credit applies to BYQMZ's own masked letter only approximately.
+Everything assumes wheels I to V as wired.
+
+Cost: about 1.95 hours of sweep on the RTX 3090 at the measured 0.0285 ms per
+setting, plus a few minutes of CPU gates and confirmations. It checkpoints in
+1,560 chunks.
+
+Run command, not run:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v5/config.json --jobs 1
+```
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.
