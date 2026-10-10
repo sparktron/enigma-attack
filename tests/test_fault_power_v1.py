@@ -90,7 +90,7 @@ class CoverageRuleTest(unittest.TestCase):
         dbl_hit, dbl_miss = [draw(2, "split_complete")] * 4, [draw(2)] * 4
         step = lambda s, d: fp.analyse(result(s + d), plan())["next_step_per_decision_rule"].split(":")[0]
         self.assertEqual(step(sub_hit, dbl_miss), "cost_a_two_split_climb")
-        self.assertEqual(step(sub_hit, dbl_hit), "stop_the_standard_reading_search")
+        self.assertEqual(step(sub_hit, dbl_hit), "measure_joint_confirmation_before_any_stop")
         self.assertEqual(step(sub_miss, dbl_miss), "cost_a_substitution_tolerant_and_a_two_split_climb")
         self.assertEqual(step(sub_miss, dbl_hit), "cost_a_substitution_tolerant_climb")
         self.assertTrue(fp.analyse(result(sub_hit + dbl_miss), plan(minimum=25))["next_step_per_decision_rule"]

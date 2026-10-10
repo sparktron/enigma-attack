@@ -8,7 +8,9 @@ W = 117 complete, and the complete split-point climb). A draw is "covered" when
 at least one of them detects it, which is the planted-key analogue of a real key
 of that kind showing up in at least one completed sweep. Each fault kind's
 covered fraction is the power of the four nulls together against that kind, and
-one minus it is the odds multiplier they leave.
+one minus it is a lower bound on the odds multiplier they leave: the sweeps decide
+on companion confirmation, which can only remove detections, so detection alone
+overstates coverage.
 
 Detection is recomputed exactly as the runner computes it, through
 ``conditional_power.detection_flags``.
@@ -27,11 +29,21 @@ sys.path.insert(0, str(ROOT))
 from conditional_power import detection_flags, rate  # noqa: E402
 from stecker_power import wilson_interval  # noqa: E402
 
+# Detection is an upper bound on what the sweeps decide on, which is companion
+# confirmation. So a fault kind found NOT covered stays not covered once
+# confirmation is added, but a kind found covered is provisional: both
+# "covered" outcomes name the joint-confirmation step instead of a stop.
+JOINT = ("scripts/joint_power.py --arm split_complete on this artifact, whose confirmed rates "
+         "lower-bound the union's")
 NEXT_STEPS = {
-    (True, True): "stop_the_standard_reading_search: both fault kinds are covered by the four nulls",
-    (True, False): "cost_a_two_split_climb: two dropped or inserted letters are not covered",
-    (False, True): "cost_a_substitution_tolerant_climb: a substituted letter is not covered",
-    (False, False): "cost_a_substitution_tolerant_and_a_two_split_climb: neither fault kind is covered",
+    (True, True): f"measure_joint_confirmation_before_any_stop: both kinds are covered by detection alone, "
+                  f"which bounds confirmed power from above; run {JOINT}",
+    (True, False): "cost_a_two_split_climb: two dropped or inserted letters are not covered "
+                   "(holds a fortiori once confirmation is required)",
+    (False, True): "cost_a_substitution_tolerant_climb: a substituted letter is not covered "
+                   "(holds a fortiori once confirmation is required)",
+    (False, False): "cost_a_substitution_tolerant_and_a_two_split_climb: neither fault kind is covered "
+                    "(holds a fortiori once confirmation is required)",
 }
 
 
@@ -51,6 +63,7 @@ def analyse(result: dict, plan: dict) -> dict:
             "detected": hits, "n": total, "rate": hits / total if total else None,
             "interval_95": wilson_interval(hits, total),
             "odds_multiplier_left_by_four_nulls": (total - hits) / total if total else None,
+            "note": "detection only; a lower bound on the multiplier, since companion confirmation can only remove detections",
         }
     scored = []
     for p in plan["predictions"]:

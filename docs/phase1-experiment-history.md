@@ -2443,11 +2443,15 @@ Predictions, with the author's guesses disclosed in the configuration:
 | D1 | the union detects less than 50% of double-indel draws | yes |
 | runner | `split_complete` detects at least 80% of clean draws; at least 60% of substitution draws; at least as many double-indel draws as `complete_w117` | no |
 
-Decision rule, fixed now. S1 held and D1 held: cost a two-split climb. S1 held
-and D1 refuted: stop the standard-reading search, since both kinds are covered.
+Decision rule, fixed now. Detection is an upper bound on what the sweeps decide
+on, which is companion confirmation, so "not covered" verdicts stand and
+"covered" verdicts are provisional. S1 held and D1 held: cost a two-split climb.
 S1 refuted and D1 held: cost both new climbs. S1 refuted and D1 refuted: cost a
-substitution-tolerant climb. A deciding cell under 100 draws is not estimable.
-Nothing further is preregistered by this run.
+substitution-tolerant climb. S1 held and D1 refuted: **no stop is decided**; both
+kinds are covered by detection, and `scripts/joint_power.py --arm split_complete`
+on this artifact measures the confirmed rates (a lower bound for the union) from
+which any stop would be decided afterwards. A deciding cell under 100 draws is
+not estimable. Nothing further is preregistered by this run.
 
 Disclosed. A 6-draw smoke run of this configuration (draws 0 to 5 of each cell,
 scratch output) found the union covering 6 of 6 clean, 5 of 6 substitution and 6
@@ -2456,8 +2460,8 @@ weak evidence and nothing was changed after it. The full run recomputes those
 draws.
 
 Cost: about 20 minutes on the RTX 3090 (v2's 800 draws took 12 minutes).
-Detection here is not companion confirmation; `scripts/joint_power.py` measures
-that afterwards if the result calls for it.
+Detection here is not companion confirmation, and the covered fraction is
+reported as a lower bound on the odds multiplier for that reason.
 
 Run command, not run:
 

@@ -191,10 +191,10 @@
   "status": "preregistered 2026-10-10; not run",
   "mode": "end_to_end_power",
   "output": "artifacts/phase1-fault-power-v1.json",
-  "hypothesis": "The four completed BYQMZ sweeps' climbs (the whole-message and W = 117 middle-past-notch climbs of v2 and v3, the W = 117 middle-complete climb of v4, and the complete split-point climb of v5), taken together, cover one substituted letter but not two dropped or inserted letters. Covered means at least one of the four planted-key stand-in arms detects the draw. For one substituted letter the union detects at least 60% (S1). For two independent dropped or inserted letters the union detects less than 50% (D1), which would make a two-split climb the next engineering step.",
-  "refuted_by": "S1 refuted: the union of the four arms detects less than 60% of substitution draws, scored by scripts/fault_power_v1.py (at least 100 draws; fewer is not estimable). D1 refuted: the union detects 50% or more of double-indel draws, so two faults are already covered and the standard-reading search can stop. Each refutes only itself; the runner's marginal predictions refute only themselves.",
+  "hypothesis": "The four completed BYQMZ sweeps' climbs (the whole-message and W = 117 middle-past-notch climbs of v2 and v3, the W = 117 middle-complete climb of v4, and the complete split-point climb of v5), taken together, cover one substituted letter but not two dropped or inserted letters. Covered means at least one of the four planted-key stand-in arms detects the draw. For one substituted letter the union detects at least 60% (S1). For two independent dropped or inserted letters the union detects less than 50% (D1), which would make a two-split climb the next engineering step. Detection is not companion confirmation, so a covered verdict is provisional until the joint rate is measured.",
+  "refuted_by": "S1 refuted: the union of the four arms detects less than 60% of substitution draws, scored by scripts/fault_power_v1.py (at least 100 draws; fewer is not estimable). D1 refuted: the union detects 50% or more of double-indel draws, so two faults are covered by detection; that is only an upper bound on confirmed coverage, so it does not by itself end the search (see the decision rule). Each refutes only itself; the runner's marginal predictions refute only themselves.",
   "end_to_end_power": {
-    "rationale": "phase1-body-direct-sweep-v5 is null and, with v2 to v4, leaves the odds of a standard reading of BYQMZ at about 0.055 at q = 0.2. That figure rests on a single dropped or inserted letter being the only fault. A real garble could be a substituted letter or two dropped or inserted letters, and no completed run measured either. This run plants each on the v2 slice and arms and measures how much of each the four sweeps' climbs cover, on fresh draws. It decides whether the nulls already speak to those cases, in which case the standard-reading search can stop, or whether a substitution-tolerant or a two-split climb is the next thing to build.",
+    "rationale": "phase1-body-direct-sweep-v5 is null and, with v2 to v4, leaves the odds of a standard reading of BYQMZ at about 0.055 at q = 0.2. That figure rests on a single dropped or inserted letter being the only fault. A real garble could be a substituted letter or two dropped or inserted letters, and no completed run measured either. This run plants each on the v2 slice and arms and measures how much of each the four sweeps' climbs cover, on fresh draws. It decides whether a substitution-tolerant or a two-split climb is the next thing to build, or whether the nulls appear to cover both cases by detection, which still needs a joint companion-confirmation measurement before any stop, because the sweeps decide on confirmation.",
     "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWOACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNACHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHVONPETROWKAXKOMMANDEURVERWUNDETXVERTRETUNGDURCHHAUPTMANNSCHNEIDERXWETTERKLARSICHTGUTSTRASSENTROCKENUNDBEFAHRBARXARTILLERIEBEOBACHTUNGMELDETBATTERIESTELLUNGENAMWALDRANDOSTWAERTSXFERNSPRECHVERBINDUNGZURDIVISIONUNTERBROCHENXWIRDWIEDERHERGESTELLTXMELDUNGFOLGTNACHEINTREFFENDERVERSTAERKUNGXENDEDERMELDUNGXZWEITEKOMPANIEHATSTELLUNGAMBAHNDAMMERREICHTUNDSICHEINGEGRABENXDRITTEKOMPANIEDECKTDIELINKEFLANKEGEGENDENBACHLAUFXGEFANGENENVERNEHMUNGERGIBTZWEIBATAILLONEINFANTERIEUNDEINEBATTERIEXPIONIEREHABENDIEBRUECKEBEINOWOSELKAWIEDERHERGESTELLTXFAHRZEUGEBENOETIGENTREIBSTOFFBISSPAETESTENSMORGENFRUEHXVERWUNDETENTRANSPORTROLLTUEBERDIEROLLBAHNNACHWESTENXFLIEGERTAETIGKEITAMVORMITTAGSCHWACHXAMNACHMITTAGVERSTAERKTXERBITTEZUWEISUNGVONZWEISCHWERENMASCHINENGEWEHRENX",
     "seed": 20261110,
     "draws": 400,
@@ -310,7 +310,7 @@
         "complete_w117",
         "split_complete"
       ],
-      "sweep_meaning": "The planted-key stand-ins for sweeps v2, v3, v4 and v5. A draw is covered when any of them detects it, recomputed from each draw's top candidate and each arm's own threshold as the runner does. One minus the covered fraction is the odds multiplier the four nulls leave for a key with that fault.",
+      "sweep_meaning": "The planted-key stand-ins for sweeps v2, v3, v4 and v5. A draw is covered when any of them detects it, recomputed from each draw's top candidate and each arm's own threshold as the runner does. One minus the covered fraction is a lower bound on the odds multiplier the four nulls leave for a key with that fault: the real sweeps decide on companion confirmation, which can only remove detections.",
       "cells": {
         "clean": 0,
         "substitution": 1,
@@ -336,10 +336,10 @@
         }
       ],
       "decision_rule": {
-        "S1 held, D1 held": "cost a two-split climb (a separate build and power control; nothing is preregistered by this run)",
-        "S1 held, D1 refuted": "stop the standard-reading search: both fault kinds are covered",
-        "S1 refuted, D1 held": "cost a substitution-tolerant climb and a two-split climb",
-        "S1 refuted, D1 refuted": "cost a substitution-tolerant climb"
+        "S1 held, D1 held": "cost a two-split climb (a separate build and power control; nothing is preregistered by this run). Holds a fortiori with confirmation, since confirmed coverage is below detected coverage.",
+        "S1 held, D1 refuted": "provisional only: both kinds are covered by detection, an upper bound. Measure scripts/joint_power.py --arm split_complete on this artifact; whether to stop is decided afterwards from its confirmed rates, and is not decided by this run.",
+        "S1 refuted, D1 held": "cost a substitution-tolerant climb and a two-split climb (holds a fortiori with confirmation)",
+        "S1 refuted, D1 refuted": "cost a substitution-tolerant climb (holds a fortiori with confirmation; D1 refuted is provisional)"
       }
     }
   },
@@ -368,7 +368,7 @@
     "The missed set is defined on the same draws that measure the split arms, so a failure the split climb shares with the reference climbs (an unlucky plugboard) is under-counted among the missed draws. It is not estimated.",
     "Detection only. The companion confirmation is not part of this run; its joint rate is to be measured afterwards on these draws, as for v3 and v4.",
     "If the rates of the earlier draws hold, about 135 one-indel and 23 clean draws are missed by all three arms: enough for the deciding indel stratum (a 95% interval about 0.16 wide), not for the clean one.",
-    "Detection here is the climb's top candidate recovering the planted plugboard at a score above the arm's own threshold. It is not companion confirmation, which the real sweeps also require and which scripts/joint_power.py measures afterwards if the result warrants it.",
+    "Detection here is the climb's top candidate recovering the planted plugboard at a score above the arm's own threshold. It is not companion confirmation, which the real sweeps decide on. Detection bounds confirmed power from above, so 'not covered' verdicts stand and 'covered' verdicts are provisional until scripts/joint_power.py measures the confirmed rate.",
     "The two faults of a double-indel draw are independent and uniformly placed, so some pairs are far apart and some adjacent; real garbles may cluster. A substituted letter is uniform over the other 25 letters at a uniform position, including the first and last.",
     "The union of four arms on one draw is a stand-in for four separate sweeps, each of which sees its own wrong-setting score distribution over 27 to 247 million settings. It carries the same pooled-null approximation as every earlier control here."
   ]

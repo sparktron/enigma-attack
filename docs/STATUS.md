@@ -422,8 +422,8 @@ Next in Phase 1, 2026-10-10: before building another climb, **`phase1-fault-powe
 (preregistered, not run) measures how much of two fault kinds the four sweeps'
 climbs already cover: one substituted letter and two dropped or inserted letters,
 400 planted draws each, about 20 minutes on the GPU. Its fixed rule chooses
-between stopping the standard-reading search and costing a substitution-tolerant
-or a two-split climb
+between costing a substitution-tolerant or a two-split climb and a joint
+confirmation step before any stop (detection bounds confirmed power from above)
 ([preregistration](phase1-experiment-history.md#phase1-fault-power-v1-preregistered)).
 Run it, then the analysis, from a clean tree:
 
