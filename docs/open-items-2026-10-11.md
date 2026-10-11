@@ -72,11 +72,9 @@ standard-reading search of BYQMZ is closed (the decision record is in the
    [#29](https://github.com/sparktron/enigma-attack/pull/29), and not a defect in the machinery.
    The control failed because the annealing search makes 12,008 evaluations against
    604,800 key pairs (2%, fewer distinct); the known key ranks first of all of them and the control passes when
-   searched exhaustively. `phase7-qtxma-source-and-scorer-v3` is preregistered
-   there (one number changed, about 1.7 hours serial, no GPU) and is waiting for
-   the maintainer to run it. Its deciding prediction is that QTXMA's target
-   fails calibration, which closes the transposition path by search as well as by
-   conservation.
+   searched exhaustively. A v3 configuration to rerun it was preregistered and
+   withdrawn the same day, never run, because the runner refuses QTXMA by design
+   before any control (the conservation gate). Nothing further is needed here.
 5. **The crib-driven Bombe** stays deferred. Reopen it only with a solved
    plaintext source from the target network, which G1 and G2 say does not
    exist in what is published.
@@ -87,8 +85,7 @@ standard-reading search of BYQMZ is closed (the decision record is in the
 ## Recommendation (inference)
 
 Nothing here is worth building before information arrives, so do not start a new
-sweep. Item 4 is done and waits only for the v3 run. Otherwise wait for items 1
-and 3. If the authors
+sweep. Item 4 is done. Wait for items 1 and 3. If the authors
 reply with a wiring, item 1 becomes a preregistered sweep with a power control
 first, as for the standard reading. If they reply that the wheels were never in
 doubt, item 1 closes. Item 3 stays open: the question sent concerns wheel wiring

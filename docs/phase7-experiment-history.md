@@ -242,12 +242,14 @@ Decision: nothing in `phase6.py` changes and no recorded artifact is touched. A
 control whose space fits in memory should be searched exhaustively. The
 configuration change that does it is preregistered as
 [phase7-qtxma-source-and-scorer-v3](#phase7-qtxma-source-and-scorer-v3-preregistered)
-below; the 7×7 pair, 25.4 million states, stays annealed and would need its own
-control. The QTXMA target stays closed by conservation either way.
+below, which was then withdrawn because the runner refuses this target (see its
+withdrawal note); the 7×7 pair, 25.4 million states, stays annealed and would need
+its own control. The QTXMA target stays closed by conservation.
 
 ## phase7-qtxma-source-and-scorer-v3 (preregistered)
 
-Status: preregistered 2026-10-11; not run. Configuration:
+Status: preregistered 2026-10-11 and **withdrawn the same day, never run** (see the
+withdrawal note at the end of this section). Configuration:
 [experiments/phase7-qtxma-source-and-scorer-v3/config.json](../experiments/phase7-qtxma-source-and-scorer-v3/config.json),
 committed before any run. It supersedes v2.
 
@@ -287,3 +289,35 @@ Run command, not run:
 ```bash
 python3 phase7.py --config experiments/phase7-qtxma-source-and-scorer-v3/config.json
 ```
+
+### Withdrawal (2026-10-11)
+
+Observed: the maintainer's first attempt to run v3 stopped with a `ValueError` from
+`phase6.run_experiment`: Phase 5 excluded frequency-preserving ciphers for QTXMA by
+letter conservation (chi-square p = 0.00025, absence p = 0.0005), "a transposition
+preserves the plaintext letter multiset, so no key in any width can reconcile
+this ciphertext." The gate (`ffa9fdb`, `_phase5_evidence`) runs before the first
+control, by design: "Refuse rather than spend a search proving it." The v2 run
+(2026-09-23) predates the gate, and its artifacts are already recorded as
+superseded in `artifact_claims.json` for this reason.
+
+What this changes:
+
+- v3 cannot run, so neither prediction was tested: not that the controls recover,
+  not that the target fails calibration. The second was the deciding prediction
+  and it is moot, since the repository refuses to search the target at all. The
+  configuration is kept as the record, marked withdrawn, with no artifact.
+- My preregistration was wrong. I checked its source-audit and scorer-validation
+  stages and the new override, and I did not run the whole path through
+  `phase6.run_experiment` before handing it over. The earlier "closed by search as
+  well as by conservation" was never available.
+- The `phase7.py` override that v3 needed is removed, with its test, since nothing
+  can use it.
+- What stands is the engineering measurement above: the 5×7 control passes when
+  searched exhaustively (exact key and plaintext, 604,800 evaluations), the
+  ranking script reproduces the ranking, and the regression tests pin the
+  convention and the dispatch. No experiment-path record of it exists, and none is
+  needed for QTXMA, which conservation closes.
+- If the machinery is reused on a target the gate admits, its configuration
+  should set `max_exhaustive_states` to at least 604,800 for the 5×7 and 7×5
+  pairs, which needs the override this removes to be restored with that config.
