@@ -498,7 +498,8 @@ SZAEJ left the unbroken list.
 Resolved 2026-10-11, and no longer on the QTXMA path: the Phase 6 and Phase 7
 5×7 known-key control failed because the annealing search covers 2% of its
 604,800 key pairs, not because of a row-filling convention. The machinery and the
-scorer are exact, and the control passes when searched exhaustively. Reusing the
-machinery needs a new configuration version with `max_exhaustive_states` of at
-least 604,800
+scorer are exact, and the control passes when searched exhaustively. The
+configuration that does so, `phase7-qtxma-source-and-scorer-v3` (preregistered
+2026-10-11, not run, about 1.7 hours serial), changes only
+`max_exhaustive_states` to 604,800
 ([diagnosis](phase7-experiment-history.md#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)).

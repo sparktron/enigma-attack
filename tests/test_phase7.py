@@ -116,6 +116,21 @@ class Phase7Tests(unittest.TestCase):
                 phase7.run_experiment(config, phase7.DEFAULT_CONFIG, [])
             self.assertEqual(search.call_args.args[0]["corpus"], str(alternate))
 
+    def test_exhaustive_limit_is_forwarded_only_when_configured(self) -> None:
+        failed = {"status": "invalid_positive_control_failure",
+                  "controls": {"positive_double_transposition": {"passed": False}}}
+        inherited = json.loads(phase7.resolve_path(self.config["phase6_config"]).read_text())["search"]["max_exhaustive_states"]
+        for configured, expected in ((None, inherited), (604800, 604800)):
+            config = copy.deepcopy(self.config)
+            config["search"].pop("max_exhaustive_states", None)
+            if configured is not None:
+                config["search"]["max_exhaustive_states"] = configured
+            with mock.patch("phase7.audit_grouping", return_value={"passed": True}), \
+                 mock.patch("phase7.validate_scorer", return_value={"passed": True}), \
+                 mock.patch("phase7.phase6.run_experiment", return_value=failed) as search:
+                phase7.run_experiment(config, phase7.DEFAULT_CONFIG, [])
+            self.assertEqual(search.call_args.args[0]["search"]["max_exhaustive_states"], expected)
+
     def test_stale_baseline_corpus_is_rejected(self) -> None:
         config = copy.deepcopy(self.config)
         with tempfile.TemporaryDirectory() as directory:

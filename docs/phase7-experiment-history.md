@@ -236,10 +236,52 @@ swap and reverse moves reach only through several worse keys. An exploratory
 polish that tried every such shift after annealing raised the exact recoveries
 from 5 to 15 of 19 seeds, which is not reliable and was not kept.
 
-Decision: nothing in `phase6.py` or any configuration changes, and no recorded
-artifact is touched. A control whose space fits in memory should be searched
-exhaustively. If the Phase 6 and Phase 7 machinery is reused, its configuration
-needs a new version with `max_exhaustive_states` of at least 604,800 for the
-5×7 and 7×5 controls and targets (about 30 s per search in one process); the
-7×7 pair, 25.4 million states, stays annealed and would need its own control.
-The QTXMA target stays closed by conservation either way.
+Decision: nothing in `phase6.py` changes and no recorded artifact is touched. A
+control whose space fits in memory should be searched exhaustively. The
+configuration change that does it is preregistered as
+[phase7-qtxma-source-and-scorer-v3](#phase7-qtxma-source-and-scorer-v3-preregistered)
+below; the 7×7 pair, 25.4 million states, stays annealed and would need its own
+control. The QTXMA target stays closed by conservation either way.
+
+## phase7-qtxma-source-and-scorer-v3 (preregistered)
+
+Status: preregistered 2026-10-11; not run. Configuration:
+[experiments/phase7-qtxma-source-and-scorer-v3/config.json](../experiments/phase7-qtxma-source-and-scorer-v3/config.json),
+committed before any run. It supersedes v2.
+
+Why. v2 failed its independent 5×7 control and gated off the QTXMA target search.
+The [correction above](#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)
+shows the failure was an annealing budget too small for a 604,800-state space.
+v3 reruns the same experiment with that space searched exhaustively.
+
+What changes from v2: one number. `search.max_exhaustive_states` is 604,800
+(v2 inherited 20,000), so the 5×7 and 7×5 pairs are exhaustive in the controls
+and the target. `phase7.py` gains a backward-compatible override: a configuration
+that names no limit keeps the inherited one, and a test pins both cases. The
+controls, scorer, seeds, width pairs and calibration are v2's. The 7×7 pair
+(25,401,600 states) is still annealed.
+
+Predictions. (1) All three known-key controls recover the plaintext and key
+exactly, so the target is searched. Its outcome is already known for the 5×7
+control, which passed under this limit in an engineering run, so it is a gate and
+not a test. (2) QTXMA's selected score does not clear the complete-search null
+(p above 0.05). This is the deciding prediction and is expected: the phase 5
+conservation gate excludes a transposition of German Army plaintext for QTXMA.
+
+Decision rule, fixed now. Controls fail: report which and stop. Controls pass and
+the target fails calibration: the transposition path for QTXMA is closed by search
+as well as by conservation. Controls pass and the target clears calibration: that
+contradicts the conservation gate, so treat it as a scorer or null artifact until
+the key and a readable plaintext are reproduced independently and the gate is
+re-examined. Not an accepted break either way.
+
+Cost, measured on random 155-letter text, not QTXMA's ciphertext: about 82 µs
+per evaluation, about 1.24 million evaluations per all-width search, 60 searches
+(3 seeds plus 19 null replicates × 3 seeds), so about 1.7 hours in one serial
+process. No GPU.
+
+Run command, not run:
+
+```bash
+python3 phase7.py --config experiments/phase7-qtxma-source-and-scorer-v3/config.json
+```

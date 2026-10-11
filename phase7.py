@@ -164,6 +164,10 @@ def run_experiment(config: Mapping[str, Any], config_path: pathlib.Path, argumen
     phase6_config["corpus"] = str(corpus_path)
     phase6_config["search"]["target_width_pairs"] = config["search"]["target_width_pairs"]
     phase6_config["search"]["seeds"] = config["search"]["seeds"]
+    # A configuration that names no limit keeps the inherited one, so v1 and v2
+    # run exactly as they did.
+    if "max_exhaustive_states" in config["search"]:
+        phase6_config["search"]["max_exhaustive_states"] = int(config["search"]["max_exhaustive_states"])
     # Phase 7 controls extend the inherited Phase 6 ones rather than replacing
     # them, so the baseline known-key gates still apply to the target search.
     inherited = list(phase6_config.get("additional_positive_controls", []))
