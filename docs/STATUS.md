@@ -428,10 +428,16 @@ sweep arm, S1 held). Two indels are covered less: 65.0% detected by some arm
 by the v5 climb alone. The odds multiplier the four nulls leave is 0.025 to 0.12
 for a substituted letter and 0.35 to 0.44 for two indels, against 0.13 for one.
 The rule's provisional branch ran the joint confirmation; it decides no stop.
-Whether to close the standard-reading search of BYQMZ, or to cost a two-split
-climb for the least probable garble, is the maintainer's. My recommendation is to
-close it and spend the effort on the wheel-wiring question the cited paper
-raises: ask Weierud and Sullivan what their 2003 to 2004 attempt covered.
+**The standard-reading search of BYQMZ is closed** (maintainer's decision,
+2026-10-10; [record](phase1-experiment-history.md#closing-the-standard-reading-search-of-byqmz-2026-10-10)).
+It covers one plaintext, a clean message or at most two transcription faults, wheels
+I to V as wired, reflector B and ten pairs. Under an illustrative prior the four
+nulls leave a multiplier of about 0.06 to 0.15; the two-indel case, the least
+excluded, is 15% to 31% of that, and the closure rests on two-fault messages
+being rare, which is assumed. No two-split climb is planned. It does not touch the
+cited paper's doubt about the wheel wiring. A question to the authors was sent
+2026-10-10 through the Crypto Cellar contact address; a reply naming a wiring or
+machine would reopen the search at that wiring.
 
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
