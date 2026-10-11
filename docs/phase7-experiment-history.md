@@ -193,3 +193,95 @@ the search's untransposition at that length is the first check. Then validate
 the search on further independent known-key messages at the target lengths and
 width branches, including ragged rows, and only then run the configured
 complete-search null calibration.
+
+### Correction: the 5x7 control's failure was the search's, not the convention (2026-10-11)
+
+Added after the fact; the v2 run above and its artifact are unchanged.
+
+Observed (engineering diagnosis, not a preregistered run; the command is
+`scripts/transposition_control_rank.py` and the calls named below):
+
+- The row-filling convention is exact. `columnar_untranspose` inverts
+  `columnar_transpose` on random texts at every length from the width to 79
+  letters and widths 2 to 7, and the 76-letter control round-trips through both
+  stages.
+- Scoring all 604,800 key pairs of the control with the control's own scorer
+  ranks the known key **first** (−6.7018 per letter) and the key pair that reads
+  out the plaintext rotated by one character **second** (−6.7145). The next
+  best is −7.1908. Exactly one key pair other than the known key reads out any
+  rotation of the plaintext: the known second stage with a first-stage order whose
+  column indices are each moved one along (`[4, 1, 0, 2, 3]` for `[3, 0, 4, 1, 2]`).
+  The ranking is in
+  [data/phase6/transposition-control-5x7-ranking.json](../data/phase6/transposition-control-5x7-ranking.json).
+- The recorded search evaluates 12,008 of those 604,800 pairs (2.0%): 604,800 is
+  above `max_exhaustive_states` (20,000), so it anneals. Over 19 seeds at the
+  configured budget it recovered the plaintext exactly on 5 and otherwise
+  stopped on a worse key, the one-character rotation among them.
+- Run through the real control path (`evaluate_positive_control`) with
+  `max_exhaustive_states` at 604,800, the search is exhaustive and the control
+  **passes**, with the exact key and plaintext (604,800 evaluations, 27 s in one
+  process). At the configured 20,000 it reproduces the recorded failure (accuracy
+  0.0526).
+
+Corrections to the text above, and to STATUS: the statement that no stage width
+at this length can produce a one-character shift is wrong, since one key pair
+does. The hypothesis that the failure is a row-filling disagreement between the
+control's construction and the search's untransposition is refuted.
+
+Interpretation (inference): the transposition machinery and the scorer are
+correct at this length, and the control's failure was a bounded annealing search
+too small for a 604,800-state space, stopping in the runner-up basin. The
+runner-up differs from the known key by a column-index shift that annealing's
+swap and reverse moves reach only through several worse keys. An exploratory
+polish that tried every such shift after annealing raised the exact recoveries
+from 5 to 15 of 19 seeds, which is not reliable and was not kept.
+
+Decision: nothing in `phase6.py` changes and no recorded artifact is touched. A
+control whose space fits in memory should be searched exhaustively. The
+configuration change that does it is preregistered as
+[phase7-qtxma-source-and-scorer-v3](#phase7-qtxma-source-and-scorer-v3-preregistered)
+below; the 7×7 pair, 25.4 million states, stays annealed and would need its own
+control. The QTXMA target stays closed by conservation either way.
+
+## phase7-qtxma-source-and-scorer-v3 (preregistered)
+
+Status: preregistered 2026-10-11; not run. Configuration:
+[experiments/phase7-qtxma-source-and-scorer-v3/config.json](../experiments/phase7-qtxma-source-and-scorer-v3/config.json),
+committed before any run. It supersedes v2.
+
+Why. v2 failed its independent 5×7 control and gated off the QTXMA target search.
+The [correction above](#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)
+shows the failure was an annealing budget too small for a 604,800-state space.
+v3 reruns the same experiment with that space searched exhaustively.
+
+What changes from v2: one number. `search.max_exhaustive_states` is 604,800
+(v2 inherited 20,000), so the 5×7 and 7×5 pairs are exhaustive in the controls
+and the target. `phase7.py` gains a backward-compatible override: a configuration
+that names no limit keeps the inherited one, and a test pins both cases. The
+controls, scorer, seeds, width pairs and calibration are v2's. The 7×7 pair
+(25,401,600 states) is still annealed.
+
+Predictions. (1) All three known-key controls recover the plaintext and key
+exactly, so the target is searched. Its outcome is already known for the 5×7
+control, which passed under this limit in an engineering run, so it is a gate and
+not a test. (2) QTXMA's selected score does not clear the complete-search null
+(p above 0.05). This is the deciding prediction and is expected: the phase 5
+conservation gate excludes a transposition of German Army plaintext for QTXMA.
+
+Decision rule, fixed now. Controls fail: report which and stop. Controls pass and
+the target fails calibration: the transposition path for QTXMA is closed by search
+as well as by conservation. Controls pass and the target clears calibration: that
+contradicts the conservation gate, so treat it as a scorer or null artifact until
+the key and a readable plaintext are reproduced independently and the gate is
+re-examined. Not an accepted break either way.
+
+Cost, measured on random 155-letter text, not QTXMA's ciphertext: about 82 µs
+per evaluation, about 1.24 million evaluations per all-width search, 60 searches
+(3 seeds plus 19 null replicates × 3 seeds), so about 1.7 hours in one serial
+process. No GPU.
+
+Run command, not run:
+
+```bash
+python3 phase7.py --config experiments/phase7-qtxma-source-and-scorer-v3/config.json
+```
