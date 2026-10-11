@@ -65,12 +65,15 @@ standard-reading search of BYQMZ is closed (the decision record is in the
 3. **Archival evidence** on the procedure and on why QTXMA and SZAEJ left the
    unbroken list. Maintainer-side, like item 1, and the same email could have
    asked it. No compute.
-4. **The 5×7 known-key control of Phase 6 and Phase 7** still fails, recovering
-   the known plaintext rotated by one position over 76 letters. The thing to
-   check is the ragged-row filling convention at that length. It is a defect in
-   the transposition search machinery, which conservation has made irrelevant to
-   this corpus, and it matters only if that machinery is reused. A few hours of
-   engineering with a definite deliverable.
+4. **The 5×7 known-key control of Phase 6 and Phase 7**: resolved in
+   [#29](https://github.com/sparktron/enigma-attack/pull/29), and not a defect in the machinery.
+   The control failed because the annealing search covers 2% of its 604,800 key
+   pairs; the known key ranks first of all of them and the control passes when
+   searched exhaustively. `phase7-qtxma-source-and-scorer-v3` is preregistered
+   there (one number changed, about 1.7 hours serial, no GPU) and is waiting for
+   the maintainer to run it. Its deciding prediction is that QTXMA's target
+   fails calibration, which closes the transposition path by search as well as by
+   conservation.
 5. **The crib-driven Bombe** stays deferred. Reopen it only with a solved
    plaintext source from the target network, which G1 and G2 say does not
    exist in what is published.
@@ -81,8 +84,8 @@ standard-reading search of BYQMZ is closed (the decision record is in the
 ## Recommendation (inference)
 
 Nothing here is worth building before information arrives, so do not start a new
-sweep. The best use of the interim is item 4 if the transposition machinery is
-worth keeping correct, and otherwise to wait for items 1 and 3. If the authors
+sweep. Item 4 is done and waits only for the v3 run. Otherwise wait for items 1
+and 3. If the authors
 reply with a wiring, item 1 becomes a preregistered sweep with a power control
 first, as for the standard reading. If they reply that the wheels were never in
 doubt, items 1 and 3 close and item 2 is what is left.
