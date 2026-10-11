@@ -40,3 +40,48 @@ divergence.
 ```bash
 python3 scripts/review/batched_climb.py --cases 40
 ```
+
+## Review of 2026-10-11
+
+Behind [docs/code-review-2026-10-11.md](../../docs/code-review-2026-10-11.md).
+The same rules apply: exploratory, no artifacts, not packaged, not in CI.
+`independent_enigma.py` needs only the standard library; the other two use the
+experiment configs under `experiments/phase1-end-to-end-power-v1/` (and, for
+`--base-config`, `phase1-fault-power-v1/`).
+
+### `independent_enigma.py` (review V-1, V-2)
+
+An Enigma I written from the published description, sharing no code with the
+repository's simulators. It compares itself with `enigma.EnigmaMachine`,
+`enigma_fast.crypt_indices` and the table path on published vectors, the
+double-step sequence and 3,000 random keys, then checks
+`stecker_space.rule_key_coverage` against an empirical count. It exits non-zero
+on any disagreement.
+
+```bash
+python3 scripts/review/independent_enigma.py
+```
+
+### `plaintext_power.py` (review B-1)
+
+Runs the repository's own `end_to_end_power` harness on several plaintexts
+(the repository's, plus Markov samples of the published trigram counts) with the
+same planted keys, and reports detection against each plaintext's index of
+coincidence. About 30 seconds per text for the whole-message arm.
+
+```bash
+python3 scripts/review/plaintext_power.py --texts 16 --draws 60
+python3 scripts/review/plaintext_power.py --base-config experiments/phase1-fault-power-v1/config.json \
+    --arm split_complete --texts 4 --draws 40 --jobs 1   # the v5 climb; needs the CUDA build
+```
+
+### `estecker_direct.py` (review S-1)
+
+Climbs planted keys at the true setting from the empty plugboard and from the
+first-plug start sets of Ostwald and Weierud's partial exhaustion (E-, R- and
+I-Stecker), each calibrated against its own wrong-setting null. It patches
+`stecker_climb.run_climb_phases` in its own process only.
+
+```bash
+python3 scripts/review/estecker_direct.py --text markov-0 --draws 36 --methods base,E
+```

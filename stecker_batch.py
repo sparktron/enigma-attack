@@ -20,6 +20,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from stecker_climb import start_boards
+
 try:  # the project has no runtime dependency; this one is optional
     import numpy as np
 except ImportError:  # pragma: no cover - exercised by the fallback test
@@ -47,12 +49,16 @@ class BatchedClimber:
         if np is None:
             raise RuntimeError("the batched climb needs numpy, which is not installed")
         self.settings = settings
+        self.starts = start_boards(settings)
+        self._bigram_list = [float(x) for x in bigram]
+        self._combined_list = [float(x) for x in combined]
         self.bigram = np.asarray(bigram, dtype=np.float64)
         self.combined = np.asarray(combined, dtype=np.float64)
         length = len(body)
         cipher = np.asarray(body, dtype=np.int64)
         valid = cipher >= 0
         self.valid = valid
+        self._valid_list = valid.tolist()
         self.cipher = np.where(valid, cipher, 0)
         self.rows = np.arange(length)
         previous = np.r_[False, valid[:-1]]
@@ -143,11 +149,50 @@ class BatchedClimber:
 
         table = np.asarray(flat_table, dtype=np.int64).reshape(self.length, 26)
         objectives = {"index_of_coincidence": self._coincidence, "ngram": self._ngram}
-        plugboard: list[int] = list(range(26))
-        evaluations = 0
-        for phase in self.settings["phases"]:
-            if phase not in objectives:
-                raise ValueError(f"unknown climb objective: {phase!r}")
-            plugboard, used = self._climb(objectives[phase], table, plugboard)
-            evaluations += used
-        return plugboard, evaluations
+        boards = self.starts
+        best: tuple[float, list[int]] | None = None
+        total = 0
+        for board in boards:
+            plugboard: list[int] = list(board)
+            evaluations = 0
+            for phase in self.settings["phases"]:
+                if phase not in objectives:
+                    raise ValueError(f"unknown climb objective: {phase!r}")
+                plugboard, used = self._climb(objectives[phase], table, plugboard)
+                evaluations += used
+            if len(boards) == 1:
+                return plugboard, evaluations
+            total += evaluations
+            score = self._final_score(plugboard, table)
+            if best is None or score > best[0]:
+                best = (score, plugboard)
+        assert best is not None
+        return best[1], total
+
+    def _final_score(self, plugboard: Sequence[int], table: "np.ndarray") -> float:
+        """``FastNgramScorer.score_decryption``'s sequential sum, term for term.
+
+        The best of several starts is chosen on this value, as the reference does,
+        so the choice cannot depend on numpy's summation order.
+        """
+
+        board = np.asarray(plugboard, dtype=np.int64)
+        text = self._decrypt(board[None, :], table)[0].tolist()
+        bigram, combined = self._bigram_list, self._combined_list
+        total = 0.0
+        previous = cursor = -1
+        for letter, readable in zip(text, self._valid_list):
+            if not readable:
+                previous = cursor = -1
+                continue
+            if previous < 0:
+                previous = letter
+                continue
+            if cursor < 0:
+                total += bigram[previous * 26 + letter]
+                cursor = previous * 676 + letter * 26
+            else:
+                total += combined[cursor + letter]
+                cursor = ((cursor % 676) + letter) * 26
+            previous = letter
+        return total

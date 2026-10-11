@@ -114,6 +114,46 @@ def climb_stecker(
     )
 
 
+MAX_START_BOARDS = 136  # every first plug on six letters, plus the empty board
+
+
+def start_boards(settings: Mapping[str, Any]) -> list[list[int]]:
+    """The plugboards a climb starts from: the empty one, then any first-plug starts.
+
+    Without ``settings['first_plug']`` this is the empty plugboard alone, which is
+    the climb as it has always run.  With ``{"letters": "E"}`` it adds every board
+    with exactly one plug joining E to another letter, in letter order then
+    partner order, a pair counted once.  That is the partial exhaustion of the
+    first plug that Ostwald and Weierud call the "E-Stecker" method (26 boards for
+    E, 73 for E, N and R, 136 for E, N, R, X, S and I); the empty board is the
+    case in which E is self-steckered.  The climb is run from each board and the
+    best final n-gram score is kept, the earliest board winning a tie.
+    """
+
+    identity = list(range(26))
+    spec = settings.get("first_plug")
+    if spec is None:
+        return [identity]
+    letters = str(spec["letters"]).upper()
+    if not letters or len(set(letters)) != len(letters) or any(c < "A" or c > "Z" for c in letters):
+        raise ValueError(f"climb.first_plug.letters must be distinct A-Z letters, not {letters!r}")
+    boards = [identity]
+    seen: set[tuple[int, int]] = set()
+    for letter in letters:
+        a = ord(letter) - 65
+        for b in range(26):
+            pair = (min(a, b), max(a, b))
+            if a == b or pair in seen:
+                continue
+            seen.add(pair)
+            board = list(identity)
+            board[a], board[b] = b, a
+            boards.append(board)
+    if len(boards) > MAX_START_BOARDS:
+        raise ValueError(f"climb.first_plug allows at most {MAX_START_BOARDS} start boards")
+    return boards
+
+
 def run_climb_phases(
     phases: Sequence[str],
     objectives: Mapping[str, Any],
@@ -133,32 +173,45 @@ def run_climb_phases(
     monoalphabetic structure.
     """
 
-    plugboard = list(range(26))
-    records: list[dict[str, Any]] = []
-    evaluations = 0
-    for objective in phases:
-        if objective not in objectives:
-            raise ValueError(f"unknown climb objective: {objective!r}")
-        outcome = climb_stecker(
-            objectives[objective],
-            letters,
-            int(settings["max_pairs"]),
-            int(settings["max_passes"]),
-            float(settings["minimum_gain"]),
-            plugboard,
-        )
-        plugboard = list(outcome.plugboard)
-        evaluations += outcome.evaluations
-        records.append(
-            {
-                "objective": objective,
-                "plugboard": enigma_fast.plugboard_pairs(plugboard),
-                "plugboard_pairs": outcome.pair_count,
-                "passes": outcome.passes,
-                "evaluations": outcome.evaluations,
-            }
-        )
-    return plugboard, records, evaluations
+    boards = start_boards(settings)
+    if len(boards) > 1 and "ngram" not in objectives:
+        raise ValueError("climb.first_plug picks its best start by the n-gram score and needs it")
+    best: tuple[float, list[int], list[dict[str, Any]]] | None = None
+    total_evaluations = 0
+    for board in boards:
+        plugboard = list(board)
+        records: list[dict[str, Any]] = []
+        evaluations = 0
+        for objective in phases:
+            if objective not in objectives:
+                raise ValueError(f"unknown climb objective: {objective!r}")
+            outcome = climb_stecker(
+                objectives[objective],
+                letters,
+                int(settings["max_pairs"]),
+                int(settings["max_passes"]),
+                float(settings["minimum_gain"]),
+                plugboard,
+            )
+            plugboard = list(outcome.plugboard)
+            evaluations += outcome.evaluations
+            records.append(
+                {
+                    "objective": objective,
+                    "plugboard": enigma_fast.plugboard_pairs(plugboard),
+                    "plugboard_pairs": outcome.pair_count,
+                    "passes": outcome.passes,
+                    "evaluations": outcome.evaluations,
+                }
+            )
+        total_evaluations += evaluations
+        if len(boards) == 1:
+            return plugboard, records, evaluations
+        score = objectives["ngram"](plugboard)
+        if best is None or score > best[0]:
+            best = (score, plugboard, records)
+    assert best is not None
+    return best[1], best[2], total_evaluations
 
 
 WINDOW_KINDS = ("head_tail",)

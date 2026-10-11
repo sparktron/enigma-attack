@@ -181,6 +181,8 @@ def _worker_init(scorer_config: dict[str, Any], body: list[int], settings: dict[
     )
     window = settings.get("window")
     split = settings.get("split")
+    if split is not None and settings.get("first_plug") is not None:
+        raise ValueError("climb.first_plug cannot be combined with climb.split")
     if split is not None and (window is not None or engine not in ("batched", "cuda")):
         raise ValueError(
             "climb.split needs the batched or cuda engine and cannot be combined with climb.window"

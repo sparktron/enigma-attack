@@ -53,7 +53,7 @@ import enigma_fast
 from provenance import code_version, sha256_file
 from resources import resolve_output, resource_root
 from stecker_calibration import calibrate_ic_rank, run_calibration
-from stecker_climb import indicator_coupled_climb
+from stecker_climb import indicator_coupled_climb, start_boards
 from stecker_companion import confirm_candidates
 from stecker_controls import confirm_against_date, evaluate_positive_control, run_preflight
 from stecker_power import run_end_to_end_power
@@ -523,6 +523,13 @@ def load_config(path: pathlib.Path) -> dict[str, Any]:
         raise ValueError(f"unsupported mode: {config['mode']!r}")
     if config.get("climb", {}).get("engine", "reference") not in CLIMB_ENGINES:
         raise ValueError(f"unknown climb engine: {config['climb']['engine']!r}")
+    climb = config.get("climb", {})
+    if climb.get("first_plug") is not None:
+        start_boards(climb)  # rejects bad letters and too many start boards
+        if climb.get("split") is not None:
+            raise ValueError("climb.first_plug cannot be combined with climb.split")
+        if "ngram" not in climb["phases"]:
+            raise ValueError("climb.first_plug picks its best start by the n-gram score and needs it")
     for ordering in config.get("indicator_orderings", []):
         if ordering not in INDICATOR_ORDERINGS:
             raise ValueError(f"unknown indicator ordering: {ordering!r}")

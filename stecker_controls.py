@@ -592,6 +592,100 @@ def cuda_climb_parity_report(
     return report
 
 
+FIRST_PLUG_PARITY_CASES = 8  # each case runs the reference climb once per start board
+
+
+def configured_first_plugs(config: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Every first-plug start set a configuration can run, in first-mention order."""
+
+    specs: list[dict[str, Any]] = []
+    candidates = [config["climb"].get("first_plug")] + [
+        arm.get("first_plug") for arm in config.get("end_to_end_power", {}).get("arms", [])
+    ]
+    for spec in candidates:
+        if spec is not None and dict(spec) not in specs:
+            specs.append(dict(spec))
+    return specs
+
+
+def first_plug_parity_report(
+    config: Mapping[str, Any], scorer: FastNgramScorer, reflector: Sequence[int], engine: str
+) -> dict[str, Any]:
+    """Check each declared first-plug climb against the reference, whole and windowed.
+
+    The reference climb defines partial exhaustion of the first plug.  The
+    batched climb must end on its plugboard after its evaluation count, and under
+    the cuda engine the GPU must reproduce the batched climb's plugboard,
+    evaluations, score and window.  The cases are the first of the seeded parity
+    cases, few because the reference climbs once per start board.
+    """
+
+    seed, samples = parity_sample_size(config)
+    samples = min(samples, FIRST_PLUG_PARITY_CASES)
+    base = {k: v for k, v in config["climb"].items() if k not in ("window", "split", "first_plug")}
+    windows = configured_windows(config)
+    specs = configured_first_plugs(config)
+    tolerance = 1e-9
+    compared = identical = 0
+    worst = 0.0
+    cases = parity_cases(config, reflector)
+    for _ in range(samples):
+        body, order, rings, start, table = next(cases)
+        letters = sum(1 for value in body if value >= 0)
+        for spec in specs:
+            climb = {**base, "first_plug": spec}
+            reference, _ = body_direct_climb(
+                [Traffic("PARITY", (0, 0, 0), (0, 0, 0), tuple(body))],
+                order, rings, [start], scorer, reflector, climb,
+            )
+            plugboard, evaluations = stecker_batch.BatchedClimber(
+                scorer.bigram, scorer.combined, body, climb
+            ).climb(table)
+            compared += 1
+            identical += list(reference.plugboard) == plugboard and reference.evaluations == evaluations
+            if engine == "cuda":
+                gpu = stecker_cuda.CudaClimber(scorer.bigram, scorer.combined, body, climb, reflector)
+                got = gpu.climb_one(order, rings, start)
+                gpu.close()
+                expected_score = scorer.score_decryption(table, body, plugboard) / letters
+                worst = max(worst, abs(got[2] - expected_score))
+                compared += 1
+                identical += (
+                    got[0] == plugboard and got[1] == evaluations and abs(got[2] - expected_score) <= tolerance
+                )
+            for window in windows:
+                windowed = {**climb, "window": window}
+                expected = windowed_climb(table, body, scorer, windowed)
+                climbers = [
+                    stecker_batch.BatchedClimber(scorer.bigram, scorer.combined, body[first:stop], windowed)
+                    for _, first, stop in climb_windows(len(body), window)
+                ]
+                batched = windowed_climb(table, body, scorer, windowed, climbers)
+                compared += 1
+                identical += batched == expected
+                if engine == "cuda":
+                    gpu = stecker_cuda.CudaClimber(scorer.bigram, scorer.combined, body, windowed, reflector)
+                    got = gpu.climb_one(order, rings, start)
+                    gpu.close()
+                    worst = max(worst, abs(got[2] - batched[2]))
+                    compared += 1
+                    identical += (
+                        got[0] == batched[0] and got[1] == batched[1] and got[3] == batched[3]
+                        and abs(got[2] - batched[2]) <= tolerance
+                    )
+    return {
+        "seed": seed,
+        "cases": samples,
+        "first_plugs": specs,
+        "windows": windows,
+        "climbs_compared": compared,
+        "climbs_identical": identical,
+        "worst_absolute_score_difference": worst,
+        "score_tolerance": tolerance,
+        "passed": compared > 0 and identical == compared,
+    }
+
+
 def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[str, Any]:
     simulator = phase1.published_vector_results()
     kernel = enigma_fast.parity_report(
@@ -629,6 +723,10 @@ def run_preflight(config: Mapping[str, Any], scorer: FastNgramScorer) -> dict[st
         gpu = cuda_climb_parity_report(config, scorer, reflector)
         report["cuda_climb_parity"] = gpu
         checks["cuda_climb_matches_batched"] = gpu["passed"]
+    if engine in ("batched", "cuda") and configured_first_plugs(config):
+        first_plug = first_plug_parity_report(config, scorer, reflector, engine)
+        report["first_plug_climb_parity"] = first_plug
+        checks["first_plug_climbs_match"] = first_plug["passed"]
     report["checks"] = checks
     report["passed"] = all(checks.values())
     return report
