@@ -190,7 +190,7 @@
       "rationale": "Length 133 is a multiple of neither stage width, so both stages have ragged final rows and no whole-row rotation of the plaintext can be produced by an alternative key. A failure here is a genuine scorer or optimizer failure rather than the rotation degeneracy that invalidated the v1 control reading."
     }
   ],
-  "status": "preregistered 2026-10-11; not run",
+  "status": "withdrawn 2026-10-11; never run (see withdrawn)",
   "predictions": [
     {
       "id": "controls-recover-exactly",
@@ -211,6 +211,7 @@
     "expected_cost": "About 1.24 million evaluations per all-width search (2,880 + 2,880 + 14,400 + 604,800 + 604,800 exhaustive, plus 12,008 annealed for 7x7), about 100 s. Three seeds make 3 searches and 19 null replicates make 57 more, about 1.7 hours in one process (the runner is serial), plus about 30 s for the 5x7 control. Exhaustive pairs repeat identically across seeds; only 7x7 depends on the seed.",
     "context": "QTXMA's letters are not Enigma-like (four letters absent in 155) and phase5's conservation gate excludes a transposition of German Army plaintext. This run does not test that exclusion; it checks the machinery and closes the search by a second route."
   },
-  "run_command": "python3 phase7.py --config experiments/phase7-qtxma-source-and-scorer-v3/config.json",
-  "run_constraint": "Not run. Run from a clean tree after this configuration and the phase7.py override are on master. One serial process, about 1.7 hours; no GPU needed."
+  "run_command": "Do not run. The runner refuses this target by design.",
+  "run_constraint": "Withdrawn 2026-10-11, never run. phase6.run_experiment refuses QTXMA before it evaluates any control or search, because the Phase 5 conservation gate (ffa9fdb) excludes a transposition of German Army plaintext for this target: 'Refuse rather than spend a search proving it.' The first attempt to run this configuration stopped there with that ValueError, so neither prediction below could be tested, and no configuration through phase7.py can run the 5x7 control while the gate stands. The preregistration was written without running the full path (only the source audit and scorer validation stages were checked). The v2 artifacts are already recorded as superseded for the same reason.",
+  "withdrawn": "Withdrawn 2026-10-11, never run. phase6.run_experiment refuses QTXMA before it evaluates any control or search, because the Phase 5 conservation gate (ffa9fdb) excludes a transposition of German Army plaintext for this target: 'Refuse rather than spend a search proving it.' The first attempt to run this configuration stopped there with that ValueError, so neither prediction below could be tested, and no configuration through phase7.py can run the 5x7 control while the gate stands. The preregistration was written without running the full path (only the source audit and scorer validation stages were checked). The v2 artifacts are already recorded as superseded for the same reason."
 }
