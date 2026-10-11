@@ -1,6 +1,8 @@
 # Project status
 
-Updated: 2026-10-08
+Updated: 2026-10-11
+
+Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
 ## Current state
 
