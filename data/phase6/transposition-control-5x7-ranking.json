@@ -1,0 +1,151 @@
+{
+  "control": "independent-solved-army-text-1941-09-24-94",
+  "letters": 76,
+  "key_pairs": 604800,
+  "known_key": {
+    "first_order": [
+      3,
+      0,
+      4,
+      1,
+      2
+    ],
+    "second_order": [
+      6,
+      1,
+      4,
+      0,
+      5,
+      2,
+      3
+    ],
+    "rank": 1,
+    "score_per_letter": -6.70179815815994
+  },
+  "keys_reading_out_a_rotation_of_the_plaintext": [
+    {
+      "rotation": 75,
+      "first_order": [
+        4,
+        1,
+        0,
+        2,
+        3
+      ],
+      "second_order": [
+        6,
+        1,
+        4,
+        0,
+        5,
+        2,
+        3
+      ],
+      "rank": 2,
+      "score_per_letter": -6.714537354173631
+    }
+  ],
+  "top": [
+    {
+      "rank": 1,
+      "score_per_letter": -6.70179815815994,
+      "first_order": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "second_order": [
+        6,
+        1,
+        4,
+        0,
+        5,
+        2,
+        3
+      ]
+    },
+    {
+      "rank": 2,
+      "score_per_letter": -6.714537354173631,
+      "first_order": [
+        4,
+        1,
+        0,
+        2,
+        3
+      ],
+      "second_order": [
+        6,
+        1,
+        4,
+        0,
+        5,
+        2,
+        3
+      ]
+    },
+    {
+      "rank": 3,
+      "score_per_letter": -7.190815440422253,
+      "first_order": [
+        4,
+        1,
+        0,
+        2,
+        3
+      ],
+      "second_order": [
+        4,
+        6,
+        2,
+        5,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "rank": 4,
+      "score_per_letter": -7.21146241617137,
+      "first_order": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "second_order": [
+        4,
+        6,
+        2,
+        5,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "rank": 5,
+      "score_per_letter": -7.474283924611357,
+      "first_order": [
+        0,
+        2,
+        1,
+        3,
+        4
+      ],
+      "second_order": [
+        6,
+        1,
+        4,
+        0,
+        5,
+        2,
+        3
+      ]
+    }
+  ],
+  "seconds": 4.2
+}

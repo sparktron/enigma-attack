@@ -116,10 +116,11 @@ exactly, the 133-letter ragged control recovering both stage keys, and the
 independent solved-message 5×7 control still fails at 5.3% positional
 agreement. That failure is a whole-message rotation rather than a scrambled
 miss: the recovery agrees with the known plaintext completely at an offset of 75
-of its 76 positions, which neither stage width can produce. It is an open
-question about the ragged-row convention at that length, and it is now a
-question about the search machinery rather than about QTXMA, which conservation
-has already closed.
+of its 76 positions. It was first read as a row-filling disagreement. It is not
+(2026-10-11, [diagnosis](phase7-experiment-history.md#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)):
+the convention is exact, the known key ranks first of all 604,800 key pairs, and
+the annealing search, which evaluates 2% of them, stopped on the runner-up. The
+control passes when searched exhaustively.
 
 ## Correctness and evidence repairs
 
@@ -494,9 +495,10 @@ cipher before any implementation work.
 Third, unchanged: archival evidence about the procedure or about why QTXMA and
 SZAEJ left the unbroken list.
 
-Lower priority, and no longer on the QTXMA path: the Phase 6 and Phase 7 5×7
-known-key control still fails, recovering the known plaintext rotated by one
-position over 76 letters. The ragged-row filling convention at that length is
-the thing to check. It is a defect in the transposition search machinery, which
-conservation has made irrelevant to this corpus' target but would matter if
-that machinery is reused.
+Resolved 2026-10-11, and no longer on the QTXMA path: the Phase 6 and Phase 7
+5×7 known-key control failed because the annealing search covers 2% of its
+604,800 key pairs, not because of a row-filling convention. The machinery and the
+scorer are exact, and the control passes when searched exhaustively. Reusing the
+machinery needs a new configuration version with `max_exhaustive_states` of at
+least 604,800
+([diagnosis](phase7-experiment-history.md#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)).

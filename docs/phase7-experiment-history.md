@@ -193,3 +193,53 @@ the search's untransposition at that length is the first check. Then validate
 the search on further independent known-key messages at the target lengths and
 width branches, including ragged rows, and only then run the configured
 complete-search null calibration.
+
+### Correction: the 5x7 control's failure was the search's, not the convention (2026-10-11)
+
+Added after the fact; the v2 run above and its artifact are unchanged.
+
+Observed (engineering diagnosis, not a preregistered run; the command is
+`scripts/transposition_control_rank.py` and the calls named below):
+
+- The row-filling convention is exact. `columnar_untranspose` inverts
+  `columnar_transpose` on random texts at every length from the width to 79
+  letters and widths 2 to 7, and the 76-letter control round-trips through both
+  stages.
+- Scoring all 604,800 key pairs of the control with the control's own scorer
+  ranks the known key **first** (−6.7018 per letter) and the key pair that reads
+  out the plaintext rotated by one character **second** (−6.7145). The next
+  best is −7.1908. Exactly one key pair other than the known key reads out any
+  rotation of the plaintext: the known second stage with a first-stage order whose
+  column indices are each moved one along (`[4, 1, 0, 2, 3]` for `[3, 0, 4, 1, 2]`).
+  The ranking is in
+  [data/phase6/transposition-control-5x7-ranking.json](../data/phase6/transposition-control-5x7-ranking.json).
+- The recorded search evaluates 12,008 of those 604,800 pairs (2.0%): 604,800 is
+  above `max_exhaustive_states` (20,000), so it anneals. Over 19 seeds at the
+  configured budget it recovered the plaintext exactly on 5 and otherwise
+  stopped on a worse key, the one-character rotation among them.
+- Run through the real control path (`evaluate_positive_control`) with
+  `max_exhaustive_states` at 604,800, the search is exhaustive and the control
+  **passes**, with the exact key and plaintext (604,800 evaluations, 27 s in one
+  process). At the configured 20,000 it reproduces the recorded failure (accuracy
+  0.0526).
+
+Corrections to the text above, and to STATUS: the statement that no stage width
+at this length can produce a one-character shift is wrong, since one key pair
+does. The hypothesis that the failure is a row-filling disagreement between the
+control's construction and the search's untransposition is refuted.
+
+Interpretation (inference): the transposition machinery and the scorer are
+correct at this length, and the control's failure was a bounded annealing search
+too small for a 604,800-state space, stopping in the runner-up basin. The
+runner-up differs from the known key by a column-index shift that annealing's
+swap and reverse moves reach only through several worse keys. An exploratory
+polish that tried every such shift after annealing raised the exact recoveries
+from 5 to 15 of 19 seeds, which is not reliable and was not kept.
+
+Decision: nothing in `phase6.py` or any configuration changes, and no recorded
+artifact is touched. A control whose space fits in memory should be searched
+exhaustively. If the Phase 6 and Phase 7 machinery is reused, its configuration
+needs a new version with `max_exhaustive_states` of at least 604,800 for the
+5×7 and 7×5 controls and targets (about 30 s per search in one process); the
+7×7 pair, 25.4 million states, stays annealed and would need its own control.
+The QTXMA target stays closed by conservation either way.
