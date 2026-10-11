@@ -121,7 +121,8 @@ miss: the recovery agrees with the known plaintext completely at an offset of 75
 of its 76 positions. It was first read as a row-filling disagreement. It is not
 (2026-10-11, [diagnosis](phase7-experiment-history.md#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)):
 the convention is exact, the known key ranks first of all 604,800 key pairs, and
-the annealing search, which evaluates 2% of them, stopped on the runner-up. The
+the annealing search, which makes 12,008 evaluations (2% of the exhaustive count;
+it revisits states, so the distinct pairs visited are fewer), stopped on the runner-up. The
 control passes when searched exhaustively.
 
 ## Correctness and evidence repairs
@@ -433,7 +434,9 @@ for a substituted letter and 0.35 to 0.44 for two indels, against 0.13 for one.
 The rule's provisional branch ran the joint confirmation; it decides no stop.
 **The standard-reading search of BYQMZ is closed** (maintainer's decision,
 2026-10-10; [record](phase1-experiment-history.md#closing-the-standard-reading-search-of-byqmz-2026-10-10)).
-It covers one plaintext, a clean message or at most two transcription faults, wheels
+It covers one plaintext, a clean message, one dropped or inserted letter, one
+substituted letter, or two dropped or inserted letters (a substitution combined with
+any other fault was not measured), wheels
 I to V as wired, reflector B and ten pairs. Under an illustrative prior the four
 nulls leave a multiplier of about 0.06 to 0.15; the two-indel case, the least
 excluded, is 15% to 31% of that, and the closure rests on two-fault messages
@@ -505,8 +508,8 @@ Third, unchanged: archival evidence about the procedure or about why QTXMA and
 SZAEJ left the unbroken list.
 
 Resolved 2026-10-11, and no longer on the QTXMA path: the Phase 6 and Phase 7
-5×7 known-key control failed because the annealing search covers 2% of its
-604,800 key pairs, not because of a row-filling convention. The machinery and the
+5×7 known-key control failed because the annealing search makes only 12,008
+evaluations against 604,800 key pairs (2%, with revisits, so fewer distinct pairs), not because of a row-filling convention. The machinery and the
 scorer are exact, and the control passes when searched exhaustively. The
 configuration that does so, `phase7-qtxma-source-and-scorer-v3` (preregistered
 2026-10-11, not run, about 1.7 hours serial), changes only
