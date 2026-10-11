@@ -2507,7 +2507,7 @@ commit, 9 minutes, CPU).
 - Joint detection and confirmation for `split_complete` alone (confirmed by both
   companions at z ≥ 6): clean 346 of 400 (86.5%), substitution 352 (88.0%),
   double indel 225 (56.3%, 51.4 to 61.0%). Given a detection, confirmation held in
-  98.3% to 98.9% of cases.
+  96.6% (clean, 346 of 358), 98.9% (substitution) and 98.3% (double indel) of cases.
 - The decision rule's outcome for S1 held and D1 refuted is provisional: no stop
   is decided by this run.
 
@@ -2603,14 +2603,15 @@ The standard-reading search of BYQMZ is closed. No further sweep of BYQMZ under
 wheels I to V as wired, reflector B and ten pairs is planned, and no two-split
 climb is to be built unless a reason below reopens it.
 
-What the closure covers: one plaintext (BYQMZ, 167 letters), a clean message or at
-most two transcription faults (dropped, inserted or substituted letters, placed
-independently), the 246.8 million middle-complete settings, and the companion
+What the closure covers: one plaintext (BYQMZ, 167 letters), a clean message, one
+dropped or inserted letter, one substituted letter, or two independent dropped or
+inserted letters (the four fault kinds measured), the 246.8 million middle-complete settings, and the companion
 check at z ≥ 6 against FKQLZ and XFEDT.
 
 What it does not cover: any wiring other than wheels I to V as published, other
 reflectors, other machines, FKQLZ or XFEDT searched on their own, faults that are
-clustered or more than two, and transposition. The cited paper's doubt about the
+clustered or more than two, a substituted letter combined with another fault of any
+kind, two substituted letters (none of these was measured), and transposition. The cited paper's doubt about the
 wheel wiring for Batch C is untouched by it, and every null above would be
 silent about a different wiring.
 

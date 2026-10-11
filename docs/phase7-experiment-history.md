@@ -213,7 +213,9 @@ Observed (engineering diagnosis, not a preregistered run; the command is
   column indices are each moved one along (`[4, 1, 0, 2, 3]` for `[3, 0, 4, 1, 2]`).
   The ranking is in
   [data/phase6/transposition-control-5x7-ranking.json](../data/phase6/transposition-control-5x7-ranking.json).
-- The recorded search evaluates 12,008 of those 604,800 pairs (2.0%): 604,800 is
+- The recorded search makes 12,008 evaluations against those 604,800 pairs (2.0% of
+  the exhaustive count; annealing revisits states, so fewer distinct pairs were
+  scored): 604,800 is
   above `max_exhaustive_states` (20,000), so it anneals. Over 19 seeds at the
   configured budget it recovered the plaintext exactly on 5 and otherwise
   stopped on a worse key, the one-character rotation among them.

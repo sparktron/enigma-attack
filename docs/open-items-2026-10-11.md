@@ -41,13 +41,16 @@ standard-reading search of BYQMZ is closed (the decision record is in the
   output gives, so its letters do not look like Enigma output; the other three
   messages' counts are unremarkable. Enigma output is not exactly iid uniform, but
   its deviation (no letter encrypts to itself) does not empty letters out. SZAEJ is
-  milder (p = 0.023 alone) and it shares QTXMA's three absences. That agrees with
-  the existing finding that QTXMA has a restricted alphabet and does not mean the
-  two messages share a cause. The "unexplained coincidence" in STATUS is a
+  milder (p = 0.023 alone, above the repository's alpha of 0.01, and one of five
+  messages inspected, so not surprising at the family level) and it shares QTXMA's
+  three absences. Phase 5 records SZAEJ as compatible with the uniform control, and
+  that stands. Its shared absences are weak evidence of a common cause, not proof of
+  one. The "unexplained coincidence" in STATUS is a
   coincidence of about 0.002 under a uniform null, which is small, not zero.
-- So the unresolved set splits: BYQMZ, FKQLZ and XFEDT have Enigma-like letter
-  statistics and have been searched, and QTXMA and SZAEJ do not and need a
-  different explanation.
+- So the unresolved set splits on the evidence as follows: BYQMZ, FKQLZ and XFEDT
+  have Enigma-like letter statistics, and SZAEJ is compatible with them. Only
+  QTXMA is a clear departure and needs a different explanation; SZAEJ's shared
+  absences are a lead worth checking while explaining QTXMA, not a classification.
 
 ## Open items, ranked
 
@@ -55,7 +58,7 @@ standard-reading search of BYQMZ is closed (the decision record is in the
    maintainer can chase. No compute until it names a wiring or machine. A
    sourced wiring costs about 2 GPU hours per wheel set or reflector with the
    existing split-point climb.
-2. **What produces QTXMA's and SZAEJ's restricted alphabets.** This is the next
+2. **What produces QTXMA's restricted alphabet (and whether SZAEJ shares it).** This is the next
    item in STATUS ("Second"), costs no compute for the first step, and is where
    the letter counts above point. The constraints already recorded stand: the
    length 155 is odd, which argues against a pure bigram cipher, and adding a
@@ -67,8 +70,8 @@ standard-reading search of BYQMZ is closed (the decision record is in the
    asked it. No compute.
 4. **The 5×7 known-key control of Phase 6 and Phase 7**: resolved in
    [#29](https://github.com/sparktron/enigma-attack/pull/29), and not a defect in the machinery.
-   The control failed because the annealing search covers 2% of its 604,800 key
-   pairs; the known key ranks first of all of them and the control passes when
+   The control failed because the annealing search makes 12,008 evaluations against
+   604,800 key pairs (2%, fewer distinct); the known key ranks first of all of them and the control passes when
    searched exhaustively. `phase7-qtxma-source-and-scorer-v3` is preregistered
    there (one number changed, about 1.7 hours serial, no GPU) and is waiting for
    the maintainer to run it. Its deciding prediction is that QTXMA's target
@@ -88,4 +91,6 @@ sweep. Item 4 is done and waits only for the v3 run. Otherwise wait for items 1
 and 3. If the authors
 reply with a wiring, item 1 becomes a preregistered sweep with a power control
 first, as for the standard reading. If they reply that the wheels were never in
-doubt, items 1 and 3 close and item 2 is what is left.
+doubt, item 1 closes. Item 3 stays open: the question sent concerns wheel wiring
+only, and a wiring-only reply gives no archival evidence on the procedure or on why
+QTXMA and SZAEJ left the unbroken list. Item 2 is then the next thing to work.
