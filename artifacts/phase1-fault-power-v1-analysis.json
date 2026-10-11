@@ -1,0 +1,220 @@
+{
+  "draws": {
+    "clean": 400,
+    "substitution": 400,
+    "double_indel": 400
+  },
+  "sweep_arms": [
+    "past_notch_whole",
+    "past_notch_w117",
+    "complete_w117",
+    "split_complete"
+  ],
+  "detection_by_arm": {
+    "clean": {
+      "past_notch_whole": {
+        "detected": 309,
+        "n": 400,
+        "rate": 0.7725,
+        "interval_95": [
+          0.7289,
+          0.8109
+        ]
+      },
+      "past_notch_w117": {
+        "detected": 315,
+        "n": 400,
+        "rate": 0.7875,
+        "interval_95": [
+          0.7448,
+          0.8248
+        ]
+      },
+      "complete_w117": {
+        "detected": 371,
+        "n": 400,
+        "rate": 0.9275,
+        "interval_95": [
+          0.8978,
+          0.949
+        ]
+      },
+      "split_past_notch": {
+        "detected": 273,
+        "n": 400,
+        "rate": 0.6825,
+        "interval_95": [
+          0.6353,
+          0.7262
+        ]
+      },
+      "split_complete": {
+        "detected": 358,
+        "n": 400,
+        "rate": 0.895,
+        "interval_95": [
+          0.8611,
+          0.9214
+        ]
+      }
+    },
+    "substitution": {
+      "past_notch_whole": {
+        "detected": 309,
+        "n": 400,
+        "rate": 0.7725,
+        "interval_95": [
+          0.7289,
+          0.8109
+        ]
+      },
+      "past_notch_w117": {
+        "detected": 306,
+        "n": 400,
+        "rate": 0.765,
+        "interval_95": [
+          0.721,
+          0.8039
+        ]
+      },
+      "complete_w117": {
+        "detected": 360,
+        "n": 400,
+        "rate": 0.9,
+        "interval_95": [
+          0.8667,
+          0.9257
+        ]
+      },
+      "split_past_notch": {
+        "detected": 270,
+        "n": 400,
+        "rate": 0.675,
+        "interval_95": [
+          0.6276,
+          0.719
+        ]
+      },
+      "split_complete": {
+        "detected": 356,
+        "n": 400,
+        "rate": 0.89,
+        "interval_95": [
+          0.8555,
+          0.917
+        ]
+      }
+    },
+    "double_indel": {
+      "past_notch_whole": {
+        "detected": 83,
+        "n": 400,
+        "rate": 0.2075,
+        "interval_95": [
+          0.1706,
+          0.2499
+        ]
+      },
+      "past_notch_w117": {
+        "detected": 93,
+        "n": 400,
+        "rate": 0.2325,
+        "interval_95": [
+          0.1938,
+          0.2763
+        ]
+      },
+      "complete_w117": {
+        "detected": 136,
+        "n": 400,
+        "rate": 0.34,
+        "interval_95": [
+          0.2953,
+          0.3877
+        ]
+      },
+      "split_past_notch": {
+        "detected": 131,
+        "n": 400,
+        "rate": 0.3275,
+        "interval_95": [
+          0.2833,
+          0.3749
+        ]
+      },
+      "split_complete": {
+        "detected": 229,
+        "n": 400,
+        "rate": 0.5725,
+        "interval_95": [
+          0.5236,
+          0.6201
+        ]
+      }
+    }
+  },
+  "covered_by_any_sweep_arm": {
+    "clean": {
+      "detected": 393,
+      "n": 400,
+      "rate": 0.9825,
+      "interval_95": [
+        0.9643,
+        0.9915
+      ],
+      "odds_multiplier_left_by_four_nulls": 0.0175,
+      "note": "detection only; a lower bound on the multiplier, since companion confirmation can only remove detections"
+    },
+    "substitution": {
+      "detected": 390,
+      "n": 400,
+      "rate": 0.975,
+      "interval_95": [
+        0.9546,
+        0.9864
+      ],
+      "odds_multiplier_left_by_four_nulls": 0.025,
+      "note": "detection only; a lower bound on the multiplier, since companion confirmation can only remove detections"
+    },
+    "double_indel": {
+      "detected": 260,
+      "n": 400,
+      "rate": 0.65,
+      "interval_95": [
+        0.602,
+        0.6951
+      ],
+      "odds_multiplier_left_by_four_nulls": 0.35,
+      "note": "detection only; a lower bound on the multiplier, since companion confirmation can only remove detections"
+    }
+  },
+  "predictions": [
+    {
+      "id": "S1",
+      "cell": "substitution",
+      "kind": "rate_at_least",
+      "threshold": 0.6,
+      "draws": 400,
+      "observed": 0.975,
+      "interval_95": [
+        0.9546,
+        0.9864
+      ],
+      "verdict": "held"
+    },
+    {
+      "id": "D1",
+      "cell": "double_indel",
+      "kind": "rate_below",
+      "threshold": 0.5,
+      "draws": 400,
+      "observed": 0.65,
+      "interval_95": [
+        0.602,
+        0.6951
+      ],
+      "verdict": "refuted"
+    }
+  ],
+  "next_step_per_decision_rule": "measure_joint_confirmation_before_any_stop: both kinds are covered by detection alone, which bounds confirmed power from above; run scripts/joint_power.py --arm split_complete on this artifact, whose confirmed rates lower-bound the union's"
+}

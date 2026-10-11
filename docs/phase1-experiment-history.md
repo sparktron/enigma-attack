@@ -2411,7 +2411,8 @@ the standard-reading search here, is the maintainer's decision.
 
 ## phase1-fault-power-v1 (preregistered)
 
-Status: preregistered 2026-10-10; not run. Configuration:
+Status: preregistered 2026-10-10; run 2026-10-10, S1 held and D1 refuted
+([result](#result-run-2026-10-10-1)). Configuration:
 [experiments/phase1-fault-power-v1/config.json](../experiments/phase1-fault-power-v1/config.json),
 with its analysis script `scripts/fault_power_v1.py`, committed before any run.
 
@@ -2463,12 +2464,91 @@ Cost: about 20 minutes on the RTX 3090 (v2's 800 draws took 12 minutes).
 Detection here is not companion confirmation, and the covered fraction is
 reported as a lower bound on the odds multiplier for that reason.
 
-Run command, not run:
+Run command:
 
 ```bash
 python3 phase1_stecker.py --config experiments/phase1-fault-power-v1/config.json --jobs 4
 python3 scripts/fault_power_v1.py
 ```
+
+### Result (run 2026-10-10)
+
+Run: the maintainer launched it from a clean tree at `88855cd` (master with the
+preregistration merged), 2026-10-10 19:49:48 to 20:03:32 UTC, 14 minutes, on 4
+spawned workers and the RTX 3090. One invocation. Artifacts:
+[the run](../artifacts/phase1-fault-power-v1.json), its
+[analysis](../artifacts/phase1-fault-power-v1-analysis.json) from
+`scripts/fault_power_v1.py`, and, as the decision rule's provisional branch
+required, the [joint confirmation](../artifacts/phase1-joint-power-v5-fault-kinds.json)
+from `scripts/joint_power.py --arm split_complete` (run afterwards from the same
+commit, 9 minutes, CPU).
+
+### Observed
+
+- Preflight and both positive controls passed. The three runner predictions all
+  held: `split_complete` detected 89.5% of clean draws (bar 80%) and 89.0% of
+  substitution draws (bar 60%), and detected 23.3 points more double-indel draws
+  than `complete_w117` (bar 0).
+- Detection by arm, of 400 draws per cell:
+
+| arm (sweep it stands in for) | clean | substitution | double indel |
+|---|---|---|---|
+| `past_notch_whole` (v2) | 309 (77.3%) | 309 (77.3%) | 83 (20.8%) |
+| `past_notch_w117` (v3) | 315 (78.8%) | 306 (76.5%) | 93 (23.3%) |
+| `complete_w117` (v4) | 371 (92.8%) | 360 (90.0%) | 136 (34.0%) |
+| `split_past_notch` | 273 (68.3%) | 270 (67.5%) | 131 (32.8%) |
+| `split_complete` (v5) | 358 (89.5%) | 356 (89.0%) | 229 (57.3%) |
+| **any of the four sweep arms** | **393 (98.3%)** | **390 (97.5%)** | **260 (65.0%)** |
+
+- **S1 held:** the union detects 97.5% of substitution draws (95% interval
+  95.5 to 98.6%), against a bar of 60%.
+- **D1 refuted:** the union detects 65.0% of double-indel draws (60.2 to 69.5%),
+  against a bar of under 50%. The author's guess was 30% to 45%.
+- Joint detection and confirmation for `split_complete` alone (confirmed by both
+  companions at z ≥ 6): clean 346 of 400 (86.5%), substitution 352 (88.0%),
+  double indel 225 (56.3%, 51.4 to 61.0%). Given a detection, confirmation held in
+  98.3% to 98.9% of cases.
+- The decision rule's outcome for S1 held and D1 refuted is provisional: no stop
+  is decided by this run.
+
+### Interpretation (inference)
+
+- A substituted letter is covered about as well as a clean message. Every arm's
+  substitution rate sits within three points of its clean rate. The confirmation step removes few detections. So the
+  odds multiplier the four nulls leave for a substituted-letter key is between
+  0.025 (union of detections) and 0.12 (`split_complete` alone, confirmed),
+  against 0.018 to 0.135 for a clean one.
+- Two dropped or inserted letters are covered much less: between 0.35 (union of
+  detections) and 0.44 (`split_complete` alone, confirmed) is left. The split
+  climb is the arm that matters here, at 57% against 34% for the next best, so it
+  finds many of these keys by placing one fault and tolerating the other. The
+  other four arms add 8 points to its detections (260 against 229). I have not
+  isolated why the guess of 30% to 45% was too low; the planted faults are
+  independent and uniformly placed, and some pairs lie so close together or so
+  near an end that they are nearly one fault.
+- The confirmed union is not measured: confirmation was run for `split_complete`
+  only, so the true union multiplier for two faults lies between 0.35 and 0.44
+  and for substitution between 0.025 and 0.12.
+- What this does to the odds. The single-indel multiplier for the four nulls
+  together was 0.13 and the clean one 0.035 (the v5 entry). The substitution case
+  now sits between those. The two-fault case is the least excluded garble, at
+  0.35 to 0.44, but a message with two independent faults is a priori rarer than
+  one with a single fault (at an independent per-fault rate of 0.2 it is about a
+  fifth as likely), so it contributes little to the remaining odds. Those
+  caveats stand: one plaintext, planted stand-ins for the sweeps, faults uniform
+  in position and independent, and wheels I to V as wired.
+
+### Decision
+
+No further sweep is preregistered by this run. By the rule fixed beforehand, the
+stop is not decided here. The measurements it called for are in. In the
+maintainer's hands: the standard-reading search of BYQMZ can be closed, leaving
+odds multipliers of 0.035 (clean), 0.13 (one indel), 0.025 to 0.12 (a
+substituted letter) and 0.35 to 0.44 (two indels), or a two-split climb can be costed to lift the last
+figure. My inference is that the expected gain from the second is small, because
+the case it targets is the least probable one, and that the wheel-wiring question
+the cited paper raises is the larger open item. That is a recommendation, not a
+result of this run.
 
 ---
 
