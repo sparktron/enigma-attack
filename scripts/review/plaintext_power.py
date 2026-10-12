@@ -86,6 +86,8 @@ def run_one(base: dict, plaintext: str, arm: str, draws: int, seed: int, jobs: i
     config = json.loads(json.dumps(base))
     power = config["end_to_end_power"]
     power["plaintext"] = plaintext
+    # A configured list of plaintexts takes precedence over the singular field.
+    power.pop("plaintexts", None)
     power["draws"] = draws
     power["seed"] = seed
     power["cells"] = [{"length": 167, "perturbation": "none"}]
@@ -105,7 +107,11 @@ def run_one(base: dict, plaintext: str, arm: str, draws: int, seed: int, jobs: i
         cwd=ROOT, check=True, capture_output=True,
     )
     result = json.loads(output.read_text(encoding="utf-8"))["result"]
-    threshold = result["cells"][0]["null"]["detection_threshold_score_per_letter"]
+    cell = result["cells"][0]
+    # Windowed, split-point, repaired and first-plug arms calibrate their own null;
+    # the others use the cell's pooled null.
+    arm_record = next(a for a in cell["arms"] if a["arm"] == arm)
+    threshold = (arm_record.get("null") or cell["null"])["detection_threshold_score_per_letter"]
     rows = [d["arms"][arm] for d in result["draws"]]
     equivalent = [r for r in rows if r["exact_equivalent_exists"]]
     # The harness's own rule: the planted plugboard is recovered exactly and the
