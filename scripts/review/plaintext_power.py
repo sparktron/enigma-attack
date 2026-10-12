@@ -28,10 +28,13 @@ Examples
 
 Review results (167 letters, ten pairs, seed 424242, detection given an exact
 equivalent in the slice):
-    repository plaintext, IC 0.0792: whole-message 0.947 (90/95); v5 0.97 (39/40)
+    repository plaintext, IC 0.0792: whole-message 0.947 (90/95); v5 0.97 (39/40,
+        recomputed pending)
     16 Markov texts, IC 0.0514 to 0.0625 (mean 0.0574), whole-message arm:
         mean 0.359 (270/752), range 0.11 to 0.64, Pearson r with IC 0.87
     v5 arm, 40 draws each: IC 0.0514 -> 0.03, 0.0578 -> 0.23, 0.0625 -> 0.57
+        (recomputed pending: measured before the fix that scores against the
+        selected arm's own null threshold; rerun on the CUDA build)
 """
 
 from __future__ import annotations

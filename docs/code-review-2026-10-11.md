@@ -77,7 +77,13 @@ a proof of concept recovers most of the loss (S-1).
   (269/752)**, Pearson r between IC and detection **0.87**, about +4.7 points per
   +0.001 of IC.
 
-  The v5 arm itself (split-point climb, complete rule, CUDA engine; 40 draws each):
+  The v5 arm itself (split-point climb, complete rule, CUDA engine; 40 draws each).
+  **Recomputed pending:** these v5 rates were computed with a version of
+  `plaintext_power.py` that scored detections against the pooled cell threshold
+  instead of the split-point arm's own null threshold (fixed in this PR). They
+  need a rerun on the CUDA build, and the 0.35 to 0.42 integral, the 0.4 in the
+  summary and the 0.6 and 0.5 to 0.65 multipliers derived from them stand
+  provisionally until then:
 
   | plaintext IC | 0.0514 | 0.0578 | 0.0625 | 0.0792 (repository's) |
   |---|---:|---:|---:|---:|
