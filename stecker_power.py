@@ -16,7 +16,7 @@ import enigma_fast
 import stecker_batch
 import stecker_split
 from stecker_climb import body_direct_climb, climb_windows, windowed_climb
-from stecker_scoring import FastNgramScorer
+from stecker_scoring import FastNgramScorer, index_of_coincidence, letter_counts
 from stecker_space import RING_RULES, RingRule, reducible_space_size, rule_key_coverage
 from stecker_sweeps import body_direct_sweep, resolve_engine
 from stecker_traffic import Traffic, normalize_plaintext, random_plugboard
@@ -42,6 +42,62 @@ def wilson_interval(successes: int, trials: int, z: float = 1.96) -> list[float]
         z * math.sqrt(rate * (1 - rate) / trials + z * z / (4 * trials * trials)) / denominator
     )
     return [round(max(0.0, centre - margin), 4), round(min(1.0, centre + margin), 4)]
+
+
+def coincidence_of_text(text: str) -> float:
+    counts, total = letter_counts(enigma_fast.text_to_indices(text))
+    return index_of_coincidence(counts, total)
+
+
+def detection_by_plaintext(
+    draws: Sequence[Mapping[str, Any]],
+    per: Sequence[Mapping[str, Any]],
+    detected: Sequence[bool],
+    exact: Sequence[Any],
+) -> dict[str, Any]:
+    """Detection split by the planted plaintext and by terciles of its IC.
+
+    A detection rate measured under one plaintext says nothing about another:
+    the climb's first phase is an index-of-coincidence climb, and detection falls
+    steeply with the plaintext's IC (docs/code-review-2026-10-11.md).  Draws take
+    their plaintexts in turn, so each plaintext has about the same number of
+    draws.  ``given_equivalent`` counts only draws whose swept slice holds an
+    exact equivalent of the planted key, which separates coverage from detection.
+    """
+
+    groups: dict[int, dict[str, Any]] = {}
+    for draw, hit, flag in zip(draws, detected, exact):
+        info = draw["plaintext"]
+        group = groups.setdefault(
+            info["index"], {"index": info["index"], "ic": info["index_of_coincidence"],
+                            "draws": 0, "detected": 0, "equivalent": 0, "detected_given_equivalent": 0},
+        )
+        group["draws"] += 1
+        group["detected"] += int(hit)
+        if flag:
+            group["equivalent"] += 1
+            group["detected_given_equivalent"] += int(hit)
+    ordered = sorted(groups.values(), key=lambda group: (group["ic"], group["index"]))
+    terciles = []
+    for part in range(3):
+        members = ordered[part * len(ordered) // 3 : (part + 1) * len(ordered) // 3]
+        if not members:
+            continue
+        draws_in = sum(m["draws"] for m in members)
+        hits = sum(m["detected"] for m in members)
+        equivalent = sum(m["equivalent"] for m in members)
+        given = sum(m["detected_given_equivalent"] for m in members)
+        terciles.append(
+            {
+                "plaintexts": len(members),
+                "ic_range": [members[0]["ic"], members[-1]["ic"]],
+                "draws": draws_in,
+                "detected": hits,
+                "detection_rate": round(hits / draws_in, 6),
+                "detected_given_equivalent": [given, equivalent],
+            }
+        )
+    return {"by_plaintext": ordered, "by_ic_tercile": terciles}
 
 
 def _one_indel(ciphertext: str, generator: random.Random) -> tuple[str, dict[str, Any]]:
@@ -147,13 +203,22 @@ def arm_climb(config: Mapping[str, Any], arm: Mapping[str, Any]) -> Mapping[str,
     configuration written before windows existed runs exactly as it did.
     """
 
+    base = config["climb"]
+    if "first_plug" in arm:
+        # ``null`` removes the configured start set, so one run can put a climb
+        # with and without it side by side.
+        base = {key: value for key, value in base.items() if key != "first_plug"}
+        if arm["first_plug"] is not None:
+            base["first_plug"] = dict(arm["first_plug"])
     if arm.get("split") is not None:
         if arm.get("window") is not None:
             raise ValueError(f"arm {arm['id']!r} sets both window and split")
-        return {**config["climb"], "split": dict(arm["split"])}
+        if base.get("first_plug") is not None:
+            raise ValueError(f"arm {arm['id']!r} sets both first_plug and split")
+        return {**base, "split": dict(arm["split"])}
     if arm.get("window") is None:
-        return config["climb"]
-    return {**config["climb"], "window": dict(arm["window"])}
+        return base
+    return {**base, "window": dict(arm["window"])}
 
 
 def _power_init(config: Mapping[str, Any], scorer: FastNgramScorer | None = None) -> None:
@@ -177,7 +242,15 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
     rings = tuple(generator.randrange(26) for _ in range(3))
     start = tuple(generator.randrange(26) for _ in range(3))
     plugboard = random_plugboard(generator, int(settings["stecker_pairs"]))
-    text = normalize_plaintext(settings["plaintext"])[: int(cell["length"])]
+    plaintexts = settings.get("plaintexts")
+    # One plaintext per draw, chosen by the draw's number and not by the draw's
+    # generator, so a configuration that lists one plaintext draws exactly the
+    # keys it always did and the keys are the same whichever plaintexts are listed.
+    plaintext_index = None if plaintexts is None else draw % len(plaintexts)
+    raw_text = settings["plaintext"] if plaintexts is None else plaintexts[plaintext_index]
+    text = normalize_plaintext(raw_text)[: int(cell["length"])]
+    if len(text) < int(cell["length"]):
+        raise ValueError(f"plaintext {plaintext_index} is shorter than the cell's {cell['length']} letters")
     clean = EnigmaI(
         rotors=order,
         rings="".join(chr(65 + value) for value in rings),
@@ -274,6 +347,7 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
         if arm.get("window") is not None
         or arm.get("repair") is not None
         or arm.get("split") is not None
+        or "first_plug" in arm
     ]
     own_null_messages = {
         arm["id"]: arm_message(message, ciphertext, perturbation, arm) for arm in own_null_arms
@@ -361,6 +435,16 @@ def _power_draw(task: tuple[int, int]) -> dict[str, Any]:
             "plugboard": expected_plugboard,
             "perturbation": perturbation,
         },
+        **(
+            {}
+            if plaintext_index is None
+            else {
+                "plaintext": {
+                    "index": plaintext_index,
+                    "index_of_coincidence": round(coincidence_of_text(text), 6),
+                }
+            }
+        ),
         "arms": arms,
         "null_scores": [round(value, 9) for value in null_scores],
     }
@@ -454,6 +538,7 @@ def run_end_to_end_power(
                 arm.get("window") is not None
                 or arm.get("repair") is not None
                 or arm.get("split") is not None
+                or "first_plug" in arm
             ):
                 own = [value for item in per for value in item["null_scores"]]
                 arm_mean, arm_sd = statistics.fmean(own), statistics.pstdev(own)
@@ -534,6 +619,11 @@ def run_end_to_end_power(
                         else None
                     ),
                     **split,
+                    **(
+                        detection_by_plaintext(mine, per, detected, exact)
+                        if "plaintexts" in settings
+                        else {}
+                    ),
                     "median_top_score_z_over_null": round(
                         statistics.median(
                             (item["top"]["score_per_letter"] - arm_mean) / arm_sd for item in per

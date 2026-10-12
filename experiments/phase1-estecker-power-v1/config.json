@@ -1,0 +1,352 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "cuda"
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261012,
+    "samples": 24
+  },
+  "experiment_id": "phase1-estecker-power-v1",
+  "status": "preregistered 2026-10-11; not run",
+  "mode": "end_to_end_power",
+  "output": "artifacts/phase1-estecker-power-v1.json",
+  "hypothesis": "On plaintexts typical of German Army traffic (index of coincidence about 0.06), partial exhaustion of the first plug (Ostwald and Weierud's E-Stecker: the climb run from the empty plugboard and from each of the 25 boards that plug E to another letter, the best final n-gram score kept) lifts the detection rate of the v4 sweep's climb (the W = 117 head-and-tail climb over the middle-complete space) well above its rate without it, clean and with one dropped or inserted letter. The repository's power controls so far used one plaintext of IC 0.0792; docs/code-review-2026-10-11.md measured detection falling steeply with plaintext IC (whole-message arm: 0.36 over 16 Markov plaintexts of IC 0.051 to 0.063; v5 arm: 0.03 to 0.57 over IC 0.051 to 0.063). This control draws 24 new plaintexts of that kind and measures the v4 climb with and without the E start set on the same keys.",
+  "refuted_by": "P1 refuted: the baseline arm detects more than 60% of clean draws (its power at typical IC is not low, so the review's concern does not carry to the v4 climb). P2 refuted: the E arm detects less than 75% of clean draws. P3 refuted: the E arm gains less than 20 points over the baseline on clean draws. P4 refuted: the E arm detects fewer indel draws than the baseline. A refuted P2 or P3 means the E start set does not repair typical-IC power at this climb and the sweep v6 is not worth its cost; the sweep's stated power is taken from this run's E-arm clean detection rate, whatever it is.",
+  "end_to_end_power": {
+    "rationale": "phase1-body-direct-sweep-v4 swept BYQMZ with a W = 117 head-and-tail climb over the middle-complete space and was null; its stated power came from planted keys under one plaintext of IC 0.0792, well above Army traffic (about 0.061). This run measures that climb, and the same climb with the E-Stecker start set, on 24 plaintexts of typical IC, so that the power stated for the E-Stecker rerun (phase1-body-direct-sweep-v6) is a power for typical text, and so that the baseline's power at typical IC is on record.",
+    "seed": 20261111,
+    "draws": 480,
+    "stecker_pairs": 10,
+    "cells": [
+      {
+        "length": 167,
+        "perturbation": "none"
+      },
+      {
+        "length": 167,
+        "perturbation": "indel"
+      }
+    ],
+    "left_neighbours": 1,
+    "middle_neighbours": 2,
+    "right_neighbours": 1,
+    "null_trials": 8,
+    "detection_z": 6.0,
+    "target_length": 167,
+    "headline_arm": "complete_w117_estecker",
+    "arms": [
+      {
+        "id": "complete_w117",
+        "ring_rule": "middle_complete",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      },
+      {
+        "id": "complete_w117_estecker",
+        "ring_rule": "middle_complete",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        },
+        "first_plug": {
+          "letters": "E"
+        }
+      }
+    ],
+    "predictions": [
+      {
+        "id": "P1",
+        "statement": "The baseline v4 climb (complete_w117) detects at most 60% of clean draws across the 24 typical-IC plaintexts. Deciding for the review's concern.",
+        "kind": "rate_at_most",
+        "cell": 0,
+        "arm": "complete_w117",
+        "value": 0.6
+      },
+      {
+        "id": "P2",
+        "statement": "The E-Stecker climb (complete_w117_estecker) detects at least 75% of clean draws. Deciding for the sweep.",
+        "kind": "rate_at_least",
+        "cell": 0,
+        "arm": "complete_w117_estecker",
+        "value": 0.75
+      },
+      {
+        "id": "P3",
+        "statement": "The E-Stecker climb detects at least 20 points more clean draws than the baseline on the same draws. Deciding for the sweep.",
+        "kind": "rate_gain_at_least",
+        "cell": 0,
+        "arm": "complete_w117_estecker",
+        "over": "complete_w117",
+        "value": 0.2
+      },
+      {
+        "id": "P4",
+        "statement": "The E-Stecker climb detects at least as many one-indel draws as the baseline.",
+        "kind": "rate_gain_at_least",
+        "cell": 1,
+        "arm": "complete_w117_estecker",
+        "over": "complete_w117",
+        "value": 0.0
+      }
+    ],
+    "arm_rationale": "complete_w117 is the climb of sweep v4 (middle_complete rule, W = 117 head and tail); complete_w117_estecker is the same climb with climb.first_plug = {letters: E}, 26 start boards. Same keys, same plaintext per draw, same slice, each against its own wrong-setting null.",
+    "plaintexts": [
+      "SIQTXZWOXEIGXVONULLBETTENTERBARSTANNULLXZWOFORTSCHNHOLTXHAUSTESXANNWENFANTENFOLLVEXMARZBESTSTDUNISKULLERZIMKOMBOGENDASTUNGDERXHALTARSIEGERKBERTKNAERKBERBAFXUNGEXELDERF",
+      "NSNULLUHRANSAMXKAXEILXSIPPERUENMALMADXROSTORDLTAGABGEMITXBERESSUNXDISUENLAMLEGUEREINSQLEGYHALINZEUGKOEHRLIPPENXSTRINAXANDSIEDIERXWOXETZNGAUSGWELANGUNGEBEXMOTOKXZWOXOPX",
+      "LIKOMPXGLEGLIQTEFEKALIERAQTAGEXDERINSXAQSXANDAVERPSUNDXEIXWEGYKIXZWOEINEUNXHZNORIHRSXBERSQUENMOTXZAHRWANIEXFLUBATTELLZZRUNGUNGINSALGRYYIRXSTANXSTRASSEQSPANFZERXBETRINU",
+      "MEHNENAIXDIERINMARXSTUNGDORCHTSSIESIAKXFUEHAZOLOHMXVIEGYKNAXMORIGXSZEINMARUEGTXMADRXEIXBORTJESZEINSVORDERXAQTNAMMADERSQGENEUTONXEIDENFAHNEIDENULLNUENSTERANDVEMITTANNID",
+      "FHXVORWEIBERSXELFHXFELGORAUMZWOVEREQTKDOPKLAJABETTAMGAZUSTUNKFZRXUFDLIEBUPPEIXAQTBELAMUTMITTEFOLONUJAKXBOROSTONAQTFGANXDIVXBORTJENAXGABZWOSTANDIVDWESENDXKALYJENDNOSHWM",
+      "LGEFELLNKRAQSNEXEINXINSETZWOSEQSPDANNEUSSINSNULLXJAXBODNAUMFUEXVOMARMKOJESTERDWENSFUELINFEQSPROOGMITTFALIQGENIAXBENKSPERIEDJEXWOXAQTXKFZXETGJOYFUEBETTERVIERZTXZWOXPOTT",
+      "UNDABGEFEHLDURQFUEBROEMITZUKERRTXZWOAQTIFFUENXDREILFXUTRINSKLAMTOPWESTSEINOSEQSDREQSXTSFUNXPOFFTIONAUMGLITKONSENZDIVXZARKEMXOSTAFFKLAESZWOAQTIMBEFAHRWXUHREINHINLAKXHOW",
+      "URSETERDLXUNXKOTXMUNZWOZWOFFSTANWESQUBISUNNIXBEFALTENMASONXKELGTHINGFRGTXELFGARSQERUPPAUNDINSVEREINBEZUMGEFOLOPWESEIMBESETTENSAQUEBEFXSOKXPROEINSSIEBESTRARZTXMARQFUENF",
+      "IEREITTEDTRIQXGETRXNEMXOSEQSXEINSTUNDBRANGXVERPSTLIENIXOTTOPWESJEANTENDAINTXVERACHLYERSSIENLAMXKOLUSLMADYXSIESTAXMORTHELXARTIONAXSSENPFLAKXRXNERFORDWORTIAQRNSEININSXFU",
+      "NGSIEBEFANZEPANDERSXEREEISSIESPRTILYYVONTXEITTRINAFINSTOEGUNDERXHOCKXKISTAFELDUNDNOEMVIERLEQTXZXDRERTURQFUNGENFXSELIQXZWOXEIQTWOAQTDERVERFUENFREINSQTXTSIGELLEGFRGTWESG",
+      "SQLIEBEDTOBENZUMBENFSENDXSAXISTAREINPOLONXDREINANDXOSSEQFLEGYHAXNEUNFXPANDZURFXVIEDNOWAJAXINSNENYINSVONXUNGUNGERBERFORIQTXNULBAHRUQXCBMXDREQTEHRVERXNUNDENDASMASTDIEBUC",
+      "NULLXAQTFEHLSHXEINSTEXZWOSIEGEXULLNOSSVIEQFFIERENYYVORPSTERNULLFXSTAGENBETZUMALLSEVORSTANXGEZXEINSZWOZUMMARMXEINROTEINNAQTNULLXUNGXVERTANNTHEMAOKOMALTHERXAERDOXEIDASTE",
+      "ERSSENFSEINSNEZUSLAGSAUFSTVIEDTSERAXAQTANNEINIKOLIZYXROSSIQXMUNXMOTTEMITTOUNGUNDERKURQLIQEGEDSINSAQTURTEETEXGYHAZAXSKOEMELDERANDERUNGXNYIRSTEIDERKEMARKECSKOMARTXKOMEIN",
+      "NDTONIQRIFMOTTEXDIEGLENXDORHORINBERTIONAQMUTSRAUFFEMXDESPYYSIQTAFANDERTEXZARTYYXKDOROENFDETTANDREQLEXDIVXSTENFSTYYRANDESTEINDERVERSQGENFXVONSAEHRWOXEIQUECSKMXKOMXVIENF",
+      "OPGESNULLVIERLEGUNGSALTKIXVONULLNULLBAHLEILNULLSQXWIGXJULLATIHMEYEREINSVIEDAXMOMACEXVIEBENIKXFELDZUMKIXZUMBAFTLAMMEARTSABHENMARSOROEMETZTERAQKOLISTOFFUEDDEMEINMAFXANNE",
+      "IGENFHXAOKXELAKXFUEHARTJESPERNOSCHEITRASCHTSCHEDSTOPPAUNDUNGBUCHNELLGUNGANDXTOFFUELDETEXPIONXMORBAKXNANXGABERXJEXFUENULLTIOXDERHAZARTJEDSICHLROEMPFLEINSXQUBISUENLAMTXB",
+      "EMVIEDNANNISUNIKLAQXNAXFLENAXSUNDOPBEZUGZUSGFJADREREINRIQVOMZWOXOHLENAXEINSXBESEINXVORPFLIEDURZWONAQTXEIKXKEINSTRXLFHXEINXZWOSCHOROQERSTUNGXVIEDNITHANXQULLNUTORTIGTXKA",
+      "RKUNDOKORXDREINAQSAMGENDIVARNULLUNGETHINSTYYUENWESTRESEQLEXROEMALSOXABETRXEINAMXVORKAERINAQTUNBERLEXSTYYVONDESPROQENGENFVIEDIVANZWOSIGUNXTRINSZWESTENENSFLACHEINSXSIQTD",
+      "RHAUFXROSTENTRAUSDREXVIERKUNGXMORDWOROXNULLHELIEREINSANDVERTANNTANDXDIENXDXNRIENDIVXEIXBORPSXAQTDUNGXEINSNULLAMXCBMXKWXUMLTXMAESHALTOKXFRIQEINSTOPGENSERSXBORTATANEGEBE",
+      "ECHSTANXSZENNTPECHALTEXYYZUMKORPFLIEDABSSTANWESENDNOWAXEMPXINGEPTRINABZIMGAZAHLSEQTZTRAMMWESBENSDIVFELEINSTONULLBESNEUTONXDIVXZWOXVORDUNDNOROESKLANZEHLXSZENFANDOXEILEI",
+      "CHOWKINXLIENAUFFEREQSNULLNEINEMXOBETREINSAQTWXRAUIMBAUPTRIESTSINRZTRINSVIEGEFAHRXAQTMITTOPGORSIERMEINZXISEINSNEINSAQXLUGLESPROQVONULITEXAQTSXPOLOPXROERXZUMTZUMARTBISSU",
+      "XKEIGXVORTXFUEBERARZINSZENIXUTINXMORGEXLFUEHLDLXJUBATARSQLINSAVERTANGIEREEEIDERXNULLBESTOPKLAMMANVERIFFXEILXUHRXNEINFORKUFBEWEGFRGUNISSEQSXVONSXFUEDTOFUEBELXSIEWIRKEHR",
+      "RUNIQENXGLJAGTXGABITALTIGTXNOXEINSZWONAXBORIJENULLXDRERWUNGUNGDEBERSQXSSVIEIDERBAFFINFXFRINEBEXOSZENFFZXDIEGUNGEBERNENDYXRONAXMOTXFLIQENFUNXQUNXSZEINAXMOEMETROEGEKALNE",
+      "NNAQTBSSPXINENKSTENXELLNULLAEREIDERSTRANNUNDUBISXAMPXOBFUEDUNGSENBERDERNULLXUHRERVESQUARMALTNULLXPAKIXINFDERMARMOTKINLAESTANDEIKOMXWAXSTUMELAGSLAZARZUGDEIDEREISAQTXFUE"
+    ],
+    "plaintexts_provenance": {
+      "generator": "scripts/review/plaintext_power.py: markov_text(random.Random(20261012), ngram_tables(config), 167), 24 draws in order",
+      "source": "the published 1941 bigram and trigram counts the scorer is built from (data/phase7)",
+      "index_of_coincidence": {
+        "min": 0.0453,
+        "max": 0.0641,
+        "mean": 0.0579
+      },
+      "caveat": "Markov samples of the scorer's own training counts: they are typical of its n-gram statistics by construction, which flatters the n-gram phase, and they are not real German. They stand for plaintext of typical letter statistics, not for any message. Their mean IC (0.0579) is a little below Army traffic's (about 0.061), so they are, if anything, slightly pessimistic for the climb."
+    },
+    "pre_run_facts": {
+      "disclosure": "Known before this configuration was written, and shaping its thresholds. None of it is a result of this run.",
+      "review": "docs/code-review-2026-10-11.md, finding B-1 and suggestion S-1. Measured there, not preregistered: the whole-message climb over 16 Markov plaintexts (IC 0.0514 to 0.0625) detected 35.8% given an exact equivalent in the slice; the v5 split-point climb detected 3%, 20% and 57% at IC 0.0514, 0.0578 and 0.0625 (40 draws each); E-Stecker lifted the true-setting climb from 5/24 to 19/24 at IC 0.0578 and from 3/36 to 14/36 at IC 0.0514 (R-Stecker, 73 starts: 27/36). No run has measured the W = 117 middle-complete climb (v4's) at typical IC, with or without E starts.",
+      "expectations": "The thresholds are the author's guesses before any measurement of this arm: the baseline near the whole-message figure (guess 0.35 to 0.55, bar 60%), the E arm at 0.75 to 0.9 (bar 75%), a gain of 0.3 or more (bar 20 points).",
+      "implementation": "climb.first_plug is new in stecker_climb.py, stecker_batch.py and stecker_cuda.py; tests/test_first_plug.py checks the reference, batched and cuda climbs against one another on identical plugboard, evaluation count, score and window, and a new preflight check (first_plug_climb_parity) repeats that on this configuration's arms before any draw.",
+      "smoke_run": "Before committing, this configuration was smoke-run once with draws cut to 4 per cell and scratch output (62 s, --jobs 4). Every preflight check passed, including first_plug_climbs_match (32 of 32 identical, worst score difference 0.0). Those are draws 0 to 3 of each cell of this run, same seed, so the full run recomputes them. Clean: baseline 2 of 4, E-Stecker 4 of 4; one indel: 1 of 4 each. With four draws that is not evidence, and no threshold, arm or plaintext was changed after seeing it."
+    }
+  },
+  "run_command": "python3 phase1_stecker.py --config experiments/phase1-estecker-power-v1/config.json --jobs 8",
+  "run_constraint": "Not run. Run from a clean tree after this configuration and the first_plug climb are committed, with nvcc and the GPU available (the climbs run on the cuda engine; the workers are spawned). The E-Stecker null climbs run on the CPU batched climber (26 starts per window) and dominate the time.",
+  "limitations": [
+    "Plaintexts are 24 Markov samples of the scorer's own n-gram counts, 20 draws each, drawn in turn. They have typical letter statistics and typical n-gram statistics by construction; real messages vary in ways these do not (names, numbers, abbreviations), and the n-gram phase is flattered. They are not authentic held-out Army text, which the repository does not have at 167 letters.",
+    "The slice is the planted key's own neighbourhood: the planted wheel order, left offsets within one of the planted, middle offsets within two, and the planted right wheel. Every other wheel order and distant start is absent, so a detection is a detection against that neighbourhood and a pooled wrong-setting null, not against 2.7e7 settings. The detection threshold is set at 6 null standard deviations to stand in for the extreme value of that many draws, and that substitution assumes the null is close to normal.",
+    "The right wheel's ring and position are taken at the planted values (or, for the AAA arm, at the planted right offset with ring A). That is the one axis the full sweep enumerates exactly, so it always visits those values, but the experiment does not test it.",
+    "The null is the climb's score at randomly drawn wrong settings of the same message. It is pooled over the cell's draws, eight per draw, and is a reference distribution rather than a sample of the space a sweep would see.",
+    "Constructed plaintext enciphered by the reference machine, not authentic held-out traffic with an authentic daily key.",
+    "The right wheel's position is swept over the planted value and its two neighbours, so the slice holds the setting one keystroke away that the tail window needs. Under the middle-past-notch rule the middle wheel's phase is fixed, so when the planted machine's first keystroke steps its middle wheel the shifted setting is not exactly reachable; the measurement includes that loss rather than assuming it away.",
+    "Each windowed arm is compared with its own pooled null, the same windowed climb at the same wrong settings, because the better of two shorter windows is distributed differently from a whole-message score. The 6-sigma threshold stands in for the extreme of a full sweep in which every setting contributes the better of two windows, which is twice as many scores as the whole-message sweep and assumes the windowed null is also near normal.",
+    "'Missed by both past-notch arms' stands in for 'v2 and v3 both null'. The real sweeps compare a candidate against a score distribution over 27.4 million settings; this control compares against a pooled null of wrong settings, as every earlier power control did. The joint figures in phase1-body-direct-sweep-v3 (73 of 80 clean) were measured the same way.",
+    "The missed set is defined by outcomes on the same draws that then measure the complete arms, so a complete arm that fails for a reason the past-notch arms share (the same unlucky plugboard) is under-counted among the missed, and one that succeeds by retrying a different equivalent setting is over-counted. Neither effect is estimated.",
+    "400 draws per cell leave about 36 clean missed draws and about 100 middle-third indel missed draws, if the rates of the earlier controls hold. A rate in a stratum of 36 has a 95% interval about 0.3 wide. The thresholds are set with that in mind and the strata sizes are reported.",
+    "Only a single dropped or inserted letter is modelled, with the head-and-tail argument of phase1-windowed-climb-power-v1. Two faults, a substituted letter, or a fault in the first or last letters behave differently.",
+    "Every figure assumes UKW-B, wheels I-V as wired and the 1940+ indicator procedure. The cited paper's authors suspect Batch C used differently wired wheels; if so, no planted-key power here applies to it.",
+    "The split-point climb judges a hypothesis by an n-gram score from which the junction terms are dropped and a fixed credit added. The credit, -8.66 per term, is the wrong-setting null mean per letter measured in the control and applies to a message with masks of its own only approximately; BYQMZ carries one masked letter at position 28 and the planted draws carry none.",
+    "The split arm is judged against its own null, the same climb at the same wrong settings as the pooled null, because the best of about 330 hypotheses is distributed differently from a single score. The 6-sigma threshold assumes that null is near normal.",
+    "The oracle arm is judged against its own null, as amended in the control, and is the ceiling for any split-point climb: it is handed the fault's position and kind.",
+    "q, the prior probability of an indel, is not measured and the nominal 0.2 is arbitrary. The yields at every reported q are printed.",
+    "Only a single dropped or inserted letter is modelled. The split-point climb has one fault hypothesis; two faults are not searched.",
+    "'Missed by all three reference arms' stands in for 'v2, v3 and v4 all null'. The real sweeps compare against score distributions over 27.4 and 246.8 million settings; this control, like every earlier one, compares against a pooled null of wrong settings.",
+    "The missed set is defined on the same draws that measure the split arms, so a failure the split climb shares with the reference climbs (an unlucky plugboard) is under-counted among the missed draws. It is not estimated.",
+    "Detection only. The companion confirmation is not part of this run; its joint rate is to be measured afterwards on these draws, as for v3 and v4.",
+    "If the rates of the earlier draws hold, about 135 one-indel and 23 clean draws are missed by all three arms: enough for the deciding indel stratum (a 95% interval about 0.16 wide), not for the clean one.",
+    "Detection here is the climb's top candidate recovering the planted plugboard at a score above the arm's own threshold. It is not companion confirmation, which the real sweeps decide on. Detection bounds confirmed power from above, so 'not covered' verdicts stand and 'covered' verdicts are provisional until scripts/joint_power.py measures the confirmed rate.",
+    "The two faults of a double-indel draw are independent and uniformly placed, so some pairs are far apart and some adjacent; real garbles may cluster. A substituted letter is uniform over the other 25 letters at a uniform position, including the first and last.",
+    "The union of four arms on one draw is a stand-in for four separate sweeps, each of which sees its own wrong-setting score distribution over 27 to 247 million settings. It carries the same pooled-null approximation as every earlier control here.",
+    "The indel cell drops or inserts one random letter at a uniformly random interior position; real garbles can be several letters. Substitution and two-fault cells are not run here.",
+    "Detection is not companion confirmation. The v5 control confirmed 96.6% of its detections; no confirmed rate is measured for the E arm here, so the sweep's stated power uses detection times that factor and says so."
+  ]
+}

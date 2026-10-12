@@ -96,7 +96,11 @@ so a wrong stecker gives a wrong message key and a body of noise. It also
 found that a body-direct stecker climb (start position searched directly
 instead of derived from the indicator), run to convergence with an
 index-of-coincidence phase ahead of the n-gram phase, recovers a known
-ten-pair plugboard and its exact plaintext on every trial at 167 letters. The
+ten-pair plugboard and its exact plaintext on 28 of 32 trials (87.5%) at 167
+letters, under a plaintext of index of coincidence 0.079; under Army-typical
+plaintexts (IC about 0.06) the climb recovers far fewer, and partial exhaustion
+of the first plug (`climb.first_plug`) recovers most of the loss
+([review](docs/code-review-2026-10-11.md)). The
 complete indicator-coupled search (2,109,120 daily keys, both indicator
 orderings) and a declared body-direct slice were both run to completion and
 found nothing, exactly as the calibration predicted. Full detail, numbers, and

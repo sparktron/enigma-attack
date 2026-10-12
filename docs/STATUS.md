@@ -4,6 +4,20 @@ Updated: 2026-10-11
 
 Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
+Code review 2026-10-11 ([code-review-2026-10-11.md](code-review-2026-10-11.md)):
+the simulators, sweep space, climb and scorer check out independently, but every
+end-to-end power figure uses one plaintext of IC 0.0792, against about 0.061 for
+Army traffic, and detection falls steeply with plaintext IC (about 0.4 for the v5
+climb at typical IC, measured, not preregistered). The closure's odds multiplier
+of 0.06 to 0.15 holds only for high-IC plaintexts. Partial plugboard exhaustion
+(Ostwald and Weierud's E-/R-Stecker) recovers most of the loss in a proof of
+concept. `climb.first_plug` now implements it in all three engines. On the maintainer's
+instruction (2026-10-11) the closure is being tested: `phase1-estecker-power-v1`
+(power at typical IC, with and without E-Stecker) and then
+`phase1-body-direct-sweep-v6` (v4's sweep with E-Stecker, launched only if the
+control's P2 and P3 hold) are preregistered in the
+[Phase 1 history](phase1-experiment-history.md#reopening-the-question-power-at-typical-plaintext-2026-10-11).
+
 ## Current state
 
 The nine confirmed findings in the [repository audit](code-review-2026-09-22.md)
@@ -242,7 +256,7 @@ control passes when searched exhaustively.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 263 tests passed locally on 2026-10-09,
+- `python3 -m unittest discover -q`: 263 tests passed locally on 2026-10-09 (272 on 2026-10-11, before the first-plug tests),
   with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
   batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
   GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that
@@ -505,7 +519,14 @@ discriminators. Its length of 155 is odd, which argues against a pure bigram
 cipher before any implementation work.
 
 Third, unchanged: archival evidence about the procedure or about why QTXMA and
-SZAEJ left the unbroken list.
+SZAEJ left the unbroken list. New source facts, from CryptoCellar pages fetched
+2026-10-11 (dated external claims, not verified further): the unbroken-message page
+updated 30 Sep 2026 says its authors are "not quite sure if these messages
+[BYQMZ, FKQLZ, XFEDT] are Enigma messages or if they are messages enciphered with
+another machine or system"; QTXMA and SZAEJ appear on neither that page nor the
+19 Sep and 22 Sep status lists, while the challenge page of 27 Jul 2026 still
+includes them; and the challenge page raises a police network run by operators
+from the Ordnungspolizei as one reading of the odd operator names and remarks.
 
 Resolved 2026-10-11, and no longer on the QTXMA path: the Phase 6 and Phase 7
 5×7 known-key control failed because the annealing search makes only 12,008

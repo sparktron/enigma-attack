@@ -2624,6 +2624,116 @@ prior on two independent faults. The question to the authors was sent
 
 ---
 
+## Reopening the question: power at typical plaintext (2026-10-11)
+
+Status: a decision record and two preregistrations. The reasons are in
+[code-review-2026-10-11.md](code-review-2026-10-11.md); the maintainer asked for
+the v4 sweep to be rerun with the E-Stecker start set (2026-10-11).
+
+### Facts
+
+- Every power control above plants its keys under one 167-letter plaintext of
+  index of coincidence 0.0792. German Army traffic averages about 0.061 (Ostwald
+  and Weierud 2017; the repository's own published counts give a pooled 0.0593).
+- Measured in the review, not preregistered, with the repository's harness and
+  identical keys: detection falls steeply with plaintext IC. Over 16 plaintexts
+  drawn from the published trigram counts (IC 0.0514 to 0.0625) the whole-message
+  climb detected 35.8% of draws given an exact equivalent in the slice, r = 0.87
+  with IC. The v5 split-point climb detected 97%, 57%, 20% and 3% at IC 0.0792,
+  0.0625, 0.0578 and 0.0514. The failure is a trapped climb, so a failed key
+  scores like a wrong setting and no second stage on the top slice can recover it.
+- Partial exhaustion of the first plug (the E-Stecker method of the same paper)
+  lifted the true-setting climb from 5/24 to 19/24 at IC 0.0578 and from 3/36 to
+  14/36 (E) and 27/36 (R, 73 starts) at IC 0.0514. A unigram first-phase
+  objective did not help.
+- The closure above rests on detection rates measured at IC 0.0792: it holds for
+  a plaintext of that IC or higher and leaves a much larger multiplier for a
+  typical one (the review's inference, about 0.5 to 0.65 for the union).
+
+### Decision (maintainer, 2026-10-11)
+
+Add partial exhaustion of the first plug to the climb (`climb.first_plug`, all
+three engines, parity-tested), measure it on typical-IC plaintexts, and rerun v4's
+sweep with it. The closure of 2026-10-10 is not retracted by this entry; it is
+conditional on the plaintext's IC, as its caveat "one plaintext" said without
+measuring, and the rerun is how that condition is tested.
+
+## phase1-estecker-power-v1 (preregistered)
+
+Configuration:
+[experiments/phase1-estecker-power-v1/config.json](../experiments/phase1-estecker-power-v1/config.json).
+
+Hypothesis. On 24 plaintexts of typical letter statistics, partial exhaustion of
+the first plug (E: the empty board plus the 25 boards that plug E to another
+letter, best final n-gram score kept) lifts the detection rate of v4's climb (W =
+117 head and tail, middle-complete) well above its rate without it, clean and with
+one dropped or inserted letter.
+
+Design. The fault-power slice (planted wheel order, left offsets within 1, middle
+within 2, right within 1), 480 draws in each of two cells (clean, one indel), the
+plaintext of draw d being plaintext d mod 24 of 24 Markov samples of the published
+counts (seed 20261012, IC 0.0453 to 0.0641, mean 0.0579, listed in the
+configuration), the keys the same whichever plaintext. Two arms on the same draws:
+`complete_w117` (v4's climb) and `complete_w117_estecker` (the same with
+`first_plug` E), each against its own wrong-setting null, detection at 6 null
+standard deviations and the planted plugboard recovered exactly. The harness now
+reports detection by plaintext and by terciles of plaintext IC.
+
+| id | statement | decides |
+|---|---|---|
+| P1 | the baseline detects at most 60% of clean draws | the review's concern |
+| P2 | the E arm detects at least 75% of clean draws | the sweep |
+| P3 | the E arm detects at least 20 points more clean draws than the baseline | the sweep |
+| P4 | the E arm detects at least as many one-indel draws as the baseline | no |
+
+The guesses (baseline 35% to 55%, E arm 75% to 90%, gain 30 points or more) are
+the author's, made before any measurement of this arm. Decision rule, fixed now:
+the v6 sweep launches only if P2 and P3 hold. Its stated power is this run's E-arm
+clean detection rate times 96.6% (the share of detections the v5 control
+confirmed), recorded in the sweep's configuration by amendment before launch.
+
+Not measured here: companion confirmation of the E arm, a substituted letter, two
+faults. Disclosed: a 4-draw smoke run (draws 0 to 3, scratch output, 62 s) passed
+every preflight check, including the new first-plug parity check, and showed the
+baseline 2 of 4 and the E arm 4 of 4 on clean draws; nothing was changed after it.
+
+Run command:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-estecker-power-v1/config.json --jobs 8
+```
+
+## phase1-body-direct-sweep-v6 (preregistered)
+
+Configuration:
+[experiments/phase1-body-direct-sweep-v6/config.json](../experiments/phase1-body-direct-sweep-v6/config.json).
+
+Hypothesis. BYQMZ's key is one v4 could miss because its plaintext has typical IC
+(about 0.06) and the climb from the empty plugboard is trapped far more often than
+the stated power assumed; the same sweep with the E-Stecker start set then retains
+a candidate that the companion check (FKQLZ and XFEDT at z >= 6) confirms.
+
+Design. v4's configuration exactly (BYQMZ, middle-complete, W = 117, 246,767,040
+settings, 1,560 chunks, retention 100, companion threshold 6, cuda engine from the
+start) plus `climb.first_plug = {letters: "E"}`: 26 start boards per climb. v4 took
+33 minutes on the RTX 3090; the projection is about 14 hours (an inference,
+replaced by the measured figure). Predictions: a confirmed candidate (deciding);
+rank one if confirmed; the E start set never scores below v4 on v4's 100 retained
+settings (a check that the implementation did not change the climb); all 100
+retained candidates re-climb identically on the CPU batched climber; if null, the
+top score lies between z 5.5 and 8.0. A null at the stated power multiplies the
+odds of a standard reading by about one minus that power, for a typical-IC
+plaintext only. A smoke run through the runner on a 72-setting slice passed the
+preflight and both positive controls.
+
+Run command (after the power control's result and amendment are committed):
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v6/config.json --jobs 1
+```
+
+---
+
 ## What Phase 1 now needs
 
 The two sweeps bound the problem from both sides.

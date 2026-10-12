@@ -63,11 +63,12 @@ except ImportError:  # pragma: no cover - exercised by the fallback test
     np = None
 
 import enigma_fast
-from stecker_climb import climb_windows
+from stecker_climb import MAX_START_BOARDS, climb_windows, start_boards
 
 MAX_LENGTH = 512
 MAX_PHASES = 8
 MAX_TOKENS = 32
+MAX_STARTS = MAX_START_BOARDS
 OBJECTIVES = {"index_of_coincidence": 0, "ngram": 1}
 
 CUDA_SOURCE = r"""
@@ -98,11 +99,15 @@ struct WindowDesc {
     unsigned short bipos[MAX_LENGTH];
 };
 
+#define MAX_STARTS 136       /* every first plug on six letters, plus the empty board */
+
 struct ClimbDesc {
     int nphases;
     int phases[MAX_PHASES];
     int max_pairs, max_passes, nwin, maxlen;
     double min_gain;
+    int nstarts;                             /* 0: climb from the empty board only */
+    unsigned char starts[MAX_STARTS * 26];
 };
 
 __constant__ unsigned char c_first[NPAIRS];
@@ -352,6 +357,31 @@ __device__ void load_rotors(const unsigned char* rotors, unsigned char* dst) {
     for (int i = threadIdx.x; i < 6 * 676 + 26; i += blockDim.x) dst[i] = rotors[i];
 }
 
+/* FastNgramScorer.score_decryption of the board in ``cur``, term for term and in its order. */
+__device__ double final_total(const unsigned char* cur, const Shared& sh, int length,
+                              const double* bigram, const double* combined) {
+    Decrypt d;
+    d.cur = cur; d.table = sh.table; d.cipher = sh.cipher;
+    d.m.a0 = d.m.a1 = d.m.a2 = d.m.a3 = NONE;
+    d.m.b0 = d.m.b1 = d.m.b2 = d.m.b3 = NONE;
+    double total = 0.0;
+    int previous = -1, cursor = -1;
+    for (int p = 0; p < length; ++p) {
+        if (sh.cipher[p] < 0) { previous = -1; cursor = -1; continue; }
+        int z = d.letter(p);
+        if (previous < 0) { previous = z; continue; }
+        if (cursor < 0) {
+            total += bigram[previous * 26 + z];
+            cursor = previous * 676 + z * 26;
+        } else {
+            total += combined[cursor + z];
+            cursor = ((cursor % 676) + z) * 26;
+        }
+        previous = z;
+    }
+    return total;
+}
+
 __global__ void __launch_bounds__(NSLOT, 2)
 climb_kernel(ClimbDesc climb, const WindowDesc* windows, const double* bigram,
              const double* combined, const unsigned char* rotors, unsigned int notch_middle,
@@ -360,8 +390,9 @@ climb_kernel(ClimbDesc climb, const WindowDesc* windows, const double* bigram,
     extern __shared__ __align__(16) unsigned char smem[];
     __shared__ unsigned char cur[32];
     __shared__ unsigned char next[32];
-    __shared__ int s_chosen, s_pairs;
-    __shared__ double s_running, s_current;
+    __shared__ unsigned char best_board[32];
+    __shared__ int s_chosen, s_pairs, s_take;
+    __shared__ double s_running, s_current, s_total, s_best_total;
 
     int block = blockIdx.x;
     int item = base + block / climb.nwin;
@@ -385,15 +416,23 @@ climb_kernel(ClimbDesc climb, const WindowDesc* windows, const double* bigram,
     for (int i = tid; i < length; i += NSLOT) sh.cipher[i] = w.cipher[i];
     for (int i = tid; i < w.ntri; i += NSLOT) sh.tripos[i] = w.tripos[i];
     for (int i = tid; i < w.nbi; i += NSLOT) sh.bipos[i] = w.bipos[i];
-    if (tid < 32) cur[tid] = tid < 26 ? tid : 0;
-    if (tid == 0) s_pairs = 0;
     __syncthreads();
     build_table(scratch, notch_middle, notch_right, settings + 6 * (long long)item, w.first,
                 length, scratch + 6 * 676 + 26, sh.table);
 
     unsigned int* my_counts = sh.counts + tid;
-    double best = 0.0;
     int evaluations = 0;
+    int nstarts = climb.nstarts > 0 ? climb.nstarts : 1;
+    for (int si = 0; si < nstarts; ++si) {
+    /* Each start board is a full climb; the best final n-gram score is kept. */
+    if (tid < 32) cur[tid] = tid < 26 ? (climb.nstarts > 0 ? climb.starts[si * 26 + tid] : tid) : 0;
+    __syncthreads();
+    if (warp == 0) {
+        unsigned int plugged = __ballot_sync(FULL, lane < 26 && cur[lane] > lane);
+        if (lane == 0) s_pairs = __popc(plugged);
+    }
+    __syncthreads();
+    double best = 0.0;
     for (int ph = 0; ph < climb.nphases; ++ph) {
         int objective = climb.phases[ph];
         if (climb.max_passes <= 0) { evaluations += 1; continue; }
@@ -438,30 +477,21 @@ climb_kernel(ClimbDesc climb, const WindowDesc* windows, const double* bigram,
         __syncthreads();
     }
 
-    if (tid < 26) out_board[out * 26 + tid] = cur[tid];
+    /* The reference keeps the first start unless a later one scores strictly higher. */
     if (tid == 0) {
-        /* FastNgramScorer.score_decryption, term for term and in its order. */
-        Decrypt d;
-        d.cur = cur; d.table = sh.table; d.cipher = sh.cipher;
-        d.m.a0 = d.m.a1 = d.m.a2 = d.m.a3 = NONE;
-        d.m.b0 = d.m.b1 = d.m.b2 = d.m.b3 = NONE;
-        double total = 0.0;
-        int previous = -1, cursor = -1;
-        for (int p = 0; p < length; ++p) {
-            if (sh.cipher[p] < 0) { previous = -1; cursor = -1; continue; }
-            int z = d.letter(p);
-            if (previous < 0) { previous = z; continue; }
-            if (cursor < 0) {
-                total += bigram[previous * 26 + z];
-                cursor = previous * 676 + z * 26;
-            } else {
-                total += combined[cursor + z];
-                cursor = ((cursor % 676) + z) * 26;
-            }
-            previous = z;
-        }
+        s_total = final_total(cur, sh, length, bigram, combined);
+        s_take = (si == 0 || s_total > s_best_total);
+        if (s_take) s_best_total = s_total;
+    }
+    __syncthreads();
+    if (s_take && tid < 26) best_board[tid] = cur[tid];
+    __syncthreads();
+    }
+
+    if (tid < 26) out_board[out * 26 + tid] = best_board[tid];
+    if (tid == 0) {
         out_evals[out] = evaluations;
-        out_score[out] = total / (double)w.letters;
+        out_score[out] = s_best_total / (double)w.letters;
     }
 }
 
@@ -1059,6 +1089,8 @@ class _ClimbDesc(ctypes.Structure):
         ("nwin", ctypes.c_int),
         ("maxlen", ctypes.c_int),
         ("min_gain", ctypes.c_double),
+        ("nstarts", ctypes.c_int),
+        ("starts", ctypes.c_ubyte * (MAX_STARTS * 26)),
     ]
 
 
@@ -1403,6 +1435,13 @@ class CudaClimber:
         climb.min_gain = float(settings["minimum_gain"])
         climb.nwin = len(self.windows)
         climb.maxlen = max(stop - first for _, first, stop in self.windows)
+        boards = start_boards(settings)
+        if len(boards) > 1:
+            if "ngram" not in phases:
+                raise ValueError("climb.first_plug picks its best start by the n-gram score and needs it")
+            climb.nstarts = len(boards)
+            for index, board in enumerate(boards):
+                climb.starts[26 * index : 26 * index + 26] = board
         self._bigram = np.ascontiguousarray(bigram, dtype=np.float64)
         self._combined = np.ascontiguousarray(combined, dtype=np.float64)
         if self._bigram.shape != (676,) or self._combined.shape != (17576,):
@@ -1562,6 +1601,8 @@ class CudaSplitClimber:
         settings: Mapping[str, Any],
         reflector: Sequence[int],
     ) -> None:
+        if settings.get("first_plug") is not None:
+            raise ValueError("climb.first_plug cannot be combined with climb.split")
         library = _require()
         split = settings.get("split")
         if split is None:
