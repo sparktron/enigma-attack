@@ -23,11 +23,11 @@ search code I read (the scope is in section 5).
 The finding that matters is in the *measurement*, not the machine. Every
 end-to-end power figure in the repository is measured on **one** plaintext, and
 that plaintext is an outlier: its index of coincidence is 0.0792, against about
-0.061 for German Army traffic. The climb's success depends steeply on the
-plaintext's IC. On Army-typical plaintexts the v5 climb detects roughly **0.4**
-of planted keys that the sweep can reach, not the 0.87 to 0.90 the closure of the
-BYQMZ search is built on. The four nulls are therefore much weaker evidence than
-the record says (B-1). The published method has a standard remedy that the
+0.061 for German Army traffic. The climb's success varies with the
+planted plaintext. The corrected v5 rerun detects **41.9%** across four
+model-generated texts, versus **97.5%** on the repository plaintext. This raises
+a concern about extending the closure's power figures to other plaintexts; the
+confirmed four-arm power on typical plaintexts remains unmeasured (B-1). The published method has a standard remedy that the
 repository does not implement, partial exhaustion of the first plug, and
 a proof of concept recovers most of the loss (S-1).
 
@@ -77,34 +77,32 @@ a proof of concept recovers most of the loss (S-1).
   (269/752)**, Pearson r between IC and detection **0.87**, about +4.7 points per
   +0.001 of IC.
 
-  The v5 arm itself (split-point climb, complete rule, CUDA engine; 40 draws each).
-  **Recomputed pending:** these v5 rates were computed with a version of
-  `plaintext_power.py` that scored detections against the pooled cell threshold
-  instead of the split-point arm's own null threshold (fixed in this PR). They
-  need a rerun on the CUDA build, and the 0.35 to 0.42 integral, the 0.4 in the
-  summary and the 0.6 and 0.5 to 0.65 multipliers derived from them stand
-  provisionally until then:
+  The corrected v5 rerun (2026-10-12, split-point climb, complete rule, CUDA,
+  40 draws per text) uses the selected arm's own null threshold. It supersedes
+  the earlier v5 table, which used the pooled threshold. The exact command,
+  configs, raw outputs, environment, code version and checksums are preserved in
+  [data/review/plaintext-power-2026-10-12/](../data/review/plaintext-power-2026-10-12/).
 
-  | plaintext IC | 0.0514 | 0.0578 | 0.0625 | 0.0792 (repository's) |
-  |---|---:|---:|---:|---:|
-  | detection given an equivalent | 0.03 (1/40) | 0.20 (8/40) | 0.57 (23/40) | 0.97 (39/40) |
+  | plaintext | IC | detection given an equivalent |
+  |---|---:|---:|
+  | repository | 0.0792 | 39/40 (97.5%) |
+  | markov-0 | 0.0578 | 8/40 (20.0%) |
+  | markov-1 | 0.0574 | 22/40 (55.0%) |
+  | markov-2 | 0.0600 | 15/40 (37.5%) |
+  | markov-3 | 0.0625 | 22/40 (55.0%) |
 
-  The fall-off is steeper than for the whole-message arm. Integrating that curve
-  over a normal IC distribution (mean 0.0593 to 0.061, sd 0.005 to 0.008) gives
-  **0.35 to 0.42**. A 40-draw cell has an interval of about ±0.15, so the figures
-  locate the curve and do not pin it.
-- **Why it matters:** The closure's multiplier of 0.06 to 0.15 comes from union
-  detection of 98.3% (clean) and v5's 86.5% confirmed rate, both measured at IC
-  0.0792. For an Army-typical plaintext v5 alone detects about 0.4 and confirms
-  about 0.97 of those, so the multiplier it leaves for a clean message is about
-  **0.6, not 0.135**. The four climbs share the same IC-seeded start, so their
-  failures are correlated and the union is only slightly better than v5 alone
-  (inference; the union was not measured at typical IC). A fair reading is that
-  the four nulls multiply the odds of a standard reading by roughly **0.5 to 0.65
-  if BYQMZ's plaintext has typical IC**, and by the recorded 0.06 to 0.15 only if
-  it is at or above about 0.075, the top few percent of Army messages. BYQMZ's own
-  plaintext IC cannot be known. The closure's list of what it does not cover
-  names "one plaintext" as a caveat but does not measure it.
+  Across the four Markov texts: **67/160 (41.9%)**, mean IC 0.0594,
+  Pearson r 0.39 and slope +2.8 percentage points per +0.001 IC. The same
+  key draws were reused across texts; these are not 160 independent key draws.
+  With four texts, the correlation does not isolate IC from other text properties.
+  The old 0.35 to 0.42 integrated curve is withdrawn: it was not recomputed.
+- **Why it matters (inference):** The repository plaintext is substantially easier
+  for this arm than these four model-generated texts. This supports measuring
+  power across plaintexts, but does not estimate power for authentic Army traffic.
+  The original closure figures remain conditional on their planted plaintext.
+  This rerun measures neither companion confirmation nor the four-arm union, so
+  the old typical-IC multipliers (about 0.6 and 0.5 to 0.65) are withdrawn rather
+  than replaced by a detection-only estimate. BYQMZ's plaintext IC is unknown.
 - **Fix:** Make every power control plaintext-aware (S-2). Until then, restate the
   closure as conditional on plaintext IC, and do not describe the standard-reading
   search as exhausted for typical messages.
@@ -262,8 +260,8 @@ and it does not bear on the technique.
   are the evidence.
 - The v5 table has 40 draws per cell. The E-Stecker numbers are true-setting
   climbs with 18 to 36 draws, plus one harness run. All are small samples.
-- The union of the four sweeps at typical IC was not measured; 0.5 to 0.65 is an
-  inference.
+- The union and companion confirmation at typical IC were not measured. The
+  earlier numerical multipliers are withdrawn after the corrected rerun.
 - Scope. Read in full: `enigma.py`, `enigma_fast.py`, `stecker_climb.py`,
   `stecker_scoring.py`, `stecker_space.py` (the ring-rule code), the worker, merge
   and checkpoint code of `stecker_sweeps.py`, `stecker_power.py`'s draw routine,

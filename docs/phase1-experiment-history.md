@@ -2817,3 +2817,30 @@ at 107).
 > **Measured, 2026-10-06.** [phase1-fkqlz-length-calibration-v1](#phase1-fkqlz-length-calibration-v1)
 > ran: 12 of 32 at 97 letters, 10 of 32 at 107, 28 of 32 at 167. FKQLZ stays a
 > companion. The "not run" and "queued" wording above is the 2026-10-04 text.
+
+
+### Exploratory v5 plaintext-power rerun (2026-10-12)
+
+Observed: the corrected `plaintext_power.py` rerun uses the split-complete arm's
+own null threshold. Detection given an exact equivalent is 39/40 for the
+repository plaintext (IC 0.0792), and 8/40, 22/40, 15/40 and 22/40 for four
+Markov texts (IC 0.0578, 0.0574, 0.0600 and 0.0625). Pooled Markov detection is
+67/160 (41.9%), mean IC 0.0594, Pearson r 0.39 and slope +2.8 percentage points
+per +0.001 IC. The same 40 key draws are reused across all five texts.
+
+The user ran the exploratory command recorded in
+[data/review/plaintext-power-2026-10-12/summary.json](../data/review/plaintext-power-2026-10-12/summary.json).
+All ten original config/output files are preserved there unchanged, with SHA-256
+checksums. Outputs record clean commit `c2ae3a7cdf76662bde8fd57361c4cc8088463a71`,
+CUDA engine and one worker. Key seed is 424242; text seed is the script default 11.
+This is a retrospective record, not a new preregistration. Hypothesis and
+refutation metadata inherited from the base fault-power configuration describe a
+different experiment and are not tested by this single-arm clean-text run.
+
+Interpretation (inference): the repository plaintext is easier than these four
+model-generated texts. Four texts and one shared key seed do not establish power
+on authentic Army traffic or isolate IC as the cause. Companion confirmation and
+the four-arm union were not measured. The review's earlier integrated curve and
+numerical typical-IC odds multipliers are withdrawn; the corrected measured table
+replaces its pending figures. Next: measure plaintext-aware joint confirmed power
+before deriving new closure multipliers.

@@ -1,0 +1,92 @@
+{
+  "command": "python3 scripts/review/plaintext_power.py --base-config experiments/phase1-fault-power-v1/config.json --arm split_complete --texts 4 --draws 40 --jobs 1",
+  "key_seed": 424242,
+  "text_seed": 11,
+  "code": {
+    "source": "git_checkout",
+    "commit": "c2ae3a7cdf76662bde8fd57361c4cc8088463a71",
+    "branch": "claude/code-review-2026-10-11-estecker",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "a34bc81dc934fffe9aa6830ff181e9c0044a4d4b41359f3304381778231f8dbc",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "32c6477740f60bf6d4c6afa77f367b0bdc9c4e28002fe759f34d79ef4f96dc3c",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "729047e9a3150608f57a6748ea465f3d0385ddfe0cd7127b9fff409ece673c8a",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
+      "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
+      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cpu_count": 20
+  },
+  "rows": [
+    {
+      "text": "repository",
+      "ic": 0.0792150638482072,
+      "detected": 39,
+      "exact_equivalents": 40,
+      "threshold": -7.885416613
+    },
+    {
+      "text": "markov-0",
+      "ic": 0.05778803838106919,
+      "detected": 8,
+      "exact_equivalents": 40,
+      "threshold": -7.839133928
+    },
+    {
+      "text": "markov-1",
+      "ic": 0.05735516917971286,
+      "detected": 22,
+      "exact_equivalents": 40,
+      "threshold": -7.857217948
+    },
+    {
+      "text": "markov-2",
+      "ic": 0.060024529254743525,
+      "detected": 15,
+      "exact_equivalents": 40,
+      "threshold": -7.870203167
+    },
+    {
+      "text": "markov-3",
+      "ic": 0.06254959959598874,
+      "detected": 22,
+      "exact_equivalents": 40,
+      "threshold": -7.894858253
+    }
+  ],
+  "markov_detected": 67,
+  "markov_exact_equivalents": 160,
+  "markov_detection": 0.41875,
+  "sha256": {
+    "markov-0.config.json": "ba81e68cc5ff1f5f4ba226127b40db6160f0d685b08f39550069c53e1ecdf717",
+    "markov-0.json": "9e39362c91cffef0ef4e25ef60daf32fa8df57e64d84344e939046adc330755a",
+    "markov-1.config.json": "73d27c4a7e6760fe425ba27f0eba6c6da6c15d23b82fe693e54ca63b8140c7fd",
+    "markov-1.json": "91bdb61faa22030b33b088166cd34dd5f855d5ea00d58cef4639910e031c4c93",
+    "markov-2.config.json": "406533c23b1ceae0901610cb83b6a29e4f5b639d934152afa3e2d1feb7682c66",
+    "markov-2.json": "72e4c8031358abe1f81975ca61a664bcc53f716e7587fe5f9e73e7c1cdda7129",
+    "markov-3.config.json": "02200a317181e07d1da8ef34d8a34a47a08fe11d40348c567b0d7503b0ab1ec8",
+    "markov-3.json": "a1fea27565bf3d18e805824ca1372b186c806f6b205096ec44c0dab6661f8fbe",
+    "repository.config.json": "0e3dd5c5ed1790696ee95194c6a6b628926b6acecc2c4ce366ebafd8f2107dac",
+    "repository.json": "bcd4efb47e78486a553eabf3824828d92eead53df64295d893eeba471c185140"
+  },
+  "provenance_note": "Retrospective preservation of user-run exploratory outputs. Hypothesis/refuted_by and limitations in raw outputs are inherited from the base fault-power config, not a preregistration of this single-arm clean-text rerun. Original absolute temporary paths retained unchanged."
+}
