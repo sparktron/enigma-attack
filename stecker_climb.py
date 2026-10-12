@@ -134,6 +134,8 @@ def start_boards(settings: Mapping[str, Any]) -> list[list[int]]:
     spec = settings.get("first_plug")
     if spec is None:
         return [identity]
+    if int(settings.get("max_pairs", 13)) < 1:
+        raise ValueError("climb.first_plug requires max_pairs >= 1 for its one-pair starts")
     letters = str(spec["letters"]).upper()
     if not letters or len(set(letters)) != len(letters) or any(c < "A" or c > "Z" for c in letters):
         raise ValueError(f"climb.first_plug.letters must be distinct A-Z letters, not {letters!r}")

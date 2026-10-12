@@ -1,0 +1,9 @@
+== drift: committed artifacts versus regenerated ones ==
+skip artifacts/phase1-estecker-power-v1.json: long-running - 480 draws on each of two cells, two arms, 24 plaintexts, CUDA E-Stecker starts; measured 760 s on RTX 3090 from clean 4749bce. Requires GPU and is checked for existence in ordinary CI. The v6 runtime gate pins the full artifact SHA-256 and validates measured thresholds and current inputs.
+WARN artifacts/phase1-estecker-power-v1.json: recorded code differs from the checkout in 2 module(s); the result is not shown to follow from the current code
+       phase1_stecker.py: recorded a34bc81dc934, checkout 0ac1ed20bcff
+       stecker_climb.py: recorded 729047e9a315, checkout 23825865d8f1
+== determinism: two runs in one environment ==
+skip artifacts/phase1-estecker-power-v1.json: long-running - 480 draws on each of two cells, two arms, 24 plaintexts, CUDA E-Stecker starts; measured 760 s on RTX 3090 from clean 4749bce. Requires GPU and is checked for existence in ordinary CI. The v6 runtime gate pins the full artifact SHA-256 and validates measured thresholds and current inputs.
+
+0 failing artifact(s)

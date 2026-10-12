@@ -1,0 +1,11 @@
+vector AAAAA->BDZGO: independent BDZGO, repo BDZGO: ok
+vector AAAAA->EWTYX: independent EWTYX, repo EWTYX: ok
+double step from KDO (rotors III II I): ['KDP', 'KDQ', 'KER', 'LFS']: ok
+random keys: 3000/3000 agree across independent / enigma.py / crypt_indices / tables
+middle_past_notch   97 letters: empirical 0.818 (600 keys), rule_key_coverage 0.820
+middle_past_notch  107 letters: empirical 0.798 (600 keys), rule_key_coverage 0.805
+middle_past_notch  167 letters: empirical 0.722 (600 keys), rule_key_coverage 0.716
+middle_complete     97 letters: empirical 1.000 (600 keys), rule_key_coverage 1.000
+middle_complete    107 letters: empirical 1.000 (600 keys), rule_key_coverage 1.000
+middle_complete    167 letters: empirical 1.000 (600 keys), rule_key_coverage 1.000
+PASS

@@ -1,22 +1,36 @@
 # Project status
 
-Updated: 2026-10-11
+Updated: 2026-10-12
 
 Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
-Code review 2026-10-11 ([code-review-2026-10-11.md](code-review-2026-10-11.md)):
-the simulators, sweep space, climb and scorer check out independently, but every
-end-to-end power figure uses one plaintext of IC 0.0792, against about 0.061 for
-Army traffic, and detection falls steeply with plaintext IC (about 0.4 for the v5
-climb at typical IC, measured, not preregistered). The closure's odds multiplier
-of 0.06 to 0.15 holds only for high-IC plaintexts. Partial plugboard exhaustion
-(Ostwald and Weierud's E-/R-Stecker) recovers most of the loss in a proof of
-concept. `climb.first_plug` now implements it in all three engines. On the maintainer's
-instruction (2026-10-11) the closure is being tested: `phase1-estecker-power-v1`
-(power at typical IC, with and without E-Stecker) and then
-`phase1-body-direct-sweep-v6` (v4's sweep with E-Stecker, launched only if the
-control's P2 and P3 hold) are preregistered in the
-[Phase 1 history](phase1-experiment-history.md#reopening-the-question-power-at-typical-plaintext-2026-10-11).
+Readiness review 2026-10-12: [code-review-2026-10-12.md](code-review-2026-10-12.md).
+The E-Stecker control is complete: clean detection **363/480 (75.625%)**
+against the baseline's 165/480 (34.375%); one-indel detection **240/480 (50%)**
+against 72/480 (15%). P1-P4 passed; P2 passed by three draws, and its pooled
+95% interval is 71.59-79.25%. V6 is amended with the measured result and an
+enforced, hash-pinned power prerequisite. It remains **not run**. Its next
+launch requires the committed amendment and an available GPU; LM Studio was
+using the RTX 3090 during this review and was left running.
+
+The earlier closure is conditional on its unusually favorable plaintext
+(IC 0.0792). The corrected exploratory v5 rerun measures 67/160 (41.875%)
+on four Markov texts versus 39/40 (97.5%) on that plaintext. Neither those
+measurements nor E-Stecker's unconditional power calibrate an additional odds
+multiplier after all four prior nulls. E-arm companion confirmation and
+full-space top-100 retention remain unmeasured. The preregistered borrowed
+96.6% v5 confirmation factor is recorded as an extrapolation only.
+
+Engineering fixes in this review: first-plug exhaustion now rejects
+`max_pairs=0` rather than starting from illegal one-pair boards; the v6 runner
+checks the pinned power artifact, P2/P3, measured counts, input/configuration
+hashes, climb and ring rule before target search. Historical ungated configs
+retain their behavior. A black-box checkpoint test verified that changing
+`first_plug` rejects a prior checkpoint and an unchanged run resumes. The amended CUDA runner smoke
+passed all seven preflight checks, both positive controls and the pinned gate
+on nine settings (344.304 s, dirty review tree explicitly recorded); its
+checkpoint resumed through the direct sweep API with zero settings run and
+identical candidates. This is operational validation, not a full target result.
 
 ## Current state
 
@@ -90,9 +104,9 @@ exactly. A fourth sweep, the
 complete split-point sweep (`phase1-body-direct-sweep-v5`, 2026-10-10), searches
 the position of one dropped or inserted letter inside every climb. It is **null**
 too: no retained candidate is companion-confirmed (best z 4.84 against 6), and its
-top score is the noise maximum (z 6.15). The four nulls together multiply the
-odds of a standard reading of BYQMZ by about 0.055 at q = 0.2 (0.035 ungarbled,
-0.13 with one indel). See
+top score is the noise maximum (z 6.15). On the single high-IC constructed plaintext, the four nulls give a model
+odds multiplier about 0.055 at q = 0.2 (0.035 ungarbled, 0.13 with one indel).
+These figures are not measured for typical plaintexts. See
 [Phase 1 history](phase1-experiment-history.md) and its linked raw artifacts.
 
 Phase 5 now carries a **conservation gate**, and it closes the transposition
@@ -256,14 +270,18 @@ control passes when searched exhaustively.
 
 ## Validation
 
-- `python3 -m unittest discover -q`: 263 tests passed locally on 2026-10-09 (272 on 2026-10-11, before the first-plug tests),
-  with numpy, nvcc 12.8 and the RTX 3090 available; without numpy the
-  batched-climb tests skip, and without numpy, nvcc or a CUDA device the seven
-  GPU tests in `tests/test_stecker_cuda.py` skip. A test checks that
-  `engine: auto` falls back to the reference climb and `engine: batched` fails
-  loudly when numpy is missing. Others check that `auto` never picks `cuda`, that
-  `cuda` fails loudly without a GPU build, and that v4's checkpoint fingerprint
-  is unchanged.
+- `python3 -m unittest discover -q`: **305 tests passed with GPU access and
+  no skips on 2026-10-12 after the readiness code fixes** (229.665 s).
+  The changed-path run passed 111 tests. A sandbox-only baseline passed 295
+  with 14 GPU-dependent skips; outside the sandbox all 295 baseline tests passed.
+  The amended E-Stecker CUDA runner smoke passed its seven preflight checks,
+  both positive controls and pinned power gate on nine settings, then its
+  checkpoint resumed through the direct API with zero new settings and identical
+  candidates. This is local operational validation on the RTX 3090, not remote
+  CI or a full challenge search. Raw evidence is preserved under
+  `data/review/readiness-2026-10-12/`; final artifact-check results are in the
+  dated review. Drift and determinism both completed with zero failing artifacts;
+  their long-running/superseded exclusions remain documented in the registry.
 - `python3 -m pip wheel . --no-deps --no-build-isolation`: wheel built on
   2026-10-08, with `stecker_cuda.py` and the `gpu` extra. A clean
   virtual environment outside the checkout resolves its inputs from the
@@ -376,6 +394,14 @@ control passes when searched exhaustively.
 
 ## Next
 
+First: run the amended `phase1-body-direct-sweep-v6` on an available RTX 3090
+from a clean checkout, preserving its checkpoint and recording all launches.
+Its power prerequisites are verified; do not rerun v2-v5 unchanged. Run the
+retained-candidate CPU parity and v4 score non-decrease checks after completion.
+A null requires plaintext-aware **joint companion-confirmed** calibration
+before any new claim about remaining odds. Broader restart sets and a combined
+E/split search need a separately preregistered equal-cost control.
+
 Do not enlarge the transposition width search. It is closed for QTXMA by
 conservation, not by a failed search, and reopening it needs a reason to think
 the plaintext layer is not German Army text.
@@ -467,7 +493,8 @@ because it sums in numpy's pairwise order. It matched on 150 recomputed v4 chunk
 preflight climbs. On the RTX 3090 it takes 0.00741 ms per setting, 299 times the
 2.22 ms of 10 CPU workers. A full v4-sized sweep takes 0.51 h and v4's
 unfinished chunks 0.46 h, against about 137 h more on the CPU. `auto` never
-selects it, the split-point climb is refused, and under `cuda` the preflight also
+selects it; CUDA gained the parity-tested split-point climb on 2026-10-08,
+and under `cuda` the preflight also
 checks it against the batched climb. The maintainer chose to rerun v4 on it,
 with the engine amended before the run as a disclosed deviation; the result is
 above ([build and benchmark](phase1-experiment-history.md#cuda-climb-engine-build-and-benchmark-2026-10-08)).

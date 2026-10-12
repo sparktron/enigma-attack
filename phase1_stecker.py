@@ -112,6 +112,88 @@ def describe_path(path: pathlib.Path) -> str:
 # ---------------------------------------------------------------------------
 
 
+def validate_power_prerequisite(config: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Verify a pinned power control before a gated sweep can search any target.
+
+    Historical configurations without this opt-in prerequisite retain their
+    behavior. The rates are recomputed from counts rather than trusting a
+    prediction flag, and a changed control, input or climb requires a new gate.
+    """
+
+    gate = config.get("power_prerequisite")
+    if gate is None:
+        return None
+    try:
+        artifact_path = resolve_path(gate["artifact"])
+        artifact_hash = sha256_file(artifact_path)
+        if artifact_hash != gate["sha256"]:
+            raise ValueError("power prerequisite artifact hash does not match")
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        calibration_path = resolve_path(gate["config"])
+        if sha256_file(calibration_path) != artifact["configuration"]["sha256"]:
+            raise ValueError("power prerequisite configuration has changed")
+        calibration = json.loads(calibration_path.read_text(encoding="utf-8"))
+        if (
+            artifact["schema"] != RESULT_SCHEMA
+            or artifact["experiment_id"] != gate["experiment_id"]
+            or calibration["experiment_id"] != gate["experiment_id"]
+            or artifact["mode"] != "end_to_end_power"
+            or calibration["mode"] != "end_to_end_power"
+            or artifact["status"] != "complete"
+            or artifact["code"]["dirty"] is not False
+            or artifact["preflight"]["passed"] is not True
+            or artifact["positive_controls"]["passed"] is not True
+        ):
+            raise ValueError("power prerequisite must be a complete, clean, passing control")
+        for field, path in (
+            ("corpus_sha256", config["corpus"]),
+            ("bigram_counts_sha256", config["scorer"]["bigram_counts"]),
+            ("trigram_counts_sha256", config["scorer"]["trigram_counts"]),
+        ):
+            if artifact["inputs"][field] != sha256_file(resolve_path(path)):
+                raise ValueError(f"power prerequisite input has changed: {field}")
+        arms = calibration["end_to_end_power"]["arms"]
+        arm_spec = next(arm for arm in arms if arm["id"] == gate["arm"])
+        for field in ("phases", "max_pairs", "max_passes", "minimum_gain",
+                      "window", "first_plug", "split"):
+            expected = arm_spec.get(field, calibration["climb"].get(field))
+            if config["climb"].get(field) != expected:
+                raise ValueError(f"power prerequisite climb differs: {field}")
+        if config["body_direct_sweep"]["ring_rule"] != arm_spec["ring_rule"]:
+            raise ValueError("power prerequisite ring rule differs")
+        if "machine" in calibration:
+            for field in ("reflector", "wheel_set"):
+                if config["machine"][field] != calibration["machine"][field]:
+                    raise ValueError(f"power prerequisite machine differs: {field}")
+        if "scorer" in calibration and config["scorer"] != calibration["scorer"]:
+            raise ValueError("power prerequisite scorer differs")
+        predictions = {p["id"]: p["passed"] for p in artifact["result"]["predictions"]}
+        if any(predictions.get(name) is not True for name in gate["required_predictions"]):
+            raise ValueError("power prerequisite deciding predictions did not pass")
+        cell = next(c for c in artifact["result"]["cells"]
+                    if c["length"] == gate["length"] and c["perturbation"] == "none")
+        measured = {arm["arm"]: arm for arm in cell["arms"]}
+        treatment, baseline = measured[gate["arm"]], measured[gate["baseline_arm"]]
+        draws = treatment["draws"]
+        if draws <= 0 or baseline["draws"] != draws or any(
+            not 0 <= arm["detected"] <= draws for arm in (treatment, baseline)
+        ):
+            raise ValueError("power prerequisite needs valid paired detection counts")
+        rate = treatment["detected"] / draws
+        gain = (treatment["detected"] - baseline["detected"]) / draws
+        if rate < gate["minimum_clean_detection"] or gain < gate["minimum_clean_gain"]:
+            raise ValueError("power prerequisite measured rates do not meet launch thresholds")
+    except (OSError, KeyError, TypeError, StopIteration, json.JSONDecodeError) as exc:
+        raise ValueError(f"power prerequisite cannot be verified: {exc}") from exc
+    return {
+        "artifact": describe_path(artifact_path), "sha256": artifact_hash,
+        "configuration_sha256": artifact["configuration"]["sha256"],
+        "arm": gate["arm"], "length": gate["length"],
+        "required_predictions": list(gate["required_predictions"]),
+        "clean_detection_rate": rate, "clean_detection_gain": gain, "passed": True,
+    }
+
+
 def run_indicator_sweep(
     config: Mapping[str, Any],
     scorer: FastNgramScorer,
@@ -203,9 +285,12 @@ def run_body_direct_sweep(
     traffic: Sequence[Traffic],
     jobs: int,
 ) -> dict[str, Any]:
+    prerequisite = validate_power_prerequisite(config)
     settings = config["body_direct_sweep"]
     by_designator = {message.designator: message for message in traffic}
     message = by_designator[settings["message"]]
+    if prerequisite is not None and len(message.body) != prerequisite["length"]:
+        raise ValueError("power prerequisite target length differs")
     rotor_orders = rotor_order_space(
         config["machine"]["rotor_orders"], config["machine"]["wheel_set"]
     )
@@ -310,6 +395,7 @@ def run_body_direct_sweep(
     key_coverage = rule_key_coverage(rule.name, len(message.body), wheel_set)
     return {
         "formulation": "body_direct",
+        **({} if prerequisite is None else {"power_prerequisite": prerequisite}),
         "message": message.designator,
         "message_length": len(message.body),
         "rings_held_at": settings["rings"].upper(),
@@ -533,6 +619,7 @@ def load_config(path: pathlib.Path) -> dict[str, Any]:
     for ordering in config.get("indicator_orderings", []):
         if ordering not in INDICATOR_ORDERINGS:
             raise ValueError(f"unknown indicator ordering: {ordering!r}")
+    validate_power_prerequisite(config)
     return config
 
 

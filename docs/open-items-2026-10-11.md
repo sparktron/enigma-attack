@@ -7,6 +7,17 @@ standard-reading search of BYQMZ is closed (the decision record is in the
 2026-10-10), ranks it, and says what each item would cost. Sources are
 [STATUS](STATUS.md) and the phase histories.
 
+## Superseding evidence (2026-10-12)
+
+The 2026-10-11 recommendation to wait is superseded for the standard-Enigma
+path by the corrected plaintext-power evidence and the completed E-Stecker
+control. P2/P3 passed (75.625% clean detection, 41.25-point gain), so the
+preregistered v6 run is justified once its amended config is committed and
+the GPU is available. See [the readiness review](code-review-2026-10-12.md).
+This does not resolve the wiring, archival or QTXMA questions below. The
+older closure multipliers apply to one favorable plaintext, and additional
+conditional confirmed power after all earlier nulls is still unmeasured.
+
 ## Facts
 
 - BYQMZ, under Enigma I, reflector B, wheels I to V as wired and ten pairs, has

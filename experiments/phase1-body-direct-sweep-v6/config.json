@@ -200,23 +200,24 @@
     "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
     "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
     "The middle-complete space has an exact equivalent for every daily key at 167 letters (rule_key_coverage 1.0). A key is still found only if the climb converges at one of its equivalents and scores into the top 100 of nine times as many settings as v3 searched; the stated power measures the first on planted draws and stands in for the second with a pooled null.",
-    "The companion calibration (phase1-companion-calibration-v1) was measured with middle-past-notch candidates. Under middle_complete a candidate's middle ring can put the notch inside a companion, and the companion check presents the candidate's rings as reported, so a companion whose true left wheel steps at a different letter is deciphered exactly only up to that letter. The joint figure in refuted_by includes that case at its natural rate on planted draws.",
+    "Companion confirmation for the E arm has not been measured. The earlier middle-past-notch calibration and v5 confirmation fraction cannot certify the middle-complete E-arm check at typical plaintext IC; the extrapolation is labelled as inference in stated_power.",
     "No result here is an accepted break: a confirmed candidate's plaintext still has to be read and reviewed before accepted_break could change.",
-    "The stated power is measured on planted single-indel and clean 167-letter draws through the complete rule's parameterization in the planted key's neighbourhood (phase1-middle-complete-power-v1), judged by a 6-sigma threshold over a pooled wrong-setting null. Under a normal null the top-100 retention cutoff over 246.8 million settings is about 4.9 sigma, below that threshold, but v2's and v3's maxima sat about 0.7 sigma above the normal expectation over 27.4 million, so the null's far tail is heavier than normal and the real cutoff is not measured. The joint companion figure was measured post hoc and preregistered nowhere.",
+    "The E-arm detection is measured on clean and single-indel 167-letter draws around planted keys, against that arm's own pooled wrong-setting null. Top-100 retention over all 246,767,040 settings and the far tail of the E-start null are not measured by the control.",
     "The sweep scores each setting by the better of two 117-letter windows, so its scores are not on the scale of v2's whole-message scores; the indicator confirmation, which compares a pooled date score with the candidate's own sweep score, is reported but is even less informative here than in v2. The companion check alone decides.",
     "A candidate found through the tail window is reported at the setting that deciphers the tail, which for a garbled message is one keystroke away from the setting of the head.",
-    "The power is conditional on v2 and v3 both null, with 'missed by both past-notch arms' on planted draws standing in for both sweeps being null, the same stand-in and the same limits as phase1-middle-complete-power-v1: one plaintext, a single indel only, 400 draws per cell, and strata of 57, 118 and 74 draws.",
-    "The prior q of one dropped or inserted letter is unmeasured. q = 0.2 is the value phase1-middle-complete-power-v1 declared; the stated power at other q is given in refuted_by so another belief can be applied without a rerun.",
+    "This power is unconditional across the new plaintext/key draws. Conditional companion-confirmed power given all four prior sweep arms missed is unmeasured; no additional posterior odds multiplier is calibrated for v6.",
+    "The prior probability of a dropped or inserted letter is unmeasured. Keep clean and one-indel rates separate; any mixture or borrowed confirmation rate is an explicit inference.",
     "The cited paper (Sullivan and Weierud 2005, footnote 42) places Batch C on a different radio network and its authors suspect differently wired wheels. Every figure here assumes wheels I-V as wired; if that is wrong the power is zero and a null says nothing about these messages.",
-    "phase1-split-point-power-v1's yield model favoured a split-point sweep per host-hour at every prior (0.0059 against 0.0030 at q = 0.2) but its rule did not consult the yield model once S1 and S2 were both refuted. This sweep follows the rule as written; it is the more powerful single sweep, not the more efficient one.",
-    "Everything this sweep can say is about a standard Enigma I reading of BYQMZ with at most the faults the W = 117 head-and-tail climb tolerates (one dropped or inserted letter, a substituted letter); it does not search a split point and so is weaker than v5 for an indel in the middle third. It spends its extra cost on the plaintext's first plugs, not on faults.",
-    "The stated power comes from Markov plaintexts of the scorer's own counts, not authentic held-out Army traffic, and from a slice around a planted key, not the whole space; the E-start null (the best of 26 climbs) is heavier-tailed than the whole-message one, so the 6-sigma detection threshold of the control and the z = 6 companion threshold of the sweep are not the same quantity."
+    "The choice of E-Stecker follows the 2026-10-11 preregistered P2/P3 launch rule, both passed by its control. Earlier split-point yield models used a different plaintext and CPU engine and do not establish current E-Stecker efficiency.",
+    "The E-arm control measured clean and single-indel draws only. V6 spends extra cost on first-plug starts, retains W=117 head-and-tail windows, and does not test a combined E/split search, two faults or substitution-specific E-arm power.",
+    "The stated power comes from Markov plaintexts of the scorer's own counts, not authentic held-out Army traffic, and from a slice around a planted key, not the whole space; the E-start null (the best of 26 climbs) is heavier-tailed than the whole-message one, so the 6-sigma detection threshold of the control and the z = 6 companion threshold of the sweep are not the same quantity.",
+    "The 480 key draws reuse 24 plaintexts. The reported Wilson interval describes pooled key-draw variability and does not include uncertainty over the language model, plaintext distribution or real target traffic. P2 passed by 3/480 draws; its interval includes values below 75%."
   ],
   "experiment_id": "phase1-body-direct-sweep-v6",
   "mode": "body_direct_sweep",
   "output": "artifacts/phase1-body-direct-sweep-v6.json",
   "hypothesis": "BYQMZ, FKQLZ and XFEDT of 1941-09-30 are Enigma I traffic (UKW-B, wheels I-V, ten stecker pairs) under one daily key, and BYQMZ's key is one that v4's sweep (the W = 117 head-and-tail climb over the middle-complete space) could miss because its plaintext has the typical, not the high, index of coincidence (about 0.06): at typical IC the climb from the empty plugboard is trapped far more often than the 0.8 to 0.9 rate measured under the one plaintext (IC 0.0792) behind the stated power of v2 to v5. The same complete sweep with partial exhaustion of the first plug (the E-Stecker start set, 26 boards) then retains at least one candidate that the companion-body confirmation accepts: FKQLZ and XFEDT each deciphered at all 17,576 starts under the candidate's wheel order, rings and plugboard, both best starts at z >= 6.",
-  "refuted_by": "No retained candidate companion-confirmed. Stated power: the clean detection rate of the complete_w117_estecker arm of phase1-estecker-power-v1 over its 24 typical-IC plaintexts (480 draws), multiplied by the 96.6% of detections the v5 control confirmed, recorded in this configuration by amendment before the sweep launches, together with the arm's one-indel rate. The sweep is launched only if that control's P2 (E arm at least 75% of clean draws) and P3 (at least 20 points over v4's climb) held; if either is refuted the E-start set does not repair typical-IC power at this climb and this sweep is withdrawn unrun. A null here, at that stated power, multiplies the remaining odds of a standard Enigma I reading by about one minus the stated power, which is a statement about a typical-IC plaintext only: BYQMZ's own plaintext IC is unknown. Nothing here tests two faults, a substituted letter combined with another fault, other reflectors, other wheel wirings, Naval wheels, other indicator procedures or non-Enigma systems.",
+  "refuted_by": "No retained candidate companion-confirmed. The pinned phase1-estecker-power-v1 control passed P2 and P3: clean detection 363/480 (75.625%), gain 198/480 (41.25 percentage points), one-indel detection 240/480 (50%). The preregistered borrowed v5 confirmation factor of 96.6% projects 73.05375% clean and 48.3% one-indel confirmed detection; this is inference, not a measurement of E-Stecker companion confirmation or full-space retention. A null is evidence about this bounded standard-Enigma hypothesis, but supplies no calibrated multiplier of the remaining odds after v2-v5: conditional joint confirmed power has not been measured on these plaintexts. BYQMZ plaintext IC is unknown. Nothing here tests two faults, a substituted letter combined with another fault, other reflectors, other wheel wirings, Naval wheels, other indicator procedures or non-Enigma systems.",
   "target": {
     "date": "1941-09-30",
     "messages": [
@@ -276,15 +277,69 @@
     "seed": 20261013,
     "samples": 24
   },
-  "status": "preregistered 2026-10-11; not run",
+  "status": "preregistered 2026-10-11; power-gate and evidence amendment 2026-10-12; not run",
   "pre_run_facts": {
     "disclosure": "Everything below was known before this run and shaped this configuration. None of it is a result of this sweep.",
-    "review": "docs/code-review-2026-10-11.md (measured there, not preregistered): detection of the whole-message climb falls with plaintext IC (r = 0.87 over 16 Markov plaintexts, IC 0.0514 to 0.0625); the v5 climb detects 3%, 20% and 57% at IC 0.0514, 0.0578 and 0.0625 against 97% at the repository's plaintext (IC 0.0792); the E-Stecker start set lifts the true-setting climb from 5/24 to 19/24 at IC 0.0578. Army plaintext averages IC about 0.061 (Ostwald and Weierud 2017).",
-    "power_control": "phase1-estecker-power-v1 (preregistered in the same commit as this file) measures v4's climb with and without the E start set on 24 typical-IC plaintexts; this sweep's stated power is taken from it and its launch is conditional on its P2 and P3.",
+    "review": "The corrected v5 exploratory rerun (data/review/plaintext-power-2026-10-12/summary.json) used the selected arm's own null: 39/40 detections for the repository plaintext (IC 0.0792), versus 8/40, 22/40, 15/40 and 22/40 over four Markov texts, pooled 67/160 (41.875%). The earlier 3%, 20%, 57% curve and inferred typical-IC union multiplier were withdrawn. The E-Stecker true-setting proof of concept remains exploratory; the larger control below decides the v6 launch.",
+    "power_control": "Completed from clean commit 4749bce on 2026-10-11, 760.314 s, 24 Markov plaintexts and 480 draws per cell. Baseline/E clean 165/480 versus 363/480; indel 72/480 versus 240/480. P1-P4 passed. Configuration hash matches its source. The runtime power_prerequisite pins the complete artifact and checks P2/P3, counts, inputs, climb and ring rule before any search.",
     "implementation": "climb.first_plug (stecker_climb.start_boards, stecker_batch.BatchedClimber, the CUDA kernel's start loop). tests/test_first_plug.py pins reference, batched and cuda to identical plugboards, evaluation counts, scores and windows, and the run's preflight repeats that on this configuration (cuda_climb_parity and first_plug_climb_parity) before any search.",
     "v4": "phase1-body-direct-sweep-v4 is null: no retained candidate companion-confirmed (best z 4.69), top score the noise maximum (z 6.51), GPU run 2026-10-08. v5 (split-point) is null too (best companion z 4.84). Neither used a start set.",
     "smoke_run": "Before committing, this configuration was smoke-run once through the runner on a 72-setting slice (two wheel orders, scratch output and checkpoint, 5 min 35 s, nearly all of it the preflight and positive controls with 26 starts per climb). Preflight passed including first_plug_climbs_match and cuda_climb_matches_batched; both positive controls passed. No result of the slice was used for anything, and nothing was changed after it."
   },
   "run_command": "python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v6/config.json --jobs 1",
-  "run_constraint": "Not run. Run from a clean tree after this configuration, phase1-estecker-power-v1's result and its stated-power amendment are committed, on a host with nvcc and the GPU otherwise idle (the cuda engine ignores --jobs). The checkpoint under build/ (git-ignored; do not clean it while the sweep is unfinished) lets it be stopped and resumed by rerunning the same command. A resumed run repeats the preflight, the positive controls and both confirmations, and its artifact's timing fields cover only the last invocation, so record every start, stop and resume in the history."
+  "run_constraint": "Not run. Run from a clean tree after this evidence amendment is committed, with nvcc available and the GPU otherwise idle (cuda ignores --jobs). The runner enforces power_prerequisite; an absent, changed, stale or failing control cannot launch the target sweep. Keep build/phase1-body-direct-sweep-v6.checkpoint.jsonl until completion. A resume repeats preflight, positive controls and confirmations; artifact timing covers only the last invocation, so record each start, stop and resume in the history. Complete the retained-candidate CPU parity and v4 non-decrease checks before interpreting the result.",
+  "power_prerequisite": {
+    "artifact": "artifacts/phase1-estecker-power-v1.json",
+    "sha256": "1bb126a60417e6b8caab5a177858f72bcfae2e7050047ebd2a21ff026f26bf11",
+    "config": "experiments/phase1-estecker-power-v1/config.json",
+    "experiment_id": "phase1-estecker-power-v1",
+    "arm": "complete_w117_estecker",
+    "baseline_arm": "complete_w117",
+    "length": 167,
+    "minimum_clean_detection": 0.75,
+    "minimum_clean_gain": 0.2,
+    "required_predictions": [
+      "P2",
+      "P3"
+    ]
+  },
+  "stated_power": {
+    "source": "artifacts/phase1-estecker-power-v1.json",
+    "measured_detection": {
+      "clean": {
+        "detected": 363,
+        "draws": 480,
+        "rate": 0.75625,
+        "wilson_interval_95": [
+          0.7159,
+          0.7925
+        ]
+      },
+      "one_indel": {
+        "detected": 240,
+        "draws": 480,
+        "rate": 0.5
+      },
+      "clean_gain_over_baseline": 0.4125
+    },
+    "paired_detection_given_baseline_miss": {
+      "clean": [
+        198,
+        315
+      ],
+      "one_indel": [
+        168,
+        408
+      ],
+      "scope": "Exploratory reanalysis of the same draws; conditions on the v4 baseline arm only, not the four prior sweeps or companion confirmation."
+    },
+    "companion_confirmation_extrapolation": {
+      "classification": "inference; not measured for E-Stecker",
+      "borrowed_confirmation_fraction": 0.966,
+      "clean": 0.7305375,
+      "one_indel": 0.483,
+      "source": "The preregistered v6 rule borrows the high-IC v5 confirmation fraction. It is not validated on the E arm or these plaintexts."
+    },
+    "limitations": "24 model-generated plaintexts, one key seed, planted-key neighbourhoods, pooled wrong-setting null; not full-space retention, authentic traffic, or conditional confirmed power after v2-v5 null. BYQMZ plaintext IC is unknown."
+  }
 }
