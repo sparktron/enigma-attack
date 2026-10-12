@@ -1,0 +1,2856 @@
+{
+  "schema": "enigma-attack.phase1-stecker-result/v1",
+  "experiment_id": "review-plaintext-power-markov-2",
+  "mode": "end_to_end_power",
+  "status": "complete",
+  "accepted_break": false,
+  "hypothesis": "The four completed BYQMZ sweeps' climbs (the whole-message and W = 117 middle-past-notch climbs of v2 and v3, the W = 117 middle-complete climb of v4, and the complete split-point climb of v5), taken together, cover one substituted letter but not two dropped or inserted letters. Covered means at least one of the four planted-key stand-in arms detects the draw. For one substituted letter the union detects at least 60% (S1). For two independent dropped or inserted letters the union detects less than 50% (D1), which would make a two-split climb the next engineering step. Detection is not companion confirmation, so a covered verdict is provisional until the joint rate is measured.",
+  "refuted_by": "S1 refuted: the union of the four arms detects less than 60% of substitution draws, scored by scripts/fault_power_v1.py (at least 100 draws; fewer is not estimable). D1 refuted: the union detects 50% or more of double-indel draws, so two faults are covered by detection; that is only an upper bound on confirmed coverage, so it does not by itself end the search (see the decision rule). Each refutes only itself; the runner's marginal predictions refute only themselves.",
+  "started_at": "2026-10-12T16:18:54.874456+00:00",
+  "completed_at": "2026-10-12T16:20:19.821273+00:00",
+  "duration_seconds": 84.94682413100963,
+  "configuration": {
+    "path": "/tmp/plaintext-power-kcd6l10q/markov-2.config.json",
+    "sha256": "406533c23b1ceae0901610cb83b6a29e4f5b639d934152afa3e2d1feb7682c66",
+    "arguments": [
+      "--config",
+      "/tmp/plaintext-power-kcd6l10q/markov-2.config.json",
+      "--output",
+      "/tmp/plaintext-power-kcd6l10q/markov-2.json",
+      "--jobs",
+      "1"
+    ]
+  },
+  "code": {
+    "source": "git_checkout",
+    "commit": "c2ae3a7cdf76662bde8fd57361c4cc8088463a71",
+    "branch": "claude/code-review-2026-10-11-estecker",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "a34bc81dc934fffe9aa6830ff181e9c0044a4d4b41359f3304381778231f8dbc",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "32c6477740f60bf6d4c6afa77f367b0bdc9c4e28002fe759f34d79ef4f96dc3c",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "729047e9a3150608f57a6748ea465f3d0385ddfe0cd7127b9fff409ece673c8a",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
+      "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
+      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cpu_count": 20
+  },
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "bigram_counts_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
+    "trigram_counts_sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+  },
+  "preflight": {
+    "simulator_validation": [
+      {
+        "name": "canonical_I_II_III_AAAAA",
+        "source": "widely published Enigma-I simulator check",
+        "expected": "BDZGO",
+        "actual": "BDZGO",
+        "passed": true
+      },
+      {
+        "name": "py_enigma_army_procedure_example",
+        "source": "https://py-enigma.readthedocs.io/en/latest/guide.html",
+        "expected_message_key": "BLA",
+        "actual_message_key": "BLA",
+        "expected_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "actual_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "passed": true
+      }
+    ],
+    "kernel_parity": {
+      "reference": "enigma.EnigmaI",
+      "seed": 20260923,
+      "samples": 60,
+      "checked_paths": [
+        "crypt_indices",
+        "position_permutations+decrypt_with_tables"
+      ],
+      "mismatches": [],
+      "passed": true
+    },
+    "scorer_parity": {
+      "reference": "phase7.PublishedNgramScorer",
+      "seed": 20260924,
+      "samples": 120,
+      "relative_tolerance": 1e-09,
+      "worst_absolute_difference_vs_phase7": 7.958078640513122e-12,
+      "worst_absolute_difference_fused_vs_split": 0.0,
+      "mismatches": [],
+      "passed": true,
+      "note": "The scorers sum the same n-gram terms in different orders, so they agree to floating-point association rather than bit for bit."
+    },
+    "scorer_discrimination": {
+      "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "shuffle_seeds": [
+        17,
+        29,
+        43,
+        71,
+        101,
+        137,
+        173,
+        211,
+        257,
+        307,
+        359,
+        401,
+        463,
+        509,
+        563,
+        617
+      ],
+      "messages": [
+        {
+          "id": "1941-09-02-15",
+          "length": 36,
+          "authentic_score_per_letter": -6.041605649,
+          "shuffled_scores_per_letter": [
+            -7.53381238,
+            -7.138965234,
+            -7.957878911,
+            -7.729892505,
+            -6.996928517,
+            -7.713943316,
+            -7.838237335,
+            -8.142174904,
+            -7.598699043,
+            -7.431054332,
+            -7.972140343,
+            -7.611678603,
+            -8.151700296,
+            -7.657444266,
+            -7.550083665,
+            -7.780321492
+          ],
+          "margin_over_best_shuffle": 0.955322868,
+          "passed": true
+        },
+        {
+          "id": "1941-08-22-30",
+          "length": 46,
+          "authentic_score_per_letter": -6.283889072,
+          "shuffled_scores_per_letter": [
+            -7.968581626,
+            -7.419135349,
+            -7.806293305,
+            -7.808875711,
+            -7.686267614,
+            -8.265622519,
+            -7.993060744,
+            -8.067796545,
+            -7.465451599,
+            -7.728003386,
+            -8.17733991,
+            -7.698991665,
+            -8.274964894,
+            -7.989477064,
+            -7.971299542,
+            -7.955495162
+          ],
+          "margin_over_best_shuffle": 1.135246277,
+          "passed": true
+        },
+        {
+          "id": "1941-09-06-36",
+          "length": 48,
+          "authentic_score_per_letter": -6.708148394,
+          "shuffled_scores_per_letter": [
+            -8.816263798,
+            -8.102734021,
+            -8.515933937,
+            -7.876037887,
+            -8.002299791,
+            -8.186431878,
+            -8.403116894,
+            -7.931246188,
+            -8.166665948,
+            -8.546867284,
+            -8.450565149,
+            -8.347104407,
+            -8.315764661,
+            -8.017910537,
+            -8.273352821,
+            -8.362505014
+          ],
+          "margin_over_best_shuffle": 1.167889493,
+          "passed": true
+        },
+        {
+          "id": "1941-09-14-46",
+          "length": 69,
+          "authentic_score_per_letter": -7.177161225,
+          "shuffled_scores_per_letter": [
+            -8.675908687,
+            -8.675470911,
+            -8.497716346,
+            -8.779147011,
+            -8.282465135,
+            -8.635697295,
+            -8.641996226,
+            -8.61997743,
+            -8.371093781,
+            -8.807484713,
+            -8.619025631,
+            -8.993581533,
+            -8.559283085,
+            -8.921036452,
+            -8.782698615,
+            -8.715187932
+          ],
+          "margin_over_best_shuffle": 1.10530391,
+          "passed": true
+        },
+        {
+          "id": "1941-09-24-94",
+          "length": 76,
+          "authentic_score_per_letter": -6.701798158,
+          "shuffled_scores_per_letter": [
+            -8.69004742,
+            -8.826037456,
+            -8.370787634,
+            -8.354428861,
+            -8.496953699,
+            -8.415178937,
+            -8.681825002,
+            -8.417311977,
+            -8.602547877,
+            -8.179790622,
+            -8.54097936,
+            -8.560020672,
+            -8.082113862,
+            -8.30474769,
+            -8.745480038,
+            -8.575674967
+          ],
+          "margin_over_best_shuffle": 1.380315704,
+          "passed": true
+        }
+      ],
+      "passing_messages": 5,
+      "required_messages": 4,
+      "passed": true
+    },
+    "batched_climb_parity": {
+      "seed": 20261004,
+      "samples": 24,
+      "identical_final_plugboards": 24,
+      "identical_evaluation_counts": 24,
+      "passed": true
+    },
+    "cuda_climb_parity": {
+      "seed": 20261004,
+      "samples": 24,
+      "reference": "stecker_batch.BatchedClimber",
+      "identical_final_plugboards": 24,
+      "identical_evaluation_counts": 24,
+      "worst_absolute_score_difference": 0.0,
+      "score_tolerance": 1e-09,
+      "splits": [
+        {
+          "ic_grid": 32,
+          "block": 64,
+          "mask_term": -8.66
+        }
+      ],
+      "split_climbs_compared": 24,
+      "split_climbs_identical": 24,
+      "passed": true
+    },
+    "checks": {
+      "published_simulator_vectors": true,
+      "fast_kernel_matches_reference": true,
+      "fast_scorer_matches_phase7": true,
+      "scorer_discriminates_authentic_plaintext": true,
+      "batched_climb_matches_reference": true,
+      "cuda_climb_matches_batched": true
+    },
+    "passed": true
+  },
+  "positive_controls": {
+    "evaluated": [
+      {
+        "id": "authentic-solved-1941-army-plaintexts",
+        "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+        "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "rings": "KQL",
+          "plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-A1",
+              "length": 36,
+              "indicator": [
+                "QWE",
+                "YYY"
+              ],
+              "true_message_key": "BNM",
+              "plaintext_sha256": "204b1c2ca2701bfa70d7ec3f44ee84a726e4f1f0fe7808e6dbf37f50bcab7089"
+            },
+            {
+              "designator": "CTRL-A2",
+              "length": 46,
+              "indicator": [
+                "LDR",
+                "WLA"
+              ],
+              "true_message_key": "KPT",
+              "plaintext_sha256": "b0281f45ce7c98f5e7b29e37c94ed4753ce32d97eaaac83a26a8f9d47e405ba3"
+            },
+            {
+              "designator": "CTRL-A3",
+              "length": 48,
+              "indicator": [
+                "ZUI",
+                "QOY"
+              ],
+              "true_message_key": "VCX",
+              "plaintext_sha256": "7f835a4a909a11ae6e30f648e1790f74b696cd8cf08a4531e2a4884c6537dc7b"
+            },
+            {
+              "designator": "CTRL-A4",
+              "length": 69,
+              "indicator": [
+                "PMF",
+                "FUB"
+              ],
+              "true_message_key": "HGD",
+              "plaintext_sha256": "434d264305fc45d9bdee67bc0ec09d49d723e293dfa0409df6dbc6671879ed05"
+            },
+            {
+              "designator": "CTRL-A5",
+              "length": 76,
+              "indicator": [
+                "TRQ",
+                "WNE"
+              ],
+              "true_message_key": "YBN",
+              "plaintext_sha256": "33ba130f62471f63b74cc542a8d81962683d2741b5666585faeb210ba2319e40"
+            }
+          ]
+        },
+        "recovered_plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.665849484,
+        "unsteckered_score_per_letter": -9.32595912,
+        "climb_passes": 22,
+        "climb_evaluations": 7283,
+        "recovered_plaintext_prefixes": [
+          "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHAR",
+          "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTE"
+        ],
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true
+        },
+        "passed": true
+      },
+      {
+        "id": "constructed-army-style-plaintexts",
+        "source": "constructed for this experiment",
+        "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "V"
+          ],
+          "rings": "BUL",
+          "plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-B1",
+              "length": 167,
+              "indicator": [
+                "XYZ",
+                "RSN"
+              ],
+              "true_message_key": "TRE",
+              "plaintext_sha256": "3602f6597566c773714ecd5f599fd5c011a30f9ab87546a5df59b33a35556a4b"
+            },
+            {
+              "designator": "CTRL-B2",
+              "length": 107,
+              "indicator": [
+                "MNB",
+                "XSE"
+              ],
+              "true_message_key": "OIU",
+              "plaintext_sha256": "a1445ab268e0bfb3f479d0b8ed294ea36527535105879a05e6cf434ad34238bb"
+            },
+            {
+              "designator": "CTRL-B3",
+              "length": 97,
+              "indicator": [
+                "GHJ",
+                "VUR"
+              ],
+              "true_message_key": "WSX",
+              "plaintext_sha256": "a00a63d6cb5409dc3978d0fdbe0dfcbe1c10a70d12586107c697f705fcc3409e"
+            }
+          ]
+        },
+        "recovered_plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.697861007,
+        "unsteckered_score_per_letter": -9.380992204,
+        "climb_passes": 12,
+        "climb_evaluations": 3937,
+        "recovered_plaintext_prefixes": [
+          "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXE",
+          "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITO",
+          "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTS"
+        ],
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true
+        },
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "gate": "A failed control makes zero target-search calls, so a target number can never come from a pipeline that cannot recover a key it was handed."
+  },
+  "result": {
+    "formulation": "end_to_end_power",
+    "seed": 424242,
+    "draws_per_cell": 40,
+    "stecker_pairs": 10,
+    "detection_z": 6.0,
+    "jobs": 1,
+    "seconds": 78.113,
+    "slice": {
+      "wheel_orders": "the planted order only",
+      "left_neighbours": 1,
+      "middle_neighbours": 2,
+      "right_neighbours": 1,
+      "definition": "Each draw plants a random wheel order, ring setting, start position and plugboard, then runs the sweep engine over the left and middle offsets within the stated neighbourhood of the planted ones. The right wheel's ring and position are taken at the planted values (or, for the held-ring arm, at the planted right offset with ring A), because the right wheel is an exact axis that the full sweep enumerates and so always visits. Every other wheel order and every distant start is absent, so a detection here is a detection against the planted key's own neighbourhood and the pooled wrong-setting null, not against the full space.",
+      "detection_rule": "A draw is detected when the best-scoring candidate's plugboard is the planted plugboard exactly and its score is at least null mean + detection_z null standard deviations. The null is the pooled climb score at wrong settings in the same cell; detection_z is chosen above the extreme value expected from 2.7e7 normal draws."
+    },
+    "cells": [
+      {
+        "length": 167,
+        "perturbation": "none",
+        "null": {
+          "samples": 320,
+          "mean_score_per_letter": -8.667525539,
+          "sd_score_per_letter": 0.11274304,
+          "detection_threshold_score_per_letter": -7.9910673
+        },
+        "arms": [
+          {
+            "arm": "split_complete",
+            "ring_rule": "middle_complete",
+            "right_ring": "planted",
+            "split": {
+              "ic_grid": 32,
+              "block": 64,
+              "mask_term": -8.66
+            },
+            "draws": 40,
+            "settings_evaluated_per_draw": 405,
+            "plugboard_recovered_by_top_candidate": 15,
+            "detected": 15,
+            "detection_rate": 0.375,
+            "detection_rate_95_interval": [
+              0.2422,
+              0.5297
+            ],
+            "plugboard_recovered_rate": 0.375,
+            "measured_exact_equivalent_rate": 1.0,
+            "analytic_exact_key_coverage": 1.0,
+            "median_best_equivalent_fraction": 1.0,
+            "detected_when_an_exact_equivalent_exists": [
+              15,
+              40
+            ],
+            "detected_when_no_exact_equivalent_exists": [
+              0,
+              0
+            ],
+            "median_top_score_z_over_null": 2.989,
+            "null": {
+              "samples": 320,
+              "mean_score_per_letter": -8.572554547,
+              "sd_score_per_letter": 0.117058563,
+              "detection_threshold_score_per_letter": -7.870203167
+            }
+          }
+        ]
+      }
+    ],
+    "coverage_by_rule": {
+      "held": {
+        "length": 167,
+        "exact_key_coverage": 0.523896,
+        "reducible_space_settings": 27418560
+      },
+      "middle_past_notch": {
+        "length": 167,
+        "exact_key_coverage": 0.715976,
+        "reducible_space_settings": 27418560
+      },
+      "middle_complete": {
+        "length": 167,
+        "exact_key_coverage": 1.0,
+        "reducible_space_settings": 246767040
+      }
+    },
+    "findings": {
+      "headline_arm": "split_complete",
+      "end_to_end_detection_rate_at_target_scale": 0.375,
+      "end_to_end_detection_interval_95": [
+        0.2422,
+        0.5297
+      ],
+      "end_to_end_detection_lower_bound_95": 0.2422,
+      "single_indel_detection_rate_at_target_length": null,
+      "stecker_stage_upper_bound_reference": "artifacts/phase1-stecker-calibration-v1.json, climb_capability_calibration: the climb is handed the true rings and start, so it bounds the stecker stage and not the sweep."
+    },
+    "predictions": [],
+    "draws": [
+      {
+        "cell": 0,
+        "draw": 0,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "I",
+            "III"
+          ],
+          "rings": "TZH",
+          "start_position": "CGK",
+          "plugboard": "AS BN CF DY GI KW LM OQ RZ TU",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "clean",
+              null
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.687059672,
+              "rings": "AJH",
+              "start_position": "IPK",
+              "plugboard": "AS BN CF DY GI KW LM OQ RZ TU",
+              "equivalent_fraction": 0.928144,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.604530016,
+              -8.536235997,
+              -8.653889665,
+              -8.522775866,
+              -8.602146967,
+              -8.767178176,
+              -8.576794083,
+              -8.508487322
+            ]
+          }
+        },
+        "null_scores": [
+          -8.620243412,
+          -8.606278679,
+          -8.6445781,
+          -8.651713199,
+          -8.662605991,
+          -8.682630768,
+          -8.670834389,
+          -8.77443705
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 1,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "IV"
+          ],
+          "rings": "FER",
+          "start_position": "AIH",
+          "plugboard": "BF CZ DN GU HW JP KS MQ RT VX",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              2
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.486910635,
+              "rings": "ASR",
+              "start_position": "UVI",
+              "plugboard": "BF CZ DN GU HW JP KS MQ RT VX",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.601503926,
+              -8.540828799,
+              -8.470918015,
+              -8.422861982,
+              -8.653704741,
+              -8.39726081,
+              -8.516203005,
+              -8.66116062
+            ]
+          }
+        },
+        "null_scores": [
+          -8.807921303,
+          -8.533660531,
+          -8.76097879,
+          -8.707759505,
+          -8.686341585,
+          -8.695552919,
+          -8.56820311,
+          -8.470229592
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 2,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "IV",
+            "III"
+          ],
+          "rings": "LQD",
+          "start_position": "KMO",
+          "plugboard": "AM CW DE FV GS IR JZ LU OX PQ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              33
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.235731677,
+              "rings": "AQD",
+              "start_position": "AKP",
+              "plugboard": "AD BJ CO EF GK IX MU NZ PS RV",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.56673139,
+              -8.529046112,
+              -8.504204062,
+              -8.754725003,
+              -8.530070554,
+              -8.582114919,
+              -8.421461129,
+              -8.418324148
+            ]
+          }
+        },
+        "null_scores": [
+          -8.777395651,
+          -8.427869292,
+          -8.672221148,
+          -8.832369421,
+          -8.673877855,
+          -8.479555456,
+          -8.822968806,
+          -8.739558178
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 3,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "II"
+          ],
+          "rings": "KRX",
+          "start_position": "INQ",
+          "plugboard": "AF BY CX DN HS LZ MO PW RT UV",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              53
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.254545204,
+              "rings": "ARX",
+              "start_position": "YLQ",
+              "plugboard": "AU DM EZ FQ GI HW LS OT",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.496380995,
+              -8.555930451,
+              -8.485100073,
+              -8.508652665,
+              -8.586249246,
+              -8.76953993,
+              -8.667433399,
+              -8.355249166
+            ]
+          }
+        },
+        "null_scores": [
+          -8.637115566,
+          -8.795502612,
+          -8.419665554,
+          -8.710779428,
+          -8.672486816,
+          -8.817520692,
+          -8.72100166,
+          -8.443217514
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 4,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "III"
+          ],
+          "rings": "NCM",
+          "start_position": "EXQ",
+          "plugboard": "AH BL DS EX FK IM JV NQ RZ WY",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "clean",
+              null
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -7.072968172,
+              "rings": "AUM",
+              "start_position": "QOQ",
+              "plugboard": "AH BL DS EX FK IM JV NQ RZ WY",
+              "equivalent_fraction": 0.808383,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.788819957,
+              -8.602852105,
+              -8.645686972,
+              -8.754773513,
+              -8.767993323,
+              -8.458773921,
+              -8.548229011,
+              -8.596225787
+            ]
+          }
+        },
+        "null_scores": [
+          -8.802497559,
+          -8.778274594,
+          -8.663080023,
+          -8.670780434,
+          -8.92250921,
+          -8.705045952,
+          -8.644120265,
+          -8.712735434
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 5,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "rings": "XNH",
+          "start_position": "HPC",
+          "plugboard": "AK BM CE DN FZ GP IU JT OY RW",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              37
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.283003383,
+              "rings": "AXH",
+              "start_position": "LXB",
+              "plugboard": "AX BK CY EG JM LV NW OP QZ RU",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.542393771,
+              -8.671301288,
+              -8.457613578,
+              -8.786691034,
+              -8.422534784,
+              -8.387662508,
+              -8.604784049,
+              -8.743000169
+            ]
+          }
+        },
+        "null_scores": [
+          -8.660454738,
+          -8.913631311,
+          -8.684154938,
+          -8.77429394,
+          -8.705565918,
+          -8.689989656,
+          -8.664749091,
+          -8.888581306
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 6,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "V",
+            "IV",
+            "III"
+          ],
+          "rings": "INX",
+          "start_position": "FGP",
+          "plugboard": "AQ CS DJ EL FG HV IU KR MO NW",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              107
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.2581066,
+              "rings": "ALX",
+              "start_position": "XDO",
+              "plugboard": "AU BC EJ FK GY HW IV LO RT",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.516943401,
+              -8.4802444,
+              -8.565948054,
+              -8.566491759,
+              -8.536383057,
+              -8.512116066,
+              -8.415504132,
+              -8.41352381
+            ]
+          }
+        },
+        "null_scores": [
+          -8.731722718,
+          -8.706670281,
+          -8.752224888,
+          -8.692771434,
+          -8.613929245,
+          -8.654600654,
+          -8.683170783,
+          -8.867668953
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 7,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "V",
+            "I",
+            "III"
+          ],
+          "rings": "ZLD",
+          "start_position": "ACB",
+          "plugboard": "DU EO FX GP HL IQ JS KT NR VW",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              165
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.469969495,
+              "rings": "AAD",
+              "start_position": "AQB",
+              "plugboard": "DU EO FX GP HL IQ JS KT NR VW",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.584757948,
+              -8.401601423,
+              -8.714992001,
+              -8.549988815,
+              -8.568973117,
+              -8.553132337,
+              -8.561358493,
+              -8.624630275
+            ]
+          }
+        },
+        "null_scores": [
+          -8.623975369,
+          -8.67702073,
+          -8.448312918,
+          -8.720919092,
+          -8.652926773,
+          -8.889715275,
+          -8.729818189,
+          -8.84212794
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 8,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "II",
+            "III"
+          ],
+          "rings": "FGB",
+          "start_position": "MYW",
+          "plugboard": "AV BP EJ FM GQ HO IT KL UZ XY",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "clean",
+              null
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -7.182731141,
+              "rings": "AIB",
+              "start_position": "HAW",
+              "plugboard": "AV BP EJ FM GQ HO IT KL UZ XY",
+              "equivalent_fraction": 0.688623,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.515668119,
+              -8.543788493,
+              -8.53092343,
+              -8.501686655,
+              -8.638228249,
+              -8.583157399,
+              -8.705859927,
+              -8.627256205
+            ]
+          }
+        },
+        "null_scores": [
+          -8.532684752,
+          -8.77396165,
+          -8.946170432,
+          -8.575627036,
+          -8.804073855,
+          -8.877072894,
+          -8.799798333,
+          -8.900618355
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 9,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "V"
+          ],
+          "rings": "EZQ",
+          "start_position": "NWL",
+          "plugboard": "BN CH DL EV FZ IO JM PR SY TW",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              94
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.240103241,
+              "rings": "AHQ",
+              "start_position": "KEL",
+              "plugboard": "CH EF GW KZ LM NY OX PS QU",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.432905258,
+              -8.614466301,
+              -8.513009438,
+              -8.788650765,
+              -8.680327611,
+              -8.511995593,
+              -8.754748517,
+              -8.651336083
+            ]
+          }
+        },
+        "null_scores": [
+          -8.692810665,
+          -8.767937992,
+          -8.616886881,
+          -8.874035396,
+          -8.76119712,
+          -8.735584563,
+          -8.675742341,
+          -8.722992163
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 10,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "II",
+            "V"
+          ],
+          "rings": "JZV",
+          "start_position": "APV",
+          "plugboard": "BC EL FY GX HU IO JQ NT PS VZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "clean",
+              null
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.477097185,
+              "rings": "APV",
+              "start_position": "QEV",
+              "plugboard": "BC EL FY GX HU IO JQ NT PS VZ",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.787436123,
+              -8.777403569,
+              -8.668555451,
+              -8.621551989,
+              -8.486611317,
+              -8.608346725,
+              -8.512652394,
+              -8.487100259
+            ]
+          }
+        },
+        "null_scores": [
+          -8.393117855,
+          -8.659538535,
+          -8.763824574,
+          -8.579808297,
+          -8.691528122,
+          -8.721503508,
+          -8.601103656,
+          -8.682250424
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 11,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "III",
+            "V"
+          ],
+          "rings": "NGV",
+          "start_position": "EOD",
+          "plugboard": "AP BF CS DH EU GV JY LZ NT QR",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              112
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.305841436,
+              "rings": "AIV",
+              "start_position": "RQC",
+              "plugboard": "AF BJ CV DZ EU GM LT NS PQ WX",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.773121786,
+              -8.484185023,
+              -8.672733389,
+              -8.753235026,
+              -8.558486735,
+              -8.478513478,
+              -8.563125399,
+              -8.892173252
+            ]
+          }
+        },
+        "null_scores": [
+          -8.781494411,
+          -8.54830077,
+          -8.850847645,
+          -8.64629553,
+          -8.656432881,
+          -8.643736619,
+          -8.661044006,
+          -8.803734761
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 12,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "II",
+            "V"
+          ],
+          "rings": "EHA",
+          "start_position": "IXO",
+          "plugboard": "BL DU EX FT GH JP NQ OZ SW VY",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              111
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.221411209,
+              "rings": "AMA",
+              "start_position": "EBN",
+              "plugboard": "AF BR DY EV HT KL MU NZ",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.607437094,
+              -8.831539356,
+              -8.597728818,
+              -8.701914487,
+              -8.452265379,
+              -8.513243894,
+              -8.494034437,
+              -8.569991947
+            ]
+          }
+        },
+        "null_scores": [
+          -8.447972511,
+          -8.629300264,
+          -8.764997907,
+          -8.603877471,
+          -8.629817542,
+          -8.619066214,
+          -8.719878501,
+          -8.543734817
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 13,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "V"
+          ],
+          "rings": "YFP",
+          "start_position": "FAS",
+          "plugboard": "AY BV CF DS GP IT JN LO MW RZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              164
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.489089358,
+              "rings": "ATP",
+              "start_position": "HOS",
+              "plugboard": "AY BV CF DS GP IT JN LO MW RZ",
+              "equivalent_fraction": 0.982036,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.633000621,
+              -8.625102392,
+              -8.499975509,
+              -8.478560178,
+              -8.739511963,
+              -8.436669342,
+              -8.776935651,
+              -8.551500275
+            ]
+          }
+        },
+        "null_scores": [
+          -8.775635944,
+          -8.575807241,
+          -8.561181554,
+          -8.809079644,
+          -8.514996849,
+          -8.594063649,
+          -8.848912972,
+          -8.639414917
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 14,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "III"
+          ],
+          "rings": "ENL",
+          "start_position": "USL",
+          "plugboard": "BM DT EG FR IX JK LP NQ OS VY",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              157
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.258033095,
+              "rings": "ADL",
+              "start_position": "PKL",
+              "plugboard": "BI CK ET FV GU LS MW NP XY",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.57201126,
+              -8.347866288,
+              -8.851434485,
+              -8.419329139,
+              -8.557956753,
+              -8.583770612,
+              -8.724656317,
+              -8.596354187
+            ]
+          }
+        },
+        "null_scores": [
+          -8.663109967,
+          -8.635436154,
+          -8.55719662,
+          -8.451796247,
+          -8.629926518,
+          -8.49465121,
+          -8.754015153,
+          -8.64492652
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 15,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "rings": "JXX",
+          "start_position": "BEC",
+          "plugboard": "AL CT DF EK GN HO IJ MV PX UZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              2
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.890106215,
+              "rings": "AMX",
+              "start_position": "STD",
+              "plugboard": "AL CT DF EK GN HO IJ MV PX UZ",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.371813422,
+              -8.464952004,
+              -8.536732428,
+              -8.353123185,
+              -8.505591003,
+              -8.567754906,
+              -8.527004623,
+              -8.671241592
+            ]
+          }
+        },
+        "null_scores": [
+          -8.533122239,
+          -8.600087179,
+          -8.621796734,
+          -8.609958298,
+          -8.75201899,
+          -8.724864651,
+          -8.674345467,
+          -8.474519972
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 16,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "rings": "UBB",
+          "start_position": "XRY",
+          "plugboard": "BY CP EU FV GK HR IJ MW NO TZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              146
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.312022199,
+              "rings": "AGB",
+              "start_position": "DYY",
+              "plugboard": "BL CQ DE FS GR HT IO KN UZ",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.365417877,
+              -8.686106553,
+              -8.785787639,
+              -8.768665742,
+              -8.304408108,
+              -8.557794422,
+              -8.450421613,
+              -8.522643141
+            ]
+          }
+        },
+        "null_scores": [
+          -8.683584735,
+          -8.504721827,
+          -8.577466214,
+          -8.604008628,
+          -8.655144278,
+          -8.535527026,
+          -8.673696474,
+          -8.42896817
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 17,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "IV",
+            "III"
+          ],
+          "rings": "NAC",
+          "start_position": "ESN",
+          "plugboard": "BD CW EX GS KN LQ MO RT UV YZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              74
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.223866154,
+              "rings": "AOC",
+              "start_position": "QGO",
+              "plugboard": "AH CM EN FY IO JP KL QT VZ",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.567003829,
+              -8.580119032,
+              -8.439706578,
+              -8.444812132,
+              -8.645245607,
+              -8.493616173,
+              -8.504652342,
+              -8.534221064
+            ]
+          }
+        },
+        "null_scores": [
+          -8.663440951,
+          -8.706729109,
+          -8.484383698,
+          -8.650159224,
+          -8.634970722,
+          -8.817255344,
+          -8.860640913,
+          -8.887280353
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 18,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "V",
+            "IV",
+            "III"
+          ],
+          "rings": "NOM",
+          "start_position": "SVY",
+          "plugboard": "BO CN EU FJ GW HM IX PT QV RS",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              40
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.266009222,
+              "rings": "AAM",
+              "start_position": "GGX",
+              "plugboard": "AF BC DT EZ GR KL MP QV SU",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.511082168,
+              -8.637853155,
+              -8.496523297,
+              -8.529444808,
+              -8.644977781,
+              -8.584684436,
+              -8.277048476,
+              -8.384089127
+            ]
+          }
+        },
+        "null_scores": [
+          -8.782558871,
+          -8.609037816,
+          -8.699396911,
+          -8.567221674,
+          -8.717726391,
+          -8.526632018,
+          -8.641100399,
+          -8.507568614
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 19,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "III",
+            "IV"
+          ],
+          "rings": "ZFQ",
+          "start_position": "IWI",
+          "plugboard": "AU BQ CL DH EO GI JN KZ MX VW",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              34
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.131050061,
+              "rings": "AEQ",
+              "start_position": "IUJ",
+              "plugboard": "AW BQ EL FY GP HS IU JN KV OR",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.600265482,
+              -8.464311644,
+              -8.460862644,
+              -8.743194895,
+              -8.536787553,
+              -8.61064476,
+              -8.499678439,
+              -8.547484786
+            ]
+          }
+        },
+        "null_scores": [
+          -8.631312829,
+          -8.792595106,
+          -8.7522392,
+          -8.740247165,
+          -8.760167517,
+          -8.860784402,
+          -8.546694147,
+          -8.709805929
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 20,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "II"
+          ],
+          "rings": "OUR",
+          "start_position": "CPA",
+          "plugboard": "AK BO CJ DF GR HT LS MN PZ QX",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "clean",
+              null
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.477097185,
+              "rings": "AUR",
+              "start_position": "OPA",
+              "plugboard": "AK BO CJ DF GR HT LS MN PZ QX",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.679571552,
+              -8.526638037,
+              -8.585522249,
+              -8.613898039,
+              -8.525629286,
+              -8.607639783,
+              -8.784062501,
+              -8.447346547
+            ]
+          }
+        },
+        "null_scores": [
+          -8.67412351,
+          -8.681931385,
+          -8.770468268,
+          -8.641344828,
+          -8.725884713,
+          -8.5400073,
+          -8.779410416,
+          -8.875698948
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 21,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "I",
+            "II",
+            "V"
+          ],
+          "rings": "YPJ",
+          "start_position": "BAD",
+          "plugboard": "AB CG DK FS HW JV LY MX NQ TU",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              34
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.095615161,
+              "rings": "APJ",
+              "start_position": "DCC",
+              "plugboard": "AG CP DM EN FI HW KV OZ TU",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.663183462,
+              -8.718332177,
+              -8.391155723,
+              -8.560619431,
+              -8.549045676,
+              -8.573717533,
+              -8.619172315,
+              -8.422716412
+            ]
+          }
+        },
+        "null_scores": [
+          -8.58380291,
+          -8.744731523,
+          -8.80581969,
+          -8.648950863,
+          -8.641580287,
+          -8.713667217,
+          -8.749770172,
+          -8.411368516
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 22,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "I"
+          ],
+          "rings": "SLT",
+          "start_position": "OZB",
+          "plugboard": "AJ BD GI HP KN LT OW SZ UY VX",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              122
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.187845747,
+              "rings": "ALT",
+              "start_position": "WZB",
+              "plugboard": "AK BL CM DO FN HJ PW QT UX",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.496471188,
+              -8.432213715,
+              -8.606336163,
+              -8.485743774,
+              -8.505754141,
+              -8.565126997,
+              -8.575767792,
+              -8.524848576
+            ]
+          }
+        },
+        "null_scores": [
+          -8.475926997,
+          -8.674104851,
+          -8.543180697,
+          -8.636211452,
+          -8.797346707,
+          -8.517377682,
+          -8.679190641,
+          -8.809114282
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 23,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "II",
+            "V"
+          ],
+          "rings": "ZDM",
+          "start_position": "RVA",
+          "plugboard": "AE BY DX FL GS HZ MU OW QR TV",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              50
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.230061103,
+              "rings": "AMM",
+              "start_position": "TCZ",
+              "plugboard": "CT GV HL IO JN KZ MX UW",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.335498385,
+              -8.565342211,
+              -8.465358506,
+              -8.679857306,
+              -8.523336053,
+              -8.684694692,
+              -8.547256522,
+              -8.588194304
+            ]
+          }
+        },
+        "null_scores": [
+          -8.677268034,
+          -8.679059105,
+          -8.746821886,
+          -8.407437255,
+          -8.69162808,
+          -8.666677638,
+          -8.606593243,
+          -8.640776669
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 24,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "V",
+            "II",
+            "IV"
+          ],
+          "rings": "GNA",
+          "start_position": "YEB",
+          "plugboard": "AG BI CV DX ES FL HP JO RW TU",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              165
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.474823318,
+              "rings": "ANA",
+              "start_position": "SEB",
+              "plugboard": "AG BI CV DX ES FL HP JO RW TU",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.621358146,
+              -8.69652179,
+              -8.558038104,
+              -8.773628847,
+              -8.808710342,
+              -8.623835439,
+              -8.447972594,
+              -8.594380275
+            ]
+          }
+        },
+        "null_scores": [
+          -8.602294196,
+          -8.616300557,
+          -8.54222508,
+          -8.683037669,
+          -8.510279658,
+          -8.728705248,
+          -8.722932774,
+          -8.80095252
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 25,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "V"
+          ],
+          "rings": "TXV",
+          "start_position": "DBW",
+          "plugboard": "AG BC EU FK HO JR LY NV PW QS",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              89
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.2693319,
+              "rings": "AMV",
+              "start_position": "JOX",
+              "plugboard": "AH FS IX JU KZ LM NP OY VW",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.592511542,
+              -8.526748136,
+              -8.634337882,
+              -8.654186501,
+              -8.568824926,
+              -8.400385512,
+              -8.612186308,
+              -8.384870979
+            ]
+          }
+        },
+        "null_scores": [
+          -8.612752674,
+          -8.481366366,
+          -8.596400996,
+          -8.557215564,
+          -8.486042405,
+          -8.603468483,
+          -8.830692604,
+          -8.715457875
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 26,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "II"
+          ],
+          "rings": "EBG",
+          "start_position": "IBC",
+          "plugboard": "AK BY CZ DR EL FU GO HX NQ TV",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              38
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.287715511,
+              "rings": "ALG",
+              "start_position": "ELB",
+              "plugboard": "AJ BY CN DI ET FH GZ LR SU",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.515339544,
+              -8.318033227,
+              -8.670925806,
+              -8.650769985,
+              -8.535337481,
+              -8.30241782,
+              -8.537387808,
+              -8.799316404
+            ]
+          }
+        },
+        "null_scores": [
+          -8.683130412,
+          -8.872745087,
+          -8.561350148,
+          -8.647533554,
+          -8.531431843,
+          -8.791318005,
+          -8.514807944,
+          -8.651864546
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 27,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "III",
+            "I"
+          ],
+          "rings": "OTM",
+          "start_position": "CSQ",
+          "plugboard": "AB CQ DI EN FK HT JM PV SX UW",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              165
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.475717971,
+              "rings": "ATM",
+              "start_position": "OSQ",
+              "plugboard": "AB CQ DI EN FK HT JM PV SX UW",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.561487651,
+              -8.930048436,
+              -8.378733668,
+              -8.649783193,
+              -8.596447436,
+              -8.59822753,
+              -8.794542132,
+              -8.597007523
+            ]
+          }
+        },
+        "null_scores": [
+          -8.778152952,
+          -8.656755777,
+          -8.60273709,
+          -8.728730733,
+          -8.66911086,
+          -8.600657215,
+          -8.735092203,
+          -8.721072373
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 28,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "V",
+            "III",
+            "II"
+          ],
+          "rings": "KIH",
+          "start_position": "ULT",
+          "plugboard": "AK BX CW EI FQ GN HT LU PV RZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              51
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.250406654,
+              "rings": "ASH",
+              "start_position": "LUS",
+              "plugboard": "BJ CZ DG HM IW KR LQ NP OY UX",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.641738689,
+              -8.356774339,
+              -8.520577479,
+              -8.41826953,
+              -8.582812785,
+              -8.758982497,
+              -8.432483409,
+              -8.735636906
+            ]
+          }
+        },
+        "null_scores": [
+          -8.71467231,
+          -8.855815127,
+          -8.562870015,
+          -8.64136625,
+          -8.651356307,
+          -8.58305072,
+          -8.745234336,
+          -8.735064394
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 29,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "II"
+          ],
+          "rings": "MOR",
+          "start_position": "QTL",
+          "plugboard": "AY BG EH FJ KQ LN MW RS TV XZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              92
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.225465396,
+              "rings": "AJR",
+              "start_position": "EOL",
+              "plugboard": "AR CT DP FN GM HX JU LS QZ",
+              "equivalent_fraction": 0.275449,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.689939351,
+              -8.690023854,
+              -8.634839234,
+              -8.388740901,
+              -8.60113587,
+              -8.586598915,
+              -8.54513574,
+              -8.388451377
+            ]
+          }
+        },
+        "null_scores": [
+          -8.687811808,
+          -8.713034432,
+          -8.663167286,
+          -8.619188867,
+          -8.715408087,
+          -8.629999275,
+          -8.659708819,
+          -8.815936318
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 30,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "II"
+          ],
+          "rings": "PKZ",
+          "start_position": "PVC",
+          "plugboard": "AI BF DP EL GQ JV KW NR OT XZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              1
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.491085496,
+              "rings": "AKZ",
+              "start_position": "AVB",
+              "plugboard": "AI BF DP EL GQ JV KW NR OT XZ",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.481841057,
+              -8.579134193,
+              -8.638197055,
+              -8.611860061,
+              -8.391409085,
+              -8.518493109,
+              -8.482709546,
+              -8.609329584
+            ]
+          }
+        },
+        "null_scores": [
+          -8.688942098,
+          -8.515824682,
+          -8.739943899,
+          -8.756879468,
+          -8.749561131,
+          -8.62330917,
+          -8.734640678,
+          -8.684339624
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 31,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "I",
+            "V"
+          ],
+          "rings": "TEA",
+          "start_position": "KBN",
+          "plugboard": "CT FR GJ HM IL KN OQ PS UW YZ",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              63
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.246559699,
+              "rings": "ARA",
+              "start_position": "QNN",
+              "plugboard": "BG CL DZ EH FI KQ OW SY TU",
+              "equivalent_fraction": 0.610778,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.68407854,
+              -8.547753731,
+              -8.602274994,
+              -8.487188215,
+              -8.583735091,
+              -8.502498088,
+              -8.516215248,
+              -8.588424363
+            ]
+          }
+        },
+        "null_scores": [
+          -8.64295684,
+          -8.541227641,
+          -8.644537335,
+          -8.691971249,
+          -8.48427966,
+          -8.603755279,
+          -8.761110238,
+          -8.759264431
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 32,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "III",
+            "I"
+          ],
+          "rings": "QME",
+          "start_position": "DJC",
+          "plugboard": "BW CG DV ET FR HI JK LU PX SY",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "clean",
+              null
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.477097185,
+              "rings": "AZE",
+              "start_position": "MVC",
+              "plugboard": "BW CG DV ET FR HI JK LU PX SY",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.608028722,
+              -8.727868332,
+              -8.633805194,
+              -8.593445802,
+              -8.858468616,
+              -8.644210786,
+              -8.504678812,
+              -8.497036091
+            ]
+          }
+        },
+        "null_scores": [
+          -8.73126632,
+          -8.636662743,
+          -8.607905011,
+          -8.700264387,
+          -8.732982473,
+          -8.655638828,
+          -8.60530384,
+          -8.658788079
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 33,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "IV",
+            "V"
+          ],
+          "rings": "GRA",
+          "start_position": "FZB",
+          "plugboard": "AM BP CH EJ FR GZ IT OV QY SX",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              165
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.475174581,
+              "rings": "ACA",
+              "start_position": "YJB",
+              "plugboard": "AM BP CH EJ FR GZ IT OV QY SX",
+              "equivalent_fraction": 1.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.567325886,
+              -8.436402435,
+              -8.394099102,
+              -8.449878574,
+              -8.465436914,
+              -8.7508475,
+              -8.794900059,
+              -8.4601808
+            ]
+          }
+        },
+        "null_scores": [
+          -8.563302357,
+          -8.352078437,
+          -8.537583225,
+          -8.685225873,
+          -8.629531337,
+          -8.520425275,
+          -8.35527609,
+          -8.682361514
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 34,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "II",
+            "III",
+            "IV"
+          ],
+          "rings": "OKI",
+          "start_position": "XWR",
+          "plugboard": "AC BH DT EK FR GV IS JW LO MU",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              28
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.261748853,
+              "rings": "ADI",
+              "start_position": "IQQ",
+              "plugboard": "AH DQ EX GM IY JZ LW PR SV",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.53422145,
+              -8.662057073,
+              -8.531296398,
+              -8.570993075,
+              -8.695744361,
+              -8.797975234,
+              -8.672481484,
+              -8.512502221
+            ]
+          }
+        },
+        "null_scores": [
+          -8.731088286,
+          -8.615779726,
+          -8.883981698,
+          -8.589502504,
+          -8.711466854,
+          -8.674986617,
+          -8.789446258,
+          -8.617812162
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 35,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "I",
+            "II",
+            "III"
+          ],
+          "rings": "WHS",
+          "start_position": "AUM",
+          "plugboard": "AO BX CM DE FN IZ KU PQ SY TV",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              25
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.130391988,
+              "rings": "ASS",
+              "start_position": "DEL",
+              "plugboard": "AB CJ DE FX HM IZ KU NO PV QS",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.609182123,
+              -8.609103325,
+              -8.45188058,
+              -8.4593852,
+              -8.518103012,
+              -8.545191247,
+              -8.805514858,
+              -8.701845211
+            ]
+          }
+        },
+        "null_scores": [
+          -8.58627268,
+          -8.40584733,
+          -8.729564657,
+          -8.714323311,
+          -8.761393948,
+          -8.776793251,
+          -8.772356988,
+          -8.76175521
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 36,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "V",
+            "I"
+          ],
+          "rings": "SEX",
+          "start_position": "ALQ",
+          "plugboard": "BG CY DS EQ FX HW JT KM NP OU",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              33
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.267484685,
+              "rings": "ANX",
+              "start_position": "ITP",
+              "plugboard": "AC DS EP GH IN JW KM QX RT",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.476766993,
+              -8.583422151,
+              -8.502104816,
+              -8.60725579,
+              -8.626976857,
+              -8.743220555,
+              -8.72432197,
+              -8.479807343
+            ]
+          }
+        },
+        "null_scores": [
+          -8.634567457,
+          -8.726662957,
+          -8.635600337,
+          -8.852798702,
+          -8.527043547,
+          -8.549707645,
+          -8.348603975,
+          -8.63995982
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 37,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "III",
+            "IV",
+            "V"
+          ],
+          "rings": "MRA",
+          "start_position": "FTL",
+          "plugboard": "BP CO DZ EN GR HY IL JM KX ST",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              120
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.276949827,
+              "rings": "AFA",
+              "start_position": "TJM",
+              "plugboard": "AH BC EQ FL GP IW JO NX RZ",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.667456851,
+              -8.597966501,
+              -8.585091541,
+              -8.545549785,
+              -8.760201083,
+              -8.574377265,
+              -8.581460556,
+              -8.566584062
+            ]
+          }
+        },
+        "null_scores": [
+          -8.648892181,
+          -8.714159027,
+          -8.767754036,
+          -8.848435115,
+          -8.821761501,
+          -8.599149364,
+          -8.843525354,
+          -8.573161828
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 38,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "II"
+          ],
+          "rings": "NZR",
+          "start_position": "GHZ",
+          "plugboard": "AD BI CH EX FQ GV KP LW NS RU",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "deletion",
+              29
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -8.299388459,
+              "rings": "AJR",
+              "start_position": "SRY",
+              "plugboard": "BC EI FH GJ KN LU PQ TX",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": false
+            },
+            "rank_of_exact_plugboard": null,
+            "null_scores": [
+              -8.556664164,
+              -8.444345607,
+              -8.598869372,
+              -8.568220213,
+              -8.544745128,
+              -8.79634966,
+              -8.632420004,
+              -8.392605674
+            ]
+          }
+        },
+        "null_scores": [
+          -8.737669826,
+          -8.58133675,
+          -8.639399029,
+          -8.702157599,
+          -8.654367953,
+          -8.657654277,
+          -8.445332229,
+          -8.405592352
+        ]
+      },
+      {
+        "cell": 0,
+        "draw": 39,
+        "planted": {
+          "rotor_order_left_to_right": [
+            "I",
+            "III",
+            "IV"
+          ],
+          "rings": "YMQ",
+          "start_position": "DDV",
+          "plugboard": "AC BD EG HV IZ KN LU MP OW XY",
+          "perturbation": {
+            "kind": "none"
+          }
+        },
+        "arms": {
+          "split_complete": {
+            "top_hypothesis": [
+              "insertion",
+              2
+            ],
+            "settings_evaluated": 405,
+            "best_equivalent_fraction": 1.0,
+            "exact_equivalent_exists": true,
+            "top": {
+              "score_per_letter": -6.678434718,
+              "rings": "AEQ",
+              "start_position": "EUW",
+              "plugboard": "AC BD EG HV IZ KN LU MP OW XY",
+              "equivalent_fraction": 0.0,
+              "plugboard_recovered_exactly": true
+            },
+            "rank_of_exact_plugboard": 1,
+            "null_scores": [
+              -8.465516353,
+              -8.800851531,
+              -8.408470456,
+              -8.441827368,
+              -8.446764244,
+              -8.586022845,
+              -8.507191179,
+              -8.584882887
+            ]
+          }
+        },
+        "null_scores": [
+          -8.704486515,
+          -8.778378539,
+          -8.437533218,
+          -8.655634635,
+          -8.667202837,
+          -8.559168271,
+          -8.658948775,
+          -8.714993783
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "The slice is the planted key's own neighbourhood: the planted wheel order, left offsets within one of the planted, middle offsets within two, and the planted right wheel. Every other wheel order and distant start is absent, so a detection is a detection against that neighbourhood and a pooled wrong-setting null, not against 2.7e7 settings. The detection threshold is set at 6 null standard deviations to stand in for the extreme value of that many draws, and that substitution assumes the null is close to normal.",
+    "The right wheel's ring and position are taken at the planted values (or, for the AAA arm, at the planted right offset with ring A). That is the one axis the full sweep enumerates exactly, so it always visits those values, but the experiment does not test it.",
+    "One plaintext prefix at one length is used for every draw. The draws vary the key, not the text, so a text that scores unusually well or badly under the published counts moves every rate together.",
+    "The null is the climb's score at randomly drawn wrong settings of the same message. It is pooled over the cell's draws, eight per draw, and is a reference distribution rather than a sample of the space a sweep would see.",
+    "The indel cell drops or inserts one random letter at a uniformly random interior position. Real garbles can be several letters, can fall in the first or last few letters, or can be a transposition; this measures the single-letter case only.",
+    "Constructed plaintext enciphered by the reference machine, not authentic held-out traffic with an authentic daily key.",
+    "The right wheel's position is swept over the planted value and its two neighbours, so the slice holds the setting one keystroke away that the tail window needs. Under the middle-past-notch rule the middle wheel's phase is fixed, so when the planted machine's first keystroke steps its middle wheel the shifted setting is not exactly reachable; the measurement includes that loss rather than assuming it away.",
+    "Each windowed arm is compared with its own pooled null, the same windowed climb at the same wrong settings, because the better of two shorter windows is distributed differently from a whole-message score. The 6-sigma threshold stands in for the extreme of a full sweep in which every setting contributes the better of two windows, which is twice as many scores as the whole-message sweep and assumes the windowed null is also near normal.",
+    "'Missed by both past-notch arms' stands in for 'v2 and v3 both null'. The real sweeps compare a candidate against a score distribution over 27.4 million settings; this control compares against a pooled null of wrong settings, as every earlier power control did. The joint figures in phase1-body-direct-sweep-v3 (73 of 80 clean) were measured the same way.",
+    "The missed set is defined by outcomes on the same draws that then measure the complete arms, so a complete arm that fails for a reason the past-notch arms share (the same unlucky plugboard) is under-counted among the missed, and one that succeeds by retrying a different equivalent setting is over-counted. Neither effect is estimated.",
+    "400 draws per cell leave about 36 clean missed draws and about 100 middle-third indel missed draws, if the rates of the earlier controls hold. A rate in a stratum of 36 has a 95% interval about 0.3 wide. The thresholds are set with that in mind and the strata sizes are reported.",
+    "Only a single dropped or inserted letter is modelled, with the head-and-tail argument of phase1-windowed-climb-power-v1. Two faults, a substituted letter, or a fault in the first or last letters behave differently.",
+    "Every figure assumes UKW-B, wheels I-V as wired and the 1940+ indicator procedure. The cited paper's authors suspect Batch C used differently wired wheels; if so, no planted-key power here applies to it.",
+    "The split-point climb judges a hypothesis by an n-gram score from which the junction terms are dropped and a fixed credit added. The credit, -8.66 per term, is the wrong-setting null mean per letter measured in the control and applies to a message with masks of its own only approximately; BYQMZ carries one masked letter at position 28 and the planted draws carry none.",
+    "The split arm is judged against its own null, the same climb at the same wrong settings as the pooled null, because the best of about 330 hypotheses is distributed differently from a single score. The 6-sigma threshold assumes that null is near normal.",
+    "The oracle arm is judged against its own null, as amended in the control, and is the ceiling for any split-point climb: it is handed the fault's position and kind.",
+    "q, the prior probability of an indel, is not measured and the nominal 0.2 is arbitrary. The yields at every reported q are printed.",
+    "Only a single dropped or inserted letter is modelled. The split-point climb has one fault hypothesis; two faults are not searched.",
+    "'Missed by all three reference arms' stands in for 'v2, v3 and v4 all null'. The real sweeps compare against score distributions over 27.4 and 246.8 million settings; this control, like every earlier one, compares against a pooled null of wrong settings.",
+    "The missed set is defined on the same draws that measure the split arms, so a failure the split climb shares with the reference climbs (an unlucky plugboard) is under-counted among the missed draws. It is not estimated.",
+    "Detection only. The companion confirmation is not part of this run; its joint rate is to be measured afterwards on these draws, as for v3 and v4.",
+    "If the rates of the earlier draws hold, about 135 one-indel and 23 clean draws are missed by all three arms: enough for the deciding indel stratum (a 95% interval about 0.16 wide), not for the clean one.",
+    "Detection here is the climb's top candidate recovering the planted plugboard at a score above the arm's own threshold. It is not companion confirmation, which the real sweeps decide on. Detection bounds confirmed power from above, so 'not covered' verdicts stand and 'covered' verdicts are provisional until scripts/joint_power.py measures the confirmed rate.",
+    "The two faults of a double-indel draw are independent and uniformly placed, so some pairs are far apart and some adjacent; real garbles may cluster. A substituted letter is uniform over the other 25 letters at a uniform position, including the first and last.",
+    "The union of four arms on one draw is a stand-in for four separate sweeps, each of which sees its own wrong-setting score distribution over 27 to 247 million settings. It carries the same pooled-null approximation as every earlier control here."
+  ]
+}

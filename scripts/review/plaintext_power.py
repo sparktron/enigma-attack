@@ -28,13 +28,16 @@ Examples
 
 Review results (167 letters, ten pairs, seed 424242, detection given an exact
 equivalent in the slice):
-    repository plaintext, IC 0.0792: whole-message 0.947 (90/95); v5 0.97 (39/40,
-        recomputed pending)
+    repository plaintext, IC 0.0792: whole-message 0.947 (90/95).
     16 Markov texts, IC 0.0514 to 0.0625 (mean 0.0574), whole-message arm:
         mean 0.359 (270/752), range 0.11 to 0.64, Pearson r with IC 0.87
-    v5 arm, 40 draws each: IC 0.0514 -> 0.03, 0.0578 -> 0.23, 0.0625 -> 0.57
-        (recomputed pending: measured before the fix that scores against the
-        selected arm's own null threshold; rerun on the CUDA build)
+    Corrected v5 rerun, 2026-10-12, 40 draws per text:
+        repository IC 0.0792: 39/40 (0.975)
+        Markov IC 0.0578: 8/40; 0.0574: 22/40; 0.0600: 15/40; 0.0625: 22/40
+        pooled Markov detection 67/160 (0.419), mean IC 0.0594, Pearson r 0.39,
+        slope +2.8 percentage points per +0.001 IC.
+        Raw configs and outputs: data/review/plaintext-power-2026-10-12/.
+        Detection only; companion confirmation and four-arm union not measured.
 """
 
 from __future__ import annotations
