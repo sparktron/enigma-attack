@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-12",
+  "scope": "October 5-12 repository/source evidence and pre-run validation; this is not a full target sweep",
+  "source_artifact": "artifacts/phase1-estecker-power-v1.json",
+  "sha256": "1bb126a60417e6b8caab5a177858f72bcfae2e7050047ebd2a21ff026f26bf11",
+  "paired_analysis": [
+    {
+      "perturbation": "none",
+      "counts": {
+        "both": 165,
+        "E_only": 198,
+        "baseline_only": 0,
+        "neither": 117
+      },
+      "E_detection_given_baseline_miss": 0.6285714285714286
+    },
+    {
+      "perturbation": "indel",
+      "counts": {
+        "both": 72,
+        "E_only": 168,
+        "baseline_only": 0,
+        "neither": 240
+      },
+      "E_detection_given_baseline_miss": 0.4117647058823529
+    }
+  ],
+  "analysis_status": "Exploratory retrospective counts, not a preregistered power experiment; conditional on baseline only",
+  "full_sweep_status": "not launched; prepared on codex/readiness-review-2026-10-12; GPU currently shared with LM Studio",
+  "commands": {
+    "cpu_tests": "python3 -m unittest discover -q (sandboxed)",
+    "gpu_baseline_tests": "python3 -m unittest discover -q (GPU access)",
+    "changed_path_tests": "python3 -m unittest tests.test_power_prerequisite tests.test_first_plug tests.test_phase1_stecker -q (GPU access)",
+    "independent": "python3 scripts/review/independent_enigma.py",
+    "drift": "python3 check_artifacts.py drift",
+    "determinism": "python3 check_artifacts.py determinism",
+    "smoke": "python3 phase1_stecker.py --config data/review/readiness-2026-10-12/smoke.config.json --jobs 1 (GPU access)",
+    "resume": "Direct run_body_direct_sweep API with unchanged smoke config and GPU access; record in resume-preregistration.json",
+    "final_gpu_suite": "python3 -m unittest discover -q (GPU access after code fixes)",
+    "E_artifact_registration": "python3 check_artifacts.py both --claims /tmp/enigma-review-estecker-claims.json (subset of committed claims)"
+  },
+  "observed": {
+    "cpu_tests": "295 tests passed; skipped14",
+    "gpu_baseline_tests": "295 tests passed; no skips",
+    "independent": "3000/3000 random keys agree, published vectors and ring coverage pass",
+    "drift": "0 failing artifacts",
+    "changed_path_tests": "111 tests passed with GPU access; no skips",
+    "smoke": {
+      "status": "complete",
+      "seconds": 344.303736146976,
+      "settings": 9,
+      "preflight": true,
+      "positive_controls": true,
+      "power_prerequisite": true,
+      "source_dirty": true
+    },
+    "resume": {
+      "passed": true,
+      "settings_run": 0,
+      "identical_candidates": true,
+      "method": "run_body_direct_sweep with unchanged completed smoke config; preflight passed in smoke.json"
+    },
+    "final_gpu_suite": "305 tests passed after the code fixes; no skips, 229.665 seconds",
+    "E_artifact_registration": "0 failures for standalone both check; long-running control not regenerated. 33 paths verified and full artifact pinned by runtime gate.",
+    "determinism": "0 failing artifacts; superseded and long-running artifacts skipped per registry"
+  },
+  "limitations": [
+    "GPU baseline test collection preceded the new regression file; changed-path validation and final full suite are separate.",
+    "LM Studio GPU contention affects measured throughput; no idle-GPU performance claim.",
+    "No E-arm companion-confirmed power or four-arm conditional power measurement.",
+    "jCodemunch session budget restricted additional code exploration; this review is not exhaustive."
+  ],
+  "external_sources": [
+    {
+      "url": "https://cryptocellar.org/bgac/ultimate-enigma.html",
+      "page_date": "2026-07-27"
+    },
+    {
+      "url": "https://cryptocellar.org/bgac/1941-msg-list-unbroken.html",
+      "page_date": "2026-09-19"
+    },
+    {
+      "url": "https://cryptocellar.org/bgac/g-army-messages.html",
+      "page_date": "2026-09-30"
+    },
+    {
+      "url": "https://cryptocellar.org/bgac/the-mvueh-break.html",
+      "page_date": "2026-09-24"
+    },
+    {
+      "url": "https://cryptocellar.org/pubs/enigma-modern-breaking.pdf",
+      "page_date": "2017-03, author version5"
+    }
+  ],
+  "evidence_hashes": {
+    "smoke.config.json": "7617c1bd01ebd5e72d1df2ee579b165cdcc6bfa1548ca1aaec1b2ab03817b48b",
+    "smoke.json": "aebcbf02f44e3c888df67dcc2d461a69753a4eac0cae34f4606dfecdc89a0795",
+    "resume-preregistration.json": "d588c12b346a474cea07dd64f5d49533a95076c95486b3f6f2a6bf5dbdc4ca5d",
+    "smoke-resume.json": "6cba7d6630b3bf6c3aa541e1bf3af00d999cc9d92dc1e07d88116e441b86eff2",
+    "cpu-tests.log": "3342cf3275a42cb088be19c75b5207799caa25e5bda1fb963cad8d3ce8f5224e",
+    "gpu-baseline-tests.log": "9846dee4406f7976ac788f071cee5d15be5e540f600fb83969e426292221cfba",
+    "final-tests.log": "77270f48c187fcfe9d0dfb354176137f4e030e1897849447d4fe0318e9c6ccb0",
+    "estecker-artifact-check.log": "559bf117475ce27c9b5eb8ce0fe1a8321f11d8b1f949e4ad343e12f8bbf96008",
+    "regressions-before-fix.log": "753ba062ee2de44795f170adff6a3cc12a0b560723bac4b7d965c55e192def17",
+    "smoke.log": "854680bdce56cb700e9e5f3be0ae7ead59c9d162e51b4b66fda01ce61f5d903d",
+    "artifact-drift.log": "6e6cfb5a342324ce57a8a2ee1fc8a88b91af074ee21d1010fef2f018d9a33f3d",
+    "independent-enigma.log": "89648942aa80ab32c75d233bc4e3c5d632a217df80169143b1fa285eb1294056",
+    "changed-path-tests.log": "49303e21e3e597b037fb57357610b9404ad9e49191e56860315adcee1d750957",
+    "artifact-determinism.log": "9a2bba796b053a1efcb6649f14c40f4536eced26eb795e46dc4a5fad7091cbeb"
+  },
+  "next": "Run amended v6 from this clean committed branch once the GPU is free, or explicitly record a user-requested contention deviation. Preserve checkpoint and verify retained-candidate parity before interpretation."
+}

@@ -1,0 +1,208 @@
+{
+  "hypothesis": "The already completed bounded smoke checkpoint resumes with zero new settings and identical candidates; no preflight or positive-control rerun is claimed by this direct API check.",
+  "config_sha256": "7617c1bd01ebd5e72d1df2ee579b165cdcc6bfa1548ca1aaec1b2ab03817b48b",
+  "code": {
+    "source": "git_checkout",
+    "commit": "1703705c16f0af838e13492fb5a45fa2cffea343",
+    "branch": "codex/readiness-review-2026-10-12",
+    "dirty": true,
+    "status": [
+      " M artifact_claims.json",
+      " M docs/STATUS.md",
+      " M docs/open-items-2026-10-11.md",
+      " M docs/phase1-experiment-history.md",
+      " M experiments/phase1-body-direct-sweep-v6/config.json",
+      " M phase1_stecker.py",
+      " M stecker_climb.py",
+      "?? data/review/readiness-2026-10-12/",
+      "?? docs/code-review-2026-10-12.md",
+      "?? tests/test_power_prerequisite.py"
+    ],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "0ac1ed20bcffbcca6863cf16c04159b4db5f07329488a28477e7ed9815c434d4",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "32c6477740f60bf6d4c6afa77f367b0bdc9c4e28002fe759f34d79ef4f96dc3c",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "23825865d8f1a18b36999830bcfed7bc9d5131d00dda23e4ddd3bd2b6f52d5af",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
+      "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
+      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "method": "run_body_direct_sweep with unchanged completed smoke config; preflight passed in smoke.json",
+  "started_at": "2026-10-12T16:57:34.333668+00:00",
+  "earlier_attempt": "Sandboxed invocation failed before search because CUDA device access was hidden; repeated here with GPU access.",
+  "seconds": 1.0743499449745286,
+  "result": {
+    "formulation": "body_direct",
+    "power_prerequisite": {
+      "artifact": "artifacts/phase1-estecker-power-v1.json",
+      "sha256": "1bb126a60417e6b8caab5a177858f72bcfae2e7050047ebd2a21ff026f26bf11",
+      "configuration_sha256": "51ac96a277b6564d2bf38326c05b3e05d225125173bf180dc624d00c138c79a1",
+      "arm": "complete_w117_estecker",
+      "length": 167,
+      "required_predictions": [
+        "P2",
+        "P3"
+      ],
+      "clean_detection_rate": 0.75625,
+      "clean_detection_gain": 0.4125,
+      "passed": true
+    },
+    "message": "BYQMZ",
+    "message_length": 167,
+    "rings_held_at": "AAA",
+    "ring_rule": "middle_complete",
+    "right_rings_searched": 1,
+    "rotor_orders": 1,
+    "start_positions": 1,
+    "evaluated_settings": 9,
+    "seconds": 0.071,
+    "seconds_per_setting": null,
+    "jobs": 1,
+    "execution": {
+      "engine": "cuda",
+      "chunks": 1,
+      "chunks_resumed_from_checkpoint": 1,
+      "chunks_run": 0,
+      "settings_run": 0,
+      "checkpoint_fingerprint": "2a6cbf437a16c86991a1dec7e64e538d896e35d4e77ace77a7bf8bade4e99d13",
+      "checkpoint": "build/phase1-v6-readiness-smoke-2026-10-12.checkpoint.jsonl",
+      "note": "seconds covers only the chunks run in this invocation; a resumed sweep reports the time of the remainder, and the projections below use the settings run in this invocation."
+    },
+    "score_distribution_over_slice": {
+      "mean_score_per_letter": -8.159275076,
+      "sd_score_per_letter": 0.074078796,
+      "max_score_per_letter": -7.980961314,
+      "top_z_score": 2.407082
+    },
+    "companion_confirmation": {
+      "companions": [
+        "FKQLZ",
+        "XFEDT"
+      ],
+      "threshold_z": 6.0,
+      "calibration": "artifacts/phase1-companion-calibration-v1.json",
+      "confirmed_candidate_ranks": [],
+      "best_min_best_z": 3.846504,
+      "seconds": 0.458,
+      "method": "Each companion is deciphered at all 17,576 start positions under the candidate's wheel order, reported rings and plugboard, without the indicator. A candidate is confirmed when every companion's best start is at least threshold_z standard deviations above that companion's own start distribution."
+    },
+    "indicator_confirmation": {
+      "best_pooled_score_per_letter": -9.536460935,
+      "mean_pooled_score_per_letter": -9.536460935,
+      "candidates_with_a_compatible_ring_setting": 0,
+      "ring_recovery": "The sweep absorbs the left and middle ring settings into the start position it searches, so the held AAA is the parameterization and not a claim about the daily key. The clear Grundstellung the indicator uses does not share that freedom, so for each candidate every left and middle ring setting that reproduces the swept body through the indicator is scored and the best is reported. The right-hand ring is kept as the sweep used it, because it moves the turnover inside the message and is an axis of the declared space.",
+      "method": "For each retained candidate the recovered plugboard and a recovered ring setting are used with the clear indicator to derive all three message keys, and the whole date is scored. The sweep itself never reads the indicator, so this is an independent check."
+    },
+    "coverage": {
+      "searched_settings": 9,
+      "reducible_space_settings": 246767040,
+      "ring_rule": "middle_complete",
+      "reducible_space_definition": "Every wheel order x 26^4: the left and middle wheel offsets, the right wheel's offset and the right wheel's absolute position (its ring), which fixes when the middle wheel steps. The middle wheel's absolute position fixes when the left wheel steps, so the rule that chooses the middle ring decides which true keys have an exact equivalent in the space; under middle_complete every middle start from which the middle notch falls inside the message is searched too, which multiplies the space.",
+      "exact_key_coverage_of_reducible_space": 1.0,
+      "exact_key_coverage_meaning": "Fraction of true daily keys for which some setting in the reducible space deciphers this message exactly as the true key does, by enumeration of the stepping patterns at this length. A key outside it can still be found if a partly equivalent neighbour survives the climb, which only some of the time it does; the end-to-end power calibration measures how often.",
+      "fraction_searched": 3.6e-08,
+      "measured_wall_seconds_per_setting_at_this_parallelism": null,
+      "jobs_used": 1,
+      "projected_wall_hours_for_reducible_space_at_this_parallelism": null,
+      "projected_core_hours_for_reducible_space": null
+    },
+    "top_candidates": [
+      {
+        "rank": 1,
+        "score_per_letter": -7.980961314,
+        "rotor_order_left_to_right": [
+          "I",
+          "II",
+          "III"
+        ],
+        "rings": "AEA",
+        "start_position": "AEA",
+        "plugboard": "EM FQ GP HU IJ KW LS OT RX",
+        "plugboard_pairs": 9,
+        "window": "head",
+        "indicator_confirmation": {
+          "arms": [
+            {
+              "indicator_ordering": "grundstellung_first",
+              "rings": "AEA",
+              "rings_recovered": false,
+              "pooled_score_per_letter": -9.679953199,
+              "message_keys": [
+                "OGM",
+                "QWK",
+                "GJA"
+              ]
+            },
+            {
+              "indicator_ordering": "message_key_first",
+              "rings": "AEA",
+              "rings_recovered": false,
+              "pooled_score_per_letter": -9.536460935,
+              "message_keys": [
+                "DXQ",
+                "PFH",
+                "PAN"
+              ]
+            }
+          ],
+          "compatible_ring_settings": 0,
+          "best_indicator_ordering": "message_key_first",
+          "best_rings": "AEA",
+          "best_rings_recovered": false,
+          "best_pooled_score_per_letter": -9.536460935,
+          "best_message_keys": [
+            "DXQ",
+            "PFH",
+            "PAN"
+          ]
+        },
+        "companion_confirmation": {
+          "companions": [
+            {
+              "designator": "FKQLZ",
+              "letters": 107,
+              "starts_scanned": 17576,
+              "best_start": "AHS",
+              "best_score_per_letter": -8.836602039,
+              "mean_score_per_letter": -9.62586125,
+              "sd_score_per_letter": 0.197524148,
+              "best_z": 3.995761,
+              "runner_up_z": 3.891007,
+              "best_plaintext_prefix": "GJQKEZXNXRSSHETSJUPPGNNCFKYTRKVRAHXPRQSFTCPICFRMATSAEEUSSUPH"
+            },
+            {
+              "designator": "XFEDT",
+              "letters": 97,
+              "starts_scanned": 17576,
+              "best_start": "HAV",
+              "best_score_per_letter": -8.814467503,
+              "mean_score_per_letter": -9.609796429,
+              "sd_score_per_letter": 0.206766711,
+              "best_z": 3.846504,
+              "runner_up_z": 3.821708,
+              "best_plaintext_prefix": "GXKWKDINSANXKCKEXUEXFYPVARXVMWJRNXZENBDBHPXJRSGIPGHAQDOOCHRC"
+            }
+          ],
+          "threshold_z": 6.0,
+          "min_best_z": 3.846504,
+          "confirmed": false
+        }
+      }
+    ]
+  },
+  "passed": true
+}

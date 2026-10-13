@@ -1,0 +1,22 @@
+usage: python3 -m unittest [-h] [--settings SETTINGS] [--jobs JOBS]
+                           [--engines ENGINES [ENGINES ...]] [--window WINDOW]
+                           [--split-grid SPLIT_GRID] [--compare]
+                           [--repeats REPEATS] [--v4-chunks V4_CHUNKS]
+                           [--cpu-ms CPU_MS]
+                           [--remaining-chunks REMAINING_CHUNKS]
+python3 -m unittest: error: --compare needs --split-grid
+usage: python3 -m unittest [-h] [--settings SETTINGS] [--jobs JOBS]
+                           [--engines ENGINES [ENGINES ...]] [--window WINDOW]
+                           [--split-grid SPLIT_GRID] [--compare]
+                           [--repeats REPEATS] [--v4-chunks V4_CHUNKS]
+                           [--cpu-ms CPU_MS]
+                           [--remaining-chunks REMAINING_CHUNKS]
+python3 -m unittest: error: --split-grid needs the batched engine: use --engines batched
+wrote /tmp/tmpzusqmngf/certificate.json after 1 daily keys
+wrote /tmp/tmpulnvsif5/certificate.json after 1 daily keys
+----------------------------------------------------------------------
+Ran 295 tests in 166.751s
+
+OK (skipped=14)
+wrote /tmp/tmp4et54q0n/phase2.json with 10 network edges
+wrote /tmp/tmpo8dkdi6o/certificate.json (12 evaluations)

@@ -2646,9 +2646,9 @@ the v4 sweep to be rerun with the E-Stecker start set (2026-10-11).
   lifted the true-setting climb from 5/24 to 19/24 at IC 0.0578 and from 3/36 to
   14/36 (E) and 27/36 (R, 73 starts) at IC 0.0514. A unigram first-phase
   objective did not help.
-- The closure above rests on detection rates measured at IC 0.0792: it holds for
-  a plaintext of that IC or higher and leaves a much larger multiplier for a
-  typical one (the review's inference, about 0.5 to 0.65 for the union).
+- The closure above rests on detection rates measured on one plaintext of
+  IC 0.0792. The review's typical-IC union multiplier was subsequently withdrawn
+  after the corrected 2026-10-12 rerun; that union remains unmeasured.
 
 ### Decision (maintainer, 2026-10-11)
 
@@ -2721,9 +2721,10 @@ replaced by the measured figure). Predictions: a confirmed candidate (deciding);
 rank one if confirmed; the E start set never scores below v4 on v4's 100 retained
 settings (a check that the implementation did not change the climb); all 100
 retained candidates re-climb identically on the CPU batched climber; if null, the
-top score lies between z 5.5 and 8.0. A null at the stated power multiplies the
-odds of a standard reading by about one minus that power, for a typical-IC
-plaintext only. A smoke run through the runner on a 72-setting slice passed the
+top score lies between z 5.5 and 8.0. The original preregistration described a null as an additional odds multiplier.
+The 2026-10-12 evidence amendment corrects this: conditional joint confirmed
+power after the earlier four nulls is unmeasured, so no such multiplier is
+calibrated. A smoke run through the runner on a 72-setting slice passed the
 preflight and both positive controls.
 
 Run command (after the power control's result and amendment are committed):
@@ -2844,3 +2845,80 @@ the four-arm union were not measured. The review's earlier integrated curve and
 numerical typical-IC odds multipliers are withdrawn; the corrected measured table
 replaces its pending figures. Next: measure plaintext-aware joint confirmed power
 before deriving new closure multipliers.
+
+
+## E-Stecker result recorded and v6 readiness amendment (2026-10-12)
+
+### Observed
+
+`artifacts/phase1-estecker-power-v1.json` was run on 2026-10-11 from clean
+commit `4749bce`, 22:46:01-22:58:42 UTC, 760.314 seconds, CUDA, eight requested
+workers (the GPU engine uses one driver process). Source config SHA-256
+`51ac96a277b6564d2bf38326c05b3e05d225125173bf180dc624d00c138c79a1`
+matches the committed config. Full artifact SHA-256:
+`1bb126a60417e6b8caab5a177858f72bcfae2e7050047ebd2a21ff026f26bf11`.
+The existing raw artifact and its frozen preregistration config are preserved
+unchanged so their recorded hashes remain valid. Completion is recorded in
+the artifact and this history. Preflight and positive
+controls passed. There are 24 Markov plaintexts (seed 20261012) and 480 key
+draws in each cell, with the configured key seed preserved in the artifact.
+
+Clean baseline/E: 165/480 and 363/480, gain 198/480 (41.25 percentage points).
+One-indel baseline/E: 72/480 and 240/480, gain 168/480 (35 points). P1-P4
+passed. P2's 75% threshold was exceeded by three draws; the pooled key-draw
+Wilson interval is 71.59-79.25%, and does not capture plaintext/model uncertainty.
+
+A retrospective paired-count analysis finds no baseline-only detection:
+clean both 165, E-only 198, neither 117; indel both 72, E-only 168, neither 240.
+The E arm detects 198/315 (62.86%) of baseline clean misses and 168/408 (41.18%)
+of baseline indel misses. This analysis was not preregistered and conditions
+only on the baseline v4 arm, not on the four earlier arms or confirmations.
+
+### Interpretation (inference)
+
+E-Stecker meets the preregistered P2/P3 launch rule and warrants v6. Its gain
+is evidence on this model-text distribution and search neighbourhood, rather
+than a measured probability of decoding the actual challenge. The promised
+borrowed v5 confirmation factor (0.966) yields projections 0.7305375 clean and
+0.483 indel; these are inference and are not measured E-arm confirmation rates.
+A further odds multiplier after v2-v5 null is not established.
+
+### Amendment and next decision
+
+Before v6 launch, its configuration now records the actual measured power,
+labels the borrowed confirmation extrapolation, removes the uncalibrated
+remaining-odds claim, and pins this control via `power_prerequisite`. The
+runner verifies completed clean provenance, P2/P3, recomputed rates, source
+config/input hashes, compatible climb, ring rule and target length before
+search. Invalid first-plug starts at zero pair capacity are rejected.
+The control is registered as long-running in `artifact_claims.json`.
+
+The measured settings, scorer, 26 starts, retention 100 and companion threshold
+6 are kept. No randomized restart budget, extra source wiring, or combined
+E/split climb was added without a control. V6 remains unrun as of this entry;
+LM Studio was using the GPU during readiness work and was not stopped.
+Next: launch from a clean checkout on an available GPU, record all starts,
+then verify CPU parity of all retained candidates and the v4 non-decrease
+prediction. The tests and smoke-run evidence are recorded in the dated review.
+
+
+Readiness smoke observed (2026-10-12): the separately recorded bounded config
+`data/review/readiness-2026-10-12/smoke.config.json` kept the calibrated climb
+and ring rule, but used one wheel order, one start on each axis, one right ring
+and retention one. Its hypothesis and refutation were recorded before launch.
+The runner completed all nine settings in 344.304 seconds in total, with all
+seven preflight checks, both positive controls and the pinned power gate
+passing. The review tree was dirty and its exact module hashes/status are in
+`smoke.json`; no clean-source claim is made. LM Studio was concurrently on the
+GPU, so this provides no idle-GPU speed estimate. The direct sweep API then
+resumed the unchanged checkpoint, ran zero new settings and reproduced every
+candidate; that API resume does not claim a second preflight/control run.
+Raw preregistration and resume output are preserved alongside the smoke.
+
+Final readiness verification (2026-10-12): the GPU-enabled suite passed all
+305 tests, no skips; the affected-path suite passed 111. Independent simulation
+agreed on 3,000 keys. Artifact drift and determinism each reported zero failing
+artifacts, skipping long-running/superseded entries as declared. The completed
+E control's 33 claim paths and pinned bytes were separately verified. Full v6
+has not been launched; these fixes are saved on the review branch
+`codex/readiness-review-2026-10-12`, based on `1703705`.

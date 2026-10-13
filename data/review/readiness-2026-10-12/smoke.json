@@ -1,0 +1,804 @@
+{
+  "schema": "enigma-attack.phase1-stecker-result/v1",
+  "experiment_id": "phase1-v6-readiness-smoke-2026-10-12",
+  "mode": "body_direct_sweep",
+  "status": "complete",
+  "accepted_break": false,
+  "hypothesis": "The amended v6 runner passes its pinned power gate, simulator/scorer/CPU-CUDA parity and positive controls, completes this bounded slice and resumes it without executing another chunk.",
+  "refuted_by": "Any failed prerequisite, preflight, positive control, exception, first-run incomplete slice or resumed settings_run greater than zero refutes operational readiness on this host; target candidate scores are not a decoding result.",
+  "started_at": "2026-10-12T16:49:58.537096+00:00",
+  "completed_at": "2026-10-12T16:55:42.840831+00:00",
+  "duration_seconds": 344.303736146976,
+  "configuration": {
+    "path": "data/review/readiness-2026-10-12/smoke.config.json",
+    "sha256": "7617c1bd01ebd5e72d1df2ee579b165cdcc6bfa1548ca1aaec1b2ab03817b48b",
+    "arguments": [
+      "--config",
+      "data/review/readiness-2026-10-12/smoke.config.json",
+      "--jobs",
+      "1"
+    ]
+  },
+  "code": {
+    "source": "git_checkout",
+    "commit": "1703705c16f0af838e13492fb5a45fa2cffea343",
+    "branch": "codex/readiness-review-2026-10-12",
+    "dirty": true,
+    "status": [
+      " M artifact_claims.json",
+      " M docs/STATUS.md",
+      " M docs/open-items-2026-10-11.md",
+      " M docs/phase1-experiment-history.md",
+      " M experiments/phase1-body-direct-sweep-v6/config.json",
+      " M phase1_stecker.py",
+      " M stecker_climb.py",
+      "?? data/review/readiness-2026-10-12/",
+      "?? tests/test_power_prerequisite.py"
+    ],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "0ac1ed20bcffbcca6863cf16c04159b4db5f07329488a28477e7ed9815c434d4",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "32c6477740f60bf6d4c6afa77f367b0bdc9c4e28002fe759f34d79ef4f96dc3c",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "23825865d8f1a18b36999830bcfed7bc9d5131d00dda23e4ddd3bd2b6f52d5af",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
+      "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
+      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "environment": {
+    "python": "3.10.12",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cpu_count": 20
+  },
+  "inputs": {
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "bigram_counts_sha256": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
+    "trigram_counts_sha256": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+  },
+  "preflight": {
+    "simulator_validation": [
+      {
+        "name": "canonical_I_II_III_AAAAA",
+        "source": "widely published Enigma-I simulator check",
+        "expected": "BDZGO",
+        "actual": "BDZGO",
+        "passed": true
+      },
+      {
+        "name": "py_enigma_army_procedure_example",
+        "source": "https://py-enigma.readthedocs.io/en/latest/guide.html",
+        "expected_message_key": "BLA",
+        "actual_message_key": "BLA",
+        "expected_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "actual_plaintext": "THEXRUSSIANSXAREXCOMINGX",
+        "passed": true
+      }
+    ],
+    "kernel_parity": {
+      "reference": "enigma.EnigmaI",
+      "seed": 20260923,
+      "samples": 60,
+      "checked_paths": [
+        "crypt_indices",
+        "position_permutations+decrypt_with_tables"
+      ],
+      "mismatches": [],
+      "passed": true
+    },
+    "scorer_parity": {
+      "reference": "phase7.PublishedNgramScorer",
+      "seed": 20260924,
+      "samples": 120,
+      "relative_tolerance": 1e-09,
+      "worst_absolute_difference_vs_phase7": 7.958078640513122e-12,
+      "worst_absolute_difference_fused_vs_split": 0.0,
+      "mismatches": [],
+      "passed": true,
+      "note": "The scorers sum the same n-gram terms in different orders, so they agree to floating-point association rather than bit for bit."
+    },
+    "scorer_discrimination": {
+      "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "shuffle_seeds": [
+        17,
+        29,
+        43,
+        71,
+        101,
+        137,
+        173,
+        211,
+        257,
+        307,
+        359,
+        401,
+        463,
+        509,
+        563,
+        617
+      ],
+      "messages": [
+        {
+          "id": "1941-09-02-15",
+          "length": 36,
+          "authentic_score_per_letter": -6.041605649,
+          "shuffled_scores_per_letter": [
+            -7.53381238,
+            -7.138965234,
+            -7.957878911,
+            -7.729892505,
+            -6.996928517,
+            -7.713943316,
+            -7.838237335,
+            -8.142174904,
+            -7.598699043,
+            -7.431054332,
+            -7.972140343,
+            -7.611678603,
+            -8.151700296,
+            -7.657444266,
+            -7.550083665,
+            -7.780321492
+          ],
+          "margin_over_best_shuffle": 0.955322868,
+          "passed": true
+        },
+        {
+          "id": "1941-08-22-30",
+          "length": 46,
+          "authentic_score_per_letter": -6.283889072,
+          "shuffled_scores_per_letter": [
+            -7.968581626,
+            -7.419135349,
+            -7.806293305,
+            -7.808875711,
+            -7.686267614,
+            -8.265622519,
+            -7.993060744,
+            -8.067796545,
+            -7.465451599,
+            -7.728003386,
+            -8.17733991,
+            -7.698991665,
+            -8.274964894,
+            -7.989477064,
+            -7.971299542,
+            -7.955495162
+          ],
+          "margin_over_best_shuffle": 1.135246277,
+          "passed": true
+        },
+        {
+          "id": "1941-09-06-36",
+          "length": 48,
+          "authentic_score_per_letter": -6.708148394,
+          "shuffled_scores_per_letter": [
+            -8.816263798,
+            -8.102734021,
+            -8.515933937,
+            -7.876037887,
+            -8.002299791,
+            -8.186431878,
+            -8.403116894,
+            -7.931246188,
+            -8.166665948,
+            -8.546867284,
+            -8.450565149,
+            -8.347104407,
+            -8.315764661,
+            -8.017910537,
+            -8.273352821,
+            -8.362505014
+          ],
+          "margin_over_best_shuffle": 1.167889493,
+          "passed": true
+        },
+        {
+          "id": "1941-09-14-46",
+          "length": 69,
+          "authentic_score_per_letter": -7.177161225,
+          "shuffled_scores_per_letter": [
+            -8.675908687,
+            -8.675470911,
+            -8.497716346,
+            -8.779147011,
+            -8.282465135,
+            -8.635697295,
+            -8.641996226,
+            -8.61997743,
+            -8.371093781,
+            -8.807484713,
+            -8.619025631,
+            -8.993581533,
+            -8.559283085,
+            -8.921036452,
+            -8.782698615,
+            -8.715187932
+          ],
+          "margin_over_best_shuffle": 1.10530391,
+          "passed": true
+        },
+        {
+          "id": "1941-09-24-94",
+          "length": 76,
+          "authentic_score_per_letter": -6.701798158,
+          "shuffled_scores_per_letter": [
+            -8.69004742,
+            -8.826037456,
+            -8.370787634,
+            -8.354428861,
+            -8.496953699,
+            -8.415178937,
+            -8.681825002,
+            -8.417311977,
+            -8.602547877,
+            -8.179790622,
+            -8.54097936,
+            -8.560020672,
+            -8.082113862,
+            -8.30474769,
+            -8.745480038,
+            -8.575674967
+          ],
+          "margin_over_best_shuffle": 1.380315704,
+          "passed": true
+        }
+      ],
+      "passing_messages": 5,
+      "required_messages": 4,
+      "passed": true
+    },
+    "batched_climb_parity": {
+      "seed": 20261013,
+      "samples": 24,
+      "identical_final_plugboards": 24,
+      "identical_evaluation_counts": 24,
+      "windows": [
+        {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      ],
+      "windowed_climbs_compared": 24,
+      "windowed_climbs_identical": 24,
+      "passed": true
+    },
+    "cuda_climb_parity": {
+      "seed": 20261013,
+      "samples": 24,
+      "reference": "stecker_batch.BatchedClimber",
+      "identical_final_plugboards": 24,
+      "identical_evaluation_counts": 24,
+      "worst_absolute_score_difference": 0.0,
+      "score_tolerance": 1e-09,
+      "windows": [
+        {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      ],
+      "windowed_climbs_compared": 24,
+      "windowed_climbs_identical": 24,
+      "passed": true
+    },
+    "first_plug_climb_parity": {
+      "seed": 20261013,
+      "cases": 8,
+      "first_plugs": [
+        {
+          "letters": "E"
+        }
+      ],
+      "windows": [
+        {
+          "kind": "head_tail",
+          "letters": 117
+        }
+      ],
+      "climbs_compared": 32,
+      "climbs_identical": 32,
+      "worst_absolute_score_difference": 0.0,
+      "score_tolerance": 1e-09,
+      "passed": true
+    },
+    "checks": {
+      "published_simulator_vectors": true,
+      "fast_kernel_matches_reference": true,
+      "fast_scorer_matches_phase7": true,
+      "scorer_discriminates_authentic_plaintext": true,
+      "batched_climb_matches_reference": true,
+      "cuda_climb_matches_batched": true,
+      "first_plug_climbs_match": true
+    },
+    "passed": true
+  },
+  "positive_controls": {
+    "evaluated": [
+      {
+        "id": "authentic-solved-1941-army-plaintexts",
+        "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+        "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "II",
+            "V",
+            "III"
+          ],
+          "rings": "KQL",
+          "plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-A1",
+              "length": 36,
+              "indicator": [
+                "QWE",
+                "YYY"
+              ],
+              "true_message_key": "BNM",
+              "plaintext_sha256": "204b1c2ca2701bfa70d7ec3f44ee84a726e4f1f0fe7808e6dbf37f50bcab7089"
+            },
+            {
+              "designator": "CTRL-A2",
+              "length": 46,
+              "indicator": [
+                "LDR",
+                "WLA"
+              ],
+              "true_message_key": "KPT",
+              "plaintext_sha256": "b0281f45ce7c98f5e7b29e37c94ed4753ce32d97eaaac83a26a8f9d47e405ba3"
+            },
+            {
+              "designator": "CTRL-A3",
+              "length": 48,
+              "indicator": [
+                "ZUI",
+                "QOY"
+              ],
+              "true_message_key": "VCX",
+              "plaintext_sha256": "7f835a4a909a11ae6e30f648e1790f74b696cd8cf08a4531e2a4884c6537dc7b"
+            },
+            {
+              "designator": "CTRL-A4",
+              "length": 69,
+              "indicator": [
+                "PMF",
+                "FUB"
+              ],
+              "true_message_key": "HGD",
+              "plaintext_sha256": "434d264305fc45d9bdee67bc0ec09d49d723e293dfa0409df6dbc6671879ed05"
+            },
+            {
+              "designator": "CTRL-A5",
+              "length": 76,
+              "indicator": [
+                "TRQ",
+                "WNE"
+              ],
+              "true_message_key": "YBN",
+              "plaintext_sha256": "33ba130f62471f63b74cc542a8d81962683d2741b5666585faeb210ba2319e40"
+            }
+          ]
+        },
+        "recovered_plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.665849484,
+        "unsteckered_score_per_letter": -9.32595912,
+        "climb_passes": 22,
+        "climb_evaluations": 175322,
+        "recovered_plaintext_prefixes": [
+          "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHAR",
+          "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTE"
+        ],
+        "windowed_climb": {
+          "window": {
+            "kind": "head_tail",
+            "letters": 117
+          },
+          "seed": 20261006,
+          "draws_per_message": 12,
+          "minimum_recovered_per_message": 3,
+          "recovered": 0,
+          "attempted": 0,
+          "draws": [],
+          "passed": true,
+          "note": "No control message is long enough to split into windows, so the windowed climb is the whole-message climb certified above."
+        },
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true,
+          "windowed_climb_recovers_known_key": true
+        },
+        "passed": true
+      },
+      {
+        "id": "constructed-army-style-plaintexts",
+        "source": "constructed for this experiment",
+        "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+        "known_key": {
+          "rotor_order_left_to_right": [
+            "IV",
+            "I",
+            "V"
+          ],
+          "rings": "BUL",
+          "plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+          "plugboard_pairs": 10,
+          "indicator_ordering": "grundstellung_first",
+          "messages": [
+            {
+              "designator": "CTRL-B1",
+              "length": 167,
+              "indicator": [
+                "XYZ",
+                "RSN"
+              ],
+              "true_message_key": "TRE",
+              "plaintext_sha256": "3602f6597566c773714ecd5f599fd5c011a30f9ab87546a5df59b33a35556a4b"
+            },
+            {
+              "designator": "CTRL-B2",
+              "length": 107,
+              "indicator": [
+                "MNB",
+                "XSE"
+              ],
+              "true_message_key": "OIU",
+              "plaintext_sha256": "a1445ab268e0bfb3f479d0b8ed294ea36527535105879a05e6cf434ad34238bb"
+            },
+            {
+              "designator": "CTRL-B3",
+              "length": 97,
+              "indicator": [
+                "GHJ",
+                "VUR"
+              ],
+              "true_message_key": "WSX",
+              "plaintext_sha256": "a00a63d6cb5409dc3978d0fdbe0dfcbe1c10a70d12586107c697f705fcc3409e"
+            }
+          ]
+        },
+        "recovered_plugboard": "AN BY CF DR GJ HS IL KM PV QZ",
+        "recovered_plugboard_pairs": 10,
+        "score_per_letter": -6.697861007,
+        "unsteckered_score_per_letter": -9.380992204,
+        "climb_passes": 12,
+        "climb_evaluations": 104402,
+        "recovered_plaintext_prefixes": [
+          "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXE",
+          "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITO",
+          "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTS"
+        ],
+        "windowed_climb": {
+          "window": {
+            "kind": "head_tail",
+            "letters": 117
+          },
+          "seed": 20261006,
+          "draws_per_message": 12,
+          "minimum_recovered_per_message": 3,
+          "recovered": 10,
+          "attempted": 12,
+          "draws": [
+            {
+              "message": "CTRL-B1",
+              "draw": 0,
+              "form": "clean",
+              "deleted_position": null,
+              "window": "head",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.508608282
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 1,
+              "form": "deletion_at_window",
+              "deleted_position": 117,
+              "window": "head",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.508608282
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 2,
+              "form": "deletion_before_tail",
+              "deleted_position": 49,
+              "window": "tail",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.592778478
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 3,
+              "form": "clean",
+              "deleted_position": null,
+              "window": "head",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.508608282
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 4,
+              "form": "deletion_at_window",
+              "deleted_position": 117,
+              "window": "head",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.508608282
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 5,
+              "form": "deletion_before_tail",
+              "deleted_position": 49,
+              "window": "tail",
+              "plugboard_recovered_exactly": false,
+              "score_per_letter": -8.116454875
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 6,
+              "form": "clean",
+              "deleted_position": null,
+              "window": "tail",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.592778478
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 7,
+              "form": "deletion_at_window",
+              "deleted_position": 117,
+              "window": "head",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.508608282
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 8,
+              "form": "deletion_before_tail",
+              "deleted_position": 49,
+              "window": "tail",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.592778478
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 9,
+              "form": "clean",
+              "deleted_position": null,
+              "window": "head",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.508608282
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 10,
+              "form": "deletion_at_window",
+              "deleted_position": 117,
+              "window": "tail",
+              "plugboard_recovered_exactly": false,
+              "score_per_letter": -7.960236711
+            },
+            {
+              "message": "CTRL-B1",
+              "draw": 11,
+              "form": "deletion_before_tail",
+              "deleted_position": 49,
+              "window": "tail",
+              "plugboard_recovered_exactly": true,
+              "score_per_letter": -6.592778478
+            }
+          ],
+          "passed": true,
+          "note": "Planted keys over the control plaintext at the control's setting; each message must recover at least the minimum."
+        },
+        "checks": {
+          "plugboard_recovered_exactly": true,
+          "plaintexts_recovered_exactly": true,
+          "indicator_confirms_message_keys": true,
+          "windowed_climb_recovers_known_key": true
+        },
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "gate": "A failed control makes zero target-search calls, so a target number can never come from a pipeline that cannot recover a key it was handed."
+  },
+  "result": {
+    "formulation": "body_direct",
+    "power_prerequisite": {
+      "artifact": "artifacts/phase1-estecker-power-v1.json",
+      "sha256": "1bb126a60417e6b8caab5a177858f72bcfae2e7050047ebd2a21ff026f26bf11",
+      "configuration_sha256": "51ac96a277b6564d2bf38326c05b3e05d225125173bf180dc624d00c138c79a1",
+      "arm": "complete_w117_estecker",
+      "length": 167,
+      "required_predictions": [
+        "P2",
+        "P3"
+      ],
+      "clean_detection_rate": 0.75625,
+      "clean_detection_gain": 0.4125,
+      "passed": true
+    },
+    "message": "BYQMZ",
+    "message_length": 167,
+    "rings_held_at": "AAA",
+    "ring_rule": "middle_complete",
+    "right_rings_searched": 1,
+    "rotor_orders": 1,
+    "start_positions": 1,
+    "evaluated_settings": 9,
+    "seconds": 0.038,
+    "seconds_per_setting": 0.004243,
+    "jobs": 1,
+    "execution": {
+      "engine": "cuda",
+      "chunks": 1,
+      "chunks_resumed_from_checkpoint": 0,
+      "chunks_run": 1,
+      "settings_run": 9,
+      "checkpoint_fingerprint": "2a6cbf437a16c86991a1dec7e64e538d896e35d4e77ace77a7bf8bade4e99d13",
+      "checkpoint": "build/phase1-v6-readiness-smoke-2026-10-12.checkpoint.jsonl",
+      "note": "seconds covers only the chunks run in this invocation; a resumed sweep reports the time of the remainder, and the projections below use the settings run in this invocation."
+    },
+    "score_distribution_over_slice": {
+      "mean_score_per_letter": -8.159275076,
+      "sd_score_per_letter": 0.074078796,
+      "max_score_per_letter": -7.980961314,
+      "top_z_score": 2.407082
+    },
+    "companion_confirmation": {
+      "companions": [
+        "FKQLZ",
+        "XFEDT"
+      ],
+      "threshold_z": 6.0,
+      "calibration": "artifacts/phase1-companion-calibration-v1.json",
+      "confirmed_candidate_ranks": [],
+      "best_min_best_z": 3.846504,
+      "seconds": 0.436,
+      "method": "Each companion is deciphered at all 17,576 start positions under the candidate's wheel order, reported rings and plugboard, without the indicator. A candidate is confirmed when every companion's best start is at least threshold_z standard deviations above that companion's own start distribution."
+    },
+    "indicator_confirmation": {
+      "best_pooled_score_per_letter": -9.536460935,
+      "mean_pooled_score_per_letter": -9.536460935,
+      "candidates_with_a_compatible_ring_setting": 0,
+      "ring_recovery": "The sweep absorbs the left and middle ring settings into the start position it searches, so the held AAA is the parameterization and not a claim about the daily key. The clear Grundstellung the indicator uses does not share that freedom, so for each candidate every left and middle ring setting that reproduces the swept body through the indicator is scored and the best is reported. The right-hand ring is kept as the sweep used it, because it moves the turnover inside the message and is an axis of the declared space.",
+      "method": "For each retained candidate the recovered plugboard and a recovered ring setting are used with the clear indicator to derive all three message keys, and the whole date is scored. The sweep itself never reads the indicator, so this is an independent check."
+    },
+    "coverage": {
+      "searched_settings": 9,
+      "reducible_space_settings": 246767040,
+      "ring_rule": "middle_complete",
+      "reducible_space_definition": "Every wheel order x 26^4: the left and middle wheel offsets, the right wheel's offset and the right wheel's absolute position (its ring), which fixes when the middle wheel steps. The middle wheel's absolute position fixes when the left wheel steps, so the rule that chooses the middle ring decides which true keys have an exact equivalent in the space; under middle_complete every middle start from which the middle notch falls inside the message is searched too, which multiplies the space.",
+      "exact_key_coverage_of_reducible_space": 1.0,
+      "exact_key_coverage_meaning": "Fraction of true daily keys for which some setting in the reducible space deciphers this message exactly as the true key does, by enumeration of the stepping patterns at this length. A key outside it can still be found if a partly equivalent neighbour survives the climb, which only some of the time it does; the end-to-end power calibration measures how often.",
+      "fraction_searched": 3.6e-08,
+      "measured_wall_seconds_per_setting_at_this_parallelism": 0.004243,
+      "jobs_used": 1,
+      "projected_wall_hours_for_reducible_space_at_this_parallelism": 290.9,
+      "projected_core_hours_for_reducible_space": 290.9
+    },
+    "top_candidates": [
+      {
+        "rank": 1,
+        "score_per_letter": -7.980961314,
+        "rotor_order_left_to_right": [
+          "I",
+          "II",
+          "III"
+        ],
+        "rings": "AEA",
+        "start_position": "AEA",
+        "plugboard": "EM FQ GP HU IJ KW LS OT RX",
+        "plugboard_pairs": 9,
+        "window": "head",
+        "indicator_confirmation": {
+          "arms": [
+            {
+              "indicator_ordering": "grundstellung_first",
+              "rings": "AEA",
+              "rings_recovered": false,
+              "pooled_score_per_letter": -9.679953199,
+              "message_keys": [
+                "OGM",
+                "QWK",
+                "GJA"
+              ]
+            },
+            {
+              "indicator_ordering": "message_key_first",
+              "rings": "AEA",
+              "rings_recovered": false,
+              "pooled_score_per_letter": -9.536460935,
+              "message_keys": [
+                "DXQ",
+                "PFH",
+                "PAN"
+              ]
+            }
+          ],
+          "compatible_ring_settings": 0,
+          "best_indicator_ordering": "message_key_first",
+          "best_rings": "AEA",
+          "best_rings_recovered": false,
+          "best_pooled_score_per_letter": -9.536460935,
+          "best_message_keys": [
+            "DXQ",
+            "PFH",
+            "PAN"
+          ]
+        },
+        "companion_confirmation": {
+          "companions": [
+            {
+              "designator": "FKQLZ",
+              "letters": 107,
+              "starts_scanned": 17576,
+              "best_start": "AHS",
+              "best_score_per_letter": -8.836602039,
+              "mean_score_per_letter": -9.62586125,
+              "sd_score_per_letter": 0.197524148,
+              "best_z": 3.995761,
+              "runner_up_z": 3.891007,
+              "best_plaintext_prefix": "GJQKEZXNXRSSHETSJUPPGNNCFKYTRKVRAHXPRQSFTCPICFRMATSAEEUSSUPH"
+            },
+            {
+              "designator": "XFEDT",
+              "letters": 97,
+              "starts_scanned": 17576,
+              "best_start": "HAV",
+              "best_score_per_letter": -8.814467503,
+              "mean_score_per_letter": -9.609796429,
+              "sd_score_per_letter": 0.206766711,
+              "best_z": 3.846504,
+              "runner_up_z": 3.821708,
+              "best_plaintext_prefix": "GXKWKDINSANXKCKEXUEXFYPVARXVMWJRNXZENBDBHPXJRSGIPGHAQDOOCHRC"
+            }
+          ],
+          "threshold_z": 6.0,
+          "min_best_z": 3.846504,
+          "confirmed": false
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "The controls are constructed or independently solved plaintexts, not authentic held-out Army traffic with an authentic daily key.",
+    "The messages behind the published 1941 n-gram counts are not enumerated, so overlap between the authentic control plaintexts and the scorer's training data cannot be ruled out. The constructed control exists to bound that risk, not to remove it.",
+    "The positive controls are body-direct and are handed the true wheel order, ring setting and start positions. They certify the stecker stage at the target lengths and say nothing about the rotor enumeration, which the sweeps and calibrations cover separately.",
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure. A different reflector, a Naval wheel or a different indicator convention is outside every space searched here.",
+    "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
+    "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
+    "The middle-complete space has an exact equivalent for every daily key at 167 letters (rule_key_coverage 1.0). A key is still found only if the climb converges at one of its equivalents and scores into the top 100 of nine times as many settings as v3 searched; the stated power measures the first on planted draws and stands in for the second with a pooled null.",
+    "Companion confirmation for the E arm has not been measured. The earlier middle-past-notch calibration and v5 confirmation fraction cannot certify the middle-complete E-arm check at typical plaintext IC; the extrapolation is labelled as inference in stated_power.",
+    "No result here is an accepted break: a confirmed candidate's plaintext still has to be read and reviewed before accepted_break could change.",
+    "The E-arm detection is measured on clean and single-indel 167-letter draws around planted keys, against that arm's own pooled wrong-setting null. Top-100 retention over all 246,767,040 settings and the far tail of the E-start null are not measured by the control.",
+    "The sweep scores each setting by the better of two 117-letter windows, so its scores are not on the scale of v2's whole-message scores; the indicator confirmation, which compares a pooled date score with the candidate's own sweep score, is reported but is even less informative here than in v2. The companion check alone decides.",
+    "A candidate found through the tail window is reported at the setting that deciphers the tail, which for a garbled message is one keystroke away from the setting of the head.",
+    "This power is unconditional across the new plaintext/key draws. Conditional companion-confirmed power given all four prior sweep arms missed is unmeasured; no additional posterior odds multiplier is calibrated for v6.",
+    "The prior probability of a dropped or inserted letter is unmeasured. Keep clean and one-indel rates separate; any mixture or borrowed confirmation rate is an explicit inference.",
+    "The cited paper (Sullivan and Weierud 2005, footnote 42) places Batch C on a different radio network and its authors suspect differently wired wheels. Every figure here assumes wheels I-V as wired; if that is wrong the power is zero and a null says nothing about these messages.",
+    "The choice of E-Stecker follows the 2026-10-11 preregistered P2/P3 launch rule, both passed by its control. Earlier split-point yield models used a different plaintext and CPU engine and do not establish current E-Stecker efficiency.",
+    "The E-arm control measured clean and single-indel draws only. V6 spends extra cost on first-plug starts, retains W=117 head-and-tail windows, and does not test a combined E/split search, two faults or substitution-specific E-arm power.",
+    "The stated power comes from Markov plaintexts of the scorer's own counts, not authentic held-out Army traffic, and from a slice around a planted key, not the whole space; the E-start null (the best of 26 climbs) is heavier-tailed than the whole-message one, so the 6-sigma detection threshold of the control and the z = 6 companion threshold of the sweep are not the same quantity.",
+    "The 480 key draws reuse 24 plaintexts. The reported Wilson interval describes pooled key-draw variability and does not include uncertainty over the language model, plaintext distribution or real target traffic. P2 passed by 3/480 draws; its interval includes values below 75%."
+  ]
+}

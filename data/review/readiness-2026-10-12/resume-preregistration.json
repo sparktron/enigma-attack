@@ -1,0 +1,47 @@
+{
+  "hypothesis": "The already completed bounded smoke checkpoint resumes with zero new settings and identical candidates; no preflight or positive-control rerun is claimed by this direct API check.",
+  "config_sha256": "7617c1bd01ebd5e72d1df2ee579b165cdcc6bfa1548ca1aaec1b2ab03817b48b",
+  "code": {
+    "source": "git_checkout",
+    "commit": "1703705c16f0af838e13492fb5a45fa2cffea343",
+    "branch": "codex/readiness-review-2026-10-12",
+    "dirty": true,
+    "status": [
+      " M artifact_claims.json",
+      " M docs/STATUS.md",
+      " M docs/open-items-2026-10-11.md",
+      " M docs/phase1-experiment-history.md",
+      " M experiments/phase1-body-direct-sweep-v6/config.json",
+      " M phase1_stecker.py",
+      " M stecker_climb.py",
+      "?? data/review/readiness-2026-10-12/",
+      "?? docs/code-review-2026-10-12.md",
+      "?? tests/test_power_prerequisite.py"
+    ],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase1_stecker.py": "0ac1ed20bcffbcca6863cf16c04159b4db5f07329488a28477e7ed9815c434d4",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "32c6477740f60bf6d4c6afa77f367b0bdc9c4e28002fe759f34d79ef4f96dc3c",
+      "stecker_calibration.py": "81368a6164d58c4a391e0c88e6f181a5da21b6d094cbcd0276eb4309cf263b99",
+      "stecker_climb.py": "23825865d8f1a18b36999830bcfed7bc9d5131d00dda23e4ddd3bd2b6f52d5af",
+      "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
+      "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
+      "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
+      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "method": "run_body_direct_sweep with unchanged completed smoke config; preflight passed in smoke.json",
+  "started_at": "2026-10-12T16:57:34.333668+00:00",
+  "earlier_attempt": "Sandboxed invocation failed before search because CUDA device access was hidden; repeated here with GPU access."
+}
