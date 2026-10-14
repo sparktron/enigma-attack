@@ -3082,3 +3082,100 @@ Run command:
 python3 phase1_stecker.py --config experiments/phase1-estecker-joint-power-v1/config.json --jobs 8
 python3 scripts/joint_power_estecker_v1.py
 ```
+
+### Result: phase1-estecker-joint-power-v1 (run 2026-10-14)
+
+Run record. Power run from clean `c9409d8` (the preregistration commit), 04:51:48 to
+05:04:31 UTC, 677.9 s, cuda engine, 8 requested workers, one invocation; preflight
+(including `first_plug_climbs_match`) and both positive controls passed. RTX 3090,
+CUDA 12.8, numpy 2.2.6, Python 3.10.12; the GPU showed about 1 GB in use by another
+process at launch. The analysis ran afterwards from the same commit
+(`scripts/joint_power_estecker_v1.py`, 189 s on 16 processes). Artifacts and SHA-256:
+`artifacts/phase1-estecker-joint-power-v1.json` (`d11c4501...`, the raw power run),
+`artifacts/phase1-estecker-joint-power-v1-joint.json` (`65b2477f...`, the preregistered
+analysis) and `artifacts/phase1-estecker-joint-power-v1-same-draws.json`
+(`65bf0392...`, secondary and post hoc). Seeds: keys 20261115, plaintexts 20261114,
+companions 20261116.
+
+#### Observed
+
+Power run, fresh draws (480 per cell), detection by the harness's rule:
+
+| cell | v4's climb (`complete_w117`) | E-Stecker (`complete_w117_estecker`) |
+|---|---|---|
+| clean | 167 (34.8%) | 376 (78.3%) |
+| one indel | 107 (22.3%) | 282 (58.8%) |
+
+R1 held (78.3% against 70%), R2 held (gain 43.5 points against 20), R3 held (gain
+36.5 against 0).
+
+Joint analysis, preregistered, E arm (sweep success = retained and companion-confirmed):
+
+| | clean | one indel |
+|---|---|---|
+| detected | 376 / 480 | 282 / 480 |
+| retained (score at or above v6's 100th-retained, -7.5831) | 375 | 283 |
+| companion-confirmed | 369 | 283 |
+| **sweep success** | **368 / 480 = 76.7% (95% interval 72.7 to 80.2)** | **278 / 480 = 57.9% (53.5 to 62.3)** |
+| confirmed given detected | 369 / 376 = 98.1% (96.2 to 99.1) | 278 / 282 = 98.6% |
+| retained given detected | 375 / 376 = 99.7% | 281 / 282 = 99.6% |
+
+v4's climb with its own sweep's cutoff (-7.6347): clean 163 / 480 = 34.0% (29.9 to
+38.3), one indel 105 / 480 = 21.9%. Paired on the same draws, clean: both 163, E only
+205, v4 only 0, neither 112; one indel: both 104, E only 174, v4 only 1, neither 201.
+
+Predictions, all held: J1 (clean success 76.7% against at least 60%), J2 (3.6 points
+from the 73.05% projection, within 10), J3 (confirmed given detected 98.1% against at
+least 90%), J4 (gain 42.7 points against at least 20), J5 (one-indel gain 36.0
+against at least 0), J6 (retained given detected 99.7% against at least 90%).
+
+Detection by tercile of plaintext IC (8 plaintexts, 160 draws each), E arm clean:
+IC 0.0505 to 0.0573: 89 / 160 (55.6%); 0.0579 to 0.0613: 135 / 160 (84.4%); 0.0614
+to 0.0744: 152 / 160 (95.0%). One indel: 42.5%, 58.1%, 75.6%. v4's climb, clean:
+14.4%, 36.3%, 53.8%.
+
+Secondary, post hoc, the gate run's own 960 draws (selection applies): E-arm sweep
+success clean 357 / 480 = 74.4% (70.3 to 78.1), one indel 236 / 480 = 49.2% (44.7 to
+53.6); confirmed given detected 98.3%, retained given detected 100%; v4's climb clean
+163 (34.0%), one indel 69 (14.4%). J1 to J6 also hold there.
+
+#### Interpretation (inference)
+
+- The projection was a fair stand-in for the clean case: measured sweep success 76.7%
+  (fresh) and 74.4% (the gate's draws), against a projected 73.05%. For one indel the
+  projection (48.3%) was low on the fresh draws (57.9%) and matched the gate's
+  (49.2%). The difference between the two sets is larger than the sampling interval, so
+  the plaintext set moves the rate: the fresh plaintexts have a higher mean IC (0.0598
+  against 0.0579). The measured power is therefore a range over plaintext sets, about
+  74% to 77% clean and 49% to 58% one indel, not a point.
+- The power is limited by detection, not by what follows it: sweep success is within
+  eight draws of detection in every cell, confirmation given detection is about 98%
+  (the borrowed factor, 96.6%, was close) and retention given detection is at least
+  99.6%. The concern that retention in the full space would cost power did not
+  materialise at v6's measured cutoff, given that the noise tail at that cutoff is
+  that of BYQMZ's own sweep.
+- The gain over v4's climb survives confirmation and retention: 205 clean draws that
+  only E-Stecker found, none that only v4's climb found.
+- The average hides a strong dependence on plaintext IC: for plaintexts of IC below
+  0.057 the E arm's clean success is about 56% (71 of its 104 clean misses lie
+  there), against 95% above 0.061. If BYQMZ's plaintext is of low IC, v6's power for it
+  is nearer 55% than 77%; its IC is unknown.
+- What a v6 null therefore says: for a standard Enigma I reading with a clean or
+  once-garbled message and plaintext of typical statistics, v6 would have missed the
+  key about 23% to 26% (clean) or 42% to 51% (one indel) of the time, more for low-IC
+  plaintexts. That is a measured miss probability for those two kinds, not a calibrated
+  odds multiplier for BYQMZ: the prior over fault kinds and over plaintext IC is
+  unmeasured, the earlier sweeps' union at typical IC was not remeasured here, and v6's
+  own null has the caveats of its entry.
+
+#### Not run, and the next decision
+
+Not run: the union of v2 to v5 and v6 at typical IC (needed for a multiplier after all
+five sweeps), a substituted letter or two faults for the E arm, several candidates
+retained near the true key (only the top was judged, which is conservative), real
+companions. v6's configuration is not amended: it is frozen with its run, and its
+stated power is now this entry. Nothing further is preregistered. For the
+maintainer: stop the standard-reading search with the measured, IC-dependent miss
+probabilities on record; or measure the union at typical IC to state a combined
+multiplier; or spend the next climb on low-IC plaintexts, where the E arm is weakest
+(R-Stecker's 73 starts was 27 of 36 at IC 0.0514 in the review).
