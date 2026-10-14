@@ -485,6 +485,18 @@ cited paper's doubt about the wheel wiring. A question to the authors was sent
 2026-10-10 through the Crypto Cellar contact address; a reply naming a wiring or
 machine would reopen the search at that wiring.
 
+Phase 1, 2026-10-13: **`phase1-body-direct-sweep-v6` is done and null**
+([result](phase1-experiment-history.md#result-phase1-body-direct-sweep-v6-run-2026-10-13)).
+It is v4's sweep with E-Stecker first-plug starts (26 per climb), run on the GPU from
+clean `ebeb9ef` in 12.2 hours, one invocation, after the pinned power control
+(`phase1-estecker-power-v1`: 75.6% clean detection on typical-IC plaintexts against
+34.4% for v4's climb) passed the runner's gate. No retained candidate is
+companion-confirmed (best z 4.57 against 6); the top score is z 7.50, in the
+preregistered 5.5 to 8.0. The two post-run checks held: all 100 retained candidates
+re-climb identically on the CPU (batched and reference), and v4's retained settings
+do not fall under E starts. The stated power is a projection (the measured 75.6%
+times v5's 0.966 confirmation factor), so no odds multiplier is claimed.
+
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
 windowed climbs on the GPU. Its scores are the batched climber's bit for bit,

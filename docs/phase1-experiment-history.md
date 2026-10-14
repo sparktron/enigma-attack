@@ -2922,3 +2922,97 @@ artifacts, skipping long-running/superseded entries as declared. The completed
 E control's 33 claim paths and pinned bytes were separately verified. Full v6
 has not been launched; these fixes are saved on the review branch
 `codex/readiness-review-2026-10-12`, based on `1703705`.
+
+## Result: phase1-body-direct-sweep-v6 (run 2026-10-13)
+
+Configuration:
+[experiments/phase1-body-direct-sweep-v6/config.json](../experiments/phase1-body-direct-sweep-v6/config.json),
+as amended 2026-10-12. Hypothesis and refutation criterion were fixed before the run
+(see the preregistration above). Artifact:
+[artifacts/phase1-body-direct-sweep-v6.json](../artifacts/phase1-body-direct-sweep-v6.json),
+SHA-256 `0b46a9e4d8849ff7787f6b96845ee745413617b56b0c88744367447e972b2121`.
+
+### Run record
+
+Launched 2026-10-13 05:47:58 UTC from clean `master` at `ebeb9ef` (after PR #34
+merged at 05:47:01), `--jobs 1`, cuda engine, one invocation, no resume; completed
+17:59:25 UTC (43,887 s in all, 43,501 s of sweep, 0.176 ms per setting). RTX 3090,
+CUDA 12.8, numpy 2.2.6, Python 3.10.12. The GPU was shared with an unrelated
+LM Studio `llama-server` (about 10.7 GB, 34% utilisation at launch), which was not
+stopped; this changes wall-clock time and not the result, because the cuda climb
+is bit-exact. The runner's power gate (pinned artifact SHA-256 `1bb126a6...`) passed
+before any search, as did all seven preflight checks including
+`first_plug_climbs_match` and `cuda_climb_matches_batched`, and both positive
+controls. The checkpoint is `build/phase1-body-direct-sweep-v6.checkpoint.jsonl`
+(git-ignored and disposable; the artifact is the record).
+
+### Observed
+
+- All 1,560 chunks, 246,767,040 settings, 100 retained candidates (100 distinct
+  machines).
+- **No retained candidate is companion-confirmed**: `confirmed_candidate_ranks` is
+  empty. The best minimum companion z over the 100 is 4.568 against the threshold 6;
+  the median is 3.96, and ranks 1 to 3 are 3.72, 3.76 and 3.96.
+- Sweep score distribution over all settings: mean -8.1186, sd 0.0807, maximum
+  -7.5133 per letter, **top z 7.498**. For reference, v4: top z 6.51, best companion z
+  4.69; v5: top z 6.15, best companion z 4.84.
+- None of the 100 retained candidates has a ring setting compatible with the clear
+  indicator under either ordering (`compatible_ring_settings` 0 for all 100).
+- Predictions: the deciding one (a companion-confirmed candidate) was refuted.
+  `null-top-near-expected-maximum` held: z 7.50 lies in the stated 5.5 to 8.0.
+  The two checks below held.
+
+### Post-run checks (run 2026-10-13, `scripts/v6_postrun_checks.py`, evidence in `data/review/v6-postrun-2026-10-13/summary.json`)
+
+Run from `ebeb9ef` (tracked tree clean), 100 s, 16 workers. Before the checks the
+comparison was shown to flag a deliberately wrong plugboard and a deliberately lower
+score.
+
+- `cuda-matches-reference-on-retained`: **held**. All 100 retained candidates
+  re-climbed on the CPU with v6's own settings (W = 117, E starts) give the cuda
+  record's plugboard, winning window and score, with the CPU batched climber
+  (100 of 100) and with the pure-Python reference climb (100 of 100). The worst score
+  difference is 4.98e-10, the artifact's nine-decimal rounding.
+- `v4-retained-settings-do-not-fall`: **held**. Re-climbing v4's 100 retained
+  settings with E starts gives a score at least v4's on all 100 (none fell by more
+  than 1e-9): 98 are equal and 2 rose (largest gain 0.0227 per letter). As the control
+  that the check can see a difference, the same rows climbed with v4's own settings
+  reproduce v4's recorded plugboard, window and score in 100 of 100. The best E score
+  on v4's rows is -7.5395, v4's own rank 1.
+- Check C (not preregistered): v6 swept every setting v4 did, and no v4 retained
+  setting scores above v6's 100th retained score (-7.5831) under E starts without being
+  among v6's retained rows with the same score: no inconsistency.
+
+### Interpretation (inference)
+
+- The standard-Enigma-I reading of BYQMZ that this sweep could reach, at typical
+  plaintext IC with at most the faults the head-and-tail climb tolerates, is not
+  supported by this sweep: no candidate's wheel order, rings and plugboard decipher
+  FKQLZ or XFEDT above noise. A top z of 7.50, higher than v4's 6.51 and v5's 6.15, is what
+  the best of 26 climbs per setting would give over a noise-only distribution, so it
+  need not indicate a near miss; the companion scores (best 4.57) and the absent
+  indicator compatibility point the same way.
+- It strengthens the case against the reading only as far as the stated power
+  reaches, and that power is a projection: 75.6% clean detection measured on Markov
+  plaintexts, times v5's confirmation factor 0.966, from a slice around a planted
+  key and not the whole space. E-start companion confirmation and full-space retention
+  were not measured. Conditional joint power on these plaintexts has not been
+  measured, so no odds multiplier is claimed, and none follows for BYQMZ, whose
+  plaintext IC is unknown.
+- The check results say the cuda first-plug climb and the reference agree on every
+  retained row and that adding E starts did not change v4's climb at v4's retained
+  settings; they do not validate the climb outside those 200 rows (the preflight
+  and `tests/test_first_plug.py` cover random settings).
+- What a null leaves open is unchanged: other wheel wirings (the cited paper's doubt
+  about Batch C), other reflectors, two faults, a substituted letter combined with
+  another fault, other machines, and a message that is not Enigma output (the
+  publishers say they are not sure these messages are).
+
+### Next decision
+
+Nothing further is preregistered. Candidates, for the maintainer: a conditional joint
+power calibration of the E-Stecker arm (companion confirmation and retention, which
+would convert the projection into a measured multiplier); a sourced alternative wiring
+from the authors, if they reply; or stopping the standard-reading search again, now
+with the typical-IC gap measured and covered. The reply to the 2026-10-10 question to
+the authors, if any, is not recorded.

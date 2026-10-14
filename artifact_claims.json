@@ -1227,6 +1227,46 @@
         "result.cells[].arms[].by_ic_tercile[].detection_rate"
       ],
       "long_running": "480 draws on each of two cells, two arms, 24 plaintexts, CUDA E-Stecker starts; measured 760 s on RTX 3090 from clean 4749bce. Requires GPU and is checked for existence in ordinary CI. The v6 runtime gate pins the full artifact SHA-256 and validates measured thresholds and current inputs."
+    },
+    "artifacts/phase1-body-direct-sweep-v6.json": {
+      "runner": [
+        "phase1_stecker.py",
+        "--config",
+        "experiments/phase1-body-direct-sweep-v6/config.json"
+      ],
+      "claim_paths": [
+        "schema",
+        "mode",
+        "status",
+        "accepted_break",
+        "configuration.sha256",
+        "inputs.corpus_sha256",
+        "preflight.passed",
+        "positive_controls.passed",
+        "result.evaluated_settings",
+        "result.ring_rule",
+        "result.coverage.reducible_space_settings",
+        "result.coverage.fraction_searched",
+        "result.score_distribution_over_slice.max_score_per_letter",
+        "result.score_distribution_over_slice.top_z_score",
+        "result.companion_confirmation.threshold_z",
+        "result.companion_confirmation.confirmed_candidate_ranks",
+        "result.companion_confirmation.best_min_best_z",
+        "result.indicator_confirmation.best_pooled_score_per_letter",
+        "result.indicator_confirmation.candidates_with_a_compatible_ring_setting",
+        "result.top_candidates[].rank",
+        "result.top_candidates[].score_per_letter",
+        "result.top_candidates[].rotor_order_left_to_right",
+        "result.top_candidates[].rings",
+        "result.top_candidates[].start_position",
+        "result.top_candidates[].plugboard",
+        "result.top_candidates[].companion_confirmation.min_best_z",
+        "result.top_candidates[].companion_confirmation.confirmed",
+        "result.top_candidates[].window",
+        "result.execution.chunks",
+        "result.execution.settings_run"
+      ],
+      "long_running": "246,767,040 settings, each a converged W = 117 head-and-tail climb from 26 start boards (E-Stecker): 43,501 s of sweep (12.1 hours; 12 h 11 min in all) on an RTX 3090 with the cuda engine, one invocation from a clean checkout at ebeb9ef (2026-10-13), the GPU shared with an unrelated local model server. Needs a GPU and a gated power control (artifacts/phase1-estecker-power-v1.json, pinned by SHA-256). The cuda first-plug climb's parity with the CPU batched and reference climbs is covered by tests/test_first_plug.py (skips without a GPU), and all 100 retained candidates were re-climbed on the CPU with both and matched (scripts/v6_postrun_checks.py, data/review/v6-postrun-2026-10-13/summary.json)."
     }
   },
   "provenance_note": "Source-file hashes and git provenance are deliberately not claim paths. They change whenever the code changes, including for edits with no effect on the result, so gating on them would make the check fire on every commit and train reviewers to ignore it. Input-data hashes are claim paths, because a changed input means a different experiment."
