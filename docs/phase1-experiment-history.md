@@ -3016,3 +3016,69 @@ would convert the projection into a measured multiplier); a sourced alternative 
 from the authors, if they reply; or stopping the standard-reading search again, now
 with the typical-IC gap measured and covered. The reply to the 2026-10-10 question to
 the authors, if any, is not recorded.
+
+## phase1-estecker-joint-power-v1 (preregistered 2026-10-14)
+
+Configuration:
+[experiments/phase1-estecker-joint-power-v1/config.json](../experiments/phase1-estecker-joint-power-v1/config.json),
+analysis `scripts/joint_power_estecker_v1.py`, both committed before any draw of this
+run was computed.
+
+Why this one. v6 was launched on a stated power that was a projection: the measured
+E-arm clean detection (75.6%) times v5's confirmation factor (0.966), measured on one
+high-IC plaintext. Companion confirmation and retention in the sweep's top 100 were not
+measured for the E climb at typical IC. This run measures the sweep's own decision rule,
+retained and companion-confirmed, on planted keys.
+
+Hypothesis. At typical plaintext IC, a planted standard Enigma I key with at most one
+dropped or inserted letter is retained by v6's sweep (top candidate scoring at or
+above v6's 100th-retained score, -7.583122342) and companion-confirmed through two
+planted companions (107 and 97 letters, z >= 6) at a rate of at least 60% clean and
+within 10 points of the 73.05% projection (E arm), and the E arm's clean success
+exceeds v4's climb's by at least 20 points.
+
+Design. A fresh `end_to_end_power` run, same slice and two arms as
+`phase1-estecker-power-v1`, on new keys (seed 20261115) and 24 new Markov plaintexts
+(seed 20261114, IC 0.0505 to 0.0744, mean 0.0598, none shared with the gate run), 480
+draws in each of two cells (clean, one indel). The analysis then plants two fresh
+Markov companions per draw under the planted key and runs the sweep's companion check
+on each arm's top candidate; the retention cutoff for each arm is its own sweep's
+lowest retained score (v4 -7.634712742, v6 -7.583122342). Fresh draws, because v6 was
+launched on the gate run's P2 result, which cleared its bar by three draws, and rates
+measured on those same draws carry that selection.
+
+| id | statement | decides |
+|---|---|---|
+| R1 | the E arm detects at least 70% of clean draws (replication of P2) | no |
+| R2 | the E arm detects at least 20 points more clean draws than v4's climb (replication of P3) | no |
+| R3 | the E arm detects at least as many one-indel draws as v4's climb | no |
+| J1 | E-arm clean sweep success (retained and confirmed) is at least 60% | yes |
+| J2 | E-arm clean sweep success is within 10 points of the 73.05% projection | yes |
+| J3 | confirmed given detected, E arm clean, is at least 90% (the borrowed factor was 96.6%) | yes, for the factor |
+| J4 | E-arm clean sweep success exceeds v4's climb's by at least 20 points | yes |
+| J5 | E-arm one-indel sweep success at least v4's climb's | no |
+| J6 | retained given detected, E arm clean, is at least 90% | no |
+
+The author's guesses, before any joint measurement: confirmation given detection 85%
+to 97%, retention given detection above 90%, E-arm clean success 0.60 to 0.70, one
+indel 0.35 to 0.45, gain over v4's climb 30 points or more. Decision rule, fixed now:
+if J1 to J4 hold, v6's stated power becomes the measured E-arm sweep success, clean and
+one indel, with its interval, replacing the projection; a refuted prediction is recorded
+as such and the measured figure replaces the projection whichever way it differs. No
+result here is a calibrated odds multiplier for BYQMZ: the prior over fault kinds and
+over plaintext IC is unmeasured, and the earlier sweeps' union is not remeasured. No
+sweep is launched or changed by this run.
+
+Not measured: a substituted letter, two faults, several candidates retained near the
+true key (the top candidate only is judged, which is conservative), real companions.
+Disclosed: a 6-draw smoke run of the configuration and of the analysis on its scratch
+artifact (scratch output) passed every preflight check; nothing was changed after it.
+The same analysis on the gate run's 960 draws will be run after the primary result and
+labelled post hoc.
+
+Run command:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-estecker-joint-power-v1/config.json --jobs 8
+python3 scripts/joint_power_estecker_v1.py
+```
