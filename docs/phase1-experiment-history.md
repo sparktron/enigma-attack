@@ -3179,3 +3179,124 @@ maintainer: stop the standard-reading search with the measured, IC-dependent mis
 probabilities on record; or measure the union at typical IC to state a combined
 multiplier; or spend the next climb on low-IC plaintexts, where the E arm is weakest
 (R-Stecker's 73 starts was 27 of 36 at IC 0.0514 in the review).
+
+## First-stage climb for low-IC plaintexts: screen, implementation, control (2026-10-15)
+
+Status: a screen (exploratory), an implementation, and a preregistration. Nothing in the
+sweep path has run.
+
+### Why
+
+phase1-estecker-joint-power-v1 measured the E-Stecker climb at 56% clean detection in the
+lowest IC tercile, 84% in the middle and 95% in the highest. The maintainer asked for a
+stronger first-stage climb for low-IC plaintexts.
+
+### Screen (not preregistered; `scripts/review/first_stage_screen.py`, evidence in `data/review/first-stage-screen-2026-10-14/`)
+
+True-setting climbs on the 117-letter head window, ten plugs, 12 low-IC Markov plaintexts
+(IC 0.0514 to 0.0575) of 30 draws each, 360 draws, each method calibrated against its own
+wrong-setting null at 6 standard deviations. Detection and cost (evaluations on the null
+climbs, relative to the empty-board climb):
+
+| method | detected (95% interval) | cost |
+|---|---|---:|
+| base | 7.8% (5 to 11) | 1 |
+| E-ngonly | 32.8% (28 to 38) | 13.0 |
+| E-ic4 | 38.9% (34 to 44) | 16.8 |
+| E (v6) | 36.7% (32 to 42) | 25.9 |
+| screen-ic-k26 (score the 325 single plugs once, climb the best 26) | 41.1% (36 to 46) | 26.3 |
+| R-ngonly | 48.3% (43 to 53) | 35.6 |
+| R-ic4 | 52.5% (47 to 58) | 47.0 |
+| I-ngonly | 58.9% (54 to 64) | 65.9 |
+| R | 52.2% (47 to 57) | 72.7 |
+| I-ic4 | 63.3% (58 to 68) | 87.5 |
+| I | 59.4% (54 to 64) | 135.5 |
+| solo-ngonly (all 325 single plugs) | 67.8% (63 to 72) | 157.6 |
+| solo-ic4 | 73.6% (69 to 78) | 209.8 |
+
+The first screen (base, E, R, I, solo, screen-ic and screen-ng at k = 8 and 26, and 26
+random kicks) reproduced these rows' shared numbers exactly in the second. Screening and
+kicks did not beat starting from more boards; the IC phase is about two thirds of a
+start's work (3,746 of 5,912 evaluations for the empty board); capping it at four passes
+or skipping it for the extra starts lost no power the paired counts could see (McNemar p
+0.18 to 1.0 for ic4 against full, 0.21 to 0.93 for ngonly against full, at E, R and I).
+R-ngonly against E, same draws: 84 detected only by R-ngonly, 42 only by E, p = 0.0002.
+
+Cost on the GPU, measured afterwards on 16,384 random settings of BYQMZ with v6's window
+and settings: E 0.1753 ms per setting (12.0 h for the 246.8 million of a v6-sized
+sweep), E-ic4 0.1275 (8.7 h), R-ngonly 0.2931 (20.1 h, 1.67 times E), R-ic4 0.3556
+(24.4 h), I-ngonly 0.5498 (37.7 h). The IC phase is cheaper per evaluation than the
+n-gram phase, so ngonly saves less than its evaluation count and ic4 more.
+
+### Decision (maintainer, 2026-10-15)
+
+Implement R-ngonly: the E, N and R first-plug starts with the extra starts climbed by
+n-gram score alone and the empty board climbed in full.
+
+### Implementation (commit `15490a6`)
+
+`climb.first_plug` gains two optional keys: `ic_passes` (cap on the IC phase wherever it
+runs) and `start_phases: "ngram_only"` (the extra starts skip the IC phase). Both default
+to the old behaviour, so no existing configuration or checkpoint fingerprint changes.
+Reference, batched and CUDA climbs (the split-point kernel is untouched and still refuses
+`first_plug`). Tests: the reference against a by-hand composition of `climb_stecker`
+calls; batched against reference and CUDA against batched on plaintext, evaluations,
+score and window, for three option combinations, whole and windowed, masked and short
+bodies; a check that mismatched option pairs disagree (so the parity tests can fail);
+the preflight and the config loader. Full suite 323 passed.
+
+## phase1-rngonly-power-v1 (preregistered 2026-10-15)
+
+Configuration:
+[experiments/phase1-rngonly-power-v1/config.json](../experiments/phase1-rngonly-power-v1/config.json),
+analysis `scripts/rngonly_power_v1.py`, both committed before any draw of this run was
+computed.
+
+Hypothesis. On fresh keys and 24 fresh plaintexts stratified by IC, the R-ngonly climb
+detects more planted keys than v6's E-Stecker climb where E is weakest and loses nothing
+where it is strong: at least 8 points more clean draws in the lowest IC tercile, at least
+4 points more overall, no more than 2 points fewer in the highest tercile, and at least
+as many one-indel draws overall.
+
+Design. The fault-power slice, three arms on the same draws (v4's climb, v6's E climb,
+R-ngonly), 720 draws in each of two cells (clean, one indel), keys seed 20261123, 24
+Markov plaintexts (seed 20261122) kept by rejection into three strata of 8 (IC 0.0529 to
+0.0574, 0.0583 to 0.0614, 0.0633 to 0.0765; mean 0.0608), none shared with earlier
+sets, 30 draws per plaintext, 240 per tercile per cell. Each arm against its own null,
+detection at 6 null standard deviations with the planted plugboard recovered exactly.
+The strata are a third each, so pooled rates weight low-IC plaintext more than Army
+traffic does; the by-tercile results are primary.
+
+| id | statement | decides |
+|---|---|---|
+| D1 | low tercile, clean: R-ngonly detects at least 8 points more than E (paired) | yes |
+| D2 | overall, clean: R-ngonly at least 4 points more than E | yes |
+| D3 | high tercile, clean: R-ngonly at most 2 points below E | yes |
+| D4 | overall, one indel: R-ngonly at least as many as E | yes |
+| S1 | the E arm detects at least 70% of clean draws overall (replication) | no |
+| N1 | low tercile, clean: R-ngonly at least 65% | no |
+| N2 | overall, clean: R-ngonly at least 80% | no |
+
+The author's guesses, before any measurement of this arm: a gain of 10 to 15 points in the
+lowest tercile, 3 to 6 in the middle, about 1 in the highest, 6 to 9 overall, and 6 to 9
+on one indel. Decision rule, fixed now: if D1 to D4 hold, R-ngonly is adopted for the
+next BYQMZ sweep (v7, about 20 hours on this GPU), which is then preregistered with this
+control pinned as its power prerequisite, as v6 was; its stated power is a projection
+(this control's detection times the E arm's measured confirmation, 0.98) until its own
+joint power is measured. If D1 is refuted no v7 is preregistered on this basis; if only
+D2 is refuted the maintainer decides whether the low-IC-only gain is worth 1.67 times
+v6's cost; if D3 or D4 is refuted the loss is weighed against D1's gain first.
+
+Not measured here: companion confirmation and retention (the R-ngonly climb's noise tail
+is heavier, so its retention cutoff in a real sweep will be higher than v6's), a
+substituted letter, two faults. Disclosed: a 6-draw smoke run (scratch output, 3 min 25
+s) passed every preflight check including `first_plug_climbs_match` on both first-plug
+arms (64 of 64 identical), and the analysis script's tercile counts equal the harness's
+on an existing artifact; nothing was changed after it.
+
+Run command:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-rngonly-power-v1/config.json --jobs 8
+python3 scripts/rngonly_power_v1.py
+```
