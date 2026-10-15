@@ -9,6 +9,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import rngonly_power_v1 as rp  # noqa: E402
+from stecker_power import cluster_interval, stratified_cluster_interval  # noqa: E402
 
 CONFIG = json.loads((ROOT / rp.CONFIG).read_text(encoding="utf-8"))
 
@@ -90,6 +91,67 @@ class AnalysisTests(unittest.TestCase):
         cells = rp.analyse(artifact(2, self.ICS, lambda *a: True))
         with self.assertRaises(ValueError):
             rp.score([{"id": "X", "statement": "", "kind": "nope", "cell": "clean", "tercile": "low", "arm": "complete_w117", "value": 0}], cells)
+
+
+class IntervalAndExclusionTests(unittest.TestCase):
+    ICS = AnalysisTests.ICS
+
+    def test_a_stratified_interval_keeps_the_design_balance(self):
+        # Three strata with very different rates, 8 clusters each.  A plain resample of all 24 lets
+        # the strata change size and so is wider than the stratified one.
+        strata = [[(2, 20)] * 8, [(10, 20)] * 8, [(18, 20)] * 8]
+        plain = cluster_interval([c for group in strata for c in group])
+        stratified = stratified_cluster_interval(strata)
+        self.assertEqual(stratified, [0.5, 0.5])
+        self.assertGreater(plain[1] - plain[0], 0.1)
+
+    def test_a_stratified_interval_is_reproducible_and_covers_its_estimate(self):
+        strata = [[(i % 5, 20) for i in range(8)], [(5 + i % 6, 20) for i in range(8)], [(12 + i % 4, 20) for i in range(8)]]
+        self.assertEqual(stratified_cluster_interval(strata), stratified_cluster_interval(strata))
+        flat = [c for group in strata for c in group]
+        estimate = sum(a for a, _ in flat) / sum(b for _, b in flat)
+        lo, hi = stratified_cluster_interval(strata)
+        self.assertLessEqual(lo, estimate)
+        self.assertGreaterEqual(hi, estimate)
+        self.assertIsNone(stratified_cluster_interval([]))
+        self.assertIsNone(stratified_cluster_interval([[]]))
+
+    def test_the_primary_analysis_leaves_out_the_first_draws_of_each_cell(self):
+        power = artifact(10, self.ICS, lambda arm, p, k: True)
+        every = rp.analyse(power, 0)["clean"]["all"]
+        # artifact() numbers draws consecutively over plaintexts, so draws 0-5 all belong to plaintext 0
+        primary = rp.analyse(power, 6)["clean"]["all"]
+        self.assertEqual((every["draws"], primary["draws"]), (240, 234))
+        self.assertEqual(primary["plaintexts"], 24)
+        self.assertEqual(primary["arms"]["complete_w117"]["of"], 234)
+
+    def test_rates_and_gains_carry_a_plaintext_interval_wider_than_the_draw_level_one(self):
+        # Within each tercile half the plaintexts are always detected and half never.
+        def detect(arm, plaintext, k):
+            return arm != "complete_w117" and plaintext % 2 == 0
+        cell = rp.analyse(artifact(10, self.ICS, detect))["clean"]["low"]
+        e = cell["arms"]["complete_w117_estecker"]
+        self.assertEqual(e["rate"], 0.5)
+        lo, hi = e["cluster_interval_95"]
+        self.assertGreater(hi - lo, 2 * (e["interval_95"][1] - e["interval_95"][0]))
+        gain = cell["paired"]["complete_w117_estecker_vs_complete_w117"]
+        self.assertEqual(gain["gain"], 0.5)
+        self.assertEqual(len(gain["cluster_interval_95"]), 2)
+
+    def test_the_harness_overall_predictions_are_recomputed_from_the_same_draws(self):
+        power = artifact(10, self.ICS, lambda arm, p, k: arm != "complete_w117")
+        cells = rp.analyse(power, 6)
+        names = ["clean"]
+        spec = [
+            {"id": "A", "statement": "", "kind": "rate_at_least", "cell": 0, "arm": "complete_w117_estecker", "value": 0.9},
+            {"id": "B", "statement": "", "kind": "rate_gain_at_least", "cell": 0, "arm": "complete_w117_rngonly", "over": "complete_w117", "value": 0.5},
+            {"id": "C", "statement": "", "kind": "rate_gain_at_least", "cell": 0, "arm": "complete_w117_rngonly", "over": "complete_w117_estecker", "value": 0.01},
+        ]
+        scored = {p["id"]: p for p in rp.score_overall(spec, cells, names)}
+        self.assertEqual([scored[k]["passed"] for k in "ABC"], [True, True, False])
+        self.assertEqual(scored["B"]["observed"], 1.0)
+        with self.assertRaises(ValueError):
+            rp.score_overall([{"id": "X", "statement": "", "kind": "nope", "cell": 0, "arm": "complete_w117", "value": 0}], cells, names)
 
 
 if __name__ == "__main__":

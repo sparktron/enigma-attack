@@ -3293,8 +3293,7 @@ the preflight and the config loader. Full suite 323 passed.
 
 Configuration:
 [experiments/phase1-rngonly-power-v1/config.json](../experiments/phase1-rngonly-power-v1/config.json),
-analysis `scripts/rngonly_power_v1.py`, both committed before any draw of this run was
-computed.
+analysis `scripts/rngonly_power_v1.py`, both committed before the run. Draws 0 to 5 of each cell had been computed in a scratch smoke run before that commit and their outcomes printed, so they were not unseen when the predictions were fixed; see the amendment to the result below.
 
 Hypothesis. On fresh keys and 24 fresh plaintexts stratified by IC, the R-ngonly climb
 detects more planted keys than v6's E-Stecker climb where E is weakest and loses nothing
@@ -3417,3 +3416,47 @@ which would have to be argued and preregistered afresh, with the post hoc origin
 argument disclosed; or look for a different lever for garbled low-IC messages, where the
 gap to the clean case is widest. Companion confirmation and retention for R-ngonly were not
 measured (its noise tail is heavier than E's).
+
+#### Amendment (2026-10-15, after review of PR #36, whose two findings apply here)
+
+1. *Pre-observed draws.* The 6-draw smoke run covered draws 0 to 5 of each cell and printed
+   their detections and the tercile predictions (`pre_run_facts.smoke_run`), so those 12 draws
+   were not unseen when the predictions were committed. The primary result now leaves them out
+   (714 draws per cell remain, 234 in the lowest tercile) and `result.all_draws` keeps all 720.
+   The harness's own overall predictions (S1, D2, D4, N2) were scored over all 720; the script
+   now recomputes them over the primary draws too. **No verdict changes.**
+2. *Repeated plaintexts.* Each plaintext supplies 30 draws per cell, so draw-level binomial
+   intervals understate the uncertainty about typical text. Every rate and paired gain now also
+   carries a bootstrap interval that resamples plaintexts within their IC tercile (the design
+   fixes eight per tercile; `stecker_power.stratified_cluster_interval`, 10,000 seeded resamples).
+
+Primary results (714 draws per cell; the all-draws figures in the tables above differ by at most
+a point):
+
+| clean | v4's climb | E (v6) | R-ngonly | R-ngonly vs E: only / only, gain (plaintext-cluster interval), McNemar p |
+|---|---|---|---|---|
+| all | 323 (45.2%) | 603 (84.5%, 81.3 to 87.6) | 626 (87.7%, 84.9 to 90.3) | 70 / 47, +3.2 points (0.4 to 6.3), p = 0.042 |
+| low | 48 (20.5%) | 159 (67.9%, 61.4 to 75.3) | 176 (75.2%, 69.9 to 81.5) | 40 / 23, +7.3 points (2.6 to 14.6), p = 0.043 |
+| mid | 123 (51.2%) | 219 (91.2%, 86.2 to 95.8) | 224 (93.3%, 89.2 to 96.7) | 18 / 13, +2.1 points (-1.2 to 5.8), p = 0.473 |
+| high | 152 (63.3%) | 225 (93.8%, 90.0 to 97.5) | 226 (94.2%, 89.6 to 97.1) | 12 / 11, +0.4 points (-5.0 to 5.0), p = 1.000 |
+
+| one indel | v4's climb | E (v6) | R-ngonly | R-ngonly vs E: only / only, gain (plaintext-cluster interval), McNemar p |
+|---|---|---|---|---|
+| all | 172 (24.1%) | 445 (62.3%, 57.8 to 67.3) | 502 (70.3%, 66.9 to 73.8) | 134 / 77, +8.0 points (3.5 to 12.6), p = 0.000 |
+| low | 17 (7.3%) | 87 (37.2%, 28.9 to 48.5) | 129 (55.1%, 47.0 to 63.7) | 61 / 19, +17.9 points (9.1 to 27.5), p = 0.000 |
+| mid | 55 (22.9%) | 163 (67.9%, 61.3 to 75.0) | 175 (72.9%, 67.1 to 78.3) | 43 / 31, +5.0 points (-2.5 to 13.8), p = 0.201 |
+| high | 100 (41.7%) | 195 (81.2%, 73.8 to 88.3) | 198 (82.5%, 80.0 to 85.4) | 30 / 27, +1.2 points (-5.0 to 7.1), p = 0.791 |
+
+Predictions on the primary set: D1 refuted (+7.3 points against at least 8), D2 refuted
+(+3.2 against 4), D3 held (+0.4 against at least -2), D4 held (+8.0 against at least 0), S1
+held (E clean 84.5%), N1 held (R-ngonly low tercile 75.2%), N2 held (87.7%).
+
+What the intervals add (inference): the refutations are by point estimate, as preregistered,
+and the plaintext-level intervals straddle both bars. The low-tercile clean gain is +7.3 with a
+95% interval of +2.6 to +14.6, which contains D1's 8-point bar; the overall clean gain is +3.2
+(+0.4 to +6.3), which contains D2's 4. So the data show R-ngonly's clean gain over E is
+positive but do not show it is below the bar; with 8 plaintexts per tercile the size of the
+low-IC gain is poorly pinned. The one-indel gain is clearly positive at every level that matters
+(overall +8.0, +3.5 to +12.6; lowest tercile +17.9, +9.1 to +27.5). The preregistered rule is
+applied as written, so no v7 sweep is preregistered on this basis, but the maintainer's
+decision should not read D1 and D2 as showing the gain is small.

@@ -135,6 +135,37 @@ def cluster_interval(
     return [round(lo, 6), round(hi, 6)]
 
 
+def stratified_cluster_interval(
+    strata: Sequence[Sequence[tuple[int, int]]], resamples: int = 10_000, seed: int = 20261015
+) -> list[float] | None:
+    """Like :func:`cluster_interval`, for plaintexts sampled in fixed strata.
+
+    The clusters of each stratum are resampled within that stratum, so every resample keeps
+    the design's balance (eight plaintexts per IC tercile, say) and the pooled interval does
+    not inherit variance from strata that were never free to change size.
+    """
+
+    strata = [list(group) for group in strata if group]
+    if not strata:
+        return None
+    generator = random.Random(seed)
+    ratios: list[float] = []
+    for _ in range(resamples):
+        num = den = 0
+        for group in strata:
+            k = len(group)
+            for _ in range(k):
+                a, b = group[generator.randrange(k)]
+                num += a
+                den += b
+        if den > 0:
+            ratios.append(num / den)
+    if not ratios:
+        return None
+    ratios.sort()
+    return [round(ratios[int(0.025 * len(ratios))], 6), round(ratios[min(len(ratios) - 1, int(0.975 * len(ratios)))], 6)]
+
+
 def _one_indel(ciphertext: str, generator: random.Random) -> tuple[str, dict[str, Any]]:
     position = generator.randrange(1, len(ciphertext) - 1)
     if generator.random() < 0.5:
