@@ -3223,3 +3223,240 @@ maintainer: stop the standard-reading search with the measured, IC-dependent mis
 probabilities on record; or measure the union at typical IC to state a combined
 multiplier; or spend the next climb on low-IC plaintexts, where the E arm is weakest
 (R-Stecker's 73 starts was 27 of 36 at IC 0.0514 in the review).
+
+## First-stage climb for low-IC plaintexts: screen, implementation, control (2026-10-15)
+
+Status: a screen (exploratory), an implementation, and a preregistration. Nothing in the
+sweep path has run.
+
+### Why
+
+phase1-estecker-joint-power-v1 measured the E-Stecker climb at 56% clean detection in the
+lowest IC tercile, 84% in the middle and 95% in the highest. The maintainer asked for a
+stronger first-stage climb for low-IC plaintexts.
+
+### Screen (not preregistered; `scripts/review/first_stage_screen.py`, evidence in `data/review/first-stage-screen-2026-10-14/`)
+
+True-setting climbs on the 117-letter head window, ten plugs, 12 low-IC Markov plaintexts
+(IC 0.0514 to 0.0575) of 30 draws each, 360 draws, each method calibrated against its own
+wrong-setting null at 6 standard deviations. Detection and cost (evaluations on the null
+climbs, relative to the empty-board climb):
+
+| method | detected (95% interval) | cost |
+|---|---|---:|
+| base | 7.8% (5 to 11) | 1 |
+| E-ngonly | 32.8% (28 to 38) | 13.0 |
+| E-ic4 | 38.9% (34 to 44) | 16.8 |
+| E (v6) | 36.7% (32 to 42) | 25.9 |
+| screen-ic-k26 (score the 325 single plugs once, climb the best 26) | 41.1% (36 to 46) | 26.3 |
+| R-ngonly | 48.3% (43 to 53) | 35.6 |
+| R-ic4 | 52.5% (47 to 58) | 47.0 |
+| I-ngonly | 58.9% (54 to 64) | 65.9 |
+| R | 52.2% (47 to 57) | 72.7 |
+| I-ic4 | 63.3% (58 to 68) | 87.5 |
+| I | 59.4% (54 to 64) | 135.5 |
+| solo-ngonly (all 325 single plugs) | 67.8% (63 to 72) | 157.6 |
+| solo-ic4 | 73.6% (69 to 78) | 209.8 |
+
+The first screen (base, E, R, I, solo, screen-ic and screen-ng at k = 8 and 26, and 26
+random kicks) reproduced these rows' shared numbers exactly in the second. Screening and
+kicks did not beat starting from more boards; the IC phase is about two thirds of a
+start's work (3,746 of 5,912 evaluations for the empty board); capping it at four passes
+or skipping it for the extra starts lost no power the paired counts could see (McNemar p
+0.18 to 1.0 for ic4 against full, 0.21 to 0.93 for ngonly against full, at E, R and I).
+R-ngonly against E, same draws: 84 detected only by R-ngonly, 42 only by E, p = 0.0002.
+
+Cost on the GPU, measured afterwards on 16,384 random settings of BYQMZ with v6's window
+and settings: E 0.1753 ms per setting (12.0 h for the 246.8 million of a v6-sized
+sweep), E-ic4 0.1275 (8.7 h), R-ngonly 0.2931 (20.1 h, 1.67 times E), R-ic4 0.3556
+(24.4 h), I-ngonly 0.5498 (37.7 h). The IC phase is cheaper per evaluation than the
+n-gram phase, so ngonly saves less than its evaluation count and ic4 more.
+
+### Decision (maintainer, 2026-10-15)
+
+Implement R-ngonly: the E, N and R first-plug starts with the extra starts climbed by
+n-gram score alone and the empty board climbed in full.
+
+### Implementation (commit `15490a6`)
+
+`climb.first_plug` gains two optional keys: `ic_passes` (cap on the IC phase wherever it
+runs) and `start_phases: "ngram_only"` (the extra starts skip the IC phase). Both default
+to the old behaviour, so no existing configuration or checkpoint fingerprint changes.
+Reference, batched and CUDA climbs (the split-point kernel is untouched and still refuses
+`first_plug`). Tests: the reference against a by-hand composition of `climb_stecker`
+calls; batched against reference and CUDA against batched on plaintext, evaluations,
+score and window, for three option combinations, whole and windowed, masked and short
+bodies; a check that mismatched option pairs disagree (so the parity tests can fail);
+the preflight and the config loader. Full suite 323 passed.
+
+## phase1-rngonly-power-v1 (preregistered 2026-10-15)
+
+Configuration:
+[experiments/phase1-rngonly-power-v1/config.json](../experiments/phase1-rngonly-power-v1/config.json),
+analysis `scripts/rngonly_power_v1.py`, both committed before the run. Draws 0 to 5 of each cell had been computed in a scratch smoke run before that commit and their outcomes printed, so they were not unseen when the predictions were fixed; see the amendment to the result below.
+
+Hypothesis. On fresh keys and 24 fresh plaintexts stratified by IC, the R-ngonly climb
+detects more planted keys than v6's E-Stecker climb where E is weakest and loses nothing
+where it is strong: at least 8 points more clean draws in the lowest IC tercile, at least
+4 points more overall, no more than 2 points fewer in the highest tercile, and at least
+as many one-indel draws overall.
+
+Design. The fault-power slice, three arms on the same draws (v4's climb, v6's E climb,
+R-ngonly), 720 draws in each of two cells (clean, one indel), keys seed 20261123, 24
+Markov plaintexts (seed 20261122) kept by rejection into three strata of 8 (IC 0.0529 to
+0.0574, 0.0583 to 0.0614, 0.0633 to 0.0765; mean 0.0608), none shared with earlier
+sets, 30 draws per plaintext, 240 per tercile per cell. Each arm against its own null,
+detection at 6 null standard deviations with the planted plugboard recovered exactly.
+The strata are a third each, so pooled rates weight low-IC plaintext more than Army
+traffic does; the by-tercile results are primary.
+
+| id | statement | decides |
+|---|---|---|
+| D1 | low tercile, clean: R-ngonly detects at least 8 points more than E (paired) | yes |
+| D2 | overall, clean: R-ngonly at least 4 points more than E | yes |
+| D3 | high tercile, clean: R-ngonly at most 2 points below E | yes |
+| D4 | overall, one indel: R-ngonly at least as many as E | yes |
+| S1 | the E arm detects at least 70% of clean draws overall (replication) | no |
+| N1 | low tercile, clean: R-ngonly at least 65% | no |
+| N2 | overall, clean: R-ngonly at least 80% | no |
+
+The author's guesses, before any measurement of this arm: a gain of 10 to 15 points in the
+lowest tercile, 3 to 6 in the middle, about 1 in the highest, 6 to 9 overall, and 6 to 9
+on one indel. Decision rule, fixed now: if D1 to D4 hold, R-ngonly is adopted for the
+next BYQMZ sweep (v7, about 20 hours on this GPU), which is then preregistered with this
+control pinned as its power prerequisite, as v6 was; its stated power is a projection
+(this control's detection times the E arm's measured confirmation, 0.98) until its own
+joint power is measured. If D1 is refuted no v7 is preregistered on this basis; if only
+D2 is refuted the maintainer decides whether the low-IC-only gain is worth 1.67 times
+v6's cost; if D3 or D4 is refuted the loss is weighed against D1's gain first.
+
+Not measured here: companion confirmation and retention (the R-ngonly climb's noise tail
+is heavier, so its retention cutoff in a real sweep will be higher than v6's), a
+substituted letter, two faults. Disclosed: a 6-draw smoke run (scratch output, 3 min 25
+s) passed every preflight check including `first_plug_climbs_match` on both first-plug
+arms (64 of 64 identical), and the analysis script's tercile counts equal the harness's
+on an existing artifact; nothing was changed after it.
+
+Run command:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-rngonly-power-v1/config.json --jobs 8
+python3 scripts/rngonly_power_v1.py
+```
+
+### Result: phase1-rngonly-power-v1 (run 2026-10-15)
+
+Run record. From clean `3067143` (the preregistration commit), 13:59:21 to 14:37:20 UTC,
+2,103 s, cuda engine, 8 requested workers, one invocation; preflight (including
+`first_plug_climbs_match`, 64 of 64 identical, worst score difference 0.0) and both
+positive controls passed. RTX 3090, CUDA 12.8, numpy 2.2.6, Python 3.10.12; about 0.8 GB of
+the GPU was in use by another process at launch. Artifacts and SHA-256:
+`artifacts/phase1-rngonly-power-v1.json` (`d7affdcb...`, the raw run) and
+`artifacts/phase1-rngonly-power-v1-terciles.json` (`78770d5e...`, the preregistered
+analysis). Seeds: keys 20261123, plaintexts 20261122.
+
+#### Observed
+
+Detection by the harness's rule, 720 draws per cell (240 per tercile), detection counts and
+rates with the paired count against the E arm (R-ngonly only / E only) and the exact McNemar p:
+
+| clean | v4's climb | E (v6) | R-ngonly | R-ngonly vs E |
+|---|---|---|---|---|
+| overall | 324 (45.0%) | 605 (84.0%, 81.2 to 86.5) | 628 (87.2%, 84.6 to 89.5) | 71 / 48, +3.2 points, p = 0.043 |
+| low IC | 49 (20.4%) | 161 (67.1%) | 178 (74.2%, 68.3 to 79.3) | 41 / 24, +7.1, p = 0.046 |
+| mid IC | 123 (51.2%) | 219 (91.2%) | 224 (93.3%) | 18 / 13, +2.1, p = 0.47 |
+| high IC | 152 (63.3%) | 225 (93.8%) | 226 (94.2%) | 12 / 11, +0.4, p = 1.0 |
+
+| one indel | v4's climb | E (v6) | R-ngonly | R-ngonly vs E |
+|---|---|---|---|---|
+| overall | 173 (24.0%) | 448 (62.2%) | 504 (70.0%, 66.6 to 73.2) | 134 / 78, +7.8, p = 0.0001 |
+| low IC | 18 (7.5%) | 90 (37.5%) | 131 (54.6%) | 61 / 20, +17.1, p < 0.0001 |
+| mid IC | 55 (22.9%) | 163 (67.9%) | 175 (72.9%) | 43 / 31, +5.0, p = 0.20 |
+| high IC | 100 (41.7%) | 195 (81.2%) | 198 (82.5%) | 30 / 27, +1.3, p = 0.79 |
+
+Strata IC: low 0.0529 to 0.0574, mid 0.0583 to 0.0614, high 0.0633 to 0.0765.
+
+Predictions: **D1 refuted** (low-tercile clean gain +7.1 points against at least 8),
+**D2 refuted** (overall clean gain +3.2 against at least 4), D3 held (high tercile +0.4
+against at least -2), D4 held (one indel overall +7.8 against at least 0), S1 held (E clean
+84.0% against at least 70%), N1 held (R-ngonly low tercile clean 74.2% against at least 65%),
+N2 held (R-ngonly clean overall 87.2% against at least 80%). The author's guesses were a
+gain of 10 to 15 points in the lowest tercile and 6 to 9 overall on clean draws (too high:
+7.1 and 3.2) and 6 to 9 on one indel (7.8, inside).
+
+#### Interpretation (inference)
+
+- R-ngonly's gain over E on clean draws is real in the lowest tercile (p = 0.046) but
+  smaller than predicted and confined there: +2.1 and +0.4 points in the middle and
+  highest terciles, neither distinguishable from zero. It does not regress where E works (D3).
+- On one-indel draws the gain is larger and clearer: +7.8 points overall and +17.1 in the
+  lowest tercile (61 draws R-ngonly alone against 20), about 1.5 times as many detections as E
+  there. Garbled low-IC messages are where v4's climb (7.5%) and E (37.5%) are weakest, so that
+  is where the extra starts matter most. This was not a deciding prediction beyond D4.
+- The screen overstated the clean low-IC gain (+11.6 points on true-setting head-window climbs
+  against +7.1 here). Plausible reasons, untested: the sweep takes the better of the head and
+  tail windows, so each key has two chances and E fails less often; and the E arm's
+  low-tercile rate here (67.1%) is well above the 55.6% of phase1-estecker-joint-power-v1, so
+  there is less headroom. The second is a plaintext-set effect (this low stratum has a mean IC
+  near 0.0558 against 0.054 there) plus sampling; it is a reminder that absolute rates belong to
+  a plaintext set.
+- Cost: R-ngonly is 1.67 times E on the GPU (about 20 hours against 12 for a full sweep).
+  For clean keys that buys +3.2 points overall (+7.1 at low IC); for one-indel keys +7.8
+  (+17.1 at low IC).
+- By the rule fixed beforehand, D1 refuted means **no v7 sweep is preregistered on this
+  basis**. The rule's wording, that the gain "did not appear", is too strong: it appeared
+  but fell below the 8-point bar. The rule stands as written.
+
+#### Next decision
+
+Nothing further is preregistered. For the maintainer: stop here, with v6 (E) as the last
+standard-reading sweep and R-ngonly's measured gains on record; or accept the one-indel
+and low-IC gain as a reason for a v7 sweep, which the preregistered rule does not support and
+which would have to be argued and preregistered afresh, with the post hoc origin of that
+argument disclosed; or look for a different lever for garbled low-IC messages, where the
+gap to the clean case is widest. Companion confirmation and retention for R-ngonly were not
+measured (its noise tail is heavier than E's).
+
+#### Amendment (2026-10-15, after review of PR #36, whose two findings apply here)
+
+1. *Pre-observed draws.* The 6-draw smoke run covered draws 0 to 5 of each cell and printed
+   their detections and the tercile predictions (`pre_run_facts.smoke_run`), so those 12 draws
+   were not unseen when the predictions were committed. The primary result now leaves them out
+   (714 draws per cell remain, 234 in the lowest tercile) and `result.all_draws` keeps all 720.
+   The harness's own overall predictions (S1, D2, D4, N2) were scored over all 720; the script
+   now recomputes them over the primary draws too. **No verdict changes.**
+2. *Repeated plaintexts.* Each plaintext supplies 30 draws per cell, so draw-level binomial
+   intervals understate the uncertainty about typical text. Every rate and paired gain now also
+   carries a bootstrap interval that resamples plaintexts within their IC tercile (the design
+   fixes eight per tercile; `stecker_power.stratified_cluster_interval`, 10,000 seeded resamples).
+
+Primary results (714 draws per cell; the all-draws figures in the tables above differ by at most
+a point):
+
+| clean | v4's climb | E (v6) | R-ngonly | R-ngonly vs E: only / only, gain (plaintext-cluster interval), McNemar p |
+|---|---|---|---|---|
+| all | 323 (45.2%) | 603 (84.5%, 81.3 to 87.6) | 626 (87.7%, 84.9 to 90.3) | 70 / 47, +3.2 points (0.4 to 6.3), p = 0.042 |
+| low | 48 (20.5%) | 159 (67.9%, 61.4 to 75.3) | 176 (75.2%, 69.9 to 81.5) | 40 / 23, +7.3 points (2.6 to 14.6), p = 0.043 |
+| mid | 123 (51.2%) | 219 (91.2%, 86.2 to 95.8) | 224 (93.3%, 89.2 to 96.7) | 18 / 13, +2.1 points (-1.2 to 5.8), p = 0.473 |
+| high | 152 (63.3%) | 225 (93.8%, 90.0 to 97.5) | 226 (94.2%, 89.6 to 97.1) | 12 / 11, +0.4 points (-5.0 to 5.0), p = 1.000 |
+
+| one indel | v4's climb | E (v6) | R-ngonly | R-ngonly vs E: only / only, gain (plaintext-cluster interval), McNemar p |
+|---|---|---|---|---|
+| all | 172 (24.1%) | 445 (62.3%, 57.8 to 67.3) | 502 (70.3%, 66.9 to 73.8) | 134 / 77, +8.0 points (3.5 to 12.6), p = 0.000 |
+| low | 17 (7.3%) | 87 (37.2%, 28.9 to 48.5) | 129 (55.1%, 47.0 to 63.7) | 61 / 19, +17.9 points (9.1 to 27.5), p = 0.000 |
+| mid | 55 (22.9%) | 163 (67.9%, 61.3 to 75.0) | 175 (72.9%, 67.1 to 78.3) | 43 / 31, +5.0 points (-2.5 to 13.8), p = 0.201 |
+| high | 100 (41.7%) | 195 (81.2%, 73.8 to 88.3) | 198 (82.5%, 80.0 to 85.4) | 30 / 27, +1.2 points (-5.0 to 7.1), p = 0.791 |
+
+Predictions on the primary set: D1 refuted (+7.3 points against at least 8), D2 refuted
+(+3.2 against 4), D3 held (+0.4 against at least -2), D4 held (+8.0 against at least 0), S1
+held (E clean 84.5%), N1 held (R-ngonly low tercile 75.2%), N2 held (87.7%).
+
+What the intervals add (inference): the refutations are by point estimate, as preregistered,
+and the plaintext-level intervals straddle both bars. The low-tercile clean gain is +7.3 with a
+95% interval of +2.6 to +14.6, which contains D1's 8-point bar; the overall clean gain is +3.2
+(+0.4 to +6.3), which contains D2's 4. So the data show R-ngonly's clean gain over E is
+positive but do not show it is below the bar; with 8 plaintexts per tercile the size of the
+low-IC gain is poorly pinned. The one-indel gain is clearly positive at every level that matters
+(overall +8.0, +3.5 to +12.6; lowest tercile +17.9, +9.1 to +27.5). The preregistered rule is
+applied as written, so no v7 sweep is preregistered on this basis, but the maintainer's
+decision should not read D1 and D2 as showing the gain is small.

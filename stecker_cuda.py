@@ -63,7 +63,7 @@ except ImportError:  # pragma: no cover - exercised by the fallback test
     np = None
 
 import enigma_fast
-from stecker_climb import MAX_START_BOARDS, climb_windows, start_boards
+from stecker_climb import MAX_START_BOARDS, climb_windows, first_plug_options, start_boards
 
 MAX_LENGTH = 512
 MAX_PHASES = 8
@@ -107,6 +107,8 @@ struct ClimbDesc {
     int max_pairs, max_passes, nwin, maxlen;
     double min_gain;
     int nstarts;                             /* 0: climb from the empty board only */
+    int ic_passes;                           /* 0: no cap; else the IC phase's pass limit */
+    int start_ngram_only;                    /* 1: starts after the empty board skip the IC phase */
     unsigned char starts[MAX_STARTS * 26];
 };
 
@@ -435,9 +437,13 @@ climb_kernel(ClimbDesc climb, const WindowDesc* windows, const double* bigram,
     double best = 0.0;
     for (int ph = 0; ph < climb.nphases; ++ph) {
         int objective = climb.phases[ph];
-        if (climb.max_passes <= 0) { evaluations += 1; continue; }
+        /* climb.start_ngram_only: the first-plug starts skip the IC phase (all threads agree). */
+        if (objective == 0 && si > 0 && climb.start_ngram_only) continue;
+        int passes = climb.max_passes;
+        if (objective == 0 && climb.ic_passes > 0 && passes > climb.ic_passes) passes = climb.ic_passes;
+        if (passes <= 0) { evaluations += 1; continue; }
         bool first_pass = true;
-        for (int pass = 0; pass < climb.max_passes; ++pass) {
+        for (int pass = 0; pass < passes; ++pass) {
             Decrypt d;
             d.cur = cur; d.table = sh.table; d.cipher = sh.cipher;
             bool valid = move_of(tid, cur, s_pairs, climb.max_pairs, d.m);
@@ -1090,6 +1096,8 @@ class _ClimbDesc(ctypes.Structure):
         ("maxlen", ctypes.c_int),
         ("min_gain", ctypes.c_double),
         ("nstarts", ctypes.c_int),
+        ("ic_passes", ctypes.c_int),
+        ("start_ngram_only", ctypes.c_int),
         ("starts", ctypes.c_ubyte * (MAX_STARTS * 26)),
     ]
 
@@ -1440,6 +1448,9 @@ class CudaClimber:
             if "ngram" not in phases:
                 raise ValueError("climb.first_plug picks its best start by the n-gram score and needs it")
             climb.nstarts = len(boards)
+            ic_passes, ngram_only = first_plug_options(settings)
+            climb.ic_passes = 0 if ic_passes is None else int(ic_passes)
+            climb.start_ngram_only = int(ngram_only)
             for index, board in enumerate(boards):
                 climb.starts[26 * index : 26 * index + 26] = board
         self._bigram = np.ascontiguousarray(bigram, dtype=np.float64)

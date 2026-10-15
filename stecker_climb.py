@@ -117,6 +117,39 @@ def climb_stecker(
 MAX_START_BOARDS = 136  # every first plug on six letters, plus the empty board
 
 
+FIRST_PLUG_KEYS = ("letters", "ic_passes", "start_phases")
+START_PHASES = ("two_phase", "ngram_only")
+
+
+def first_plug_options(settings: Mapping[str, Any]) -> tuple[int | None, bool]:
+    """How each start board is climbed: ``(ic_passes, extra_starts_ngram_only)``.
+
+    ``climb.first_plug.ic_passes`` caps the index-of-coincidence phase at that many
+    passes wherever it runs, for the empty board and the first-plug starts alike.
+    ``start_phases: "ngram_only"`` makes every first-plug start skip the index-of-
+    coincidence phase and climb by n-gram score alone, while the empty board is
+    still climbed by every configured phase in full.  Both default to the
+    behaviour a ``first_plug`` without them has always had.  Measured in
+    ``scripts/review/first_stage_screen.py`` on low-IC plaintexts: the IC phase is
+    about two thirds of a start's work, a four-pass cap loses no detectable power,
+    and skipping it for the extra starts loses none that the paired counts can see.
+    """
+
+    spec = settings.get("first_plug")
+    if spec is None:
+        return None, False
+    unknown = sorted(set(spec) - set(FIRST_PLUG_KEYS))
+    if unknown:
+        raise ValueError(f"unknown climb.first_plug keys: {unknown}")
+    ic_passes = spec.get("ic_passes")
+    if ic_passes is not None and (isinstance(ic_passes, bool) or not isinstance(ic_passes, int) or ic_passes < 1):
+        raise ValueError(f"climb.first_plug.ic_passes must be an integer of at least 1, not {ic_passes!r}")
+    start_phases = spec.get("start_phases", "two_phase")
+    if start_phases not in START_PHASES:
+        raise ValueError(f"climb.first_plug.start_phases must be one of {START_PHASES}, not {start_phases!r}")
+    return ic_passes, start_phases == "ngram_only"
+
+
 def start_boards(settings: Mapping[str, Any]) -> list[list[int]]:
     """The plugboards a climb starts from: the empty one, then any first-plug starts.
 
@@ -136,6 +169,7 @@ def start_boards(settings: Mapping[str, Any]) -> list[list[int]]:
         return [identity]
     if int(settings.get("max_pairs", 13)) < 1:
         raise ValueError("climb.first_plug requires max_pairs >= 1 for its one-pair starts")
+    first_plug_options(settings)  # rejects unknown keys and bad option values
     letters = str(spec["letters"]).upper()
     if not letters or len(set(letters)) != len(letters) or any(c < "A" or c > "Z" for c in letters):
         raise ValueError(f"climb.first_plug.letters must be distinct A-Z letters, not {letters!r}")
@@ -178,20 +212,27 @@ def run_climb_phases(
     boards = start_boards(settings)
     if len(boards) > 1 and "ngram" not in objectives:
         raise ValueError("climb.first_plug picks its best start by the n-gram score and needs it")
+    ic_passes, ngram_only = first_plug_options(settings)
     best: tuple[float, list[int], list[dict[str, Any]]] | None = None
     total_evaluations = 0
-    for board in boards:
+    for index, board in enumerate(boards):
         plugboard = list(board)
         records: list[dict[str, Any]] = []
         evaluations = 0
         for objective in phases:
             if objective not in objectives:
                 raise ValueError(f"unknown climb objective: {objective!r}")
+            is_ic = objective == "index_of_coincidence"
+            if ngram_only and index > 0 and is_ic:
+                continue
+            passes = int(settings["max_passes"])
+            if is_ic and ic_passes is not None:
+                passes = min(passes, ic_passes)
             outcome = climb_stecker(
                 objectives[objective],
                 letters,
                 int(settings["max_pairs"]),
-                int(settings["max_passes"]),
+                passes,
                 float(settings["minimum_gain"]),
                 plugboard,
             )

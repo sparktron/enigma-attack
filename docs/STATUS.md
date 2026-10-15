@@ -512,6 +512,21 @@ detection. It falls with plaintext IC: clean detection is 56% in the lowest terc
 replaces v6's projected power; it is a measured miss probability for those two fault
 kinds on typical text, not a calibrated odds multiplier for BYQMZ.
 
+Phase 1, 2026-10-15: **`phase1-rngonly-power-v1`: the R-ngonly climb did not clear its bar**
+([result](phase1-experiment-history.md#result-phase1-rngonly-power-v1-run-2026-10-15)).
+`climb.first_plug` now takes `ic_passes` and `start_phases: "ngram_only"` (all three
+engines, parity-tested); R-ngonly is the E, N and R first-plug starts with the extra starts
+climbed by n-gram score alone, 1.67 times E's GPU cost (about 20 hours for a sweep). On
+fresh keys and 24 plaintexts stratified by IC (714 draws per cell once the 12 draws seen in a
+smoke run are left out) it detects 87.7% of clean draws against E's 84.5% and 45.2% for
+v4's climb, and 70.3% of one-indel draws against 62.3% and 24.1%. D1 (at least 8 points over
+E in the lowest IC tercile; observed +7.3, plaintext-level interval +2.6 to +14.6) and D2 (at
+least 4 overall; observed +3.2, +0.4 to +6.3) were refuted by their point estimates, and
+the intervals contain both bars; D3 and D4 held, so by the
+preregistered rule no v7 sweep is preregistered. The gain is largest on garbled low-IC
+messages (one indel, lowest tercile: 54.6% against 37.5%). The decision is the
+maintainer's.
+
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
 windowed climbs on the GPU. Its scores are the batched climber's bit for bit,

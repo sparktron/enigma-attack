@@ -1,0 +1,15 @@
+low set: 12 texts, IC 0.0514 to 0.0575, mean 0.0556
+base           detected  28/360 (0.078, 0.05-0.11)  exact  28  null -8.418+-0.130  cost x1.0  (ic 3746 + ng 2166 evals)
+E              detected 132/360 (0.367, 0.32-0.42)  exact 132  null -8.234+-0.085  cost x25.9  (ic 97067 + ng 56043 evals)
+R              detected 188/360 (0.522, 0.47-0.57)  exact 188  null -8.194+-0.077  cost x72.7  (ic 272480 + ng 157397 evals)
+I              detected 214/360 (0.594, 0.54-0.64)  exact 214  null -8.174+-0.073  cost x135.5  (ic 507654 + ng 293249 evals)
+screen-ic-k26  detected 148/360 (0.411, 0.36-0.46)  exact 148  null -8.220+-0.082  cost x26.3  (ic 97068 + ng 58152 evals)
+E-ic4          detected 140/360 (0.389, 0.34-0.44)  exact 140  null -8.216+-0.078  cost x16.8  (ic 34059 + ng 65158 evals)
+R-ic4          detected 189/360 (0.525, 0.47-0.58)  exact 189  null -8.172+-0.071  cost x47.0  (ic 95631 + ng 182408 evals)
+I-ic4          detected 228/360 (0.633, 0.58-0.68)  exact 228  null -8.150+-0.068  cost x87.5  (ic 178165 + ng 339338 evals)
+solo-ic4       detected 265/360 (0.736, 0.69-0.78)  exact 265  null -8.125+-0.064  cost x209.8  (ic 427070 + ng 813262 evals)
+E-ngonly       detected 118/360 (0.328, 0.28-0.38)  exact 118  null -8.234+-0.077  cost x13.0  (ic 3746 + ng 73167 evals)
+R-ngonly       detected 174/360 (0.483, 0.43-0.53)  exact 174  null -8.187+-0.070  cost x35.6  (ic 3746 + ng 206993 evals)
+I-ngonly       detected 212/360 (0.589, 0.54-0.64)  exact 212  null -8.165+-0.067  cost x65.9  (ic 3746 + ng 386098 evals)
+solo-ngonly    detected 244/360 (0.678, 0.63-0.72)  exact 244  null -8.141+-0.064  cost x157.6  (ic 3746 + ng 927940 evals)
+7112 s

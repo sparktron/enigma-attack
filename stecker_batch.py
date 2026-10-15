@@ -20,7 +20,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from stecker_climb import start_boards
+from stecker_climb import first_plug_options, start_boards
 
 try:  # the project has no runtime dependency; this one is optional
     import numpy as np
@@ -50,6 +50,7 @@ class BatchedClimber:
             raise RuntimeError("the batched climb needs numpy, which is not installed")
         self.settings = settings
         self.starts = start_boards(settings)
+        self.ic_passes, self.ngram_only = first_plug_options(settings)
         self._bigram_list = [float(x) for x in bigram]
         self._combined_list = [float(x) for x in combined]
         self.bigram = np.asarray(bigram, dtype=np.float64)
@@ -117,13 +118,15 @@ class BatchedClimber:
         unplug[rows, plugged] = plugged
         return np.vstack([boards, unplug])
 
-    def _climb(self, objective, table: "np.ndarray", initial: Sequence[int]) -> tuple[list[int], int]:
+    def _climb(
+        self, objective, table: "np.ndarray", initial: Sequence[int], max_passes: int | None = None
+    ) -> tuple[list[int], int]:
         max_pairs = int(self.settings["max_pairs"])
         minimum_gain = float(self.settings["minimum_gain"])
         current = np.asarray(initial, dtype=np.int64)
         best = float(objective(current[None, :], table)[0])
         evaluations = 1
-        for _ in range(int(self.settings["max_passes"])):
+        for _ in range(int(self.settings["max_passes"]) if max_passes is None else max_passes):
             trials = self._candidates(current, max_pairs)
             scores = objective(trials, table).tolist()
             evaluations += len(scores)
@@ -152,13 +155,19 @@ class BatchedClimber:
         boards = self.starts
         best: tuple[float, list[int]] | None = None
         total = 0
-        for board in boards:
+        for index, board in enumerate(boards):
             plugboard: list[int] = list(board)
             evaluations = 0
             for phase in self.settings["phases"]:
                 if phase not in objectives:
                     raise ValueError(f"unknown climb objective: {phase!r}")
-                plugboard, used = self._climb(objectives[phase], table, plugboard)
+                is_ic = phase == "index_of_coincidence"
+                if self.ngram_only and index > 0 and is_ic:
+                    continue
+                passes = int(self.settings["max_passes"])
+                if is_ic and self.ic_passes is not None:
+                    passes = min(passes, self.ic_passes)
+                plugboard, used = self._climb(objectives[phase], table, plugboard, passes)
                 evaluations += used
             if len(boards) == 1:
                 return plugboard, evaluations
