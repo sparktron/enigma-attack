@@ -19,7 +19,10 @@ import stecker_batch
 import stecker_cuda
 import stecker_controls
 import stecker_power
-from stecker_climb import body_direct_climb, climb_windows, start_boards, windowed_climb
+from stecker_climb import (
+    body_direct_climb, climb_stecker, climb_windows, coincidence_of_decryption, first_plug_options,
+    start_boards, windowed_climb,
+)
 from stecker_scoring import FastNgramScorer
 from stecker_traffic import Traffic, traffic_from_corpus
 
@@ -349,6 +352,175 @@ class PreflightTests(Fixture):
     def test_a_configuration_without_first_plug_adds_no_check(self):
         config = copy.deepcopy(self.config)
         self.assertEqual(stecker_controls.configured_first_plugs(config), [])
+
+
+OPTION_SPECS = (
+    {"letters": "E", "ic_passes": 4},
+    {"letters": "ENR", "start_phases": "ngram_only"},  # R-ngonly
+    {"letters": "E", "ic_passes": 2, "start_phases": "ngram_only"},
+)
+
+
+class OptionTests(unittest.TestCase):
+    def test_defaults_and_parsing(self):
+        self.assertEqual(first_plug_options({}), (None, False))
+        self.assertEqual(first_plug_options({"first_plug": E}), (None, False))
+        self.assertEqual(first_plug_options({"first_plug": {"letters": "E", "ic_passes": 4}}), (4, False))
+        self.assertEqual(first_plug_options({"first_plug": {"letters": "E", "start_phases": "ngram_only"}}), (None, True))
+        self.assertEqual(first_plug_options({"first_plug": {"letters": "E", "start_phases": "two_phase"}}), (None, False))
+
+    def test_options_never_change_the_start_boards(self):
+        plain = start_boards({"first_plug": {"letters": "ENR"}})
+        for spec in OPTION_SPECS:
+            self.assertEqual(start_boards({"first_plug": {**spec, "letters": "ENR"}}), plain)
+
+    def test_bad_options_are_rejected_everywhere_a_spec_is_read(self):
+        for bad in ({"letters": "E", "ic_passes": 0}, {"letters": "E", "ic_passes": -1}, {"letters": "E", "ic_passes": 2.5},
+                    {"letters": "E", "ic_passes": True}, {"letters": "E", "ic_passes": "4"},
+                    {"letters": "E", "start_phases": "none"}, {"letters": "E", "extra": 1}):
+            with self.assertRaises(ValueError, msg=bad):
+                first_plug_options({"first_plug": bad})
+            with self.assertRaises(ValueError, msg=bad):
+                start_boards({"first_plug": bad, "max_pairs": 10})
+
+    def test_options_are_rejected_by_the_config_loader(self):
+        config = json.loads(V4_CONFIG.read_text(encoding="utf-8"))
+        config["climb"] = {**config["climb"], "first_plug": {"letters": "E", "ic_passes": 0}}
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "config.json"
+            path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                stecker.load_config(path)
+            config["climb"]["first_plug"] = {"letters": "ENR", "start_phases": "ngram_only"}
+            path.write_text(json.dumps(config), encoding="utf-8")
+            self.assertEqual(stecker.load_config(path)["climb"]["first_plug"]["start_phases"], "ngram_only")
+
+
+class OptionSemanticsTests(Fixture):
+    """The reference climb against a by-hand composition of climb_stecker calls."""
+
+    def by_hand(self, body, order, rings, start, spec):
+        table = self.table(order, rings + start, body)
+        letters = sum(1 for v in body if v >= 0)
+        ngram = lambda pb: self.scorer.score_decryption(table, body, pb)  # noqa: E731
+        ic = lambda pb: coincidence_of_decryption(table, body, pb) * len(body) / letters  # noqa: E731
+        settings = {**self.climb, "first_plug": spec}
+        ic_passes, ngram_only = first_plug_options(settings)
+        best, used = None, 0
+        for index, board in enumerate(start_boards(settings)):
+            plugboard = list(board)
+            if not (ngram_only and index > 0):
+                passes = int(self.climb["max_passes"]) if ic_passes is None else min(int(self.climb["max_passes"]), ic_passes)
+                outcome = climb_stecker(ic, letters, int(self.climb["max_pairs"]), passes, float(self.climb["minimum_gain"]), plugboard)
+                plugboard, used = list(outcome.plugboard), used + outcome.evaluations
+            outcome = climb_stecker(ngram, letters, int(self.climb["max_pairs"]), int(self.climb["max_passes"]),
+                                    float(self.climb["minimum_gain"]), plugboard)
+            plugboard, used = list(outcome.plugboard), used + outcome.evaluations
+            score = ngram(plugboard)
+            if best is None or score > best[0]:
+                best = (score, plugboard)
+        return tuple(best[1]), used
+
+    def test_the_reference_climb_is_the_by_hand_composition(self):
+        generator = random.Random(41)
+        message_body = self.body[:90]
+        message = Traffic("T", (0, 0, 0), (0, 0, 0), tuple(message_body))
+        for spec in ({"letters": "E", "ic_passes": 3}, {"letters": "E", "start_phases": "ngram_only"},
+                     {"letters": "EN", "ic_passes": 2, "start_phases": "ngram_only"}):
+            for _ in range(2):
+                order = generator.sample(["I", "II", "III", "IV", "V"], 3)
+                rings = tuple(generator.randrange(26) for _ in range(3))
+                start = tuple(generator.randrange(26) for _ in range(3))
+                outcome, _ = body_direct_climb(
+                    [message], order, rings, [list(start)], self.scorer, self.reflector, {**self.climb, "first_plug": spec}
+                )
+                expected = self.by_hand(message_body, order, rings, start, spec)
+                self.assertEqual((outcome.plugboard, outcome.evaluations), expected, (spec, order, rings, start))
+
+    def test_a_cap_that_does_not_bind_changes_nothing_and_a_binding_one_saves_work(self):
+        message = Traffic("T", (0, 0, 0), (0, 0, 0), tuple(self.body[:100]))
+        args = ([message], ["II", "V", "III"], (3, 4, 5), [[6, 7, 8]], self.scorer, self.reflector)
+        full, _ = body_direct_climb(*args, {**self.climb, "first_plug": E})
+        loose, _ = body_direct_climb(*args, {**self.climb, "first_plug": {**E, "ic_passes": 10_000}})
+        tight, _ = body_direct_climb(*args, {**self.climb, "first_plug": {**E, "ic_passes": 1}})
+        self.assertEqual((loose.plugboard, loose.evaluations), (full.plugboard, full.evaluations))
+        self.assertLess(tight.evaluations, full.evaluations)
+
+    def test_ngram_only_starts_save_the_ic_phase_and_never_lose_to_the_empty_board(self):
+        message = Traffic("T", (0, 0, 0), (0, 0, 0), tuple(self.body[:100]))
+        args = ([message], ["II", "V", "III"], (3, 4, 5), [[6, 7, 8]], self.scorer, self.reflector)
+        base, _ = body_direct_climb(*args, self.climb)
+        full, _ = body_direct_climb(*args, {**self.climb, "first_plug": E})
+        only, _ = body_direct_climb(*args, {**self.climb, "first_plug": {**E, "start_phases": "ngram_only"}})
+        self.assertLess(only.evaluations, full.evaluations)
+        self.assertGreater(only.evaluations, base.evaluations)
+        self.assertGreaterEqual(only.score_per_letter, base.score_per_letter)
+
+
+@unittest.skipUnless(stecker_batch.available(), "numpy is not installed")
+class OptionBatchedParityTests(Fixture):
+    def test_batched_ends_on_the_reference_plugboard_after_the_same_evaluations(self):
+        generator = random.Random(53)
+        for length in (167, 60):
+            body = list(self.body[:length])
+            if length == 60:
+                body[7] = body[20] = -1
+            message = Traffic("T", (0, 0, 0), (0, 0, 0), tuple(body))
+            for spec in OPTION_SPECS:
+                names = generator.sample(["I", "II", "III", "IV", "V"], 3)
+                row = [generator.randrange(26) for _ in range(6)]
+                settings = {**self.climb, "first_plug": spec}
+                outcome, _ = body_direct_climb([message], names, row[:3], [row[3:]], self.scorer, self.reflector, settings)
+                plugboard, evaluations = stecker_batch.BatchedClimber(
+                    self.scorer.bigram, self.scorer.combined, body, settings
+                ).climb(self.table(names, row, body))
+                self.assertEqual((tuple(plugboard), evaluations), (outcome.plugboard, outcome.evaluations), (length, spec, names, row))
+
+
+@unittest.skipUnless(GPU and stecker_batch.available(), "needs numpy, nvcc and a CUDA device")
+class OptionCudaParityTests(CudaParityTests):
+    """The CUDA kernel against the batched climb for every option combination."""
+
+    # Inherited only for climb_both; the parent's own tests run once, in CudaParityTests.
+    test_first_plug_climbs_match_the_batched_climb_exactly = None
+    test_a_single_start_is_unchanged_by_the_multi_start_kernel = None
+    test_the_cuda_split_climber_refuses_first_plug = None
+
+    def test_option_climbs_match_the_batched_climb_exactly(self):
+        generator = random.Random(67)
+        masked = list(self.body)
+        for position in (0, 1, 30, 31, 32, 90, 140):
+            masked[position] = -1
+        for body in (self.body, masked, self.body[:83]):
+            rows = [
+                (tuple(generator.sample(["I", "II", "III", "IV", "V"], 3)), [generator.randrange(26) for _ in range(6)])
+                for _ in range(4)
+            ]
+            for window in (None, self.WINDOW):
+                for spec in OPTION_SPECS:
+                    self.assertEqual(self.climb_both(body, window, rows, spec), [], (len(body), window, spec))
+
+    def test_the_cuda_kernel_agrees_when_the_cap_exceeds_max_passes(self):
+        rows = [(("II", "V", "III"), [3, 4, 5, 6, 7, 8])]
+        spec = {"letters": "E", "ic_passes": 10_000}
+        self.assertEqual(self.climb_both(self.body, None, rows, spec), [])
+        self.assertEqual(self.climb_both(self.body, None, rows, E), [])
+
+
+@unittest.skipUnless(stecker_batch.available(), "numpy is not installed")
+class OptionPreflightTests(Fixture):
+    def test_the_preflight_checks_every_declared_option_spec(self):
+        config = copy.deepcopy(self.config)
+        config["climb"] = {**self.climb, "engine": "batched"}
+        config["batched_climb_parity"] = {"seed": 9, "samples": 2}
+        config["end_to_end_power"] = {"arms": [
+            {"id": "r", "ring_rule": "held", "right_ring": "A", "first_plug": {"letters": "ENR", "start_phases": "ngram_only"}},
+            {"id": "e4", "ring_rule": "held", "right_ring": "A", "first_plug": {"letters": "E", "ic_passes": 4}},
+        ]}
+        self.assertEqual(len(stecker_controls.configured_first_plugs(config)), 2)
+        report = stecker_controls.first_plug_parity_report(config, self.scorer, self.reflector, "batched")
+        self.assertTrue(report["passed"], report)
+        self.assertEqual(report["climbs_compared"], 2 * 2)
 
 
 if __name__ == "__main__":

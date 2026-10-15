@@ -85,3 +85,22 @@ I-Stecker), each calibrated against its own wrong-setting null. It patches
 ```bash
 python3 scripts/review/estecker_direct.py --text markov-0 --draws 36 --methods base,E
 ```
+
+### `first_stage_screen.py` (2026-10-14, low-IC first-stage screen)
+
+True-setting climbs on the 117-letter head window, ten plugs, 12 low-IC Markov plaintexts
+(IC 0.0514 to 0.0575) of 30 draws each: which way of choosing the climb's start plugboards
+recovers a planted plugboard most often per unit of work. Each method is calibrated against
+its own wrong-setting null (6 sigma, the power harness's rule); cost is evaluations on the
+null climbs. Results and per-draw flags are in `data/review/first-stage-screen-2026-10-14/`
+(`low.*` first screen, `low-variants.*` the capped-IC and n-gram-only variants; the second
+took about two hours on 18 cores).
+
+```bash
+python3 scripts/review/first_stage_screen.py --set low --texts 12 --draws-per-text 30 \
+    --methods base,E,R,I,screen-ic-k26,E-ic4,R-ic4,I-ic4,solo-ic4,E-ngonly,R-ngonly,I-ngonly,solo-ngonly \
+    --output data/review/first-stage-screen-2026-10-14/low-variants.json
+```
+
+Exploratory, not preregistered. It chose `climb.first_plug`'s `ic_passes` and
+`start_phases: "ngram_only"` options (see the Phase 1 history).
