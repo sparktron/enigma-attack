@@ -1,0 +1,489 @@
+{
+  "schema": "enigma-attack.phase1-rngonly-power-terciles/v1",
+  "experiment_id": "phase1-rngonly-power-v1-terciles",
+  "preregistered": true,
+  "started_at": "2026-10-15T14:37:37.923781+00:00",
+  "completed_at": "2026-10-15T14:37:37.928070+00:00",
+  "code": {
+    "source": "git_checkout",
+    "commit": "30671436a2c157769270ec83043f5cc329703def",
+    "branch": "claude/low-ic-first-stage",
+    "dirty": true,
+    "status": [
+      "?? artifacts/phase1-rngonly-power-v1.json"
+    ],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "28b1ff81eaf0118bf6a11c0132b07760cc4891017b55a43a6987ba01df89dbc5",
+      "stecker_climb.py": "caabb04a11da2b33d0a9d7b23b7485e95580d59ee3e5a03f85da7e24fedfc434",
+      "stecker_cuda.py": "902b0b27a4377ab72cac110be6eeeb362620f2c16281f7f2ab07406fe1e38b0b",
+      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
+      "scripts/rngonly_power_v1.py": "d03d6c31c93c2f1e3d1d24552f74868d97821f198e9f5a7b0366974f9db5a778"
+    }
+  },
+  "inputs": {
+    "power_artifact_sha256": "d7affdcb9fc2867d441c53a770155a8f1d68e0ecb3794a160afed4c07740c2cd",
+    "config_sha256": "c5f20d576f591cc41799007f9fd8204e6690750d4d9608abc2e2ac75e7ad0fc4"
+  },
+  "result": {
+    "cells": {
+      "clean": {
+        "all": {
+          "draws": 720,
+          "arms": {
+            "complete_w117": {
+              "count": 324,
+              "of": 720,
+              "rate": 0.45,
+              "interval_95": [
+                0.414,
+                0.4865
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 605,
+              "of": 720,
+              "rate": 0.840278,
+              "interval_95": [
+                0.8117,
+                0.8652
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 628,
+              "of": 720,
+              "rate": 0.872222,
+              "interval_95": [
+                0.8458,
+                0.8946
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 71,
+              "only_second": 48,
+              "gain": 0.031944,
+              "mcnemar_p": 0.043268
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 304,
+              "only_second": 0,
+              "gain": 0.422222,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 281,
+              "only_second": 0,
+              "gain": 0.390278,
+              "mcnemar_p": 0.0
+            }
+          }
+        },
+        "low": {
+          "draws": 240,
+          "arms": {
+            "complete_w117": {
+              "count": 49,
+              "of": 240,
+              "rate": 0.204167,
+              "interval_95": [
+                0.158,
+                0.2596
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 161,
+              "of": 240,
+              "rate": 0.670833,
+              "interval_95": [
+                0.6091,
+                0.7272
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 178,
+              "of": 240,
+              "rate": 0.741667,
+              "interval_95": [
+                0.6828,
+                0.7929
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 41,
+              "only_second": 24,
+              "gain": 0.070833,
+              "mcnemar_p": 0.046353
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 129,
+              "only_second": 0,
+              "gain": 0.5375,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 112,
+              "only_second": 0,
+              "gain": 0.466667,
+              "mcnemar_p": 0.0
+            }
+          }
+        },
+        "mid": {
+          "draws": 240,
+          "arms": {
+            "complete_w117": {
+              "count": 123,
+              "of": 240,
+              "rate": 0.5125,
+              "interval_95": [
+                0.4496,
+                0.575
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 219,
+              "of": 240,
+              "rate": 0.9125,
+              "interval_95": [
+                0.8699,
+                0.9421
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 224,
+              "of": 240,
+              "rate": 0.933333,
+              "interval_95": [
+                0.8945,
+                0.9586
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 18,
+              "only_second": 13,
+              "gain": 0.020833,
+              "mcnemar_p": 0.47313
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 101,
+              "only_second": 0,
+              "gain": 0.420833,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 96,
+              "only_second": 0,
+              "gain": 0.4,
+              "mcnemar_p": 0.0
+            }
+          }
+        },
+        "high": {
+          "draws": 240,
+          "arms": {
+            "complete_w117": {
+              "count": 152,
+              "of": 240,
+              "rate": 0.633333,
+              "interval_95": [
+                0.5707,
+                0.6918
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 225,
+              "of": 240,
+              "rate": 0.9375,
+              "interval_95": [
+                0.8995,
+                0.9618
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 226,
+              "of": 240,
+              "rate": 0.941667,
+              "interval_95": [
+                0.9045,
+                0.9649
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 12,
+              "only_second": 11,
+              "gain": 0.004167,
+              "mcnemar_p": 1.0
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 74,
+              "only_second": 0,
+              "gain": 0.308333,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 73,
+              "only_second": 0,
+              "gain": 0.304167,
+              "mcnemar_p": 0.0
+            }
+          }
+        }
+      },
+      "indel": {
+        "all": {
+          "draws": 720,
+          "arms": {
+            "complete_w117": {
+              "count": 173,
+              "of": 720,
+              "rate": 0.240278,
+              "interval_95": [
+                0.2105,
+                0.2728
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 448,
+              "of": 720,
+              "rate": 0.622222,
+              "interval_95": [
+                0.5862,
+                0.6569
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 504,
+              "of": 720,
+              "rate": 0.7,
+              "interval_95": [
+                0.6655,
+                0.7323
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 134,
+              "only_second": 78,
+              "gain": 0.077778,
+              "mcnemar_p": 0.000146
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 331,
+              "only_second": 0,
+              "gain": 0.459722,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 275,
+              "only_second": 0,
+              "gain": 0.381944,
+              "mcnemar_p": 0.0
+            }
+          }
+        },
+        "low": {
+          "draws": 240,
+          "arms": {
+            "complete_w117": {
+              "count": 18,
+              "of": 240,
+              "rate": 0.075,
+              "interval_95": [
+                0.048,
+                0.1154
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 90,
+              "of": 240,
+              "rate": 0.375,
+              "interval_95": [
+                0.3162,
+                0.4378
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 131,
+              "of": 240,
+              "rate": 0.545833,
+              "interval_95": [
+                0.4826,
+                0.6076
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 61,
+              "only_second": 20,
+              "gain": 0.170833,
+              "mcnemar_p": 6e-06
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 113,
+              "only_second": 0,
+              "gain": 0.470833,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 72,
+              "only_second": 0,
+              "gain": 0.3,
+              "mcnemar_p": 0.0
+            }
+          }
+        },
+        "mid": {
+          "draws": 240,
+          "arms": {
+            "complete_w117": {
+              "count": 55,
+              "of": 240,
+              "rate": 0.229167,
+              "interval_95": [
+                0.1805,
+                0.2864
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 163,
+              "of": 240,
+              "rate": 0.679167,
+              "interval_95": [
+                0.6177,
+                0.735
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 175,
+              "of": 240,
+              "rate": 0.729167,
+              "interval_95": [
+                0.6697,
+                0.7815
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 43,
+              "only_second": 31,
+              "gain": 0.05,
+              "mcnemar_p": 0.200678
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 120,
+              "only_second": 0,
+              "gain": 0.5,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 108,
+              "only_second": 0,
+              "gain": 0.45,
+              "mcnemar_p": 0.0
+            }
+          }
+        },
+        "high": {
+          "draws": 240,
+          "arms": {
+            "complete_w117": {
+              "count": 100,
+              "of": 240,
+              "rate": 0.416667,
+              "interval_95": [
+                0.3561,
+                0.4799
+              ]
+            },
+            "complete_w117_estecker": {
+              "count": 195,
+              "of": 240,
+              "rate": 0.8125,
+              "interval_95": [
+                0.7583,
+                0.8568
+              ]
+            },
+            "complete_w117_rngonly": {
+              "count": 198,
+              "of": 240,
+              "rate": 0.825,
+              "interval_95": [
+                0.7719,
+                0.8678
+              ]
+            }
+          },
+          "paired": {
+            "complete_w117_rngonly_vs_complete_w117_estecker": {
+              "only_first": 30,
+              "only_second": 27,
+              "gain": 0.0125,
+              "mcnemar_p": 0.791366
+            },
+            "complete_w117_rngonly_vs_complete_w117": {
+              "only_first": 98,
+              "only_second": 0,
+              "gain": 0.408333,
+              "mcnemar_p": 0.0
+            },
+            "complete_w117_estecker_vs_complete_w117": {
+              "only_first": 95,
+              "only_second": 0,
+              "gain": 0.395833,
+              "mcnemar_p": 0.0
+            }
+          }
+        }
+      }
+    },
+    "predictions": [
+      {
+        "id": "D1",
+        "statement": "In the lowest IC tercile the R-ngonly arm detects at least 8 points more clean draws than the E arm. Deciding.",
+        "kind": "tercile_gain_at_least",
+        "threshold": 0.08,
+        "observed": 0.070833,
+        "passed": false
+      },
+      {
+        "id": "D3",
+        "statement": "In the highest IC tercile the R-ngonly arm is no more than 2 points below the E arm on clean draws (no regression where E already works). Deciding.",
+        "kind": "tercile_gain_at_least",
+        "threshold": -0.02,
+        "observed": 0.004167,
+        "passed": true
+      },
+      {
+        "id": "N1",
+        "statement": "In the lowest IC tercile the R-ngonly arm detects at least 65% of clean draws. Not deciding.",
+        "kind": "tercile_rate_at_least",
+        "threshold": 0.65,
+        "observed": 0.741667,
+        "passed": true
+      }
+    ]
+  }
+}

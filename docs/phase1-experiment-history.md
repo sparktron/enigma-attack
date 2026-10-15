@@ -3300,3 +3300,76 @@ Run command:
 python3 phase1_stecker.py --config experiments/phase1-rngonly-power-v1/config.json --jobs 8
 python3 scripts/rngonly_power_v1.py
 ```
+
+### Result: phase1-rngonly-power-v1 (run 2026-10-15)
+
+Run record. From clean `3067143` (the preregistration commit), 13:59:21 to 14:37:20 UTC,
+2,103 s, cuda engine, 8 requested workers, one invocation; preflight (including
+`first_plug_climbs_match`, 64 of 64 identical, worst score difference 0.0) and both
+positive controls passed. RTX 3090, CUDA 12.8, numpy 2.2.6, Python 3.10.12; about 0.8 GB of
+the GPU was in use by another process at launch. Artifacts and SHA-256:
+`artifacts/phase1-rngonly-power-v1.json` (`d7affdcb...`, the raw run) and
+`artifacts/phase1-rngonly-power-v1-terciles.json` (`78770d5e...`, the preregistered
+analysis). Seeds: keys 20261123, plaintexts 20261122.
+
+#### Observed
+
+Detection by the harness's rule, 720 draws per cell (240 per tercile), detection counts and
+rates with the paired count against the E arm (R-ngonly only / E only) and the exact McNemar p:
+
+| clean | v4's climb | E (v6) | R-ngonly | R-ngonly vs E |
+|---|---|---|---|---|
+| overall | 324 (45.0%) | 605 (84.0%, 81.2 to 86.5) | 628 (87.2%, 84.6 to 89.5) | 71 / 48, +3.2 points, p = 0.043 |
+| low IC | 49 (20.4%) | 161 (67.1%) | 178 (74.2%, 68.3 to 79.3) | 41 / 24, +7.1, p = 0.046 |
+| mid IC | 123 (51.2%) | 219 (91.2%) | 224 (93.3%) | 18 / 13, +2.1, p = 0.47 |
+| high IC | 152 (63.3%) | 225 (93.8%) | 226 (94.2%) | 12 / 11, +0.4, p = 1.0 |
+
+| one indel | v4's climb | E (v6) | R-ngonly | R-ngonly vs E |
+|---|---|---|---|---|
+| overall | 173 (24.0%) | 448 (62.2%) | 504 (70.0%, 66.6 to 73.2) | 134 / 78, +7.8, p = 0.0001 |
+| low IC | 18 (7.5%) | 90 (37.5%) | 131 (54.6%) | 61 / 20, +17.1, p < 0.0001 |
+| mid IC | 55 (22.9%) | 163 (67.9%) | 175 (72.9%) | 43 / 31, +5.0, p = 0.20 |
+| high IC | 100 (41.7%) | 195 (81.2%) | 198 (82.5%) | 30 / 27, +1.3, p = 0.79 |
+
+Strata IC: low 0.0529 to 0.0574, mid 0.0583 to 0.0614, high 0.0633 to 0.0765.
+
+Predictions: **D1 refuted** (low-tercile clean gain +7.1 points against at least 8),
+**D2 refuted** (overall clean gain +3.2 against at least 4), D3 held (high tercile +0.4
+against at least -2), D4 held (one indel overall +7.8 against at least 0), S1 held (E clean
+84.0% against at least 70%), N1 held (R-ngonly low tercile clean 74.2% against at least 65%),
+N2 held (R-ngonly clean overall 87.2% against at least 80%). The author's guesses were a
+gain of 10 to 15 points in the lowest tercile and 6 to 9 overall on clean draws (too high:
+7.1 and 3.2) and 6 to 9 on one indel (7.8, inside).
+
+#### Interpretation (inference)
+
+- R-ngonly's gain over E on clean draws is real in the lowest tercile (p = 0.046) but
+  smaller than predicted and confined there: +2.1 and +0.4 points in the middle and
+  highest terciles, neither distinguishable from zero. It does not regress where E works (D3).
+- On one-indel draws the gain is larger and clearer: +7.8 points overall and +17.1 in the
+  lowest tercile (61 draws R-ngonly alone against 20), about 1.5 times as many detections as E
+  there. Garbled low-IC messages are where v4's climb (7.5%) and E (37.5%) are weakest, so that
+  is where the extra starts matter most. This was not a deciding prediction beyond D4.
+- The screen overstated the clean low-IC gain (+11.6 points on true-setting head-window climbs
+  against +7.1 here). Plausible reasons, untested: the sweep takes the better of the head and
+  tail windows, so each key has two chances and E fails less often; and the E arm's
+  low-tercile rate here (67.1%) is well above the 55.6% of phase1-estecker-joint-power-v1, so
+  there is less headroom. The second is a plaintext-set effect (this low stratum has a mean IC
+  near 0.0558 against 0.054 there) plus sampling; it is a reminder that absolute rates belong to
+  a plaintext set.
+- Cost: R-ngonly is 1.67 times E on the GPU (about 20 hours against 12 for a full sweep).
+  For clean keys that buys +3.2 points overall (+7.1 at low IC); for one-indel keys +7.8
+  (+17.1 at low IC).
+- By the rule fixed beforehand, D1 refuted means **no v7 sweep is preregistered on this
+  basis**. The rule's wording, that the gain "did not appear", is too strong: it appeared
+  but fell below the 8-point bar. The rule stands as written.
+
+#### Next decision
+
+Nothing further is preregistered. For the maintainer: stop here, with v6 (E) as the last
+standard-reading sweep and R-ngonly's measured gains on record; or accept the one-indel
+and low-IC gain as a reason for a v7 sweep, which the preregistered rule does not support and
+which would have to be argued and preregistered afresh, with the post hoc origin of that
+argument disclosed; or look for a different lever for garbled low-IC messages, where the
+gap to the clean case is widest. Companion confirmation and retention for R-ngonly were not
+measured (its noise tail is heavier than E's).
