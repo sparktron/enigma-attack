@@ -3021,8 +3021,10 @@ the authors, if any, is not recorded.
 
 Configuration:
 [experiments/phase1-estecker-joint-power-v1/config.json](../experiments/phase1-estecker-joint-power-v1/config.json),
-analysis `scripts/joint_power_estecker_v1.py`, both committed before any draw of this
-run was computed.
+analysis `scripts/joint_power_estecker_v1.py`, both committed before the run. Draws 0 to 5
+of each cell had been computed in a scratch smoke run before that commit and their outcomes
+printed, so they were not unseen when the predictions were fixed; see the amendment to the
+result below.
 
 Why this one. v6 was launched on a stated power that was a projection: the measured
 E-arm clean detection (75.6%) times v5's confirmation factor (0.966), measured on one
@@ -3096,6 +3098,48 @@ process at launch. The analysis ran afterwards from the same commit
 analysis) and `artifacts/phase1-estecker-joint-power-v1-same-draws.json`
 (`65bf0392...`, secondary and post hoc). Seeds: keys 20261115, plaintexts 20261114,
 companions 20261116.
+
+#### Amendment (2026-10-15, after review of PR #36)
+
+Two review findings, both correct, change how the results below are to be read.
+
+1. *Pre-observed draws.* The 6-draw smoke run of the configuration and of the analysis
+   covered draws 0 to 5 of each cell, and its printed outcomes (sweep success, J1 to J6) are in the
+   configuration's `pre_run_facts.smoke_run`. The run recomputes those 12 draws, so the
+   full sample was not unseen when the predictions were committed, and calling the
+   all-draws artifact `preregistered` overstated it. (The configuration's clause that no joint
+   analysis of any draw had been run referred to the gate run's 960 draws, which is still
+   true; it does not cover these.) The primary result now leaves out draws 0 to 5 of each
+   cell (474 draws per cell remain) and `result.all_draws` keeps the full 480 for comparison.
+   No prediction changes: J1 to J6 all hold on the primary set.
+2. *Repeated plaintexts.* The 480 draws per cell come from 24 plaintexts, 20 draws each, and the
+   rates differ strongly between plaintexts (by IC tercile 56%, 84%, 95% for E's detection),
+   so a binomial interval over pooled draws treats them as 480 independent samples of text and is too
+   narrow for a claim about typical text. The analysis now also reports a percentile bootstrap
+   that resamples plaintexts with replacement (10,000 resamples, seeded);
+   `interval_95` is kept and is the draw-level one, `cluster_interval_95` is the one to quote.
+
+Corrected headline figures (primary set, 474 draws per cell; the all-draws figures in the
+tables below differ by at most a point):
+
+| | clean | one indel |
+|---|---|---|
+| E sweep success | 363 / 474 = **76.6%**, plaintext-cluster interval 67.4 to 85.0 (draw-level 72.6 to 80.2) | 276 / 474 = **58.2%**, 50.8 to 65.8 (draw-level 53.7 to 62.6) |
+| v4's climb | 161 / 474 = 34.0%, 24.6 to 43.5 | 105 / 474 = 22.2%, 14.8 to 30.6 |
+| E minus v4, paired | +42.6 points, 36.6 to 48.7 (202 draws E only, 0 v4 only) | +36.1, 30.7 to 41.6 (172 E only, 1 v4 only) |
+| confirmed given detected, E | 364 / 371 = 98.1%, 96.6 to 99.4 | 276 / 280 = 98.6%, 97.1 to 99.7 |
+| retained given detected, E | 370 / 371 = 99.7%, 99.1 to 100 | 279 / 280 = 99.6%, 98.9 to 100 |
+
+The same corrections apply to the post hoc same-draws analysis (no draws excluded, since
+all of it is post hoc): E clean 357 / 480 = 74.4%, plaintext-cluster interval 66.3 to 81.5; one
+indel 236 / 480 = 49.2%, 42.9 to 55.0.
+
+What this changes in the reading: the point estimates and the predictions are as before, and
+the intervals about typical text are about twice as wide as quoted. The measured
+miss probability for a clean standard reading at typical text is therefore 15% to 33% (the
+cluster interval of 1 minus E's success), not the 23% to 26% the interpretation below quotes
+from point estimates; for one indel 34% to 49%, not 42% to 51%. The paired gain over
+v4's climb is the sturdiest result, because plaintext variation cancels in a paired difference.
 
 #### Observed
 

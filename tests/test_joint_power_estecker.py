@@ -10,6 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import joint_power_estecker_v1 as joint  # noqa: E402
+from stecker_power import cluster_interval, wilson_interval  # noqa: E402
 
 CONFIG = json.loads((ROOT / joint.CONFIG).read_text(encoding="utf-8"))
 ARMS = ("complete_w117", "complete_w117_estecker")
@@ -68,6 +69,76 @@ class OneDrawTests(unittest.TestCase):
         second = joint.companions_for(PLANTED, random.Random("20261116:0:0"))
         self.assertEqual([m.body for m in first], [m.body for m in second])
         self.assertEqual([len(m.body) for m in first], [107, 97])
+
+
+class ClusterTests(unittest.TestCase):
+    def test_plaintexts_that_differ_make_the_interval_wider_than_the_draw_level_one(self):
+        # 12 plaintexts always detected, 12 never: 240 draws at a pooled rate of 0.5.
+        heterogeneous = [(20, 20)] * 12 + [(0, 20)] * 12
+        lo, hi = cluster_interval(heterogeneous)
+        wilson = wilson_interval(240, 480)
+        self.assertGreater(hi - lo, 2 * (wilson[1] - wilson[0]))
+        self.assertLess(lo, 0.5 - 0.15)
+        self.assertGreater(hi, 0.5 + 0.15)
+
+    def test_plaintexts_that_agree_give_a_narrow_interval_and_a_constant_gives_a_point(self):
+        homogeneous = [(10, 20)] * 24
+        self.assertEqual(cluster_interval(homogeneous), [0.5, 0.5])
+        lo, hi = cluster_interval([(10 + (i % 3) - 1, 20) for i in range(24)])
+        self.assertLess(hi - lo, 0.05)
+
+    def test_it_is_reproducible_empty_input_is_none_and_differences_work(self):
+        clusters = [(i % 7, 20) for i in range(24)]
+        self.assertEqual(cluster_interval(clusters), cluster_interval(clusters))
+        self.assertNotEqual(cluster_interval(clusters, seed=1), cluster_interval(clusters, seed=2))
+        self.assertIsNone(cluster_interval([]))
+        self.assertIsNone(cluster_interval([(0, 0)]))
+        lo, hi = cluster_interval([(-3, 20)] * 12 + [(5, 20)] * 12)  # paired differences may be negative
+        self.assertLess(lo, 0)
+        self.assertGreater(hi, 0)
+
+    def test_the_interval_covers_the_point_estimate(self):
+        clusters = [(i % 11, 20) for i in range(24)]
+        estimate = sum(c[0] for c in clusters) / sum(c[1] for c in clusters)
+        lo, hi = cluster_interval(clusters)
+        self.assertLessEqual(lo, estimate)
+        self.assertGreaterEqual(hi, estimate)
+
+
+class SummariseTests(unittest.TestCase):
+    ARMS = {"complete_w117": -7.6, "complete_w117_estecker": -7.58}
+
+    def row(self, cell, draw, plaintext, e_success, b_success=False):
+        def arm(success):
+            return {"detected": success, "retained": success, "confirmed": success, "sweep_success": success,
+                    "score_per_letter": -7.0, "plugboard_exact": success, "companion_best_z": [9, 9], "min_best_z": 9}
+        return {"cell": cell, "draw": draw, "plaintext": {"index": plaintext},
+                "arms": {"complete_w117": arm(b_success), "complete_w117_estecker": arm(e_success)}}
+
+    def test_the_first_draws_are_left_out_of_the_primary_result_and_kept_in_the_full_one(self):
+        rows = [self.row(0, d, d % 4, e_success=d >= 6) for d in range(40)]
+        primary = joint.summarise(rows, ["clean"], self.ARMS, 6)["clean"]
+        everything = joint.summarise(rows, ["clean"], self.ARMS, 0)["clean"]
+        self.assertEqual((primary["draws"], everything["draws"]), (34, 40))
+        self.assertEqual(primary["arms"]["complete_w117_estecker"]["sweep_success"]["count"], 34)
+        self.assertEqual(everything["arms"]["complete_w117_estecker"]["sweep_success"]["count"], 34)
+        self.assertEqual(everything["arms"]["complete_w117_estecker"]["sweep_success"]["of"], 40)
+        self.assertEqual(primary["plaintexts"], 4)
+
+    def test_every_rate_carries_both_kinds_of_interval_and_the_gain_a_cluster_one(self):
+        rows = [self.row(0, d, d % 4, e_success=(d % 4) < 2) for d in range(40)]
+        cell = joint.summarise(rows, ["clean"], self.ARMS, 0)["clean"]
+        success = cell["arms"]["complete_w117_estecker"]["sweep_success"]
+        self.assertEqual(success["rate"], 0.5)
+        self.assertEqual(len(success["interval_95"]), 2)
+        lo, hi = success["cluster_interval_95"]
+        self.assertGreater(hi - lo, success["interval_95"][1] - success["interval_95"][0])
+        gain = cell["paired_sweep_success"]["gain"]
+        self.assertEqual(gain["rate"], 0.5)
+        self.assertLessEqual(gain["cluster_interval_95"][0], 0.5)
+        given = cell["arms"]["complete_w117_estecker"]["confirmed_given_detected"]
+        self.assertEqual((given["count"], given["of"]), (20, 20))
+        self.assertIn("cluster_interval_95", given)
 
 
 class StatisticsTests(unittest.TestCase):
