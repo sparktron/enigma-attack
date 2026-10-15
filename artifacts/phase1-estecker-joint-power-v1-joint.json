@@ -3,15 +3,21 @@
   "experiment_id": "phase1-estecker-joint-power-v1",
   "preregistered": true,
   "secondary_post_hoc_same_draws_as_gate": false,
-  "started_at": "2026-10-14T05:04:43.567436+00:00",
-  "completed_at": "2026-10-14T05:07:52.716973+00:00",
+  "pre_observed_draws": {
+    "excluded_from_primary_per_cell": 6,
+    "reason": "draws 0 to 5 of each cell were run in a smoke test before the preregistration commit and their outcomes printed (config pre_run_facts.smoke_run); the primary result leaves them out and result.all_draws keeps them"
+  },
+  "started_at": "2026-10-15T21:41:00.665824+00:00",
+  "completed_at": "2026-10-15T21:44:26.577975+00:00",
   "code": {
     "source": "git_checkout",
-    "commit": "c9409d826a2573bd1be9da515f87091062d6e86a",
+    "commit": "9bb087a07107045caa067003db5ac409b8cfaf09",
     "branch": "claude/estecker-joint-power-v1",
     "dirty": true,
     "status": [
-      "?? artifacts/phase1-estecker-joint-power-v1.json"
+      " M scripts/joint_power_estecker_v1.py",
+      " M stecker_power.py",
+      " M tests/test_joint_power_estecker.py"
     ],
     "files_sha256": {
       "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
@@ -28,13 +34,13 @@
       "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
       "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
       "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
-      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_power.py": "5cc5826198d44877ba4d258ad1bc4238adab0cf7e93dbd4538faaa85bae68b21",
       "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
       "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
       "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
       "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
       "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
-      "scripts/joint_power_estecker_v1.py": "1cc8f0d03388430f8883df1cf6963624b8a81f01ef5eb702219dcd8ab06c713b"
+      "scripts/joint_power_estecker_v1.py": "bf07d9681246a517a5fa8a704b45c7b75dfcdfb13c0c0e679fe9241b507118ec"
     }
   },
   "inputs": {
@@ -54,214 +60,307 @@
   "result": {
     "cells": {
       "clean": {
-        "draws": 480,
+        "draws": 474,
+        "plaintexts": 24,
         "arms": {
           "complete_w117": {
             "retention_cutoff_score_per_letter": -7.634712742,
             "detected": {
-              "count": 167,
-              "of": 480,
-              "rate": 0.347917,
+              "count": 165,
+              "of": 474,
+              "rate": 0.348101,
               "interval_95": [
-                0.3067,
-                0.3916
+                0.3066,
+                0.3921
+              ],
+              "cluster_interval_95": [
+                0.251055,
+                0.444681
               ]
             },
             "retained": {
-              "count": 170,
-              "of": 480,
-              "rate": 0.354167,
+              "count": 168,
+              "of": 474,
+              "rate": 0.35443,
               "interval_95": [
                 0.3127,
-                0.398
+                0.3985
+              ],
+              "cluster_interval_95": [
+                0.255814,
+                0.452632
               ]
             },
             "confirmed": {
-              "count": 163,
-              "of": 480,
-              "rate": 0.339583,
+              "count": 161,
+              "of": 474,
+              "rate": 0.339662,
               "interval_95": [
-                0.2986,
-                0.3831
+                0.2985,
+                0.3834
+              ],
+              "cluster_interval_95": [
+                0.245763,
+                0.434599
               ]
             },
             "sweep_success": {
-              "count": 163,
-              "of": 480,
-              "rate": 0.339583,
+              "count": 161,
+              "of": 474,
+              "rate": 0.339662,
               "interval_95": [
-                0.2986,
-                0.3831
+                0.2985,
+                0.3834
+              ],
+              "cluster_interval_95": [
+                0.245763,
+                0.434599
               ]
             },
             "detected_and_sweep_success": {
-              "count": 161,
-              "of": 480,
-              "rate": 0.335417,
+              "count": 159,
+              "of": 474,
+              "rate": 0.335443,
               "interval_95": [
-                0.2946,
-                0.3788
+                0.2944,
+                0.3791
+              ],
+              "cluster_interval_95": [
+                0.242038,
+                0.430672
               ]
             },
             "confirmed_given_detected": {
-              "count": 161,
-              "of": 167,
-              "rate": 0.964072,
+              "count": 159,
+              "of": 165,
+              "rate": 0.963636,
               "interval_95": [
-                0.9238,
-                0.9834
+                0.9229,
+                0.9832
+              ],
+              "cluster_interval_95": [
+                0.927273,
+                0.993789
               ]
             },
             "retained_given_detected": {
-              "count": 167,
-              "of": 167,
+              "count": 165,
+              "of": 165,
               "rate": 1.0,
               "interval_95": [
-                0.9775,
+                0.9772,
+                1.0
+              ],
+              "cluster_interval_95": [
+                1.0,
                 1.0
               ]
             },
             "sweep_success_given_detected": {
-              "count": 161,
-              "of": 167,
-              "rate": 0.964072,
+              "count": 159,
+              "of": 165,
+              "rate": 0.963636,
               "interval_95": [
-                0.9238,
-                0.9834
+                0.9229,
+                0.9832
+              ],
+              "cluster_interval_95": [
+                0.927273,
+                0.993789
               ]
             }
           },
           "complete_w117_estecker": {
             "retention_cutoff_score_per_letter": -7.583122342,
             "detected": {
-              "count": 376,
-              "of": 480,
-              "rate": 0.783333,
+              "count": 371,
+              "of": 474,
+              "rate": 0.7827,
               "interval_95": [
-                0.7443,
-                0.8179
+                0.7434,
+                0.8175
+              ],
+              "cluster_interval_95": [
+                0.689873,
+                0.864979
               ]
             },
             "retained": {
-              "count": 375,
-              "of": 480,
-              "rate": 0.78125,
+              "count": 370,
+              "of": 474,
+              "rate": 0.780591,
               "interval_95": [
-                0.7421,
-                0.8159
+                0.7412,
+                0.8155
+              ],
+              "cluster_interval_95": [
+                0.686441,
+                0.863732
               ]
             },
             "confirmed": {
-              "count": 369,
-              "of": 480,
-              "rate": 0.76875,
+              "count": 364,
+              "of": 474,
+              "rate": 0.767932,
               "interval_95": [
-                0.729,
-                0.8042
+                0.7279,
+                0.8037
+              ],
+              "cluster_interval_95": [
+                0.675847,
+                0.85084
               ]
             },
             "sweep_success": {
-              "count": 368,
-              "of": 480,
-              "rate": 0.766667,
+              "count": 363,
+              "of": 474,
+              "rate": 0.765823,
               "interval_95": [
-                0.7268,
-                0.8023
+                0.7257,
+                0.8017
+              ],
+              "cluster_interval_95": [
+                0.673684,
+                0.849576
               ]
             },
             "detected_and_sweep_success": {
-              "count": 368,
-              "of": 480,
-              "rate": 0.766667,
+              "count": 363,
+              "of": 474,
+              "rate": 0.765823,
               "interval_95": [
-                0.7268,
-                0.8023
+                0.7257,
+                0.8017
+              ],
+              "cluster_interval_95": [
+                0.673684,
+                0.849576
               ]
             },
             "confirmed_given_detected": {
-              "count": 369,
-              "of": 376,
-              "rate": 0.981383,
+              "count": 364,
+              "of": 371,
+              "rate": 0.981132,
               "interval_95": [
-                0.9621,
-                0.991
+                0.9616,
+                0.9908
+              ],
+              "cluster_interval_95": [
+                0.965686,
+                0.994269
               ]
             },
             "retained_given_detected": {
-              "count": 375,
-              "of": 376,
-              "rate": 0.99734,
+              "count": 370,
+              "of": 371,
+              "rate": 0.997305,
               "interval_95": [
-                0.9851,
+                0.9849,
                 0.9995
+              ],
+              "cluster_interval_95": [
+                0.991254,
+                1.0
               ]
             },
             "sweep_success_given_detected": {
-              "count": 368,
-              "of": 376,
-              "rate": 0.978723,
+              "count": 363,
+              "of": 371,
+              "rate": 0.978437,
               "interval_95": [
-                0.9586,
-                0.9892
+                0.958,
+                0.989
+              ],
+              "cluster_interval_95": [
+                0.962644,
+                0.991957
               ]
             }
           }
         },
         "paired_sweep_success": {
-          "both": 163,
-          "estecker_only": 205,
+          "both": 161,
+          "estecker_only": 202,
           "baseline_only": 0,
-          "neither": 112
+          "neither": 111,
+          "gain": {
+            "rate": 0.42616,
+            "cluster_interval_95": [
+              0.366316,
+              0.487395
+            ]
+          }
         }
       },
       "indel": {
-        "draws": 480,
+        "draws": 474,
+        "plaintexts": 24,
         "arms": {
           "complete_w117": {
             "retention_cutoff_score_per_letter": -7.634712742,
             "detected": {
               "count": 107,
-              "of": 480,
-              "rate": 0.222917,
+              "of": 474,
+              "rate": 0.225738,
               "interval_95": [
-                0.188,
-                0.2623
+                0.1904,
+                0.2655
+              ],
+              "cluster_interval_95": [
+                0.15222,
+                0.310273
               ]
             },
             "retained": {
               "count": 108,
-              "of": 480,
-              "rate": 0.225,
+              "of": 474,
+              "rate": 0.227848,
               "interval_95": [
-                0.1899,
-                0.2645
+                0.1924,
+                0.2677
+              ],
+              "cluster_interval_95": [
+                0.154989,
+                0.312236
               ]
             },
             "confirmed": {
               "count": 106,
-              "of": 480,
-              "rate": 0.220833,
+              "of": 474,
+              "rate": 0.223629,
               "interval_95": [
-                0.186,
-                0.2601
+                0.1884,
+                0.2633
+              ],
+              "cluster_interval_95": [
+                0.147992,
+                0.310924
               ]
             },
             "sweep_success": {
               "count": 105,
-              "of": 480,
-              "rate": 0.21875,
+              "of": 474,
+              "rate": 0.221519,
               "interval_95": [
-                0.1841,
-                0.2579
+                0.1865,
+                0.2611
+              ],
+              "cluster_interval_95": [
+                0.147992,
+                0.30608
               ]
             },
             "detected_and_sweep_success": {
               "count": 104,
-              "of": 480,
-              "rate": 0.216667,
+              "of": 474,
+              "rate": 0.219409,
               "interval_95": [
-                0.1821,
-                0.2557
+                0.1845,
+                0.2588
+              ],
+              "cluster_interval_95": [
+                0.147122,
+                0.303347
               ]
             },
             "confirmed_given_detected": {
@@ -271,6 +370,10 @@
               "interval_95": [
                 0.9344,
                 0.9949
+              ],
+              "cluster_interval_95": [
+                0.947368,
+                1.0
               ]
             },
             "retained_given_detected": {
@@ -280,6 +383,10 @@
               "interval_95": [
                 0.9489,
                 0.9983
+              ],
+              "cluster_interval_95": [
+                0.972222,
+                1.0
               ]
             },
             "sweep_success_given_detected": {
@@ -289,90 +396,133 @@
               "interval_95": [
                 0.9208,
                 0.9904
+              ],
+              "cluster_interval_95": [
+                0.936709,
+                1.0
               ]
             }
           },
           "complete_w117_estecker": {
             "retention_cutoff_score_per_letter": -7.583122342,
             "detected": {
-              "count": 282,
-              "of": 480,
-              "rate": 0.5875,
+              "count": 280,
+              "of": 474,
+              "rate": 0.590717,
               "interval_95": [
-                0.5429,
-                0.6307
+                0.5459,
+                0.6341
+              ],
+              "cluster_interval_95": [
+                0.517021,
+                0.66318
               ]
             },
             "retained": {
-              "count": 283,
-              "of": 480,
-              "rate": 0.589583,
+              "count": 281,
+              "of": 474,
+              "rate": 0.592827,
               "interval_95": [
-                0.545,
-                0.6327
+                0.548,
+                0.6361
+              ],
+              "cluster_interval_95": [
+                0.518124,
+                0.667368
               ]
             },
             "confirmed": {
-              "count": 283,
-              "of": 480,
-              "rate": 0.589583,
+              "count": 281,
+              "of": 474,
+              "rate": 0.592827,
               "interval_95": [
-                0.545,
-                0.6327
+                0.548,
+                0.6361
+              ],
+              "cluster_interval_95": [
+                0.514894,
+                0.670168
               ]
             },
             "sweep_success": {
-              "count": 278,
-              "of": 480,
-              "rate": 0.579167,
+              "count": 276,
+              "of": 474,
+              "rate": 0.582278,
               "interval_95": [
-                0.5345,
-                0.6225
+                0.5374,
+                0.6258
+              ],
+              "cluster_interval_95": [
+                0.508403,
+                0.658228
               ]
             },
             "detected_and_sweep_success": {
-              "count": 277,
-              "of": 480,
-              "rate": 0.577083,
+              "count": 275,
+              "of": 474,
+              "rate": 0.580169,
               "interval_95": [
-                0.5324,
-                0.6205
+                0.5353,
+                0.6238
+              ],
+              "cluster_interval_95": [
+                0.5074,
+                0.653361
               ]
             },
             "confirmed_given_detected": {
-              "count": 278,
-              "of": 282,
-              "rate": 0.985816,
+              "count": 276,
+              "of": 280,
+              "rate": 0.985714,
               "interval_95": [
-                0.9641,
-                0.9945
+                0.9638,
+                0.9944
+              ],
+              "cluster_interval_95": [
+                0.970803,
+                0.996667
               ]
             },
             "retained_given_detected": {
-              "count": 281,
-              "of": 282,
-              "rate": 0.996454,
+              "count": 279,
+              "of": 280,
+              "rate": 0.996429,
               "interval_95": [
-                0.9802,
+                0.9801,
                 0.9994
+              ],
+              "cluster_interval_95": [
+                0.988889,
+                1.0
               ]
             },
             "sweep_success_given_detected": {
-              "count": 277,
-              "of": 282,
-              "rate": 0.98227,
+              "count": 275,
+              "of": 280,
+              "rate": 0.982143,
               "interval_95": [
-                0.9592,
-                0.9924
+                0.9589,
+                0.9923
+              ],
+              "cluster_interval_95": [
+                0.966912,
+                0.996139
               ]
             }
           }
         },
         "paired_sweep_success": {
           "both": 104,
-          "estecker_only": 174,
+          "estecker_only": 172,
           "baseline_only": 1,
-          "neither": 201
+          "neither": 197,
+          "gain": {
+            "rate": 0.360759,
+            "cluster_interval_95": [
+              0.306554,
+              0.415612
+            ]
+          }
         }
       }
     },
@@ -382,7 +532,7 @@
         "statement": "The E arm's sweep success on clean draws is at least 60%. Deciding.",
         "kind": "sweep_success_at_least",
         "threshold": 0.6,
-        "observed": 0.766667,
+        "observed": 0.765823,
         "passed": true
       },
       {
@@ -390,7 +540,7 @@
         "statement": "The E arm's clean sweep success lies within 10 points of the 73.05% projection (so the projection is a fair stand-in for the measurement). Deciding.",
         "kind": "sweep_success_within_of_projection",
         "threshold": 0.1,
-        "observed": 0.03613,
+        "observed": 0.035286,
         "passed": true
       },
       {
@@ -398,7 +548,7 @@
         "statement": "Given the harness detects a clean draw, the companion check confirms it at least 90% of the time (the borrowed v5 factor was 96.6%, measured on a single high-IC plaintext). Deciding for the factor.",
         "kind": "confirmed_given_detected_at_least",
         "threshold": 0.9,
-        "observed": 0.981383,
+        "observed": 0.981132,
         "passed": true
       },
       {
@@ -406,7 +556,7 @@
         "statement": "The E arm's clean sweep success exceeds v4's climb's by at least 20 points: the gain survives confirmation and retention. Deciding.",
         "kind": "sweep_success_gain_at_least",
         "threshold": 0.2,
-        "observed": 0.427084,
+        "observed": 0.426161,
         "passed": true
       },
       {
@@ -414,7 +564,7 @@
         "statement": "The E arm's one-indel sweep success is at least v4's climb's. Not deciding.",
         "kind": "sweep_success_gain_at_least",
         "threshold": 0.0,
-        "observed": 0.360417,
+        "observed": 0.360759,
         "passed": true
       },
       {
@@ -422,10 +572,530 @@
         "statement": "Given detection, the candidate is retained at least 90% of the time. Not deciding.",
         "kind": "retained_given_detected_at_least",
         "threshold": 0.9,
-        "observed": 0.99734,
+        "observed": 0.997305,
         "passed": true
       }
     ],
+    "all_draws": {
+      "cells": {
+        "clean": {
+          "draws": 480,
+          "plaintexts": 24,
+          "arms": {
+            "complete_w117": {
+              "retention_cutoff_score_per_letter": -7.634712742,
+              "detected": {
+                "count": 167,
+                "of": 480,
+                "rate": 0.347917,
+                "interval_95": [
+                  0.3067,
+                  0.3916
+                ],
+                "cluster_interval_95": [
+                  0.25,
+                  0.445833
+                ]
+              },
+              "retained": {
+                "count": 170,
+                "of": 480,
+                "rate": 0.354167,
+                "interval_95": [
+                  0.3127,
+                  0.398
+                ],
+                "cluster_interval_95": [
+                  0.25625,
+                  0.452083
+                ]
+              },
+              "confirmed": {
+                "count": 163,
+                "of": 480,
+                "rate": 0.339583,
+                "interval_95": [
+                  0.2986,
+                  0.3831
+                ],
+                "cluster_interval_95": [
+                  0.245833,
+                  0.435417
+                ]
+              },
+              "sweep_success": {
+                "count": 163,
+                "of": 480,
+                "rate": 0.339583,
+                "interval_95": [
+                  0.2986,
+                  0.3831
+                ],
+                "cluster_interval_95": [
+                  0.245833,
+                  0.435417
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 161,
+                "of": 480,
+                "rate": 0.335417,
+                "interval_95": [
+                  0.2946,
+                  0.3788
+                ],
+                "cluster_interval_95": [
+                  0.241667,
+                  0.43125
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 161,
+                "of": 167,
+                "rate": 0.964072,
+                "interval_95": [
+                  0.9238,
+                  0.9834
+                ],
+                "cluster_interval_95": [
+                  0.928105,
+                  0.993902
+                ]
+              },
+              "retained_given_detected": {
+                "count": 167,
+                "of": 167,
+                "rate": 1.0,
+                "interval_95": [
+                  0.9775,
+                  1.0
+                ],
+                "cluster_interval_95": [
+                  1.0,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 161,
+                "of": 167,
+                "rate": 0.964072,
+                "interval_95": [
+                  0.9238,
+                  0.9834
+                ],
+                "cluster_interval_95": [
+                  0.928105,
+                  0.993902
+                ]
+              }
+            },
+            "complete_w117_estecker": {
+              "retention_cutoff_score_per_letter": -7.583122342,
+              "detected": {
+                "count": 376,
+                "of": 480,
+                "rate": 0.783333,
+                "interval_95": [
+                  0.7443,
+                  0.8179
+                ],
+                "cluster_interval_95": [
+                  0.691667,
+                  0.864583
+                ]
+              },
+              "retained": {
+                "count": 375,
+                "of": 480,
+                "rate": 0.78125,
+                "interval_95": [
+                  0.7421,
+                  0.8159
+                ],
+                "cluster_interval_95": [
+                  0.6875,
+                  0.864583
+                ]
+              },
+              "confirmed": {
+                "count": 369,
+                "of": 480,
+                "rate": 0.76875,
+                "interval_95": [
+                  0.729,
+                  0.8042
+                ],
+                "cluster_interval_95": [
+                  0.677083,
+                  0.852083
+                ]
+              },
+              "sweep_success": {
+                "count": 368,
+                "of": 480,
+                "rate": 0.766667,
+                "interval_95": [
+                  0.7268,
+                  0.8023
+                ],
+                "cluster_interval_95": [
+                  0.675,
+                  0.85
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 368,
+                "of": 480,
+                "rate": 0.766667,
+                "interval_95": [
+                  0.7268,
+                  0.8023
+                ],
+                "cluster_interval_95": [
+                  0.675,
+                  0.85
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 369,
+                "of": 376,
+                "rate": 0.981383,
+                "interval_95": [
+                  0.9621,
+                  0.991
+                ],
+                "cluster_interval_95": [
+                  0.966146,
+                  0.994334
+                ]
+              },
+              "retained_given_detected": {
+                "count": 375,
+                "of": 376,
+                "rate": 0.99734,
+                "interval_95": [
+                  0.9851,
+                  0.9995
+                ],
+                "cluster_interval_95": [
+                  0.991354,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 368,
+                "of": 376,
+                "rate": 0.978723,
+                "interval_95": [
+                  0.9586,
+                  0.9892
+                ],
+                "cluster_interval_95": [
+                  0.963061,
+                  0.992063
+                ]
+              }
+            }
+          },
+          "paired_sweep_success": {
+            "both": 163,
+            "estecker_only": 205,
+            "baseline_only": 0,
+            "neither": 112,
+            "gain": {
+              "rate": 0.427083,
+              "cluster_interval_95": [
+                0.366667,
+                0.4875
+              ]
+            }
+          }
+        },
+        "indel": {
+          "draws": 480,
+          "plaintexts": 24,
+          "arms": {
+            "complete_w117": {
+              "retention_cutoff_score_per_letter": -7.634712742,
+              "detected": {
+                "count": 107,
+                "of": 480,
+                "rate": 0.222917,
+                "interval_95": [
+                  0.188,
+                  0.2623
+                ],
+                "cluster_interval_95": [
+                  0.15,
+                  0.308333
+                ]
+              },
+              "retained": {
+                "count": 108,
+                "of": 480,
+                "rate": 0.225,
+                "interval_95": [
+                  0.1899,
+                  0.2645
+                ],
+                "cluster_interval_95": [
+                  0.152083,
+                  0.308333
+                ]
+              },
+              "confirmed": {
+                "count": 106,
+                "of": 480,
+                "rate": 0.220833,
+                "interval_95": [
+                  0.186,
+                  0.2601
+                ],
+                "cluster_interval_95": [
+                  0.145833,
+                  0.308333
+                ]
+              },
+              "sweep_success": {
+                "count": 105,
+                "of": 480,
+                "rate": 0.21875,
+                "interval_95": [
+                  0.1841,
+                  0.2579
+                ],
+                "cluster_interval_95": [
+                  0.145833,
+                  0.304167
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 104,
+                "of": 480,
+                "rate": 0.216667,
+                "interval_95": [
+                  0.1821,
+                  0.2557
+                ],
+                "cluster_interval_95": [
+                  0.145833,
+                  0.3
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 105,
+                "of": 107,
+                "rate": 0.981308,
+                "interval_95": [
+                  0.9344,
+                  0.9949
+                ],
+                "cluster_interval_95": [
+                  0.947368,
+                  1.0
+                ]
+              },
+              "retained_given_detected": {
+                "count": 106,
+                "of": 107,
+                "rate": 0.990654,
+                "interval_95": [
+                  0.9489,
+                  0.9983
+                ],
+                "cluster_interval_95": [
+                  0.972222,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 104,
+                "of": 107,
+                "rate": 0.971963,
+                "interval_95": [
+                  0.9208,
+                  0.9904
+                ],
+                "cluster_interval_95": [
+                  0.936709,
+                  1.0
+                ]
+              }
+            },
+            "complete_w117_estecker": {
+              "retention_cutoff_score_per_letter": -7.583122342,
+              "detected": {
+                "count": 282,
+                "of": 480,
+                "rate": 0.5875,
+                "interval_95": [
+                  0.5429,
+                  0.6307
+                ],
+                "cluster_interval_95": [
+                  0.514583,
+                  0.660417
+                ]
+              },
+              "retained": {
+                "count": 283,
+                "of": 480,
+                "rate": 0.589583,
+                "interval_95": [
+                  0.545,
+                  0.6327
+                ],
+                "cluster_interval_95": [
+                  0.514583,
+                  0.664583
+                ]
+              },
+              "confirmed": {
+                "count": 283,
+                "of": 480,
+                "rate": 0.589583,
+                "interval_95": [
+                  0.545,
+                  0.6327
+                ],
+                "cluster_interval_95": [
+                  0.5125,
+                  0.666667
+                ]
+              },
+              "sweep_success": {
+                "count": 278,
+                "of": 480,
+                "rate": 0.579167,
+                "interval_95": [
+                  0.5345,
+                  0.6225
+                ],
+                "cluster_interval_95": [
+                  0.50625,
+                  0.65625
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 277,
+                "of": 480,
+                "rate": 0.577083,
+                "interval_95": [
+                  0.5324,
+                  0.6205
+                ],
+                "cluster_interval_95": [
+                  0.504167,
+                  0.65
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 278,
+                "of": 282,
+                "rate": 0.985816,
+                "interval_95": [
+                  0.9641,
+                  0.9945
+                ],
+                "cluster_interval_95": [
+                  0.971119,
+                  0.996678
+                ]
+              },
+              "retained_given_detected": {
+                "count": 281,
+                "of": 282,
+                "rate": 0.996454,
+                "interval_95": [
+                  0.9802,
+                  0.9994
+                ],
+                "cluster_interval_95": [
+                  0.988971,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 277,
+                "of": 282,
+                "rate": 0.98227,
+                "interval_95": [
+                  0.9592,
+                  0.9924
+                ],
+                "cluster_interval_95": [
+                  0.967213,
+                  0.996169
+                ]
+              }
+            }
+          },
+          "paired_sweep_success": {
+            "both": 104,
+            "estecker_only": 174,
+            "baseline_only": 1,
+            "neither": 201,
+            "gain": {
+              "rate": 0.360417,
+              "cluster_interval_95": [
+                0.30625,
+                0.414583
+              ]
+            }
+          }
+        }
+      },
+      "predictions": [
+        {
+          "id": "J1",
+          "statement": "The E arm's sweep success on clean draws is at least 60%. Deciding.",
+          "kind": "sweep_success_at_least",
+          "threshold": 0.6,
+          "observed": 0.766667,
+          "passed": true
+        },
+        {
+          "id": "J2",
+          "statement": "The E arm's clean sweep success lies within 10 points of the 73.05% projection (so the projection is a fair stand-in for the measurement). Deciding.",
+          "kind": "sweep_success_within_of_projection",
+          "threshold": 0.1,
+          "observed": 0.03613,
+          "passed": true
+        },
+        {
+          "id": "J3",
+          "statement": "Given the harness detects a clean draw, the companion check confirms it at least 90% of the time (the borrowed v5 factor was 96.6%, measured on a single high-IC plaintext). Deciding for the factor.",
+          "kind": "confirmed_given_detected_at_least",
+          "threshold": 0.9,
+          "observed": 0.981383,
+          "passed": true
+        },
+        {
+          "id": "J4",
+          "statement": "The E arm's clean sweep success exceeds v4's climb's by at least 20 points: the gain survives confirmation and retention. Deciding.",
+          "kind": "sweep_success_gain_at_least",
+          "threshold": 0.2,
+          "observed": 0.427084,
+          "passed": true
+        },
+        {
+          "id": "J5",
+          "statement": "The E arm's one-indel sweep success is at least v4's climb's. Not deciding.",
+          "kind": "sweep_success_gain_at_least",
+          "threshold": 0.0,
+          "observed": 0.360417,
+          "passed": true
+        },
+        {
+          "id": "J6",
+          "statement": "Given detection, the candidate is retained at least 90% of the time. Not deciding.",
+          "kind": "retained_given_detected_at_least",
+          "threshold": 0.9,
+          "observed": 0.99734,
+          "passed": true
+        }
+      ]
+    },
     "draws": [
       {
         "cell": 0,

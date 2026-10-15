@@ -51,7 +51,7 @@ import plaintext_power  # noqa: E402
 from enigma import EnigmaI  # noqa: E402
 from provenance import code_version, sha256_file  # noqa: E402
 from stecker_companion import confirm_through_companions  # noqa: E402
-from stecker_power import wilson_interval  # noqa: E402
+from stecker_power import cluster_interval, wilson_interval  # noqa: E402
 from stecker_scoring import FastNgramScorer  # noqa: E402
 from stecker_traffic import Traffic  # noqa: E402
 
@@ -62,6 +62,7 @@ SWEEPS = {
     "complete_w117": "artifacts/phase1-body-direct-sweep-v4.json",
     "complete_w117_estecker": "artifacts/phase1-body-direct-sweep-v6.json",
 }
+SMOKE_DRAWS = 6  # draws 0-5 of each cell were run, and their outcomes seen, before the preregistration commit
 COMPANION_SEED = 20261116
 COMPANION_LENGTHS = (107, 97)
 THRESHOLD_Z = 6.0
@@ -123,17 +124,87 @@ def one_draw(task: tuple[dict, dict, dict]) -> dict[str, Any]:
     return row
 
 
+def cluster_of(row: dict, position: int = 0) -> int:
+    """The plaintext a draw was enciphered from; draws sharing one are not independent.
+
+    A row with no plaintext (a power artifact that planted one text) is its own cluster.
+    """
+
+    return row["plaintext"]["index"] if "plaintext" in row else row.get("draw", position)
+
+
+def clusters(rows: list[dict], numerator, denominator) -> list[tuple[int, int]]:
+    """Per-plaintext ``(numerator, denominator)`` counts for ``cluster_interval``."""
+
+    by_plaintext: dict[int, list[int]] = {}
+    for position, row in enumerate(rows):
+        entry = by_plaintext.setdefault(cluster_of(row, position), [0, 0])
+        entry[0] += numerator(row)
+        entry[1] += denominator(row)
+    return [(a, b) for _, (a, b) in sorted(by_plaintext.items())]
+
+
 def rate(rows: list[dict], arm: str, predicate) -> dict[str, Any]:
     hits = sum(1 for row in rows if predicate(row["arms"][arm]))
     n = len(rows)
-    return {"count": hits, "of": n, "rate": round(hits / n, 6), "interval_95": wilson_interval(hits, n)}
+    return {
+        "count": hits, "of": n, "rate": round(hits / n, 6),
+        # Wilson over the pooled draws: treats every draw as an independent sample, so it
+        # understates the uncertainty about typical text (draws share 24 plaintexts).
+        "interval_95": wilson_interval(hits, n),
+        "cluster_interval_95": cluster_interval(
+            clusters(rows, lambda r: int(predicate(r["arms"][arm])), lambda r: 1)
+        ),
+    }
 
 
 def conditional(rows: list[dict], arm: str, given, event) -> dict[str, Any]:
     base = [row for row in rows if given(row["arms"][arm])]
     hits = sum(1 for row in base if event(row["arms"][arm]))
-    return {"count": hits, "of": len(base), "rate": None if not base else round(hits / len(base), 6),
-            "interval_95": wilson_interval(hits, len(base)) if base else None}
+    return {
+        "count": hits, "of": len(base), "rate": None if not base else round(hits / len(base), 6),
+        "interval_95": wilson_interval(hits, len(base)) if base else None,
+        "cluster_interval_95": cluster_interval(
+            clusters(rows, lambda r: int(given(r["arms"][arm]) and event(r["arms"][arm])),
+                     lambda r: int(given(r["arms"][arm])))
+        ) if base else None,
+    }
+
+
+def summarise(rows: list[dict], names: list[str], arms_cutoffs: dict[str, float], first_draw: int) -> dict[str, dict]:
+    """Every rate, per cell, over the draws numbered ``first_draw`` or more."""
+
+    cells: dict[str, dict] = {}
+    for index, name in enumerate(names):
+        mine = [row for row in rows if row["cell"] == index and row["draw"] >= first_draw]
+        arms = {}
+        for arm in arms_cutoffs:
+            arms[arm] = {
+                "retention_cutoff_score_per_letter": arms_cutoffs[arm],
+                "detected": rate(mine, arm, lambda a: a["detected"]),
+                "retained": rate(mine, arm, lambda a: a["retained"]),
+                "confirmed": rate(mine, arm, lambda a: a["confirmed"]),
+                "sweep_success": rate(mine, arm, lambda a: a["sweep_success"]),
+                "detected_and_sweep_success": rate(mine, arm, lambda a: a["detected"] and a["sweep_success"]),
+                "confirmed_given_detected": conditional(mine, arm, lambda a: a["detected"], lambda a: a["confirmed"]),
+                "retained_given_detected": conditional(mine, arm, lambda a: a["detected"], lambda a: a["retained"]),
+                "sweep_success_given_detected": conditional(mine, arm, lambda a: a["detected"], lambda a: a["sweep_success"]),
+            }
+        e, b = "complete_w117_estecker", "complete_w117"
+        paired = {
+            "both": sum(1 for r in mine if r["arms"][e]["sweep_success"] and r["arms"][b]["sweep_success"]),
+            "estecker_only": sum(1 for r in mine if r["arms"][e]["sweep_success"] and not r["arms"][b]["sweep_success"]),
+            "baseline_only": sum(1 for r in mine if not r["arms"][e]["sweep_success"] and r["arms"][b]["sweep_success"]),
+            "neither": sum(1 for r in mine if not r["arms"][e]["sweep_success"] and not r["arms"][b]["sweep_success"]),
+        }
+        gain_clusters = clusters(mine, lambda r: int(r["arms"][e]["sweep_success"]) - int(r["arms"][b]["sweep_success"]), lambda r: 1)
+        paired["gain"] = {
+            "rate": round((paired["estecker_only"] - paired["baseline_only"]) / len(mine), 6),
+            "cluster_interval_95": cluster_interval(gain_clusters),
+        }
+        cells[name] = {"draws": len(mine), "plaintexts": len({cluster_of(r, i) for i, r in enumerate(mine)}), "arms": arms,
+                       "paired_sweep_success": paired}
+    return cells
 
 
 def score_predictions(spec: list[dict], cells: dict[str, dict]) -> list[dict]:
@@ -176,6 +247,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", default="artifacts/phase1-estecker-joint-power-v1-joint.json")
     parser.add_argument("--jobs", type=int, default=16)
     parser.add_argument("--secondary", action="store_true", help="mark as post hoc (the gate run's own draws)")
+    parser.add_argument("--exclude-first-draws", type=int, default=SMOKE_DRAWS,
+                        help="leave draws 0..N-1 of each cell out of the primary result (the smoke run saw them)")
     arguments = parser.parse_args(argv)
 
     config = json.loads(stecker.resolve_path(arguments.config).read_text(encoding="utf-8"))
@@ -198,37 +271,24 @@ def main(argv: list[str] | None = None) -> int:
         rows = pool.map(one_draw, tasks)
 
     names = ["clean" if c["perturbation"] == "none" else c["perturbation"] for c in power["result"]["cells"]]
-    cells: dict[str, dict] = {}
-    for index, name in enumerate(names):
-        mine = [row for row in rows if row["cell"] == index]
-        arms = {}
-        for arm in cutoffs:
-            arms[arm] = {
-                "retention_cutoff_score_per_letter": cutoffs[arm],
-                "detected": rate(mine, arm, lambda a: a["detected"]),
-                "retained": rate(mine, arm, lambda a: a["retained"]),
-                "confirmed": rate(mine, arm, lambda a: a["confirmed"]),
-                "sweep_success": rate(mine, arm, lambda a: a["sweep_success"]),
-                "detected_and_sweep_success": rate(mine, arm, lambda a: a["detected"] and a["sweep_success"]),
-                "confirmed_given_detected": conditional(mine, arm, lambda a: a["detected"], lambda a: a["confirmed"]),
-                "retained_given_detected": conditional(mine, arm, lambda a: a["detected"], lambda a: a["retained"]),
-                "sweep_success_given_detected": conditional(mine, arm, lambda a: a["detected"], lambda a: a["sweep_success"]),
-            }
-        e, b = "complete_w117_estecker", "complete_w117"
-        paired = {
-            "both": sum(1 for r in mine if r["arms"][e]["sweep_success"] and r["arms"][b]["sweep_success"]),
-            "estecker_only": sum(1 for r in mine if r["arms"][e]["sweep_success"] and not r["arms"][b]["sweep_success"]),
-            "baseline_only": sum(1 for r in mine if not r["arms"][e]["sweep_success"] and r["arms"][b]["sweep_success"]),
-            "neither": sum(1 for r in mine if not r["arms"][e]["sweep_success"] and not r["arms"][b]["sweep_success"]),
-        }
-        cells[name] = {"draws": len(mine), "arms": arms, "paired_sweep_success": paired}
-
-    predictions = score_predictions(config["joint_analysis"]["predictions"], cells)
+    # The primary result leaves out draws 0 to ``--exclude-first-draws`` of each cell: the smoke run
+    # before the preregistration commit computed them and printed their outcomes, so they were not
+    # unseen when the predictions were fixed.  The all-draws figures are kept, labelled.
+    primary = summarise(rows, names, cutoffs, arguments.exclude_first_draws)
+    everything = summarise(rows, names, cutoffs, 0)
+    spec = config["joint_analysis"]["predictions"]
+    predictions = score_predictions(spec, primary)
+    predictions_all = score_predictions(spec, everything)
+    cells = primary
     payload = {
         "schema": SCHEMA,
         "experiment_id": arguments.experiment_id,
         "preregistered": not arguments.secondary,
         "secondary_post_hoc_same_draws_as_gate": bool(arguments.secondary),
+        "pre_observed_draws": {
+            "excluded_from_primary_per_cell": arguments.exclude_first_draws,
+            "reason": "draws 0 to 5 of each cell were run in a smoke test before the preregistration commit and their outcomes printed (config pre_run_facts.smoke_run); the primary result leaves them out and result.all_draws keeps them",
+        },
         "started_at": started.isoformat(),
         "completed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "code": version,
@@ -238,18 +298,24 @@ def main(argv: list[str] | None = None) -> int:
             **{f"{arm}_sweep_sha256": sha256_file(stecker.resolve_path(path)) for arm, path in SWEEPS.items()},
         },
         "companion": {"seed": COMPANION_SEED, "lengths": list(COMPANION_LENGTHS), "threshold_z": THRESHOLD_Z},
-        "result": {"cells": cells, "predictions": predictions, "draws": rows},
+        "result": {"cells": cells, "predictions": predictions,
+                   "all_draws": {"cells": everything, "predictions": predictions_all},
+                   "draws": rows},
     }
     out = pathlib.Path(arguments.output)
     out = out if out.is_absolute() else ROOT / out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    for name, cell in cells.items():
-        for arm, a in cell["arms"].items():
-            print(f"{name:6s} {arm:24s} detected {a['detected']['count']}/{a['detected']['of']} retained {a['retained']['count']} "
-                  f"confirmed {a['confirmed']['count']} sweep_success {a['sweep_success']['count']} ({a['sweep_success']['rate']:.3f})")
-    for p in predictions:
-        print(p["id"], "held" if p["passed"] else "REFUTED", "observed", p["observed"], "threshold", p["threshold"])
+    for label, group, scored in (("primary (pre-observed draws excluded)", cells, predictions),
+                                 ("all draws (includes the smoke-run draws)", everything, predictions_all)):
+        print(f"== {label}")
+        for name, cell in group.items():
+            for arm, a in cell["arms"].items():
+                s = a["sweep_success"]
+                print(f"{name:6s} {arm:24s} n={cell['draws']} detected {a['detected']['count']} confirmed {a['confirmed']['count']} "
+                      f"sweep_success {s['count']} ({s['rate']:.3f}, plaintext-cluster {s['cluster_interval_95']}, draw-level {s['interval_95']})")
+        for p in scored:
+            print(p["id"], "held" if p["passed"] else "REFUTED", "observed", p["observed"], "threshold", p["threshold"])
     return 0
 
 

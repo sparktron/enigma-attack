@@ -3,16 +3,22 @@
   "experiment_id": "phase1-estecker-joint-power-v1-same-draws",
   "preregistered": false,
   "secondary_post_hoc_same_draws_as_gate": true,
-  "started_at": "2026-10-14T05:08:00.666561+00:00",
-  "completed_at": "2026-10-14T05:11:11.440319+00:00",
+  "pre_observed_draws": {
+    "excluded_from_primary_per_cell": 0,
+    "reason": "draws 0 to 5 of each cell were run in a smoke test before the preregistration commit and their outcomes printed (config pre_run_facts.smoke_run); the primary result leaves them out and result.all_draws keeps them"
+  },
+  "started_at": "2026-10-15T21:44:26.769634+00:00",
+  "completed_at": "2026-10-15T21:47:49.161996+00:00",
   "code": {
     "source": "git_checkout",
-    "commit": "c9409d826a2573bd1be9da515f87091062d6e86a",
+    "commit": "9bb087a07107045caa067003db5ac409b8cfaf09",
     "branch": "claude/estecker-joint-power-v1",
     "dirty": true,
     "status": [
-      "?? artifacts/phase1-estecker-joint-power-v1-joint.json",
-      "?? artifacts/phase1-estecker-joint-power-v1.json"
+      " M artifacts/phase1-estecker-joint-power-v1-joint.json",
+      " M scripts/joint_power_estecker_v1.py",
+      " M stecker_power.py",
+      " M tests/test_joint_power_estecker.py"
     ],
     "files_sha256": {
       "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
@@ -29,13 +35,13 @@
       "stecker_companion.py": "dba07478fc370a5574cd9a07e05e115c849b9bbf2315fde11c745f03ba3e90db",
       "stecker_controls.py": "f1dc711fcbdfb18e0fdb920ac111621232fc52bf8e4af224449bea972606cf39",
       "stecker_cuda.py": "1aafcf8c61ffaab0909b77479e1023d026c1bdc1410ee813978e6ef490034c8f",
-      "stecker_power.py": "42731730b6347228bc194b4d65c8ef9b9721666d09b7dabd5be94a7d418f942e",
+      "stecker_power.py": "5cc5826198d44877ba4d258ad1bc4238adab0cf7e93dbd4538faaa85bae68b21",
       "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
       "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
       "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
       "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
       "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
-      "scripts/joint_power_estecker_v1.py": "1cc8f0d03388430f8883df1cf6963624b8a81f01ef5eb702219dcd8ab06c713b"
+      "scripts/joint_power_estecker_v1.py": "bf07d9681246a517a5fa8a704b45c7b75dfcdfb13c0c0e679fe9241b507118ec"
     }
   },
   "inputs": {
@@ -56,6 +62,7 @@
     "cells": {
       "clean": {
         "draws": 480,
+        "plaintexts": 24,
         "arms": {
           "complete_w117": {
             "retention_cutoff_score_per_letter": -7.634712742,
@@ -66,6 +73,10 @@
               "interval_95": [
                 0.3027,
                 0.3873
+              ],
+              "cluster_interval_95": [
+                0.272917,
+                0.410417
               ]
             },
             "retained": {
@@ -75,6 +86,10 @@
               "interval_95": [
                 0.3027,
                 0.3873
+              ],
+              "cluster_interval_95": [
+                0.272917,
+                0.410417
               ]
             },
             "confirmed": {
@@ -84,6 +99,10 @@
               "interval_95": [
                 0.3006,
                 0.3852
+              ],
+              "cluster_interval_95": [
+                0.272917,
+                0.410417
               ]
             },
             "sweep_success": {
@@ -93,6 +112,10 @@
               "interval_95": [
                 0.2986,
                 0.3831
+              ],
+              "cluster_interval_95": [
+                0.270833,
+                0.40625
               ]
             },
             "detected_and_sweep_success": {
@@ -102,6 +125,10 @@
               "interval_95": [
                 0.2986,
                 0.3831
+              ],
+              "cluster_interval_95": [
+                0.270833,
+                0.40625
               ]
             },
             "confirmed_given_detected": {
@@ -111,6 +138,10 @@
               "interval_95": [
                 0.9569,
                 0.9967
+              ],
+              "cluster_interval_95": [
+                0.96988,
+                1.0
               ]
             },
             "retained_given_detected": {
@@ -119,6 +150,10 @@
               "rate": 1.0,
               "interval_95": [
                 0.9772,
+                1.0
+              ],
+              "cluster_interval_95": [
+                1.0,
                 1.0
               ]
             },
@@ -129,6 +164,10 @@
               "interval_95": [
                 0.9569,
                 0.9967
+              ],
+              "cluster_interval_95": [
+                0.96988,
+                1.0
               ]
             }
           },
@@ -141,6 +180,10 @@
               "interval_95": [
                 0.7159,
                 0.7925
+              ],
+              "cluster_interval_95": [
+                0.675,
+                0.825
               ]
             },
             "retained": {
@@ -150,6 +193,10 @@
               "interval_95": [
                 0.7159,
                 0.7925
+              ],
+              "cluster_interval_95": [
+                0.675,
+                0.825
               ]
             },
             "confirmed": {
@@ -159,6 +206,10 @@
               "interval_95": [
                 0.7029,
                 0.7808
+              ],
+              "cluster_interval_95": [
+                0.6625,
+                0.814583
               ]
             },
             "sweep_success": {
@@ -168,6 +219,10 @@
               "interval_95": [
                 0.7029,
                 0.7808
+              ],
+              "cluster_interval_95": [
+                0.6625,
+                0.814583
               ]
             },
             "detected_and_sweep_success": {
@@ -177,6 +232,10 @@
               "interval_95": [
                 0.7029,
                 0.7808
+              ],
+              "cluster_interval_95": [
+                0.6625,
+                0.814583
               ]
             },
             "confirmed_given_detected": {
@@ -186,6 +245,10 @@
               "interval_95": [
                 0.9644,
                 0.9924
+              ],
+              "cluster_interval_95": [
+                0.968668,
+                0.994872
               ]
             },
             "retained_given_detected": {
@@ -194,6 +257,10 @@
               "rate": 1.0,
               "interval_95": [
                 0.9895,
+                1.0
+              ],
+              "cluster_interval_95": [
+                1.0,
                 1.0
               ]
             },
@@ -204,6 +271,10 @@
               "interval_95": [
                 0.9644,
                 0.9924
+              ],
+              "cluster_interval_95": [
+                0.968668,
+                0.994872
               ]
             }
           }
@@ -212,11 +283,19 @@
           "both": 161,
           "estecker_only": 196,
           "baseline_only": 2,
-          "neither": 121
+          "neither": 121,
+          "gain": {
+            "rate": 0.404167,
+            "cluster_interval_95": [
+              0.35625,
+              0.452083
+            ]
+          }
         }
       },
       "indel": {
         "draws": 480,
+        "plaintexts": 24,
         "arms": {
           "complete_w117": {
             "retention_cutoff_score_per_letter": -7.634712742,
@@ -227,6 +306,10 @@
               "interval_95": [
                 0.1208,
                 0.1847
+              ],
+              "cluster_interval_95": [
+                0.120833,
+                0.179167
               ]
             },
             "retained": {
@@ -236,6 +319,10 @@
               "interval_95": [
                 0.1227,
                 0.187
+              ],
+              "cluster_interval_95": [
+                0.122917,
+                0.18125
               ]
             },
             "confirmed": {
@@ -245,6 +332,10 @@
               "interval_95": [
                 0.1171,
                 0.1802
+              ],
+              "cluster_interval_95": [
+                0.11875,
+                0.172917
               ]
             },
             "sweep_success": {
@@ -254,6 +345,10 @@
               "interval_95": [
                 0.1152,
                 0.178
+              ],
+              "cluster_interval_95": [
+                0.116667,
+                0.16875
               ]
             },
             "detected_and_sweep_success": {
@@ -263,6 +358,10 @@
               "interval_95": [
                 0.1133,
                 0.1757
+              ],
+              "cluster_interval_95": [
+                0.114583,
+                0.16875
               ]
             },
             "confirmed_given_detected": {
@@ -272,6 +371,10 @@
               "interval_95": [
                 0.8657,
                 0.9782
+              ],
+              "cluster_interval_95": [
+                0.898551,
+                0.985915
               ]
             },
             "retained_given_detected": {
@@ -280,6 +383,10 @@
               "rate": 1.0,
               "interval_95": [
                 0.9493,
+                1.0
+              ],
+              "cluster_interval_95": [
+                1.0,
                 1.0
               ]
             },
@@ -290,6 +397,10 @@
               "interval_95": [
                 0.8657,
                 0.9782
+              ],
+              "cluster_interval_95": [
+                0.898551,
+                0.985915
               ]
             }
           },
@@ -302,6 +413,10 @@
               "interval_95": [
                 0.4554,
                 0.5446
+              ],
+              "cluster_interval_95": [
+                0.435417,
+                0.560417
               ]
             },
             "retained": {
@@ -311,6 +426,10 @@
               "interval_95": [
                 0.4575,
                 0.5466
+              ],
+              "cluster_interval_95": [
+                0.435417,
+                0.564583
               ]
             },
             "confirmed": {
@@ -320,6 +439,10 @@
               "interval_95": [
                 0.4534,
                 0.5425
+              ],
+              "cluster_interval_95": [
+                0.435417,
+                0.55625
               ]
             },
             "sweep_success": {
@@ -329,6 +452,10 @@
               "interval_95": [
                 0.4472,
                 0.5363
+              ],
+              "cluster_interval_95": [
+                0.429167,
+                0.55
               ]
             },
             "detected_and_sweep_success": {
@@ -338,6 +465,10 @@
               "interval_95": [
                 0.4451,
                 0.5342
+              ],
+              "cluster_interval_95": [
+                0.427083,
+                0.547917
               ]
             },
             "confirmed_given_detected": {
@@ -347,6 +478,10 @@
               "interval_95": [
                 0.9522,
                 0.9911
+              ],
+              "cluster_interval_95": [
+                0.963134,
+                0.995327
               ]
             },
             "retained_given_detected": {
@@ -355,6 +490,10 @@
               "rate": 1.0,
               "interval_95": [
                 0.9842,
+                1.0
+              ],
+              "cluster_interval_95": [
+                1.0,
                 1.0
               ]
             },
@@ -365,6 +504,10 @@
               "interval_95": [
                 0.9522,
                 0.9911
+              ],
+              "cluster_interval_95": [
+                0.963134,
+                0.995327
               ]
             }
           }
@@ -373,7 +516,14 @@
           "both": 69,
           "estecker_only": 167,
           "baseline_only": 0,
-          "neither": 244
+          "neither": 244,
+          "gain": {
+            "rate": 0.347917,
+            "cluster_interval_95": [
+              0.291667,
+              0.4
+            ]
+          }
         }
       }
     },
@@ -427,6 +577,526 @@
         "passed": true
       }
     ],
+    "all_draws": {
+      "cells": {
+        "clean": {
+          "draws": 480,
+          "plaintexts": 24,
+          "arms": {
+            "complete_w117": {
+              "retention_cutoff_score_per_letter": -7.634712742,
+              "detected": {
+                "count": 165,
+                "of": 480,
+                "rate": 0.34375,
+                "interval_95": [
+                  0.3027,
+                  0.3873
+                ],
+                "cluster_interval_95": [
+                  0.272917,
+                  0.410417
+                ]
+              },
+              "retained": {
+                "count": 165,
+                "of": 480,
+                "rate": 0.34375,
+                "interval_95": [
+                  0.3027,
+                  0.3873
+                ],
+                "cluster_interval_95": [
+                  0.272917,
+                  0.410417
+                ]
+              },
+              "confirmed": {
+                "count": 164,
+                "of": 480,
+                "rate": 0.341667,
+                "interval_95": [
+                  0.3006,
+                  0.3852
+                ],
+                "cluster_interval_95": [
+                  0.272917,
+                  0.410417
+                ]
+              },
+              "sweep_success": {
+                "count": 163,
+                "of": 480,
+                "rate": 0.339583,
+                "interval_95": [
+                  0.2986,
+                  0.3831
+                ],
+                "cluster_interval_95": [
+                  0.270833,
+                  0.40625
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 163,
+                "of": 480,
+                "rate": 0.339583,
+                "interval_95": [
+                  0.2986,
+                  0.3831
+                ],
+                "cluster_interval_95": [
+                  0.270833,
+                  0.40625
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 163,
+                "of": 165,
+                "rate": 0.987879,
+                "interval_95": [
+                  0.9569,
+                  0.9967
+                ],
+                "cluster_interval_95": [
+                  0.96988,
+                  1.0
+                ]
+              },
+              "retained_given_detected": {
+                "count": 165,
+                "of": 165,
+                "rate": 1.0,
+                "interval_95": [
+                  0.9772,
+                  1.0
+                ],
+                "cluster_interval_95": [
+                  1.0,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 163,
+                "of": 165,
+                "rate": 0.987879,
+                "interval_95": [
+                  0.9569,
+                  0.9967
+                ],
+                "cluster_interval_95": [
+                  0.96988,
+                  1.0
+                ]
+              }
+            },
+            "complete_w117_estecker": {
+              "retention_cutoff_score_per_letter": -7.583122342,
+              "detected": {
+                "count": 363,
+                "of": 480,
+                "rate": 0.75625,
+                "interval_95": [
+                  0.7159,
+                  0.7925
+                ],
+                "cluster_interval_95": [
+                  0.675,
+                  0.825
+                ]
+              },
+              "retained": {
+                "count": 363,
+                "of": 480,
+                "rate": 0.75625,
+                "interval_95": [
+                  0.7159,
+                  0.7925
+                ],
+                "cluster_interval_95": [
+                  0.675,
+                  0.825
+                ]
+              },
+              "confirmed": {
+                "count": 357,
+                "of": 480,
+                "rate": 0.74375,
+                "interval_95": [
+                  0.7029,
+                  0.7808
+                ],
+                "cluster_interval_95": [
+                  0.6625,
+                  0.814583
+                ]
+              },
+              "sweep_success": {
+                "count": 357,
+                "of": 480,
+                "rate": 0.74375,
+                "interval_95": [
+                  0.7029,
+                  0.7808
+                ],
+                "cluster_interval_95": [
+                  0.6625,
+                  0.814583
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 357,
+                "of": 480,
+                "rate": 0.74375,
+                "interval_95": [
+                  0.7029,
+                  0.7808
+                ],
+                "cluster_interval_95": [
+                  0.6625,
+                  0.814583
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 357,
+                "of": 363,
+                "rate": 0.983471,
+                "interval_95": [
+                  0.9644,
+                  0.9924
+                ],
+                "cluster_interval_95": [
+                  0.968668,
+                  0.994872
+                ]
+              },
+              "retained_given_detected": {
+                "count": 363,
+                "of": 363,
+                "rate": 1.0,
+                "interval_95": [
+                  0.9895,
+                  1.0
+                ],
+                "cluster_interval_95": [
+                  1.0,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 357,
+                "of": 363,
+                "rate": 0.983471,
+                "interval_95": [
+                  0.9644,
+                  0.9924
+                ],
+                "cluster_interval_95": [
+                  0.968668,
+                  0.994872
+                ]
+              }
+            }
+          },
+          "paired_sweep_success": {
+            "both": 161,
+            "estecker_only": 196,
+            "baseline_only": 2,
+            "neither": 121,
+            "gain": {
+              "rate": 0.404167,
+              "cluster_interval_95": [
+                0.35625,
+                0.452083
+              ]
+            }
+          }
+        },
+        "indel": {
+          "draws": 480,
+          "plaintexts": 24,
+          "arms": {
+            "complete_w117": {
+              "retention_cutoff_score_per_letter": -7.634712742,
+              "detected": {
+                "count": 72,
+                "of": 480,
+                "rate": 0.15,
+                "interval_95": [
+                  0.1208,
+                  0.1847
+                ],
+                "cluster_interval_95": [
+                  0.120833,
+                  0.179167
+                ]
+              },
+              "retained": {
+                "count": 73,
+                "of": 480,
+                "rate": 0.152083,
+                "interval_95": [
+                  0.1227,
+                  0.187
+                ],
+                "cluster_interval_95": [
+                  0.122917,
+                  0.18125
+                ]
+              },
+              "confirmed": {
+                "count": 70,
+                "of": 480,
+                "rate": 0.145833,
+                "interval_95": [
+                  0.1171,
+                  0.1802
+                ],
+                "cluster_interval_95": [
+                  0.11875,
+                  0.172917
+                ]
+              },
+              "sweep_success": {
+                "count": 69,
+                "of": 480,
+                "rate": 0.14375,
+                "interval_95": [
+                  0.1152,
+                  0.178
+                ],
+                "cluster_interval_95": [
+                  0.116667,
+                  0.16875
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 68,
+                "of": 480,
+                "rate": 0.141667,
+                "interval_95": [
+                  0.1133,
+                  0.1757
+                ],
+                "cluster_interval_95": [
+                  0.114583,
+                  0.16875
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 68,
+                "of": 72,
+                "rate": 0.944444,
+                "interval_95": [
+                  0.8657,
+                  0.9782
+                ],
+                "cluster_interval_95": [
+                  0.898551,
+                  0.985915
+                ]
+              },
+              "retained_given_detected": {
+                "count": 72,
+                "of": 72,
+                "rate": 1.0,
+                "interval_95": [
+                  0.9493,
+                  1.0
+                ],
+                "cluster_interval_95": [
+                  1.0,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 68,
+                "of": 72,
+                "rate": 0.944444,
+                "interval_95": [
+                  0.8657,
+                  0.9782
+                ],
+                "cluster_interval_95": [
+                  0.898551,
+                  0.985915
+                ]
+              }
+            },
+            "complete_w117_estecker": {
+              "retention_cutoff_score_per_letter": -7.583122342,
+              "detected": {
+                "count": 240,
+                "of": 480,
+                "rate": 0.5,
+                "interval_95": [
+                  0.4554,
+                  0.5446
+                ],
+                "cluster_interval_95": [
+                  0.435417,
+                  0.560417
+                ]
+              },
+              "retained": {
+                "count": 241,
+                "of": 480,
+                "rate": 0.502083,
+                "interval_95": [
+                  0.4575,
+                  0.5466
+                ],
+                "cluster_interval_95": [
+                  0.435417,
+                  0.564583
+                ]
+              },
+              "confirmed": {
+                "count": 239,
+                "of": 480,
+                "rate": 0.497917,
+                "interval_95": [
+                  0.4534,
+                  0.5425
+                ],
+                "cluster_interval_95": [
+                  0.435417,
+                  0.55625
+                ]
+              },
+              "sweep_success": {
+                "count": 236,
+                "of": 480,
+                "rate": 0.491667,
+                "interval_95": [
+                  0.4472,
+                  0.5363
+                ],
+                "cluster_interval_95": [
+                  0.429167,
+                  0.55
+                ]
+              },
+              "detected_and_sweep_success": {
+                "count": 235,
+                "of": 480,
+                "rate": 0.489583,
+                "interval_95": [
+                  0.4451,
+                  0.5342
+                ],
+                "cluster_interval_95": [
+                  0.427083,
+                  0.547917
+                ]
+              },
+              "confirmed_given_detected": {
+                "count": 235,
+                "of": 240,
+                "rate": 0.979167,
+                "interval_95": [
+                  0.9522,
+                  0.9911
+                ],
+                "cluster_interval_95": [
+                  0.963134,
+                  0.995327
+                ]
+              },
+              "retained_given_detected": {
+                "count": 240,
+                "of": 240,
+                "rate": 1.0,
+                "interval_95": [
+                  0.9842,
+                  1.0
+                ],
+                "cluster_interval_95": [
+                  1.0,
+                  1.0
+                ]
+              },
+              "sweep_success_given_detected": {
+                "count": 235,
+                "of": 240,
+                "rate": 0.979167,
+                "interval_95": [
+                  0.9522,
+                  0.9911
+                ],
+                "cluster_interval_95": [
+                  0.963134,
+                  0.995327
+                ]
+              }
+            }
+          },
+          "paired_sweep_success": {
+            "both": 69,
+            "estecker_only": 167,
+            "baseline_only": 0,
+            "neither": 244,
+            "gain": {
+              "rate": 0.347917,
+              "cluster_interval_95": [
+                0.291667,
+                0.4
+              ]
+            }
+          }
+        }
+      },
+      "predictions": [
+        {
+          "id": "J1",
+          "statement": "The E arm's sweep success on clean draws is at least 60%. Deciding.",
+          "kind": "sweep_success_at_least",
+          "threshold": 0.6,
+          "observed": 0.74375,
+          "passed": true
+        },
+        {
+          "id": "J2",
+          "statement": "The E arm's clean sweep success lies within 10 points of the 73.05% projection (so the projection is a fair stand-in for the measurement). Deciding.",
+          "kind": "sweep_success_within_of_projection",
+          "threshold": 0.1,
+          "observed": 0.013213,
+          "passed": true
+        },
+        {
+          "id": "J3",
+          "statement": "Given the harness detects a clean draw, the companion check confirms it at least 90% of the time (the borrowed v5 factor was 96.6%, measured on a single high-IC plaintext). Deciding for the factor.",
+          "kind": "confirmed_given_detected_at_least",
+          "threshold": 0.9,
+          "observed": 0.983471,
+          "passed": true
+        },
+        {
+          "id": "J4",
+          "statement": "The E arm's clean sweep success exceeds v4's climb's by at least 20 points: the gain survives confirmation and retention. Deciding.",
+          "kind": "sweep_success_gain_at_least",
+          "threshold": 0.2,
+          "observed": 0.404167,
+          "passed": true
+        },
+        {
+          "id": "J5",
+          "statement": "The E arm's one-indel sweep success is at least v4's climb's. Not deciding.",
+          "kind": "sweep_success_gain_at_least",
+          "threshold": 0.0,
+          "observed": 0.347917,
+          "passed": true
+        },
+        {
+          "id": "J6",
+          "statement": "Given detection, the candidate is retained at least 90% of the time. Not deciding.",
+          "kind": "retained_given_detected_at_least",
+          "threshold": 0.9,
+          "observed": 1.0,
+          "passed": true
+        }
+      ]
+    },
     "draws": [
       {
         "cell": 0,
