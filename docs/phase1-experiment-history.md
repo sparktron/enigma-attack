@@ -3016,3 +3016,210 @@ would convert the projection into a measured multiplier); a sourced alternative 
 from the authors, if they reply; or stopping the standard-reading search again, now
 with the typical-IC gap measured and covered. The reply to the 2026-10-10 question to
 the authors, if any, is not recorded.
+
+## phase1-estecker-joint-power-v1 (preregistered 2026-10-14)
+
+Configuration:
+[experiments/phase1-estecker-joint-power-v1/config.json](../experiments/phase1-estecker-joint-power-v1/config.json),
+analysis `scripts/joint_power_estecker_v1.py`, both committed before the run. Draws 0 to 5
+of each cell had been computed in a scratch smoke run before that commit and their outcomes
+printed, so they were not unseen when the predictions were fixed; see the amendment to the
+result below.
+
+Why this one. v6 was launched on a stated power that was a projection: the measured
+E-arm clean detection (75.6%) times v5's confirmation factor (0.966), measured on one
+high-IC plaintext. Companion confirmation and retention in the sweep's top 100 were not
+measured for the E climb at typical IC. This run measures the sweep's own decision rule,
+retained and companion-confirmed, on planted keys.
+
+Hypothesis. At typical plaintext IC, a planted standard Enigma I key with at most one
+dropped or inserted letter is retained by v6's sweep (top candidate scoring at or
+above v6's 100th-retained score, -7.583122342) and companion-confirmed through two
+planted companions (107 and 97 letters, z >= 6) at a rate of at least 60% clean and
+within 10 points of the 73.05% projection (E arm), and the E arm's clean success
+exceeds v4's climb's by at least 20 points.
+
+Design. A fresh `end_to_end_power` run, same slice and two arms as
+`phase1-estecker-power-v1`, on new keys (seed 20261115) and 24 new Markov plaintexts
+(seed 20261114, IC 0.0505 to 0.0744, mean 0.0598, none shared with the gate run), 480
+draws in each of two cells (clean, one indel). The analysis then plants two fresh
+Markov companions per draw under the planted key and runs the sweep's companion check
+on each arm's top candidate; the retention cutoff for each arm is its own sweep's
+lowest retained score (v4 -7.634712742, v6 -7.583122342). Fresh draws, because v6 was
+launched on the gate run's P2 result, which cleared its bar by three draws, and rates
+measured on those same draws carry that selection.
+
+| id | statement | decides |
+|---|---|---|
+| R1 | the E arm detects at least 70% of clean draws (replication of P2) | no |
+| R2 | the E arm detects at least 20 points more clean draws than v4's climb (replication of P3) | no |
+| R3 | the E arm detects at least as many one-indel draws as v4's climb | no |
+| J1 | E-arm clean sweep success (retained and confirmed) is at least 60% | yes |
+| J2 | E-arm clean sweep success is within 10 points of the 73.05% projection | yes |
+| J3 | confirmed given detected, E arm clean, is at least 90% (the borrowed factor was 96.6%) | yes, for the factor |
+| J4 | E-arm clean sweep success exceeds v4's climb's by at least 20 points | yes |
+| J5 | E-arm one-indel sweep success at least v4's climb's | no |
+| J6 | retained given detected, E arm clean, is at least 90% | no |
+
+The author's guesses, before any joint measurement: confirmation given detection 85%
+to 97%, retention given detection above 90%, E-arm clean success 0.60 to 0.70, one
+indel 0.35 to 0.45, gain over v4's climb 30 points or more. Decision rule, fixed now:
+if J1 to J4 hold, v6's stated power becomes the measured E-arm sweep success, clean and
+one indel, with its interval, replacing the projection; a refuted prediction is recorded
+as such and the measured figure replaces the projection whichever way it differs. No
+result here is a calibrated odds multiplier for BYQMZ: the prior over fault kinds and
+over plaintext IC is unmeasured, and the earlier sweeps' union is not remeasured. No
+sweep is launched or changed by this run.
+
+Not measured: a substituted letter, two faults, several candidates retained near the
+true key (the top candidate only is judged, which is conservative), real companions.
+Disclosed: a 6-draw smoke run of the configuration and of the analysis on its scratch
+artifact (scratch output) passed every preflight check; nothing was changed after it.
+The same analysis on the gate run's 960 draws will be run after the primary result and
+labelled post hoc.
+
+Run command:
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-estecker-joint-power-v1/config.json --jobs 8
+python3 scripts/joint_power_estecker_v1.py
+```
+
+### Result: phase1-estecker-joint-power-v1 (run 2026-10-14)
+
+Run record. Power run from clean `c9409d8` (the preregistration commit), 04:51:48 to
+05:04:31 UTC, 677.9 s, cuda engine, 8 requested workers, one invocation; preflight
+(including `first_plug_climbs_match`) and both positive controls passed. RTX 3090,
+CUDA 12.8, numpy 2.2.6, Python 3.10.12; the GPU showed about 1 GB in use by another
+process at launch. The analysis ran afterwards from the same commit
+(`scripts/joint_power_estecker_v1.py`, 189 s on 16 processes). Artifacts and SHA-256:
+`artifacts/phase1-estecker-joint-power-v1.json` (`d11c4501...`, the raw power run),
+`artifacts/phase1-estecker-joint-power-v1-joint.json` (`65b2477f...`, the preregistered
+analysis) and `artifacts/phase1-estecker-joint-power-v1-same-draws.json`
+(`65bf0392...`, secondary and post hoc). Seeds: keys 20261115, plaintexts 20261114,
+companions 20261116.
+
+#### Amendment (2026-10-15, after review of PR #36)
+
+Two review findings, both correct, change how the results below are to be read.
+
+1. *Pre-observed draws.* The 6-draw smoke run of the configuration and of the analysis
+   covered draws 0 to 5 of each cell, and its printed outcomes (sweep success, J1 to J6) are in the
+   configuration's `pre_run_facts.smoke_run`. The run recomputes those 12 draws, so the
+   full sample was not unseen when the predictions were committed, and calling the
+   all-draws artifact `preregistered` overstated it. (The configuration's clause that no joint
+   analysis of any draw had been run referred to the gate run's 960 draws, which is still
+   true; it does not cover these.) The primary result now leaves out draws 0 to 5 of each
+   cell (474 draws per cell remain) and `result.all_draws` keeps the full 480 for comparison.
+   No prediction changes: J1 to J6 all hold on the primary set.
+2. *Repeated plaintexts.* The 480 draws per cell come from 24 plaintexts, 20 draws each, and the
+   rates differ strongly between plaintexts (by IC tercile 56%, 84%, 95% for E's detection),
+   so a binomial interval over pooled draws treats them as 480 independent samples of text and is too
+   narrow for a claim about typical text. The analysis now also reports a percentile bootstrap
+   that resamples plaintexts with replacement (10,000 resamples, seeded);
+   `interval_95` is kept and is the draw-level one, `cluster_interval_95` is the one to quote.
+
+Corrected headline figures (primary set, 474 draws per cell; the all-draws figures in the
+tables below differ by at most a point):
+
+| | clean | one indel |
+|---|---|---|
+| E sweep success | 363 / 474 = **76.6%**, plaintext-cluster interval 67.4 to 85.0 (draw-level 72.6 to 80.2) | 276 / 474 = **58.2%**, 50.8 to 65.8 (draw-level 53.7 to 62.6) |
+| v4's climb | 161 / 474 = 34.0%, 24.6 to 43.5 | 105 / 474 = 22.2%, 14.8 to 30.6 |
+| E minus v4, paired | +42.6 points, 36.6 to 48.7 (202 draws E only, 0 v4 only) | +36.1, 30.7 to 41.6 (172 E only, 1 v4 only) |
+| confirmed given detected, E | 364 / 371 = 98.1%, 96.6 to 99.4 | 276 / 280 = 98.6%, 97.1 to 99.7 |
+| retained given detected, E | 370 / 371 = 99.7%, 99.1 to 100 | 279 / 280 = 99.6%, 98.9 to 100 |
+
+The same corrections apply to the post hoc same-draws analysis (no draws excluded, since
+all of it is post hoc): E clean 357 / 480 = 74.4%, plaintext-cluster interval 66.3 to 81.5; one
+indel 236 / 480 = 49.2%, 42.9 to 55.0.
+
+What this changes in the reading: the point estimates and the predictions are as before, and
+the intervals about typical text are about twice as wide as quoted. The measured
+miss probability for a clean standard reading at typical text is therefore 15% to 33% (the
+cluster interval of 1 minus E's success), not the 23% to 26% the interpretation below quotes
+from point estimates; for one indel 34% to 49%, not 42% to 51%. The paired gain over
+v4's climb is the sturdiest result, because plaintext variation cancels in a paired difference.
+
+#### Observed
+
+Power run, fresh draws (480 per cell), detection by the harness's rule:
+
+| cell | v4's climb (`complete_w117`) | E-Stecker (`complete_w117_estecker`) |
+|---|---|---|
+| clean | 167 (34.8%) | 376 (78.3%) |
+| one indel | 107 (22.3%) | 282 (58.8%) |
+
+R1 held (78.3% against 70%), R2 held (gain 43.5 points against 20), R3 held (gain
+36.5 against 0).
+
+Joint analysis, preregistered, E arm (sweep success = retained and companion-confirmed):
+
+| | clean | one indel |
+|---|---|---|
+| detected | 376 / 480 | 282 / 480 |
+| retained (score at or above v6's 100th-retained, -7.5831) | 375 | 283 |
+| companion-confirmed | 369 | 283 |
+| **sweep success** | **368 / 480 = 76.7% (95% interval 72.7 to 80.2)** | **278 / 480 = 57.9% (53.5 to 62.3)** |
+| confirmed given detected | 369 / 376 = 98.1% (96.2 to 99.1) | 278 / 282 = 98.6% |
+| retained given detected | 375 / 376 = 99.7% | 281 / 282 = 99.6% |
+
+v4's climb with its own sweep's cutoff (-7.6347): clean 163 / 480 = 34.0% (29.9 to
+38.3), one indel 105 / 480 = 21.9%. Paired on the same draws, clean: both 163, E only
+205, v4 only 0, neither 112; one indel: both 104, E only 174, v4 only 1, neither 201.
+
+Predictions, all held: J1 (clean success 76.7% against at least 60%), J2 (3.6 points
+from the 73.05% projection, within 10), J3 (confirmed given detected 98.1% against at
+least 90%), J4 (gain 42.7 points against at least 20), J5 (one-indel gain 36.0
+against at least 0), J6 (retained given detected 99.7% against at least 90%).
+
+Detection by tercile of plaintext IC (8 plaintexts, 160 draws each), E arm clean:
+IC 0.0505 to 0.0573: 89 / 160 (55.6%); 0.0579 to 0.0613: 135 / 160 (84.4%); 0.0614
+to 0.0744: 152 / 160 (95.0%). One indel: 42.5%, 58.1%, 75.6%. v4's climb, clean:
+14.4%, 36.3%, 53.8%.
+
+Secondary, post hoc, the gate run's own 960 draws (selection applies): E-arm sweep
+success clean 357 / 480 = 74.4% (70.3 to 78.1), one indel 236 / 480 = 49.2% (44.7 to
+53.6); confirmed given detected 98.3%, retained given detected 100%; v4's climb clean
+163 (34.0%), one indel 69 (14.4%). J1 to J6 also hold there.
+
+#### Interpretation (inference)
+
+- The projection was a fair stand-in for the clean case: measured sweep success 76.7%
+  (fresh) and 74.4% (the gate's draws), against a projected 73.05%. For one indel the
+  projection (48.3%) was low on the fresh draws (57.9%) and matched the gate's
+  (49.2%). The difference between the two sets is larger than the sampling interval, so
+  the plaintext set moves the rate: the fresh plaintexts have a higher mean IC (0.0598
+  against 0.0579). The measured power is therefore a range over plaintext sets, about
+  74% to 77% clean and 49% to 58% one indel, not a point.
+- The power is limited by detection, not by what follows it: sweep success is within
+  eight draws of detection in every cell, confirmation given detection is about 98%
+  (the borrowed factor, 96.6%, was close) and retention given detection is at least
+  99.6%. The concern that retention in the full space would cost power did not
+  materialise at v6's measured cutoff, given that the noise tail at that cutoff is
+  that of BYQMZ's own sweep.
+- The gain over v4's climb survives confirmation and retention: 205 clean draws that
+  only E-Stecker found, none that only v4's climb found.
+- The average hides a strong dependence on plaintext IC: for plaintexts of IC below
+  0.057 the E arm's clean success is about 56% (71 of its 104 clean misses lie
+  there), against 95% above 0.061. If BYQMZ's plaintext is of low IC, v6's power for it
+  is nearer 55% than 77%; its IC is unknown.
+- What a v6 null therefore says: for a standard Enigma I reading with a clean or
+  once-garbled message and plaintext of typical statistics, v6 would have missed the
+  key about 23% to 26% (clean) or 42% to 51% (one indel) of the time, more for low-IC
+  plaintexts. That is a measured miss probability for those two kinds, not a calibrated
+  odds multiplier for BYQMZ: the prior over fault kinds and over plaintext IC is
+  unmeasured, the earlier sweeps' union at typical IC was not remeasured here, and v6's
+  own null has the caveats of its entry.
+
+#### Not run, and the next decision
+
+Not run: the union of v2 to v5 and v6 at typical IC (needed for a multiplier after all
+five sweeps), a substituted letter or two faults for the E arm, several candidates
+retained near the true key (only the top was judged, which is conservative), real
+companions. v6's configuration is not amended: it is frozen with its run, and its
+stated power is now this entry. Nothing further is preregistered. For the
+maintainer: stop the standard-reading search with the measured, IC-dependent miss
+probabilities on record; or measure the union at typical IC to state a combined
+multiplier; or spend the next climb on low-IC plaintexts, where the E arm is weakest
+(R-Stecker's 73 starts was 27 of 36 at IC 0.0514 in the review).

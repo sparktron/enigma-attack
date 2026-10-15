@@ -100,6 +100,41 @@ def detection_by_plaintext(
     return {"by_plaintext": ordered, "by_ic_tercile": terciles}
 
 
+def cluster_interval(
+    clusters: Sequence[tuple[int, int]], resamples: int = 10_000, seed: int = 20261015, z: float = 1.96
+) -> list[float] | None:
+    """95% percentile-bootstrap interval for ``sum(numerators) / sum(denominators)`` over clusters.
+
+    Each cluster is ``(numerator, denominator)``, here one plaintext's hits and draws.  The
+    clusters are resampled with replacement, so the interval carries the variation between
+    plaintexts that a binomial interval over the pooled draws omits: draws that share a
+    plaintext are not independent samples of plaintext (docs/code-review-2026-10-15.md).  A
+    numerator may be negative, so a paired difference in counts is also an interval of this
+    kind.  The generator is seeded, so the interval is reproducible; the same seed and
+    cluster count give the same resamples for every statistic, which keeps statistics
+    computed on the same clusters consistent with each other.
+    """
+
+    k = len(clusters)
+    if k == 0:
+        return None
+    generator = random.Random(seed)
+    numerators = [c[0] for c in clusters]
+    denominators = [c[1] for c in clusters]
+    ratios: list[float] = []
+    for _ in range(resamples):
+        picks = [generator.randrange(k) for _ in range(k)]
+        den = sum(denominators[i] for i in picks)
+        if den > 0:
+            ratios.append(sum(numerators[i] for i in picks) / den)
+    if not ratios:
+        return None
+    ratios.sort()
+    lo = ratios[int(0.025 * len(ratios))]
+    hi = ratios[min(len(ratios) - 1, int(0.975 * len(ratios)))]
+    return [round(lo, 6), round(hi, 6)]
+
+
 def _one_indel(ciphertext: str, generator: random.Random) -> tuple[str, dict[str, Any]]:
     position = generator.randrange(1, len(ciphertext) - 1)
     if generator.random() < 0.5:

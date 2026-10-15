@@ -497,6 +497,21 @@ re-climb identically on the CPU (batched and reference), and v4's retained setti
 do not fall under E starts. The stated power is a projection (the measured 75.6%
 times v5's 0.966 confirmation factor), so no odds multiplier is claimed.
 
+Phase 1, 2026-10-14: **`phase1-estecker-joint-power-v1` measured v6's power**
+([result](phase1-experiment-history.md#result-phase1-estecker-joint-power-v1-run-2026-10-14)).
+On fresh keys and 24 fresh typical-IC plaintexts, the E-Stecker climb's sweep success
+(retained and companion-confirmed, the sweep's own decision rule) is 76.6% clean
+(plaintext-cluster interval 67.4 to 85.0) and 58.2% with one dropped or inserted letter
+(50.8 to 65.8), against 34.0% and 22.2% for v4's climb. This is the primary set: draws 0 to
+5 of each cell, seen in a smoke run before the preregistration, are left out, and the
+intervals resample plaintexts (draw-level intervals ignore that 24 plaintexts supply all the
+draws and were about half as wide). The gate run's own draws give 74.4% and 49.2% (post hoc). Confirmation
+given detection is 98% and retention at least 99.6%, so the power is limited by
+detection. It falls with plaintext IC: clean detection is 56% in the lowest tercile
+(IC 0.050 to 0.057) and 95% in the highest. All preregistered predictions held. This
+replaces v6's projected power; it is a measured miss probability for those two fault
+kinds on typical text, not a calibrated odds multiplier for BYQMZ.
+
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
 windowed climbs on the GPU. Its scores are the batched climber's bit for bit,
