@@ -3526,3 +3526,100 @@ unrelated local model server for v6 and may be again, which changes wall-clock t
 python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v7/config.json --jobs 1
 python3 scripts/v6_postrun_checks.py --target v7
 ```
+
+### Result: phase1-body-direct-sweep-v7 (run 2026-10-16)
+
+Configuration as preregistered above, unchanged. Artifact:
+[artifacts/phase1-body-direct-sweep-v7.json](../artifacts/phase1-body-direct-sweep-v7.json),
+SHA-256 `9b95bd71...`. Post-run evidence: `data/review/v7-postrun/` (`summary.json`, `checks.log`).
+
+#### Run record
+
+Launched 2026-10-16 02:37:55 UTC from clean `b3ad89f` (the preregistration commit),
+`--jobs 1`, cuda engine, one invocation, no resume; completed 22:48:44 UTC (72,649 s in all,
+72,030 s of sweep, 20.0 hours). RTX 3090, CUDA 12.8, numpy 2.2.6, Python 3.10.12. The GPU was
+shared with an unrelated LM Studio server, which changes wall-clock time and not the result
+(the cuda climb is bit-exact). The pinned power gate (control `phase1-rngonly-power-v1`, arm
+`complete_w117_rngonly`, required S1, D4, N2) passed before any search and is recorded under
+`result.power_prerequisite`, as did all seven preflight checks including
+`first_plug_climbs_match` and both positive controls. The checkpoint
+(`build/phase1-body-direct-sweep-v7.checkpoint.jsonl`) is git-ignored and disposable; the
+artifact is the record.
+
+#### Observed
+
+- All 1,560 chunks, 246,767,040 settings, 100 retained candidates (100 distinct settings).
+- **No retained candidate is companion-confirmed**: `confirmed_candidate_ranks` is empty. The best
+  minimum companion z over the 100 is 4.63 against the threshold 6; the median is 4.05 and
+  ranks 1 to 3 are 4.14, 4.14 and 3.91. None of the 100 has a ring setting compatible with the
+  clear indicator.
+- Sweep score distribution over all settings: mean -8.0705, sd 0.0669, maximum -7.4784 per
+  letter, **top z 8.85**; the 100th retained score is -7.5734. For reference, v4: top z 6.51,
+  best companion z 4.69; v5: 6.15, 4.84; v6: 7.50, 4.57.
+- Ranks 1 and 2 are the same wheel order (IV II I), rings (AUQ) and plugboard with start positions
+  one step apart (JET, KFT) and the same score and companion score: an equivalent pair, as the
+  earlier sweeps' retained sets also held.
+- 40 of the 100 retained settings are also among v6's 100, at identical scores (v6's rank 1 is
+  v7's rank 9). v7's top setting is its own and did not confirm.
+- Predictions: the deciding one (a companion-confirmed candidate) was refuted;
+  `null-top-in-band` held (z 8.85 in 5.5 to 9.5, and in the 8 to 9 the author expected);
+  `cost-in-band` held (20.0 hours in 18 to 24); `confirmed-candidate-is-rank-one` does not
+  apply (nothing confirmed); the two checks below held.
+
+#### Post-run checks (`scripts/v6_postrun_checks.py --target v7`, 191 s, 16 workers, from `b3ad89f`)
+
+Before the checks the comparison was shown to flag a wrong plugboard and a lower score. Field
+names in the summary that say `v6` refer to the target sweep (here v7).
+
+- `cuda-matches-reference-on-retained`: **held**. All 100 retained candidates re-climbed on the
+  CPU with v7's own settings give the cuda record's plugboard, winning window and score, with the
+  CPU batched climber (100 of 100) and the pure-Python reference (100 of 100); worst score
+  difference 4.8e-10, the artifact's nine-decimal rounding.
+- `v4-retained-settings-do-not-fall`: **held**. Re-climbing v4's 100 retained settings with the
+  R-ngonly climb gives a score at least v4's on all 100 (98 equal under E; here all 100 equal,
+  none rose). Control: v4's own settings reproduce v4's record 100 of 100. Check C (not
+  preregistered): no v4 retained setting scores above v7's 100th retained score without being
+  among v7's retained rows.
+- Informational, not a check: re-climbing v6's 100 retained settings with v7's climb gives 51 equal,
+  0 higher and **49 lower**, the largest drop 0.574 per letter.
+
+#### Interpretation (inference)
+
+- The standard-Enigma-I reading of BYQMZ that v6 and v7 could reach, at typical plaintext IC with
+  at most the faults the head-and-tail climb tolerates, is not supported: no candidate's wheel
+  order, rings and plugboard decipher FKQLZ or XFEDT above noise (best z 4.63, with no candidate
+  consistent with the indicator). A top z of 8.85 is what the best of 73 climbs per setting would
+  give over noise, higher than v6's 7.50 for the reason the author expected, and is no sign of a
+  near miss.
+- v7 is not a superset of v6. 49 of v6's 100 retained settings score lower under the R-ngonly climb
+  (E's two-phase climbs from its first-plug starts find boards that n-gram-only climbs from the same
+  starts do not), matching the control's finding that the two climbs fail on different keys.
+  That is why a second sweep added coverage: what the pair covers is the union.
+- From the control's draws, the keys neither the E nor the R-ngonly climb detects (detection
+  level, 714 draws per cell, plaintext-level intervals): clean 5.7% (4.1 to 7.3) overall, 15.0%
+  (9.9 to 19.0) at low IC and 1.2% at mid and high IC; one indel 18.9% (15.6 to 22.3) overall,
+  36.8% (28.1 to 45.5) at low IC, 14.2% and 6.2% at mid and high IC
+  (`data/review/v7-prereg-2026-10-16/union_miss.json`). With the E arm's measured confirmation
+  (98%) the miss rates would be slightly higher. So, for a standard reading with a clean or
+  once-garbled message and a typical plaintext, v6 and v7 together would have missed the key
+  about 6% or 19% of the time, and much more for a garbled low-IC message (37%). These are
+  planted-key detection rates on 24 Markov plaintexts, not a calibrated odds multiplier: the
+  priors over fault kinds and plaintext IC are unmeasured, BYQMZ's plaintext IC is unknown,
+  R-ngonly's confirmation and retention were not measured, and v2 to v5 are not in the union.
+- The decision to run v7 against its control's rule rested on the planted-key finding that the
+  two climbs fail on different keys. This run does not test that finding (a null on the real key
+  is what the finding predicts whether or not a standard-reading key exists), but the 49 lower
+  v6 settings above are independent evidence that the climbs differ. v7 covered keys v6 could
+  not, at the measured rate, and did not find one.
+
+#### Not run, and the next decision
+
+Not run: confirmation and retention of the R-ngonly climb on planted keys, two faults, a
+substituted letter combined with another fault, other wirings. Nothing further is
+preregistered. What a null of v6 and v7 leaves open is unchanged: other wheel wirings (the cited
+paper's doubt about Batch C), other reflectors, two faults, other machines, and a message that
+is not Enigma output (the publishers say they are not sure these messages are). For the
+maintainer: the standard-reading search of BYQMZ is now covered to about 94% (clean) and 81%
+(one indel) at typical IC by detection, with low-IC garbled keys the least covered; that and
+the open wiring question are the decision. The reply to the 2026-10-10 question to the authors,
+if any, is not recorded here.
