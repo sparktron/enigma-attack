@@ -3460,3 +3460,69 @@ low-IC gain is poorly pinned. The one-indel gain is clearly positive at every le
 (overall +8.0, +3.5 to +12.6; lowest tercile +17.9, +9.1 to +27.5). The preregistered rule is
 applied as written, so no v7 sweep is preregistered on this basis, but the maintainer's
 decision should not read D1 and D2 as showing the gain is small.
+
+## phase1-body-direct-sweep-v7 (preregistered 2026-10-16)
+
+Configuration:
+[experiments/phase1-body-direct-sweep-v7/config.json](../experiments/phase1-body-direct-sweep-v7/config.json),
+with `scripts/v7_marginal_power.py` (post hoc, run before the configuration was written) and
+the post-run checks `scripts/v6_postrun_checks.py --target v7`.
+
+**This run departs from a preregistered rule.** `phase1-rngonly-power-v1` fixed that a v7
+sweep would be preregistered only if D1 to D4 all held. D1 and D2 were refuted by their point
+estimates (+7.3 and +3.2 points; the plaintext-level intervals contain both bars). The
+maintainer decided on 2026-10-16 to run v7 regardless, which the history had listed as an
+option that would have to be argued afresh with its post hoc origin disclosed. This is that
+preregistration. Its power gate therefore pins the control's artifact but requires only the
+predictions that held (S1, D4, N2), and the configuration says so.
+
+The case, computed post hoc from the control's own draws before the configuration existed
+(`data/review/v7-prereg-2026-10-16/marginal.json`). v7 follows a null v6, so the relevant
+power is conditional on v6 having missed the key. On the 714 primary draws per cell the
+R-ngonly arm detects a key the E arm misses in 9.8% of clean draws (70; plaintext-level
+interval 7.6 to 12.3) and 18.8% of one-indel draws (134; 15.4 to 22.4): 63.1% of the E arm's
+clean misses (54.6 to 71.6) and 49.8% of its one-indel misses (43.3 to 56.4); in the
+lowest IC tercile 53.3% and 41.5%. The two climbs fail on largely different keys: the E arm
+detects 47 clean and 77 one-indel keys R-ngonly misses, which is why the net gain (+3.2, +8.0
+points) understates what a second, different climb adds after the first. These are detection
+rates. Companion confirmation and retention were not measured for the R-ngonly arm.
+
+Hypothesis. BYQMZ's key is one v6 missed because its climb was trapped, and the R-ngonly
+climb retains a candidate that the companion check (FKQLZ and XFEDT, z >= 6) confirms.
+
+Design. v6's configuration exactly (BYQMZ, middle-complete, W = 117, 246,767,040 settings,
+1,560 chunks, retention 100, companion threshold 6, cuda engine) with the first-plug start
+set changed from E (two-phase extras) to E, N and R with n-gram-only extras: 73 start boards
+per climb. Cost: 0.2931 ms per setting measured on the GPU, 20.1 hours projected (v6: 12.2).
+
+| id | statement | decides |
+|---|---|---|
+| companion-confirmed-candidate | at least one retained candidate is companion-confirmed | yes |
+| confirmed-candidate-is-rank-one | a confirmed candidate is the rank-1 candidate | no |
+| v4-retained-settings-do-not-fall | v4's 100 retained settings score at least v4's under the R-ngonly climb (the empty board is the first start and is v4's climb) | no |
+| cuda-matches-reference-on-retained | all 100 retained candidates re-climb identically on the CPU batched and reference climbers | no |
+| null-top-in-band | if null, the top score lies at z 5.5 to 9.5 (the author expects 8 to 9; v4 6.51, v6 7.50) | no |
+| cost-in-band | the recorded time is 18 to 24 hours | no |
+
+Stated power (inference where marked): the conditional detection above, scaled by the E arm's
+measured confirmation given detection (98%, not measured for the R-ngonly arm), projects about
+62% of clean and 49% of one-indel keys that v6 missed. A null of v7 then leaves about 38% and
+51% of the remaining standard-reading mass for those two fault kinds on typical-IC text, and
+more for low-IC text. That is not a calibrated odds multiplier: the priors over fault kinds
+and plaintext IC are unmeasured, the retention cutoff of a best-of-73 climb is unmeasured
+(it will be higher than v6's), and BYQMZ's plaintext IC is unknown. v7 and v6 cover the same
+settings and differ only in the climb's start boards, so a null of both says something about
+the climbs' blind spots, not about unsearched settings.
+
+Smoke run (scratch, 72 settings, 9 min 46 s): the gate, all seven preflight checks including
+`first_plug_climbs_match` (32 of 32 identical) and both positive controls passed; nothing was
+changed after it. `scripts/v6_postrun_checks.py` was generalised to `--target v7` and
+reproduces v6's committed evidence exactly on its default target.
+
+Run command (from a clean tree on a host with nvcc and the GPU; the GPU was shared with an
+unrelated local model server for v6 and may be again, which changes wall-clock time only):
+
+```bash
+python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v7/config.json --jobs 1
+python3 scripts/v6_postrun_checks.py --target v7
+```

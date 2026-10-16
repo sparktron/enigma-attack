@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Post-run checks for phase1-body-direct-sweep-v6 (its two non-deciding predictions).
+"""Post-run checks for phase1-body-direct-sweep-v6 and v7 (their two non-deciding predictions).
+
+``--target v6`` (the default) is v6's run as recorded; ``--target v7`` runs the same checks
+for the R-ngonly sweep (artifact and configuration of phase1-body-direct-sweep-v7), and in
+addition re-climbs v6's retained rows with v7's climb for information only: v7's extra
+starts are climbed by n-gram score alone, so a v6 setting may legitimately score lower
+under it, and that is reported, not judged.  Below, "v6" in a docstring means the target.
 
 ``cuda-matches-reference-on-retained``
     Every one of v6's 100 retained candidates is re-climbed on the CPU, from its
@@ -25,6 +31,7 @@ Self-test: before the checks, the comparison is run against a deliberately wrong
 plugboard and a deliberately lower score, and must flag both.
 
     python3 scripts/v6_postrun_checks.py --output data/review/v6-postrun-2026-10-13/summary.json
+    python3 scripts/v6_postrun_checks.py --target v7 --output data/review/v7-postrun/summary.json
 """
 
 from __future__ import annotations
@@ -47,9 +54,13 @@ from stecker_scoring import FastNgramScorer  # noqa: E402
 from stecker_traffic import traffic_from_corpus  # noqa: E402
 
 TOLERANCE = 1e-9
-V6 = ROOT / "artifacts/phase1-body-direct-sweep-v6.json"
+TARGETS = {
+    "v6": ("artifacts/phase1-body-direct-sweep-v6.json", "experiments/phase1-body-direct-sweep-v6/config.json"),
+    "v7": ("artifacts/phase1-body-direct-sweep-v7.json", "experiments/phase1-body-direct-sweep-v7/config.json"),
+}
+V6 = ROOT / TARGETS["v6"][0]
 V4 = ROOT / "artifacts/phase1-body-direct-sweep-v4.json"
-V6_CONFIG = ROOT / "experiments/phase1-body-direct-sweep-v6/config.json"
+V6_CONFIG = ROOT / TARGETS["v6"][1]
 V4_CONFIG = ROOT / "experiments/phase1-body-direct-sweep-v4/config.json"
 _STATE: dict = {}
 
@@ -127,12 +138,18 @@ def self_test(row: dict, got: dict) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--output", default="data/review/v6-postrun-2026-10-13/summary.json")
+    parser.add_argument("--target", choices=sorted(TARGETS), default="v6")
+    parser.add_argument("--output", default=None)
     parser.add_argument("--jobs", type=int, default=16)
     arguments = parser.parse_args()
 
-    v6, v4 = json.loads(V6.read_text(encoding="utf-8")), json.loads(V4.read_text(encoding="utf-8"))
-    config_v6, config_v4 = stecker.load_config(V6_CONFIG), stecker.load_config(V4_CONFIG)
+    target_artifact, target_config = (ROOT / path for path in TARGETS[arguments.target])
+    output = arguments.output or (
+        "data/review/v6-postrun-2026-10-13/summary.json" if arguments.target == "v6"
+        else f"data/review/{arguments.target}-postrun/summary.json"
+    )
+    v6, v4 = json.loads(target_artifact.read_text(encoding="utf-8")), json.loads(V4.read_text(encoding="utf-8"))
+    config_v6, config_v4 = stecker.load_config(target_config), stecker.load_config(V4_CONFIG)
     rows6, rows4 = v6["result"]["top_candidates"], v4["result"]["top_candidates"]
     started = time.time()
     init(config_v6, config_v4)
@@ -145,6 +162,10 @@ def main() -> int:
         a_reference = pool.map(climb_row, [(r, "v6", "reference") for r in rows6])
         b_control = pool.map(climb_row, [(r, "v4", "batched") for r in rows4])
         b_e = pool.map(climb_row, [(r, "v6", "batched") for r in rows4])
+        informational = None
+        if arguments.target != "v6":
+            rows_v6 = json.loads(V6.read_text(encoding="utf-8"))["result"]["top_candidates"]
+            informational = (rows_v6, pool.map(climb_row, [(r, "v6", "batched") for r in rows_v6]))
 
     def tabulate(rows, got):
         return [matches(r, g) for r, g in zip(rows, got)]
@@ -165,9 +186,10 @@ def main() -> int:
     summary = {
         "script": "scripts/v6_postrun_checks.py",
         "tolerance": TOLERANCE,
-        "v6_artifact": str(V6.relative_to(ROOT)),
+        "target": arguments.target,
+        "target_artifact": str(target_artifact.relative_to(ROOT)),
         "v4_artifact": str(V4.relative_to(ROOT)),
-        "v6_code": v6["code"]["commit"],
+        "target_code": v6["code"]["commit"],
         "seconds": round(time.time() - started, 1),
         "self_test": test,
         "cuda_matches_reference_on_retained": {
@@ -202,7 +224,16 @@ def main() -> int:
                              "delta": d, "window": g["window"]} for r, g, d in zip(rows4, b_e, deltas)],
         },
     }
-    out = ROOT / arguments.output
+    if informational is not None:
+        rows_v6, got_v6 = informational
+        deltas_v6 = [g["score"] - r["score_per_letter"] for r, g in zip(rows_v6, got_v6)]
+        summary["informational_v6_retained_under_target_climb"] = {
+            "note": "not a check: the target's extra starts are n-gram only, so a v6 setting may score lower here",
+            "rows": len(rows_v6), "equal": sum(1 for d in deltas_v6 if abs(d) <= TOLERANCE),
+            "higher": sum(1 for d in deltas_v6 if d > TOLERANCE), "lower": sum(1 for d in deltas_v6 if d < -TOLERANCE),
+            "largest_gain": max(deltas_v6), "largest_drop": min(deltas_v6),
+        }
+    out = ROOT / output
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     brief = {k: v for k, v in summary.items() if k != "per_row"}

@@ -1,0 +1,365 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "cuda",
+    "window": {
+      "kind": "head_tail",
+      "letters": 117
+    },
+    "window_rationale": "Fixed at W = 117 by the sweep rule preregistered in phase1-windowed-climb-power-v1 before that run, whose three deciding predictions held. W = 134 measured slightly higher on indel draws there; the rule forbids choosing it on that evidence.",
+    "first_plug": {
+      "letters": "ENR",
+      "start_phases": "ngram_only"
+    },
+    "first_plug_rationale": "The R-ngonly climb of phase1-rngonly-power-v1: the empty plugboard climbed in full (index of coincidence then n-grams, which is v4's climb exactly) and each of the 73 boards that plug E, N or R to another letter climbed by n-gram score alone, the best final n-gram score kept, the earliest board winning a tie. Chosen from the low-IC screen (scripts/review/first_stage_screen.py); implemented as climb.first_plug.start_phases = ngram_only, parity-tested across the reference, batched and cuda climbs. Measured on the GPU at 0.2931 ms per setting, 1.67 times v6's E climb."
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The controls are constructed or independently solved plaintexts, not authentic held-out Army traffic with an authentic daily key.",
+    "The messages behind the published 1941 n-gram counts are not enumerated, so overlap between the authentic control plaintexts and the scorer's training data cannot be ruled out. The constructed control exists to bound that risk, not to remove it.",
+    "The positive controls are body-direct and are handed the true wheel order, ring setting and start positions. They certify the stecker stage at the target lengths and say nothing about the rotor enumeration, which the sweeps and calibrations cover separately.",
+    "Every result assumes UKW-B, the Army/Air Force wheels I-V and the 1940+ clear-Grundstellung indicator procedure. A different reflector, a Naval wheel or a different indicator convention is outside every space searched here.",
+    "The calibrations use one plaintext per cell and a single key draw per cell. They locate the detection boundary to within a cell, not to a precise length.",
+    "The authentic control pools five short messages under one daily key (275 letters); the constructed control pools three at the target lengths (371 letters). Neither certifies a single 167-letter message on its own, which is what the capability calibration measures.",
+    "The middle-complete space has an exact equivalent for every daily key at 167 letters (rule_key_coverage 1.0). A key is still found only if the climb converges at one of its equivalents and scores into the top 100 of nine times as many settings as v3 searched; the stated power measures the first on planted draws and stands in for the second with a pooled null.",
+    "Companion confirmation for the E arm has not been measured. The earlier middle-past-notch calibration and v5 confirmation fraction cannot certify the middle-complete E-arm check at typical plaintext IC; the extrapolation is labelled as inference in stated_power.",
+    "No result here is an accepted break: a confirmed candidate's plaintext still has to be read and reviewed before accepted_break could change.",
+    "The E-arm detection is measured on clean and single-indel 167-letter draws around planted keys, against that arm's own pooled wrong-setting null. Top-100 retention over all 246,767,040 settings and the far tail of the E-start null are not measured by the control.",
+    "The sweep scores each setting by the better of two 117-letter windows, so its scores are not on the scale of v2's whole-message scores; the indicator confirmation, which compares a pooled date score with the candidate's own sweep score, is reported but is even less informative here than in v2. The companion check alone decides.",
+    "A candidate found through the tail window is reported at the setting that deciphers the tail, which for a garbled message is one keystroke away from the setting of the head.",
+    "This power is unconditional across the new plaintext/key draws. Conditional companion-confirmed power given all four prior sweep arms missed is unmeasured; no additional posterior odds multiplier is calibrated for v6.",
+    "The prior probability of a dropped or inserted letter is unmeasured. Keep clean and one-indel rates separate; any mixture or borrowed confirmation rate is an explicit inference.",
+    "The cited paper (Sullivan and Weierud 2005, footnote 42) places Batch C on a different radio network and its authors suspect differently wired wheels. Every figure here assumes wheels I-V as wired; if that is wrong the power is zero and a null says nothing about these messages.",
+    "The choice of E-Stecker follows the 2026-10-11 preregistered P2/P3 launch rule, both passed by its control. Earlier split-point yield models used a different plaintext and CPU engine and do not establish current E-Stecker efficiency.",
+    "The E-arm control measured clean and single-indel draws only. V6 spends extra cost on first-plug starts, retains W=117 head-and-tail windows, and does not test a combined E/split search, two faults or substitution-specific E-arm power.",
+    "The stated power comes from Markov plaintexts of the scorer's own counts, not authentic held-out Army traffic, and from a slice around a planted key, not the whole space; the E-start null (the best of 26 climbs) is heavier-tailed than the whole-message one, so the 6-sigma detection threshold of the control and the z = 6 companion threshold of the sweep are not the same quantity.",
+    "The 480 key draws reuse 24 plaintexts. The reported Wilson interval describes pooled key-draw variability and does not include uncertainty over the language model, plaintext distribution or real target traffic. P2 passed by 3/480 draws; its interval includes values below 75%.",
+    "v7 is chosen and launched on the maintainer's decision, against the rule its control preregistered (D1 and D2 were refuted by point estimate). The case for it, the conditional detection of keys v6 missed, was computed post hoc from the control's own draws before this configuration was written.",
+    "The stated power is detection on 24 Markov plaintexts, scaled by the E arm's confirmation; companion confirmation of R-ngonly candidates and retention of a best-of-73 climb in the full sweep's top 100 are not measured, and the retention cutoff of this sweep will be higher than v6's.",
+    "v7 and v6 are not independent in what they cover: both search the same 246.8 million settings under the same ring rule, window and scorer, and differ only in the climb's start boards. A null of both is evidence about the climb's blind spots, not about unsearched settings."
+  ],
+  "experiment_id": "phase1-body-direct-sweep-v7",
+  "mode": "body_direct_sweep",
+  "output": "artifacts/phase1-body-direct-sweep-v7.json",
+  "hypothesis": "BYQMZ, FKQLZ and XFEDT of 1941-09-30 are Enigma I traffic (UKW-B, wheels I-V, ten stecker pairs) under one daily key, and BYQMZ's key is one that v6's sweep (the W = 117 head-and-tail climb with E first-plug starts over the middle-complete space) missed because its climb was trapped: the E, N and R first-plug starts with n-gram-only extras fail on largely different keys from v6's, finding about 63% of the clean keys and 50% of the one-indel keys that E misses on typical text. The same complete sweep with that climb then retains at least one candidate that the companion-body confirmation accepts: FKQLZ and XFEDT each deciphered at all 17,576 starts under the candidate's wheel order, rings and plugboard, both best starts at z >= 6.",
+  "refuted_by": "No retained candidate companion-confirmed. A null is evidence about this bounded standard-Enigma hypothesis only, and v7 is a sequel to a null v6, so its power is the conditional one: on the stratified draws of phase1-rngonly-power-v1 (714 per cell once the 12 draws seen in a smoke run are left out) the R-ngonly arm detected 63.1% of the clean keys the E arm missed (70 of 111, plaintext-level interval 54.6 to 71.6) and 49.8% of the one-indel keys (134 of 269, 43.3 to 56.4). Scaled by the E arm's measured confirmation given detection (98%, not measured for the R-ngonly arm) that projects about 62% and 49% (inference). A null therefore leaves about 38% of the remaining clean-key mass and 51% of the one-indel mass of a standard reading, on typical-IC text and for those two fault kinds only, and less for low-IC text (53% and 42% of E's misses detected in the lowest tercile). It is not a calibrated odds multiplier: the priors over fault kinds and plaintext IC are unmeasured, the retention cutoff of a best-of-73 climb was not measured, and BYQMZ's plaintext IC is unknown. Nothing here tests two faults, a substituted letter combined with another fault, other reflectors, other wheel wirings, Naval wheels, other indicator procedures or non-Enigma systems.",
+  "target": {
+    "date": "1941-09-30",
+    "messages": [
+      "BYQMZ",
+      "FKQLZ",
+      "XFEDT"
+    ]
+  },
+  "body_direct_sweep": {
+    "message": "BYQMZ",
+    "rings": "AAA",
+    "start_left": "all",
+    "start_middle": "all",
+    "start_right": "all",
+    "keep": 100,
+    "rationale": "Same message, ring rule (middle_complete), window (W = 117), retention, start axes, right-ring axis, companions and threshold as v4 and v6, run on the cuda engine; the only change from v6 is the first-plug start set (E, N and R with n-gram-only extras in place of E with two-phase extras). v6's 246,767,040 settings are swept again with 73 start boards each. Projected cost 20.1 hours (0.2931 ms per setting, measured on 16,384 settings of BYQMZ; v6 took 12.2 hours). 1,560 checkpointed chunks, so a stop loses at most one chunk.",
+    "ring_rule": "middle_complete",
+    "right_ring": "all",
+    "checkpoint": "build/phase1-body-direct-sweep-v7.checkpoint.jsonl",
+    "companion_confirmation": {
+      "companions": [
+        "FKQLZ",
+        "XFEDT"
+      ],
+      "threshold_z": 6.0,
+      "calibration": "artifacts/phase1-companion-calibration-v1.json"
+    }
+  },
+  "predictions": [
+    {
+      "id": "companion-confirmed-candidate",
+      "statement": "At least one of the 100 retained candidates is companion-confirmed (min over FKQLZ and XFEDT of best-start z >= 6).",
+      "decides_hypothesis": true
+    },
+    {
+      "id": "confirmed-candidate-is-rank-one",
+      "statement": "If a candidate is confirmed, it is also the sweep's rank-1 candidate on BYQMZ alone.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "v4-retained-settings-do-not-fall",
+      "statement": "Re-climbing each of v4's 100 retained settings with the R-ngonly climb gives a score per letter at least v4's, to within 1e-9. The empty board is the first start and the climb from it is v4's exactly, so a fall would mean the implementation changed the climb. Checked after the run by a CPU re-climb of v4's retained rows.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "cuda-matches-reference-on-retained",
+      "statement": "All 100 retained candidates re-climb identically on the CPU batched climber and on the pure-Python reference climb (plugboard, winning window and score within 1e-9), as v6's did.",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "null-top-in-band",
+      "statement": "If no candidate is confirmed, the sweep's top score lies between z = 5.5 and z = 9.5 over the distribution of all 246,767,040 settings' scores (v4 6.51, v6 7.50; the best of 73 starts has a heavier right tail than the best of 26, so the author expects 8 to 9).",
+      "decides_hypothesis": false
+    },
+    {
+      "id": "cost-in-band",
+      "statement": "The sweep's recorded time is between 18 and 24 hours on this GPU, with the GPU shared as before (projection 20.1 hours).",
+      "decides_hypothesis": false
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261201,
+    "samples": 24
+  },
+  "status": "preregistered 2026-10-16; not run",
+  "pre_run_facts": {
+    "disclosure": "Everything below was known before this run and shaped this configuration. None of it is a result of this sweep.",
+    "decision_departs_from_the_preregistered_rule": "phase1-rngonly-power-v1 preregistered that a v7 sweep would be preregistered only if D1 to D4 all held. D1 (low-IC tercile clean gain over E, at least 8 points) and D2 (overall clean gain, at least 4) were refuted by their point estimates (+7.3 and +3.2 points), D3 and D4 held, and the plaintext-level intervals contain both bars (+2.6 to +14.6 and +0.4 to +6.3). The maintainer decided on 2026-10-16 to run v7 regardless, as an alternative the history listed ('argue for a v7 sweep on the one-indel and low-IC gain, preregistered afresh with its post hoc origin disclosed'). This configuration is that fresh preregistration. It is not licensed by the control's rule, and its power gate therefore pins the control's artifact but requires only the predictions that held (S1, D4, N2), not D1 or D2.",
+    "marginal_power": "scripts/v7_marginal_power.py, post hoc, run on the control's artifact before this configuration was written (data/review/v7-prereg-2026-10-16/marginal.json): v7 follows a null v6, so the relevant power is conditional. On the primary draws (714 per cell) the R-ngonly arm detects a key the E arm misses in 9.8%% of clean draws (70; plaintext-level interval 7.6 to 12.3) and 18.8%% of one-indel draws (134; 15.4 to 22.4), which is 63.1%% of the E arm's clean misses and 49.8%% of its one-indel misses; in the lowest IC tercile 53.3%% and 41.5%%. The reverse also happens: the E arm detects 47 clean and 77 one-indel keys the R-ngonly arm misses, which is why the net gain (+3.2, +8.0 points) understates what a second, different climb adds after the first. These are detection rates; companion confirmation and retention were not measured for the R-ngonly arm.",
+    "cost": "Measured on the GPU on 16,384 random settings of BYQMZ with v6's window and settings: R-ngonly 0.2931 ms per setting (1.67 times E's 0.1753, which gave v6's 12.2 hours), so 20.1 hours for 246.8 million settings.",
+    "v6": "phase1-body-direct-sweep-v6 is null (best companion z 4.57, top z 7.50), run 2026-10-13 from clean ebeb9ef; v4 and v5 are null too (best companion z 4.69 and 4.84).",
+    "implementation": "climb.first_plug.start_phases and ic_passes (stecker_climb.py, stecker_batch.py, stecker_cuda.py, commit 15490a6, merged in #37); tests/test_first_plug.py pins the reference, batched and cuda climbs to one another on plugboard, evaluations, score and window for these options; the run's preflight repeats that on this configuration before any search.",
+    "smoke_run": "Before committing, this configuration was smoke-run once through the runner on a 72-setting slice (two wheel orders, scratch output and checkpoint, 9 min 46 s, nearly all of it the preflight and positive controls with 73 starts per climb). The pinned power gate passed (recorded under result.power_prerequisite: arm complete_w117_rngonly, clean detection 87.2%, required predictions S1, D4, N2), all seven preflight checks passed including first_plug_climbs_match (32 of 32 identical across reference, batched and cuda, worst score difference 0.0), and both positive controls passed. No result of the slice was used for anything, and nothing was changed after it."
+  },
+  "run_command": "python3 phase1_stecker.py --config experiments/phase1-body-direct-sweep-v7/config.json --jobs 1",
+  "run_constraint": "Not run. Run from a clean tree on a host with nvcc and the GPU (cuda ignores --jobs). The runner enforces power_prerequisite: an absent, changed, stale or failing control cannot launch the target sweep. Keep build/phase1-body-direct-sweep-v7.checkpoint.jsonl until completion; resume by rerunning the same command (a resume repeats preflight, positive controls and confirmations, and the artifact's timing covers only the last invocation), and record each start, stop and resume. Then run scripts/v6_postrun_checks.py with the v7 arguments (retained-candidate CPU parity and the v4 non-decrease check) before interpreting the result.",
+  "power_prerequisite": {
+    "artifact": "artifacts/phase1-rngonly-power-v1.json",
+    "sha256": "d7affdcb9fc2867d441c53a770155a8f1d68e0ecb3794a160afed4c07740c2cd",
+    "config": "experiments/phase1-rngonly-power-v1/config.json",
+    "experiment_id": "phase1-rngonly-power-v1",
+    "arm": "complete_w117_rngonly",
+    "baseline_arm": "complete_w117_estecker",
+    "length": 167,
+    "minimum_clean_detection": 0.8,
+    "minimum_clean_gain": 0.0,
+    "required_predictions": [
+      "S1",
+      "D4",
+      "N2"
+    ],
+    "note": "Deliberately omits D1 and D2, which were refuted; see pre_run_facts.decision_departs_from_the_preregistered_rule. The gate checks that the pinned control is the complete, clean, passing run of this exact climb, that its clean detection is at least 80% and no lower than the E arm's, and that S1, D4 and N2 held."
+  },
+  "stated_power": {
+    "source": "artifacts/phase1-rngonly-power-v1.json (primary draws 6 onward of each cell; scripts/rngonly_power_v1.py, scripts/v7_marginal_power.py)",
+    "measured_detection_primary": {
+      "clean": {
+        "rngonly": 0.877,
+        "estecker": 0.845,
+        "v4": 0.452
+      },
+      "one_indel": {
+        "rngonly": 0.703,
+        "estecker": 0.623,
+        "v4": 0.241
+      },
+      "draws_per_cell": 714
+    },
+    "conditional_on_v6_null_detection": {
+      "clean": {
+        "count": [
+          70,
+          111
+        ],
+        "rate": 0.630631,
+        "plaintext_interval_95": [
+          0.546392,
+          0.715909
+        ]
+      },
+      "one_indel": {
+        "count": [
+          134,
+          269
+        ],
+        "rate": 0.498141,
+        "plaintext_interval_95": [
+          0.432727,
+          0.563694
+        ]
+      },
+      "scope": "detection of keys the E arm missed, same draws; not confirmation, not retention"
+    },
+    "confirmation_extrapolation": {
+      "classification": "inference; measured for the E arm (98.1% clean, 98.6% one indel) and not for the R-ngonly arm",
+      "clean": 0.619,
+      "one_indel": 0.491
+    },
+    "limitations": "24 model-generated plaintexts stratified by IC, one key seed, planted-key neighbourhoods, a pooled wrong-setting null; not full-space retention, authentic traffic, or confirmed power. BYQMZ plaintext IC is unknown."
+  }
+}
