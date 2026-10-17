@@ -17,6 +17,13 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const startName = (s) => C.ch(Math.floor(s / 676)) + C.ch(Math.floor(s / 26)) + C.ch(s);
   const startIndex = (p) => C.idx(p[0]) * 676 + C.idx(p[1]) * 26 + C.idx(p[2]);
+  /** Two starts are the same key when the first key press brings them to the same positions. */
+  function afterFirstPress(positions) {
+    const m = new C.Machine(D, { rotors: key.rotors, rings: key.rings, positions });
+    m.step();
+    return m.positions;
+  }
+
   function icOfText(text) {
     const counts = new Array(26).fill(0);
     for (const c of text) counts[C.idx(c)]++;
@@ -238,7 +245,10 @@
       parts.push(`; it was at its turnover letter ${D.rotors[m.R.name][1]}, so the middle wheel stepped too`);
     }
     if (s.middleNotch) {
-      parts.push(`; the middle wheel was at its own turnover ${D.rotors[m.M.name][1]}, so it stepped again and carried the left wheel with it (the double step)`);
+      parts.push(
+        `; the middle wheel was at its own turnover letter ${D.rotors[m.M.name][1]}, so it stepped once and carried the left wheel with it. ` +
+          `A middle wheel carried onto its turnover by the right wheel steps again on the very next press: the double step`
+      );
     }
     parts.push(`. Wheels now read ${m.positions}; lamp ${trace.output} lit.`);
     $("step-note").textContent = parts.join("");
@@ -621,39 +631,63 @@
     }
     const v = sweep.values;
     const t = v[truth];
+    const TIE = 1e-12;
+    const target = afterFirstPress(key.msgKey);
     let sum = 0;
     let sq = 0;
     let above = 0;
+    const equivalent = [];
+    const tied = [];
     for (let s = 0; s < STARTS; s++) {
       if (s === truth) continue;
       sum += v[s];
       sq += v[s] * v[s];
-      if (v[s] > t) above++;
+      if (v[s] > t + TIE) above++;
+      else if (v[s] >= t - TIE) (afterFirstPress(startName(s)) === target ? equivalent : tied).push(startName(s));
     }
     const mean = sum / (STARTS - 1);
     const sd = Math.sqrt(sq / (STARTS - 1) - mean * mean);
     const z = (t - mean) / sd;
     const rank = above + 1;
+    const ties = equivalent.length + tied.length;
+    const zText = (z >= 0 ? "+" : "") + z.toFixed(1);
+    const tiedNames = [...equivalent, ...tied];
+    const rankText = rank.toLocaleString("en-US") + (ties ? ` (tied: ${tiedNames.slice(0, 2).join(", ")}${ties > 2 ? ", …" : ""})` : "");
     dl.innerHTML = [
       ["Sender's start", key.msgKey],
       ["Its IC", fmt(t)],
       ["Wrong starts, mean ± sd", `${fmt(mean)} ± ${fmt(sd)}`],
-      ["z-score", (z >= 0 ? "+" : "") + z.toFixed(1)],
-      ["Rank among 17,576", rank.toLocaleString("en-US")],
+      ["z-score", zText],
+      ["Rank among 17,576", rankText],
     ].map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("");
-    const order = Array.from({ length: STARTS }, (_, i) => i).sort((a, b) => v[b] - v[a]);
-    const rows = order.slice(0, 8).map((s, i) => [i + 1, s]);
-    if (rank > 8) rows.push([rank, truth]);
-    tbody.innerHTML = rows
-      .map(([r, s]) => `<tr class="${s === truth ? "truth" : ""}"><td>${r.toLocaleString("en-US")}</td><td class="mono">${startName(s)}${s === truth ? " · sender's" : ""}</td><td class="n">${fmt(v[s])}</td></tr>`)
+    // Competition ranking: equal scores share a rank.
+    const order = Array.from({ length: STARTS }, (_, i) => i).sort((a, b) => v[b] - v[a] || (a === truth ? -1 : b === truth ? 1 : a - b));
+    const rankOf = (s) => {
+      let r = 1;
+      for (let i = 0; i < STARTS && v[order[i]] > v[s] + TIE; i++) r++;
+      return r;
+    };
+    const top = order.slice(0, 8);
+    if (!top.includes(truth)) top.push(truth);
+    tbody.innerHTML = top
+      .map((s) => {
+        const tag = s === truth ? " · sender's" : equivalent.includes(startName(s)) ? " · same key" : "";
+        return `<tr class="${s === truth ? "truth" : ""}"><td>${rankOf(s).toLocaleString("en-US")}</td><td class="mono">${startName(s)}${tag}</td><td class="n">${fmt(v[s])}</td></tr>`;
+      })
       .join("");
+    const sameKey = equivalent.length
+      ? ` ${equivalent.join(", ")} ${equivalent.length === 1 ? "scores" : "score"} exactly the same because ${equivalent.length === 1 ? "it is" : "they are"} the same key: the first key press brings ${equivalent.length === 1 ? "it" : "each"} to ${target}, as it does from ${key.msgKey}, so the whole message decrypts identically.`
+      : "";
+    const otherTies = tied.length ? ` It also ties with ${tied.length} unrelated start${tied.length === 1 ? "" : "s"} (${tied.slice(0, 3).join(", ")}${tied.length > 3 ? ", …" : ""}).` : "";
     let read;
-    if (rank === 1) {
-      read = `With ${sweep.plugs} plug${sweep.plugs === 1 ? "" : "s"}, the sender's start ${key.msgKey} stands alone at the top, z = +${z.toFixed(1)}. Enough letters pass through unplugged that the decryption keeps plaintext's lopsided letter counts.`;
+    if (rank === 1 && !tied.length) {
+      read = `With ${sweep.plugs} plug${sweep.plugs === 1 ? "" : "s"}, the sender's key stands alone at the top, z = ${zText}. Enough letters pass through unplugged that the decryption keeps plaintext's lopsided letter counts.${sameKey}`;
+    } else if (rank === 1) {
+      read = `With ${sweep.plugs} plug${sweep.plugs === 1 ? "" : "s"}, the sender's start ${key.msgKey} shares the top score (z = ${zText}).${sameKey}${otherTies}`;
     } else if (rank <= 200) {
-      read = `With ${sweep.plugs} plugs the sender's start ranks ${rank}. A sweep that keeps its top 200 would pass it to the climb, but it no longer stands out (z = ${z >= 0 ? "+" : ""}${z.toFixed(1)}).`;
+      read = `With ${sweep.plugs} plugs the sender's start ranks ${rank}. A sweep that keeps its top 200 would pass it to the climb, but it no longer stands out (z = ${zText}).${sameKey}${otherTies}`;
     } else {
-      read = `With ${sweep.plugs} plugs the sender's start ranks ${rank.toLocaleString("en-US")} of 17,576 (z = ${z >= 0 ? "+" : ""}${z.toFixed(1)}). With ${2 * sweep.plugs} of 26 letters plugged, only about ${Math.round(100 * ((26 - 2 * sweep.plugs) / 26) ** 2)}% of key presses pass the plugboard untouched both ways, so the unplugged decryption keeps almost none of the plaintext's letter counts. Over all 60 wheel orders it would be buried far deeper. This is the README's finding: at ten plugs the IC stage has almost no detection power.`;
+      read = `With ${sweep.plugs} plugs the sender's start ranks ${rank.toLocaleString("en-US")} of 17,576 (z = ${zText}).${sameKey} With ${2 * sweep.plugs} of 26 letters plugged, only about ${Math.round(100 * ((26 - 2 * sweep.plugs) / 26) ** 2)}% of key presses pass the plugboard untouched both ways, so the unplugged decryption keeps almost none of the plaintext's letter counts. Over all 60 wheel orders it would be buried far deeper. This is the README's finding: at ten plugs the IC stage has almost no detection power.`;
     }
     $("sweep-read").textContent = read;
   }
@@ -672,7 +706,15 @@
     $("climb-true-v").textContent = key.msgKey;
     const ready = sweep.best !== null;
     $("climb-best").disabled = !ready;
-    $("climb-best-v").textContent = ready ? `${startName(sweep.best)}${startName(sweep.best) === key.msgKey ? " (the sender's)" : ""}` : "(run the sweep)";
+    const bestName = ready ? startName(sweep.best) : "";
+    const bestTag = !ready
+      ? ""
+      : bestName === key.msgKey
+        ? " (the sender's)"
+        : afterFirstPress(bestName) === afterFirstPress(key.msgKey)
+          ? " (the same key as the sender's)"
+          : "";
+    $("climb-best-v").textContent = ready ? bestName + bestTag : "(run the sweep)";
     if (!ready && $("climb-best").checked) $("climb-true").checked = true;
     const positions = climbStart();
     const body = sweep.body;
