@@ -1,0 +1,405 @@
+<title>Enigma Attack Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Saira+Stencil+One&display=swap">
+<style>
+/* Layout: one reading column of numbered stages; the machine and the attack
+   share one key sheet. Light theme is a signals message form, dark is the
+   machine's black crinkle panel; amber is a lit lamp, orange and blue are the
+   forward and return current. */
+:root {
+  --bg: #e9ece5;
+  --surface: #f6f7f2;
+  --sunk: #dfe3da;
+  --ink: #1d221e;
+  --muted: #59635b;
+  --rule: #c3cabf;
+  --wire: #aeb7aa;
+  --fwd: #c0561b;
+  --ret: #2a679b;
+  --lamp: #e2a21f;
+  --lamp-ink: #2b2007;
+  --ok: #2c7a4f;
+  --bad: #b23a3a;
+  --focus: #2a679b;
+  --font-display: "Saira Stencil One", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.6rem;
+  --step-3: clamp(2.2rem, 6vw, 3.6rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131512; --surface: #1c1f1b; --sunk: #0f110e; --ink: #e4e7df; --muted: #9aa294;
+    --rule: #333931; --wire: #4a5247; --fwd: #ee8a4f; --ret: #6eaae0; --lamp: #ffc23d;
+    --lamp-ink: #2b2007; --ok: #63c48c; --bad: #ec7373; --focus: #6eaae0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131512; --surface: #1c1f1b; --sunk: #0f110e; --ink: #e4e7df; --muted: #9aa294;
+  --rule: #333931; --wire: #4a5247; --fwd: #ee8a4f; --ret: #6eaae0; --lamp: #ffc23d;
+  --lamp-ink: #2b2007; --ok: #63c48c; --bad: #ec7373; --focus: #6eaae0; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+}
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--step-3); letter-spacing: 0.01em; }
+h2 { font-size: var(--step-2); font-weight: 600; display: flex; align-items: baseline; gap: 0.6rem; }
+h3 { font-size: var(--step-1); font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--ret); }
+code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.masthead { padding-block: 2.5rem 1.5rem; border-bottom: 1px solid var(--rule); }
+.masthead .wrap { display: grid; gap: 0.9rem; }
+.eyebrow { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.12rem; color: var(--ink); }
+.toc { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: var(--step--1); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.toc a { color: var(--muted); text-decoration: none; }
+.toc a:hover { color: var(--ink); text-decoration: underline; }
+
+main section { padding-block: 2.5rem; border-bottom: 1px solid var(--rule); }
+main section > .wrap { display: grid; gap: 1.1rem; }
+.num { font-family: var(--font-display); font-weight: 400; color: var(--fwd); font-size: 1.1em; min-width: 1.2em; }
+.note { color: var(--muted); font-size: var(--step--1); }
+.label { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+
+/* Key sheet */
+.keysheet { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.9rem 1.2rem; background: var(--surface); border: 1px solid var(--rule); padding: 1.1rem; }
+.field { display: grid; gap: 0.3rem; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+.field .de { font-style: italic; text-transform: none; letter-spacing: 0; }
+input[type="text"], select, textarea {
+  font-family: var(--font-mono); font-size: 0.95rem; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--rule); padding: 0.45rem 0.55rem; width: 100%; min-width: 0; border-radius: 2px;
+}
+textarea { resize: vertical; min-height: 4.5rem; line-height: 1.5; }
+.wheels { display: flex; gap: 0.4rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+button {
+  font-family: var(--font-body); font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  color: var(--ink); background: var(--surface); border: 1px solid var(--ink); padding: 0.45rem 0.9rem; border-radius: 2px;
+}
+button.primary { background: var(--ink); color: var(--bg); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button:not(:disabled):hover { border-color: var(--fwd); }
+.error { color: var(--bad); font-weight: 600; }
+.sent { display: grid; gap: 0.4rem; background: var(--sunk); padding: 0.9rem 1rem; border-left: 3px solid var(--ink); min-width: 0; }
+.groups { font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.04em; word-spacing: 0.4em; overflow-wrap: anywhere; }
+
+/* Machine */
+.seg { display: inline-flex; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; flex-wrap: wrap; }
+.seg button { border: 0; border-radius: 0; background: transparent; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; justify-content: space-between; }
+.diagram { background: var(--surface); border: 1px solid var(--rule); overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 620px; height: auto; }
+svg text { font-family: var(--font-mono); fill: var(--ink); }
+svg .faint { fill: var(--muted); }
+svg .ringlbl { stroke: var(--sunk); stroke-width: 3px; paint-order: stroke; }
+svg .box { fill: var(--sunk); stroke: var(--rule); }
+svg .win { fill: var(--surface); stroke: var(--ink); }
+svg .win.moved { stroke: var(--fwd); stroke-width: 2; }
+svg .wire { stroke: var(--wire); stroke-width: 1; fill: none; }
+svg .sig-f { stroke: var(--fwd); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+svg .sig-r { stroke: var(--ret); stroke-width: 2.6; fill: none; stroke-linejoin: round; }
+svg .key-dot { fill: var(--fwd); }
+svg .lamp-dot { fill: var(--lamp); }
+svg .lamp-dot + text, svg .key-dot + text { fill: var(--bg); font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: var(--step--1); color: var(--muted); }
+.legend i { display: inline-block; width: 1.6rem; height: 3px; vertical-align: middle; margin-right: 0.4rem; }
+.trace { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 2px; }
+.trace .cell { flex: 1 0 4.6rem; background: var(--surface); border-top: 3px solid var(--rule); padding: 0.35rem 0.45rem; font-family: var(--font-mono); }
+.trace .cell.f { border-top-color: var(--fwd); }
+.trace .cell.r { border-top-color: var(--ret); }
+.trace .cell.l { border-top-color: var(--lamp); }
+.trace .cell b { display: block; font-size: 1rem; }
+.trace .cell span { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.stepnote { min-height: 3em; }
+.boards { display: grid; gap: 0.6rem; justify-items: center; background: var(--sunk); padding: 1rem 0.5rem; border-radius: 2px; }
+.krow { display: flex; gap: clamp(3px, 1vw, 8px); justify-content: center; }
+.lamp, .kb {
+  width: clamp(28px, 8.5vw, 42px); height: clamp(28px, 8.5vw, 42px); border-radius: 50%;
+  display: grid; place-items: center; font-family: var(--font-mono); font-weight: 600; font-size: clamp(0.75rem, 2.6vw, 1rem); padding: 0;
+}
+.lamp { background: var(--surface); color: var(--muted); border: 1px solid var(--rule); transition: background 120ms, color 120ms, box-shadow 120ms; }
+.lamp.lit { background: var(--lamp); color: var(--lamp-ink); border-color: var(--lamp); box-shadow: 0 0 14px 2px var(--lamp); }
+.kb { background: var(--ink); color: var(--bg); border: 2px solid var(--muted); }
+.kb.down { transform: translateY(2px); border-color: var(--fwd); }
+.boards .label { margin-top: 0.2rem; }
+.tapes { display: grid; gap: 0.6rem; }
+.tape { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.8rem; align-items: start; }
+.tape .groups span { color: var(--muted); opacity: 0.55; }
+.tape .groups span.done { color: var(--ink); opacity: 1; }
+.tape .groups span.cur { background: var(--fwd); color: var(--bg); opacity: 1; }
+.tape.out .groups span.cur { background: var(--lamp); color: var(--lamp-ink); }
+.chip { display: inline-block; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.5rem; border: 1px solid currentColor; border-radius: 2px; }
+.chip.ok { color: var(--ok); }
+.chip.bad { color: var(--bad); }
+.chip.wait { color: var(--muted); }
+
+/* Attack */
+.keyspace { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.keyspace div { background: var(--surface); padding: 0.7rem 0.8rem; display: grid; gap: 0.15rem; min-width: 0; }
+.keyspace b { font-family: var(--font-mono); font-size: 0.95rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.keyspace .times { background: var(--sunk); }
+.controls { display: flex; flex-wrap: wrap; gap: 0.8rem 1.4rem; align-items: center; }
+.controls label { display: flex; gap: 0.5rem; align-items: center; }
+input[type="range"] { accent-color: var(--fwd); width: 11rem; }
+.radios { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
+.split { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+@media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--rule); padding: 0.9rem; min-width: 0; }
+.panel svg { display: block; width: 100%; height: auto; }
+.panel svg .bar { fill: var(--wire); }
+.panel svg .axis { stroke: var(--muted); stroke-width: 1; }
+.panel svg .grid { stroke: var(--rule); stroke-width: 1; }
+.panel svg text { font-size: 10px; fill: var(--muted); }
+.panel svg .hot { stroke: var(--fwd); stroke-width: 2; }
+.panel svg .hot-t { fill: var(--fwd); font-weight: 600; }
+.panel svg .ref { stroke: var(--ret); stroke-width: 1; stroke-dasharray: 4 3; }
+.panel svg .ref-t { fill: var(--ret); }
+.panel svg .halo { stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
+.progress { height: 4px; background: var(--sunk); }
+.progress div { height: 100%; width: 0; background: var(--fwd); }
+.stats { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 0.8rem; font-variant-numeric: tabular-nums; }
+.stats dt { color: var(--muted); font-size: var(--step--1); }
+.stats dd { margin: 0; font-family: var(--font-mono); text-align: right; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 0.25rem 0.4rem; border-bottom: 1px solid var(--rule); font-size: var(--step--1); }
+td.n, th.n { text-align: right; font-family: var(--font-mono); }
+tr.truth td { color: var(--fwd); font-weight: 600; }
+.plugviz svg text { font-size: 13px; fill: var(--ink); }
+.plugviz svg .arc-ok { stroke: var(--ok); stroke-width: 2.4; fill: none; }
+.plugviz svg .arc-bad { stroke: var(--bad); stroke-width: 2.4; fill: none; }
+.plugviz svg .arc-true { stroke: var(--muted); stroke-width: 1.2; fill: none; stroke-dasharray: 3 3; }
+.plugviz svg .cap { font-size: 10px; fill: var(--muted); }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.charts .line-ic { stroke: var(--ret); stroke-width: 2; fill: none; }
+.charts .line-ng { stroke: var(--fwd); stroke-width: 2; fill: none; }
+.charts .dot-ic { fill: var(--ret); }
+.charts .dot-ng { fill: var(--fwd); }
+.charts .area-ic { fill: var(--ret); opacity: 0.12; }
+.charts .area-ng { fill: var(--fwd); opacity: 0.12; }
+.decrypt { font-family: var(--font-mono); font-size: 0.98rem; letter-spacing: 0.03em; overflow-wrap: anywhere; line-height: 1.75; }
+.decrypt .y { color: var(--ok); font-weight: 600; }
+.decrypt .n { color: var(--bad); opacity: 0.7; }
+.log { max-height: 14rem; overflow-y: auto; margin: 0; padding-left: 1.4rem; font-family: var(--font-mono); font-size: 0.8rem; display: grid; gap: 0.15rem; }
+.log li.phase { list-style: none; margin-left: -1.4rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem; padding-top: 0.4rem; }
+.verdict { border-left: 4px solid var(--rule); padding: 0.9rem 1rem; background: var(--surface); display: grid; gap: 0.5rem; }
+.verdict.ok { border-left-color: var(--ok); }
+.verdict.bad { border-left-color: var(--bad); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.facts div { border-top: 2px solid var(--ink); padding-top: 0.6rem; display: grid; gap: 0.3rem; }
+.facts b { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 600; }
+footer { padding-block: 2rem 3rem; }
+footer p { color: var(--muted); font-size: var(--step--1); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">enigma-attack · Phase 1 pipeline, run in your browser</div>
+    <h1>Enigma Attack Bench</h1>
+    <p class="lede">Set a daily key and watch an Enigma I encipher and decipher a message one key press at a time. Then attack the ciphertext the way this repository does: sweep the wheel start positions by index of coincidence, then hill-climb the plugboard with 1941 Army n-gram counts.</p>
+    <nav class="toc" aria-label="Sections">
+      <a href="#key">1 Key sheet</a><a href="#machine">2 Machine</a><a href="#sweep">3 Sweep</a><a href="#climb">4 Climb</a><a href="#verdict">5 Verdict</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="key">
+    <div class="wrap">
+      <h2><span class="num">1</span>Key sheet</h2>
+      <p>The sender's settings for the day and the message. The defaults are the constructed control message CTRL-B1 from <code>phase1-stecker-calibration-v1</code>: 167 letters of Army-style German, written so it cannot overlap the n-gram counts the attack scores with.</p>
+      <form id="key-form" class="keysheet" novalidate>
+        <div class="field">
+          <span class="label">Wheel order <span class="de">Walzenlage</span></span>
+          <div class="wheels">
+            <select id="key-l" aria-label="Left wheel"></select>
+            <select id="key-m" aria-label="Middle wheel"></select>
+            <select id="key-r" aria-label="Right wheel"></select>
+          </div>
+        </div>
+        <label class="field"><span class="label">Ring setting <span class="de">Ringstellung</span></span><input type="text" id="key-rings" maxlength="3" autocomplete="off" spellcheck="false"></label>
+        <label class="field"><span class="label">Grundstellung</span><input type="text" id="key-grund" maxlength="3" autocomplete="off" spellcheck="false"></label>
+        <label class="field"><span class="label">Message key <span class="de">Spruchschlüssel</span></span><input type="text" id="key-msg" maxlength="3" autocomplete="off" spellcheck="false"></label>
+        <label class="field wide"><span class="label">Plugboard <span class="de">Steckerverbindungen</span></span><input type="text" id="key-plugs" autocomplete="off" spellcheck="false"></label>
+        <label class="field wide"><span class="label">Plaintext <span class="de">Klartext</span> · letters only; Army text writes X for a stop and Q for CH</span><textarea id="key-plain" spellcheck="false"></textarea></label>
+        <div class="field wide">
+          <div class="actions">
+            <button type="submit" class="primary" id="key-apply">Set the machine</button>
+            <button type="button" id="key-demo">Restore the demo key</button>
+            <span class="error" id="key-error" role="alert"></span>
+          </div>
+        </div>
+      </form>
+      <div class="sent">
+        <span class="label">What goes over the air</span>
+        <div class="groups" id="sent-text"></div>
+        <span class="note" id="sent-note"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="machine">
+    <div class="wrap">
+      <h2><span class="num">2</span>The machine</h2>
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="What the machine is doing">
+          <button type="button" id="mode-indicator" aria-pressed="false">Indicator</button>
+          <button type="button" id="mode-encipher" aria-pressed="true">Encipher</button>
+          <button type="button" id="mode-decipher" aria-pressed="false">Decipher</button>
+        </div>
+        <div class="actions">
+          <button type="button" class="primary" id="m-step">Press next key</button>
+          <button type="button" id="m-play">Play</button>
+          <button type="button" id="m-reset">Reset</button>
+          <label class="label" for="m-speed">Speed</label>
+          <select id="m-speed" style="width:auto">
+            <option value="1700">Slow</option>
+            <option value="750" selected>Normal</option>
+            <option value="160">Fast</option>
+            <option value="0">Instant</option>
+          </select>
+        </div>
+      </div>
+      <p id="mode-note"></p>
+      <div class="diagram"><svg id="wiring" role="img" aria-label="Signal path through the plugboard, three wheels and reflector"></svg></div>
+      <div class="legend">
+        <span><i style="background:var(--fwd)"></i>Current toward the reflector</span>
+        <span><i style="background:var(--ret)"></i>Current back to the lamps</span>
+        <span><i style="background:var(--wire)"></i>Wheel wiring at the current positions</span>
+      </div>
+      <p class="stepnote" id="step-note"></p>
+      <div class="trace" id="trace" aria-live="polite"></div>
+      <div class="boards">
+        <span class="label">Lampboard</span>
+        <div id="lamps"></div>
+        <span class="label">Keyboard · click or type a letter to press it</span>
+        <div id="keys"></div>
+      </div>
+      <div class="tapes">
+        <div class="tape"><span class="label" id="tape-in-label">Typed</span><div class="groups" id="tape-in"></div></div>
+        <div class="tape out"><span class="label" id="tape-out-label">Lamps</span><div class="groups" id="tape-out"></div></div>
+        <div id="tape-status"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sweep">
+    <div class="wrap">
+      <h2><span class="num">3</span>Stage 1 · Sweep the wheel starts</h2>
+      <p>The interceptor has only the ciphertext. The plugboard multiplies the keyspace beyond any search, so the method this repository follows (Weierud and Sullivan, with Ostwald and Weierud's two-phase scoring) first ignores it: decrypt with no plugs at every wheel setting and keep the settings whose output has the highest index of coincidence, the chance that two letters drawn from it match. German plaintext scores about 0.07 and random letters 0.0385.</p>
+      <div class="keyspace" id="keyspace"></div>
+      <p class="note">This page sweeps all 17,576 starts of the sender's wheel order with the sender's rings held, one sixtieth of the 1,054,560 settings a Phase 1 sweep ranks per indicator ordering.</p>
+      <div class="controls">
+        <label for="sweep-plugs"><span class="label">Plugs the sender used</span>
+          <input type="range" id="sweep-plugs" min="0" max="10" step="1" value="10">
+          <b class="mono" id="sweep-plugs-v">10</b></label>
+        <button type="button" class="primary" id="sweep-run">Run the sweep</button>
+        <span class="note" id="sweep-plugs-note"></span>
+      </div>
+      <div class="progress" aria-hidden="true"><div id="sweep-progress"></div></div>
+      <div class="split">
+        <div class="panel">
+          <span class="label">Index of coincidence at each of the 17,576 starts</span>
+          <svg id="sweep-hist" viewBox="0 0 640 240" role="img" aria-label="Histogram of index of coincidence across start positions"></svg>
+        </div>
+        <div class="panel" style="display:grid;gap:0.8rem">
+          <dl class="stats" id="sweep-stats"></dl>
+          <table>
+            <thead><tr><th>Rank</th><th>Start</th><th class="n">IC</th></tr></thead>
+            <tbody id="sweep-top"></tbody>
+          </table>
+        </div>
+      </div>
+      <p id="sweep-read"></p>
+    </div>
+  </section>
+
+  <section id="climb">
+    <div class="wrap">
+      <h2><span class="num">4</span>Stage 2 · Climb the plugboard</h2>
+      <p>At one wheel setting the climb tries every change of one plug: all 325 letter pairs and every unplug. It keeps the single best change and repeats until nothing improves. It climbs on index of coincidence first, then on the log-likelihood of the text under the published 1941 Army bigram and trigram counts, at most 10 pairs and 30 passes per phase, as <code>phase1-stecker-calibration-v1</code> configures it.</p>
+      <div class="controls">
+        <div class="radios" role="radiogroup" aria-label="Wheel setting to climb from">
+          <label><input type="radio" name="climb-start" id="climb-true" value="true" checked> The sender's start <b class="mono" id="climb-true-v"></b> <span class="note">(a positive control, as the repo runs it)</span></label>
+          <label><input type="radio" name="climb-start" id="climb-best" value="best"> The sweep's top start <b class="mono" id="climb-best-v"></b></label>
+        </div>
+      </div>
+      <div class="controls">
+        <button type="button" class="primary" id="climb-run">Run the climb</button>
+        <button type="button" id="climb-step">One pass</button>
+        <button type="button" id="climb-reset">Reset</button>
+        <span class="note" id="climb-status"></span>
+      </div>
+      <div class="panel plugviz">
+        <span class="label">Plugboard: the climb's plugs above, the sender's hidden plugs dashed below</span>
+        <svg id="plug-svg" viewBox="0 0 640 150" role="img" aria-label="Plugboard pairs found by the climb compared with the sender's"></svg>
+      </div>
+      <div class="charts">
+        <div class="panel"><span class="label">Index of coincidence per pass</span><svg id="chart-ic" viewBox="0 0 320 170"></svg></div>
+        <div class="panel"><span class="label">N-gram log-likelihood per letter</span><svg id="chart-ng" viewBox="0 0 320 170"></svg></div>
+      </div>
+      <div class="panel" style="display:grid;gap:0.5rem">
+        <span class="label" id="decrypt-label">Decryption at this plugboard</span>
+        <div class="decrypt" id="decrypt"></div>
+        <span class="note">Green letters match the sender's plaintext. The attacker cannot see this colouring; the scores above are all the climb has.</span>
+      </div>
+      <div class="panel">
+        <span class="label">Pass log</span>
+        <ol class="log" id="climb-log"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="verdict">
+    <div class="wrap">
+      <h2><span class="num">5</span>Verdict</h2>
+      <div class="verdict" id="verdict-box"><p>Run the climb to see what it recovers.</p></div>
+      <h3>What the repository measured</h3>
+      <div class="facts">
+        <div><b>0%</b><p>Chance the true setting reaches the top 200 of an IC-ranked sweep at 167 letters with ten plugs, over 32 key draws (<code>phase1-ic-rank-v1</code>). Stage 1 alone almost never finds it.</p></div>
+        <div><b>28 / 32</b><p>Trials in which a body-direct climb, IC phase then n-grams, recovered a ten-pair plugboard and the exact plaintext at 167 letters, on a plaintext of IC 0.079. On Army-typical text near 0.06 it recovers far fewer.</p></div>
+        <div><b>2,109,120</b><p>Daily keys in the complete indicator-coupled search of the real 1941 traffic. It found nothing, as the calibration predicted. BYQMZ, FKQLZ and XFEDT are still on the publisher's unbroken list.</p></div>
+      </div>
+      <p class="note">Details: <code>README.md</code> and <code>docs/phase1-experiment-history.md</code>.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Built by <code>scripts/build_visualizer.py</code> from <code>enigma.py</code> (wheels I–V, UKW-B), the stecker-climb settings and control message of <code>phase1-stecker-calibration-v1</code>, and the 1941 Army bigram and trigram counts in <code>data/phase7</code>, compiled by Geoff Sullivan and Frode Weierud (CryptoCellar, CC BY-NC-SA 4.0). The machine, sweep, scorer and climb are checked against the Python pipeline by <code>tests/test_visualizer.py</code>.</p>
+  </div>
+</footer>
+
+<script>
+/*@@DATA@@*/
+</script>
+<script>
+/*@@CORE@@*/
+</script>
+<script>
+/*@@APP@@*/
+</script>
