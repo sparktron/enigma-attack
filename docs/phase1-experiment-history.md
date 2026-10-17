@@ -3623,3 +3623,21 @@ maintainer: the standard-reading search of BYQMZ is now covered to about 94% (cl
 (one indel) at typical IC by detection, with low-IC garbled keys the least covered; that and
 the open wiring question are the decision. The reply to the 2026-10-10 question to the authors,
 if any, is not recorded here.
+
+#### Amendment (2026-10-16, after review of PR #38)
+
+One finding, correct. Limitation 8 of the v7 configuration (index 7), "Companion confirmation for
+the E arm has not been measured", is stale. It was inherited from v6's configuration, where it was
+true when v6 launched. By the time v7 was preregistered, `phase1-estecker-joint-power-v1`
+(run 2026-10-14) had measured it: confirmation given detection for the E arm is 98.1% on clean
+draws and 98.6% on one-indel draws, and v7's `refuted_by` and
+`stated_power.confirmation_extrapolation` use those measured rates. So the configuration
+contradicted itself. The correct reading is that **only the R-ngonly arm's confirmation is
+unmeasured**, as the configuration's last-but-two limitation already says. The projected 62% (clean)
+and 49% (one-indel) power for keys v6 missed is therefore the R-ngonly arm's measured conditional
+detection scaled by the E arm's measured confirmation, an extrapolation to the R-ngonly arm
+and labelled as inference.
+
+The configuration itself is left byte-identical: the finished artifact records its SHA-256
+(`99e0f801...`, which matches the committed file), and a preregistered configuration is not
+rewritten after its run. The amendment is this entry.
