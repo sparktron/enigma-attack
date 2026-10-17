@@ -107,6 +107,26 @@ found nothing, exactly as the calibration predicted. Full detail, numbers, and
 what this implies for the next experiment are in
 [docs/phase1-experiment-history.md](docs/phase1-experiment-history.md).
 
+### Phase 1 visualizer
+
+[`visualizer/enigma-visualizer.html`](visualizer/enigma-visualizer.html) is a
+self-contained page (open it in a browser; it needs no server) that shows the
+machine and the attack step by step: the signal path through plugboard, wheels
+and reflector for each key press, the indicator procedure, encipherment and
+decipherment, then the index-of-coincidence sweep of all 17,576 starts of one
+wheel order and the two-phase stecker climb, pass by pass. Its defaults are the
+constructed control message of `phase1-stecker-calibration-v1`, and a slider
+shows the IC stage losing the true start as plugs are added.
+
+```bash
+python3 scripts/build_visualizer.py   # regenerate after editing visualizer/
+```
+
+The page embeds the wirings, climb settings and Phase 7 n-gram counts from the
+repository at build time. `tests/test_visualizer.py` fails if the committed page
+is stale and, when `node` is installed, checks its machine, sweep, scorer and
+climb against the Python pipeline.
+
 ## Phase 2 — Network and archival crib generation
 
 Treat archive research as part of the cryptanalytic loop.
@@ -425,6 +445,7 @@ A credible break should satisfy most of these simultaneously:
 - `stecker_calibration.py` — known-key calibrations of the IC stage, the climb, screening and the indicator gradient
 - `stecker_controls.py` — preflight checks, positive controls, and the indicator confirmation with ring recovery
 - `stecker_power.py` — end-to-end power of the body-direct sweep against planted random-ring keys
+- `visualizer/` — the Phase 1 visualizer page, its template and JS sources; built by `scripts/build_visualizer.py`
 - `provenance.py` — the shared `code` block: commit, uncommitted-change flag, and module hashes
 - `resources.py` — locates research inputs in a checkout or installed wheel, and default outputs
 - `phase2.py` — traffic graph, archive priorities, and provenance-aware crib ranker
