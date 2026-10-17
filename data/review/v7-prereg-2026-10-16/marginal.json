@@ -1,0 +1,194 @@
+{
+  "power_artifact": "artifacts/phase1-rngonly-power-v1.json",
+  "first_draw": 6,
+  "result": {
+    "clean": {
+      "all": {
+        "draws": 714,
+        "e_misses": 111,
+        "r_only": 70,
+        "e_only": 47,
+        "r_only_per_draw": {
+          "rate": 0.098039,
+          "cluster_interval_95": [
+            0.07563,
+            0.123422
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 70,
+          "of": 111,
+          "rate": 0.630631,
+          "cluster_interval_95": [
+            0.546392,
+            0.715909
+          ]
+        },
+        "union_detection": 0.942577
+      },
+      "low": {
+        "draws": 234,
+        "e_misses": 75,
+        "r_only": 40,
+        "e_only": 23,
+        "r_only_per_draw": {
+          "rate": 0.17094,
+          "cluster_interval_95": [
+            0.132479,
+            0.226496
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 40,
+          "of": 75,
+          "rate": 0.533333,
+          "cluster_interval_95": [
+            0.441558,
+            0.638554
+          ]
+        },
+        "union_detection": 0.850427
+      },
+      "mid": {
+        "draws": 240,
+        "e_misses": 21,
+        "r_only": 18,
+        "e_only": 13,
+        "r_only_per_draw": {
+          "rate": 0.075,
+          "cluster_interval_95": [
+            0.0375,
+            0.116667
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 18,
+          "of": 21,
+          "rate": 0.857143,
+          "cluster_interval_95": [
+            0.740741,
+            1.0
+          ]
+        },
+        "union_detection": 0.9875
+      },
+      "high": {
+        "draws": 240,
+        "e_misses": 15,
+        "r_only": 12,
+        "e_only": 11,
+        "r_only_per_draw": {
+          "rate": 0.05,
+          "cluster_interval_95": [
+            0.0125,
+            0.0875
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 12,
+          "of": 15,
+          "rate": 0.8,
+          "cluster_interval_95": [
+            0.428571,
+            1.0
+          ]
+        },
+        "union_detection": 0.9875
+      }
+    },
+    "indel": {
+      "all": {
+        "draws": 714,
+        "e_misses": 269,
+        "r_only": 134,
+        "e_only": 77,
+        "r_only_per_draw": {
+          "rate": 0.187675,
+          "cluster_interval_95": [
+            0.154062,
+            0.22409
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 134,
+          "of": 269,
+          "rate": 0.498141,
+          "cluster_interval_95": [
+            0.432727,
+            0.563694
+          ]
+        },
+        "union_detection": 0.810924
+      },
+      "low": {
+        "draws": 234,
+        "e_misses": 147,
+        "r_only": 61,
+        "e_only": 19,
+        "r_only_per_draw": {
+          "rate": 0.260684,
+          "cluster_interval_95": [
+            0.198276,
+            0.324786
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 61,
+          "of": 147,
+          "rate": 0.414966,
+          "cluster_interval_95": [
+            0.328767,
+            0.5
+          ]
+        },
+        "union_detection": 0.632479
+      },
+      "mid": {
+        "draws": 240,
+        "e_misses": 77,
+        "r_only": 43,
+        "e_only": 31,
+        "r_only_per_draw": {
+          "rate": 0.179167,
+          "cluster_interval_95": [
+            0.116667,
+            0.25
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 43,
+          "of": 77,
+          "rate": 0.558442,
+          "cluster_interval_95": [
+            0.428571,
+            0.7
+          ]
+        },
+        "union_detection": 0.858333
+      },
+      "high": {
+        "draws": 240,
+        "e_misses": 45,
+        "r_only": 30,
+        "e_only": 27,
+        "r_only_per_draw": {
+          "rate": 0.125,
+          "cluster_interval_95": [
+            0.075,
+            0.175
+          ]
+        },
+        "r_detects_given_e_misses": {
+          "count": 30,
+          "of": 45,
+          "rate": 0.666667,
+          "cluster_interval_95": [
+            0.586957,
+            0.75
+          ]
+        },
+        "union_detection": 0.9375
+      }
+    }
+  }
+}

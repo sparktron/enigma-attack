@@ -527,6 +527,19 @@ preregistered rule no v7 sweep is preregistered. The gain is largest on garbled 
 messages (one indel, lowest tercile: 54.6% against 37.5%). The decision is the
 maintainer's.
 
+Phase 1, 2026-10-16: **`phase1-body-direct-sweep-v7` is done and null**
+([result](phase1-experiment-history.md#result-phase1-body-direct-sweep-v7-run-2026-10-16)).
+It is v6's sweep with the R-ngonly climb (E, N and R first-plug starts, extras by n-gram score
+alone, 73 starts), run on the GPU from clean `b3ad89f` in 20.0 hours, one invocation, on the
+maintainer's decision and against the rule its control preregistered (stated in the
+configuration). No retained candidate is companion-confirmed (best z 4.63 against 6); the top
+score is z 8.85, in the preregistered 5.5 to 9.5. Both post-run checks held (all 100
+retained candidates re-climb identically on the CPU; v4's retained settings do not fall).
+v7 is not a superset of v6: 49 of v6's 100 retained settings score lower under it, which is
+why a second sweep added coverage. From the control's draws, the keys neither climb detects are
+5.7% (clean) and 18.9% (one indel) at typical IC and 15% and 37% at low IC, detection level, not
+a calibrated odds multiplier.
+
 **CUDA engine (2026-10-08, exploratory engineering).** `climb.engine = "cuda"`
 (`stecker_cuda.py`, `pip install .[gpu]` plus nvcc) runs the whole-message and
 windowed climbs on the GPU. Its scores are the batched climber's bit for bit,

@@ -1,0 +1,47 @@
+{
+  "script": "scripts/v6_postrun_checks.py",
+  "tolerance": 1e-09,
+  "target": "v7",
+  "target_artifact": "artifacts/phase1-body-direct-sweep-v7.json",
+  "v4_artifact": "artifacts/phase1-body-direct-sweep-v4.json",
+  "target_code": "b3ad89f72a20680958be7aa7adc8623ec40098a3",
+  "seconds": 190.8,
+  "self_test": {
+    "real_row_identical": true,
+    "wrong_plugboard_and_lower_score_flagged": true
+  },
+  "cuda_matches_reference_on_retained": {
+    "rows": 100,
+    "batched_identical": 100,
+    "reference_identical": 100,
+    "worst_abs_score_delta_batched": 4.769296069184747e-10,
+    "worst_abs_score_delta_reference": 4.769296069184747e-10,
+    "mismatches": [],
+    "passed": true
+  },
+  "v4_retained_settings_do_not_fall": {
+    "rows": 100,
+    "control_v4_settings_reproduce_v4_identical": 100,
+    "e_score_not_below_v4": 100,
+    "fallen_rows": [],
+    "rows_improved_by_e_starts": 0,
+    "rows_equal": 100,
+    "largest_gain": 4.958771171459375e-10,
+    "best_e_score_on_v4_rows": -7.53950879282139,
+    "passed": true
+  },
+  "check_c_v4_rows_consistent_with_v6_retained": {
+    "v6_100th_retained_score": -7.573383084,
+    "inconsistent": [],
+    "passed": true
+  },
+  "informational_v6_retained_under_target_climb": {
+    "note": "not a check: the target's extra starts are n-gram only, so a v6 setting may score lower here",
+    "rows": 100,
+    "equal": 51,
+    "higher": 0,
+    "lower": 49,
+    "largest_gain": 4.689599819585055e-10,
+    "largest_drop": -0.5736946712403883
+  }
+}
