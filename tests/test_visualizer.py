@@ -36,11 +36,12 @@ const c = job.climb;
 const table = C.positionTable(D, c.rotors, c.rings, c.positions, c.body.length);
 out.ngram = job.ngram_boards.map((pb) => scorer.scoreDecryption(table, c.body, pb));
 out.ic = job.ngram_boards.map((pb) => C.coincidenceOfDecryption(table, c.body, pb));
-const result = C.runClimbPhases(D.climb.phases, {
+const objectives = {
   index_of_coincidence: (pb) => C.coincidenceOfDecryption(table, c.body, pb),
   ngram: (pb) => scorer.scoreDecryption(table, c.body, pb),
-}, D.climb);
-out.climb = C.plugPairs(result.plugboard);
+};
+// runClimbPhases drains climbPhases, the generator the page draws pass by pass.
+out.climbs = c.settings.map((settings) => C.runClimbPhases(D.climb.phases, objectives, settings).records);
 process.stdout.write(JSON.stringify(out));
 """
 
@@ -104,13 +105,20 @@ class VisualizerTest(unittest.TestCase):
             for i in range(0, 20, 2):
                 board[pool[i]], board[pool[i + 1]] = pool[i + 1], pool[i]
             boards.append(board)
+        capped = {**data["climb"], "max_passes": 3}  # stops the IC phase short of converging
         job = {
             "core": str(ROOT / "visualizer" / "enigma-core.js"),
             "data": data,
             "crypt": crypt_cases,
             "tables": table_cases,
             "sweep": sweep,
-            "climb": {"rotors": demo["rotors"], "rings": demo["rings"], "positions": demo["message_key"], "body": body},
+            "climb": {
+                "rotors": demo["rotors"],
+                "rings": demo["rings"],
+                "positions": demo["message_key"],
+                "body": body,
+                "settings": [data["climb"], capped],
+            },
             "ngram_boards": boards,
         }
         completed = subprocess.run(
@@ -150,17 +158,20 @@ class VisualizerTest(unittest.TestCase):
             self.assertAlmostEqual(ngram, scorer.score_decryption(table, body, board), places=7)
             self.assertAlmostEqual(ic, coincidence_of_decryption(table, body, board), places=12)
 
-        plugboard, _, _ = run_climb_phases(
-            data["climb"]["phases"],
-            {
-                "index_of_coincidence": lambda pb: coincidence_of_decryption(table, body, pb),
-                "ngram": lambda pb: scorer.score_decryption(table, body, pb),
-            },
-            len(body),
-            data["climb"],
-        )
-        self.assertEqual(result["climb"], enigma_fast.plugboard_pairs(plugboard))
-        self.assertEqual(result["climb"], demo["plugboard"])
+        objectives = {
+            "index_of_coincidence": lambda pb: coincidence_of_decryption(table, body, pb),
+            "ngram": lambda pb: scorer.score_decryption(table, body, pb),
+        }
+        for settings, got in zip(job["climb"]["settings"], result["climbs"]):
+            _, records, _ = run_climb_phases(data["climb"]["phases"], objectives, len(body), settings)
+            self.assertEqual(
+                [(r["objective"], r["plugboard"], r["passes"]) for r in got],
+                [(r["objective"], r["plugboard"], r["passes"]) for r in records],
+            )
+        full, short = result["climbs"]
+        self.assertEqual(full[-1]["plugboard"], demo["plugboard"])
+        self.assertTrue(all(r["converged"] for r in full))
+        self.assertFalse(short[0]["converged"])
 
 
 if __name__ == "__main__":

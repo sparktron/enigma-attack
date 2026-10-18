@@ -243,14 +243,16 @@
 
   /**
    * stecker_climb.climb_stecker, one pass per iteration: best improvement over
-   * all 325 swaps plus the unplug moves.  Yields after every pass so a page can
-   * draw it; the return value is the converged plugboard.
+   * all 325 swaps plus the unplug moves.  Yields after every improving pass so
+   * a page can draw it.  Returns the final plugboard, and whether the climb
+   * converged (a pass found no improving change) or stopped at maxPasses.
    */
   function* climbStecker(evaluate, maxPairs, maxPasses, minimumGain, initial) {
     let current = initial ? initial.slice() : Array.from({ length: 26 }, (_, i) => i);
     let best = evaluate(current);
     let evaluations = 1;
     let passes = 0;
+    let converged = false;
     while (passes < maxPasses) {
       passes++;
       let passBest = best;
@@ -288,21 +290,33 @@
           chosen = trial;
         }
       }
-      if (chosen === null) break;
+      if (chosen === null) {
+        converged = true;
+        break;
+      }
       const before = current;
       current = chosen;
       const previous = best;
       best = passBest;
       yield { pass: passes, before, plugboard: current.slice(), previous, score: best, evaluations };
     }
-    return { plugboard: current, score: best, passes, evaluations };
+    return { plugboard: current, score: best, passes, evaluations, converged };
   }
 
-  /** Run a whole climb with no drawing, phases in order as run_climb_phases. */
-  function runClimbPhases(phases, objectives, settings, initial) {
+  /**
+   * stecker_climb.run_climb_phases, one pass at a time: each objective climbs
+   * from where the previous one stopped.  Yields { type: "phase" } as a phase
+   * starts, { type: "pass" } after each of its improving passes and
+   * { type: "end" } with its record as it stops.  Returns the final plugboard
+   * and the records.  The page draws this generator and the parity test runs
+   * it, so what the page shows is what the test checks.
+   */
+  function* climbPhases(phases, objectives, settings, initial) {
     let plugboard = initial ? initial.slice() : Array.from({ length: 26 }, (_, i) => i);
     const records = [];
-    for (const objective of phases) {
+    for (const [index, objective] of phases.entries()) {
+      if (!objectives[objective]) throw new Error(`unknown climb objective: ${objective}`);
+      yield { type: "phase", index, objective };
       const climb = climbStecker(
         objectives[objective],
         settings.max_pairs,
@@ -311,11 +325,25 @@
         plugboard
       );
       let step = climb.next();
-      while (!step.done) step = climb.next();
+      while (!step.done) {
+        yield { type: "pass", index, objective, ...step.value };
+        step = climb.next();
+      }
+      const { passes, evaluations, converged } = step.value;
       plugboard = step.value.plugboard;
-      records.push({ objective, plugboard: plugPairs(plugboard), passes: step.value.passes });
+      const record = { objective, plugboard: plugPairs(plugboard), passes, evaluations, converged };
+      records.push(record);
+      yield { type: "end", index, ...record };
     }
     return { plugboard, records };
+  }
+
+  /** Run a whole climb with no drawing. */
+  function runClimbPhases(phases, objectives, settings, initial) {
+    const run = climbPhases(phases, objectives, settings, initial);
+    let step = run.next();
+    while (!step.done) step = run.next();
+    return step.value;
   }
 
   function textToIndices(text) {
@@ -336,6 +364,7 @@
     sweepStarts,
     NgramScorer,
     climbStecker,
+    climbPhases,
     runClimbPhases,
     textToIndices,
   };

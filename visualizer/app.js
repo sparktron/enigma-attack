@@ -739,12 +739,13 @@
         index_of_coincidence: (pb) => C.coincidenceOfDecryption(table, body, pb),
         ngram: (pb) => scorer.scoreDecryption(table, body, pb),
       },
-      phase: 0,
-      gen: null,
+      objective: D.climb.phases[0],
+      run: null,
       board: Array.from({ length: 26 }, (_, i) => i),
       history: [],
       log: [],
       done: false,
+      converged: false,
       timer: null,
     });
     record(0, "start");
@@ -762,7 +763,7 @@
   function record(pass, kind) {
     const pb = climb.board;
     climb.history.push({
-      phase: D.climb.phases[Math.min(climb.phase, D.climb.phases.length - 1)],
+      phase: climb.objective,
       pass,
       kind,
       ic: climb.objectives.index_of_coincidence(pb),
@@ -788,40 +789,45 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  /** Advance the climb to its next improving pass; false once every phase has stopped. */
   function climbPass() {
     if (climb.done) return false;
-    const phases = D.climb.phases;
-    const settings = D.climb;
-    if (!climb.gen) {
-      const objective = phases[climb.phase];
-      climb.gen = C.climbStecker(climb.objectives[objective], settings.max_pairs, settings.max_passes, settings.minimum_gain, climb.board);
-      logLine(objective === "ngram" ? "Phase 2 · n-gram log-likelihood" : "Phase 1 · index of coincidence", "phase");
-    }
-    const step = climb.gen.next();
-    if (!step.done) {
+    if (!climb.run) climb.run = C.climbPhases(D.climb.phases, climb.objectives, D.climb, climb.board);
+    for (;;) {
+      const step = climb.run.next();
+      if (step.done) {
+        const records = step.value.records;
+        climb.done = true;
+        climb.converged = records.length > 0 && records[records.length - 1].converged;
+        $("climb-run").disabled = true;
+        $("climb-step").disabled = true;
+        $("climb-status").textContent = climb.converged
+          ? "Converged: no single plug change improves the score."
+          : `Stopped at the ${D.climb.max_passes}-pass limit before converging.`;
+        drawClimb();
+        renderVerdict();
+        return false;
+      }
       const s = step.value;
-      climb.board = s.plugboard;
-      record(s.pass, "pass");
-      const h = climb.history[climb.history.length - 1];
-      const val = phases[climb.phase] === "ngram" ? `n-gram ${fmt(h.ng, 3)}/letter` : `IC ${fmt(h.ic)}`;
-      logLine(`pass ${s.pass}: ${describeMove(s.before, s.plugboard)}  →  ${val}`);
-      $("climb-status").textContent = `${phases[climb.phase] === "ngram" ? "Phase 2" : "Phase 1"}, pass ${s.pass}: ${C.plugPairs(climb.board).split(" ").filter(Boolean).length} plugs.`;
-      drawClimb();
-      return true;
+      if (s.type === "phase") {
+        climb.objective = s.objective;
+        logLine(`Phase ${s.index + 1} · ${s.objective === "ngram" ? "n-gram log-likelihood" : "index of coincidence"}`, "phase");
+      } else if (s.type === "end") {
+        const ending = s.converged
+          ? `converged after ${s.passes} pass${s.passes === 1 ? "" : "es"}`
+          : `stopped at the ${s.passes}-pass limit`;
+        logLine(`${ending}; ${s.evaluations.toLocaleString("en-US")} plugboards scored`);
+      } else {
+        climb.board = s.plugboard;
+        record(s.pass, "pass");
+        const h = climb.history[climb.history.length - 1];
+        const val = s.objective === "ngram" ? `n-gram ${fmt(h.ng, 3)}/letter` : `IC ${fmt(h.ic)}`;
+        logLine(`pass ${s.pass}: ${describeMove(s.before, s.plugboard)}  →  ${val}`);
+        $("climb-status").textContent = `Phase ${s.index + 1}, pass ${s.pass}: ${C.plugPairs(climb.board).split(" ").filter(Boolean).length} plugs.`;
+        drawClimb();
+        return true;
+      }
     }
-    logLine(`converged after ${step.value.passes} pass${step.value.passes === 1 ? "" : "es"}; ${step.value.evaluations.toLocaleString("en-US")} plugboards scored`);
-    climb.gen = null;
-    climb.phase++;
-    if (climb.phase >= phases.length) {
-      climb.done = true;
-      $("climb-run").disabled = true;
-      $("climb-step").disabled = true;
-      $("climb-status").textContent = "Converged: no single plug change improves the score.";
-      drawClimb();
-      renderVerdict();
-      return false;
-    }
-    return climbPass();
   }
 
   function runClimb() {
@@ -959,11 +965,14 @@
       const start = climb.positions === key.msgKey ? climb.positions : `${climb.positions} (the same key as the sender's ${key.msgKey})`;
       body = `<h3>Plaintext recovered exactly</h3><p>From the ciphertext alone, given wheel order ${key.rotors.join("-")}, rings ${key.rings} and start ${start}, the climb found ${correct} of the sender's ${plugCount(truth.length)} and read all ${climb.plain.length} letters. ${atTrue ? "This is the positive control the repository runs: it certifies the climb, not the sweep that has to hand it the right setting." : ""}</p>`;
     } else if (!atTrue) {
-      body = `<h3>The climb polished noise</h3><p>The sweep's top start ${climb.positions} is neither the sender's ${key.msgKey} nor the same key, so no plugboard can make the text readable. The climb still converged, on ${found.length} plugs of which ${correct} happen to be right, with ${climb.right} of ${climb.plain.length} letters matching by chance. This is how the attack fails with ${plugCount(truth.length)}: stage 1 does not hand stage 2 the right setting.</p>`;
+      body = `<h3>The climb polished noise</h3><p>The sweep's top start ${climb.positions} is neither the sender's ${key.msgKey} nor the same key, so no plugboard can make the text readable. The climb still ${climb.converged ? "converged" : "ran to its pass limit"}, on ${found.length} plugs of which ${correct} happen to be right, with ${climb.right} of ${climb.plain.length} letters matching by chance. This is how the attack fails with ${plugCount(truth.length)}: stage 1 does not hand stage 2 the right setting.</p>`;
     } else if (truth.length > D.climb.max_pairs) {
       body = `<h3>Right setting, more plugs than the climb allows</h3><p>The sender used ${truth.length} pairs, but the climb places at most ${D.climb.max_pairs}, so it cannot reach the sender's plugboard from any start. At ${where} it found ${correct} of the ${truth.length} plugs and ${climb.right} of ${climb.plain.length} letters.</p>`;
     } else {
-      body = `<h3>Right setting, wrong plugboard</h3><p>At ${where} the climb found ${correct} of ${truth.length} plugs and ${climb.right} of ${climb.plain.length} letters, then stuck at a local optimum. The repository's <code>climb.first_plug</code> option restarts the climb from every first plug on a few common letters to recover most of these.</p>`;
+      const then = climb.converged
+        ? "then stuck at a local optimum. The repository's <code>climb.first_plug</code> option restarts the climb from every first plug on a few common letters to recover most of these."
+        : `then stopped at the ${D.climb.max_passes}-pass limit before converging, so more passes might still improve it.`;
+      body = `<h3>Right setting, wrong plugboard</h3><p>At ${where} the climb found ${correct} of ${truth.length} plugs and ${climb.right} of ${climb.plain.length} letters, ${then}</p>`;
     }
     box.innerHTML = `${body}<p class="mono">Found: ${esc(found.join(" ") || "no plugs")}<br>Sender: ${esc(truth.join(" ") || "no plugs")}</p>`;
   }
