@@ -483,7 +483,8 @@
   function renderKeyspace() {
     const pairs = key.pairs.length;
     const plugs = plugboardCount(pairs);
-    const total = 60n * 17576n * 17576n * plugs;
+    // The left wheel's ring only shifts its start, so 26 ring and start pairs act alike.
+    const total = 60n * 26n ** 5n * plugs;
     const sci = (big) => {
       const s = big.toString();
       return `${s[0]}.${s.slice(1, 3)} × 10<sup>${s.length - 1}</sup>`;
@@ -491,11 +492,11 @@
     $("keyspace").innerHTML = [
       ["Wheel orders from I–V", "60"],
       ["Ring settings", "17,576"],
-      ["Start positions", "17,576"],
+      ["Start positions (message key)", "17,576"],
       [`Plugboards with ${pairs} pairs`, plugs.toLocaleString("en-US")],
     ]
       .map(([l, v]) => `<div><span class="label">${esc(l)}</span><b>${esc(v)}</b></div>`)
-      .join("") + `<div class="times"><span class="label">Daily keys, all multiplied</span><b>${sci(total)}</b></div>`;
+      .join("") + `<div class="times"><span class="label">Distinct settings for one message</span><b>${sci(total)}</b></div>`;
   }
 
   // ------------------------------------------------------------------ stage 1
