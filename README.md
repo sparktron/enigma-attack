@@ -122,10 +122,12 @@ shows the IC stage losing the true start as plugs are added.
 python3 scripts/build_visualizer.py   # regenerate after editing visualizer/
 ```
 
-The page embeds the wirings, climb settings and Phase 7 n-gram counts from the
-repository at build time. `tests/test_visualizer.py` fails if the committed page
-is stale and, when `node` is installed, checks its machine, sweep, scorer and
-climb against the Python pipeline.
+The page embeds the wirings and the climb settings, n-gram scorer and control
+message of `phase1-stecker-calibration-v1` at build time, and fills the numbers
+its text quotes from the configs and artifacts that record them.
+`tests/test_visualizer.py` fails if the committed page is stale and, when `node`
+is installed, checks its machine, sweep, scorer and climb against the Python
+pipeline.
 
 ## Phase 2 — Network and archival crib generation
 

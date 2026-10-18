@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -17,6 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import build_visualizer  # noqa: E402
 import enigma  # noqa: E402
 import enigma_fast  # noqa: E402
+from provenance import sha256_text  # noqa: E402
 from stecker_climb import coincidence_of_decryption, run_climb_phases  # noqa: E402
 from stecker_scoring import FastNgramScorer  # noqa: E402
 
@@ -55,14 +57,38 @@ class VisualizerTest(unittest.TestCase):
             "visualizer/enigma-visualizer.html is stale; run python3 scripts/build_visualizer.py",
         )
 
-    def test_page_embeds_the_repository_sources(self) -> None:
+    def test_demo_is_the_recorded_control(self) -> None:
+        demo = build_visualizer.page_data()["demo"]
+        artifact = json.loads((ROOT / "artifacts" / f"{demo['experiment_id']}.json").read_text(encoding="utf-8"))
+        control = next(c for c in artifact["positive_controls"]["evaluated"] if c["id"] == build_visualizer.DEMO_CONTROL)
+        recorded = control["known_key"]
+        message = next(m for m in recorded["messages"] if m["designator"] == demo["designator"])
+        self.assertEqual(demo["rotors"], recorded["rotor_order_left_to_right"])
+        self.assertEqual(demo["rings"], recorded["rings"])
+        self.assertEqual(demo["plugboard"], recorded["plugboard"])
+        self.assertEqual(control["recovered_plugboard"], recorded["plugboard"])
+        self.assertEqual(sha256_text(demo["plaintext"]), message["plaintext_sha256"])
+        self.assertEqual(demo["message_key"], message["true_message_key"])
+        indicator = enigma.EnigmaI(demo["rotors"], demo["rings"], demo["grundstellung"], demo["plugboard"]).crypt(
+            demo["message_key"]
+        )
+        self.assertEqual([demo["grundstellung"], indicator], message["indicator"])
+
+    def test_prose_quotes_the_sources(self) -> None:
         data = build_visualizer.page_data()
-        for name, spec in data["rotors"].items():
-            self.assertEqual(tuple(spec), enigma.ROTOR_WIRINGS[name])
-        self.assertEqual(data["reflector"], enigma.REFLECTOR_B)
         demo = data["demo"]
-        self.assertEqual(len(demo["plaintext"]), 167)
-        self.assertEqual(len(demo["plugboard"].split()), 10)
+        facts = build_visualizer.measured(len(demo["plaintext"]), len(demo["plugboard"].split()))
+        data["climb"].update(max_pairs=7, max_passes=19)
+        facts["ic_rank"]["retention"] = 0.4375
+        facts["climb_power"].update(recovered=17, draws=33)
+        facts["indicator_sweep"]["daily_keys"] = 1234567
+        with mock.patch.object(build_visualizer, "page_data", return_value=data), mock.patch.object(
+            build_visualizer, "measured", return_value=facts
+        ):
+            page = build_visualizer.render_fragment()
+        for text in ("at most 7 pairs and 19 passes per phase", "<b>44%</b>", "<b>17 / 33</b>", "<b>1,234,567</b>"):
+            self.assertIn(text, page)
+        self.assertNotRegex(page, r"\{\{\w+\}\}")
 
     @unittest.skipIf(NODE is None, "node is not installed")
     def test_javascript_matches_the_python_pipeline(self) -> None:

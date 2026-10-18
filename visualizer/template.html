@@ -230,7 +230,7 @@ footer p { color: var(--muted); font-size: var(--step--1); }
   <section id="key">
     <div class="wrap">
       <h2><span class="num">1</span>Key sheet</h2>
-      <p>The sender's settings for the day and the message. The defaults are the constructed control message CTRL-B1 from <code>phase1-stecker-calibration-v1</code>: 167 letters of Army-style German, written so it cannot overlap the n-gram counts the attack scores with.</p>
+      <p>The sender's settings for the day and the message. The defaults are the constructed control message {{demo_message}} from <code>{{calibration_id}}</code>: {{demo_letters}} letters of Army-style German, written so it cannot overlap the n-gram counts the attack scores with.</p>
       <form id="key-form" class="keysheet" novalidate>
         <div class="field">
           <span class="label">Wheel order <span class="de">Walzenlage</span></span>
@@ -312,11 +312,11 @@ footer p { color: var(--muted); font-size: var(--step--1); }
       <p>The interceptor has only the ciphertext. The plugboard multiplies the keyspace beyond any search, so the method this repository follows (Weierud and Sullivan, with Ostwald and Weierud's two-phase scoring) first ignores it: decrypt with no plugs at every wheel setting and keep the settings whose output has the highest index of coincidence, the chance that two letters drawn from it match. German plaintext scores about 0.07 and random letters 0.0385.</p>
       <div class="keyspace" id="keyspace"></div>
       <p class="note">The rings and starts multiplied overcount by 26: no wheel sits to the left of the left wheel to use its notch, so only the difference between the left wheel's ring and its start changes the output. The start is the message key, chosen for each message; the key sheet fixes the wheel order, rings and plugboard for the day.</p>
-      <p class="note">This page sweeps all 17,576 starts of the sender's wheel order with the sender's rings held, one sixtieth of the 1,054,560 settings a Phase 1 sweep ranks per indicator ordering.</p>
+      <p class="note">This page sweeps all 17,576 starts of the sender's wheel order with the sender's rings held, one sixtieth of the {{ranked_population}} settings a Phase 1 sweep ranks per indicator ordering.</p>
       <div class="controls">
         <label for="sweep-plugs"><span class="label">Plugs the sender used</span>
-          <input type="range" id="sweep-plugs" min="0" max="10" step="1" value="10">
-          <b class="mono" id="sweep-plugs-v">10</b></label>
+          <input type="range" id="sweep-plugs" min="0" max="{{demo_pairs}}" step="1" value="{{demo_pairs}}">
+          <b class="mono" id="sweep-plugs-v">{{demo_pairs}}</b></label>
         <button type="button" class="primary" id="sweep-run">Run the sweep</button>
         <span class="note" id="sweep-plugs-note"></span>
       </div>
@@ -341,7 +341,7 @@ footer p { color: var(--muted); font-size: var(--step--1); }
   <section id="climb">
     <div class="wrap">
       <h2><span class="num">4</span>Stage 2 · Climb the plugboard</h2>
-      <p>At one wheel setting the climb tries every change of one plug: all 325 letter pairs and every unplug. It keeps the single best change and repeats until nothing improves. It climbs on index of coincidence first, then on the log-likelihood of the text under the published 1941 Army bigram and trigram counts, at most 10 pairs and 30 passes per phase, as <code>phase1-stecker-calibration-v1</code> configures it.</p>
+      <p>At one wheel setting the climb tries every change of one plug: all 325 letter pairs and every unplug. It keeps the single best change and repeats until nothing improves. It climbs on index of coincidence first, then on the log-likelihood of the text under the published 1941 Army bigram and trigram counts, at most {{max_pairs}} pairs and {{max_passes}} passes per phase, as <code>{{calibration_id}}</code> configures it.</p>
       <div class="controls">
         <div class="radios" role="radiogroup" aria-label="Wheel setting to climb from">
           <label><input type="radio" name="climb-start" id="climb-true" value="true" checked> The sender's start <b class="mono" id="climb-true-v"></b> <span class="note">(a positive control, as the repo runs it)</span></label>
@@ -380,9 +380,9 @@ footer p { color: var(--muted); font-size: var(--step--1); }
       <div class="verdict" id="verdict-box"><p>Run the climb to see what it recovers.</p></div>
       <h3>What the repository measured</h3>
       <div class="facts">
-        <div><b>0%</b><p>Chance the true setting reaches the top 200 of an IC-ranked sweep at 167 letters with ten plugs, over 32 key draws (<code>phase1-ic-rank-v1</code>). Stage 1 alone almost never finds it.</p></div>
-        <div><b>28 / 32</b><p>Trials in which a body-direct climb, IC phase then n-grams, recovered a ten-pair plugboard and the exact plaintext at 167 letters, on a plaintext of IC 0.079. On Army-typical text near 0.06 it recovers far fewer.</p></div>
-        <div><b>2,109,120</b><p>Daily keys in the complete indicator-coupled search of the real 1941 traffic. It found nothing, as the calibration predicted. BYQMZ, FKQLZ and XFEDT are still on the publisher's unbroken list.</p></div>
+        <div><b>{{ic_rank_retention}}</b><p>Chance the true setting reaches the top {{ic_rank_retained}} of an IC-ranked sweep at {{demo_letters}} letters with {{demo_pairs}} plugs, over {{ic_rank_draws}} key draws (<code>{{ic_rank_id}}</code>). Stage 1 alone almost never finds it.</p></div>
+        <div><b>{{climb_power_recovered}} / {{climb_power_draws}}</b><p>Trials in which a body-direct climb, IC phase then n-grams, recovered a {{demo_pairs}}-pair plugboard and the exact plaintext at {{demo_letters}} letters, on a plaintext of IC {{climb_power_plaintext_ic}} (<code>{{climb_power_id}}</code>). On Army-typical text near 0.06 it recovers far fewer.</p></div>
+        <div><b>{{indicator_sweep_keys}}</b><p>Daily keys in the complete indicator-coupled search of the real 1941 traffic (<code>{{indicator_sweep_id}}</code>). It found nothing, as the calibration predicted. BYQMZ, FKQLZ and XFEDT are still on the publisher's unbroken list.</p></div>
       </div>
       <p class="note">Details: <code>README.md</code> and <code>docs/phase1-experiment-history.md</code>.</p>
     </div>
@@ -391,7 +391,7 @@ footer p { color: var(--muted); font-size: var(--step--1); }
 
 <footer>
   <div class="wrap">
-    <p>Built by <code>scripts/build_visualizer.py</code> from <code>enigma.py</code> (wheels I–V, UKW-B), the stecker-climb settings and control message of <code>phase1-stecker-calibration-v1</code>, and the 1941 Army bigram and trigram counts in <code>data/phase7</code>, compiled by Geoff Sullivan and Frode Weierud (CryptoCellar, CC BY-NC-SA 4.0). The machine, sweep, scorer and climb are checked against the Python pipeline by <code>tests/test_visualizer.py</code>.</p>
+    <p>Built by <code>scripts/build_visualizer.py</code> from <code>enigma.py</code> (wheels I–V, UKW-B), the stecker-climb settings, scorer and control message of <code>{{calibration_id}}</code>, the 1941 Army bigram and trigram counts in <code>data/phase7</code>, compiled by Geoff Sullivan and Frode Weierud (CryptoCellar, CC BY-NC-SA 4.0), and the recorded results of <code>{{ic_rank_id}}</code>, <code>{{climb_power_id}}</code> and <code>{{indicator_sweep_id}}</code>. The machine, sweep, scorer and climb are checked against the Python pipeline by <code>tests/test_visualizer.py</code>.</p>
   </div>
 </footer>
 
