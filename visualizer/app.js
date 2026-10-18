@@ -534,7 +534,11 @@
 
   function runSweep() {
     if (sweep.running) return;
-    if (sweep.done >= STARTS) resetSweep(false);
+    if (sweep.done >= STARTS) {
+      // The same ciphertext again: the top start, and any climb from it, stay valid.
+      sweep.values = new Float64Array(STARTS);
+      sweep.done = 0;
+    }
     sweep.running = true;
     $("sweep-run").disabled = true;
     const token = sweep.token;
@@ -562,7 +566,7 @@
     for (let s = 1; s < STARTS; s++) if (sweep.values[s] > sweep.values[best]) best = s;
     sweep.best = best;
     drawSweep();
-    resetClimb();
+    updateClimbChoices(); // a climb from the sender's start keeps its result
   }
 
   function drawSweep() {
@@ -704,8 +708,7 @@
     return wantBest ? startName(sweep.best) : key.msgKey;
   }
 
-  function resetClimb() {
-    if (climb.timer) clearTimeout(climb.timer);
+  function updateClimbChoices() {
     $("climb-true-v").textContent = key.msgKey;
     const ready = sweep.best !== null;
     $("climb-best").disabled = !ready;
@@ -719,6 +722,11 @@
           : "";
     $("climb-best-v").textContent = ready ? bestName + bestTag : "(run the sweep)";
     if (!ready && $("climb-best").checked) $("climb-true").checked = true;
+  }
+
+  function resetClimb() {
+    if (climb.timer) clearTimeout(climb.timer);
+    updateClimbChoices();
     const positions = climbStart();
     const body = sweep.body;
     const table = C.positionTable(D, key.rotors, key.rings, positions, body.length);
