@@ -22,9 +22,10 @@ from stecker_scoring import FastNgramScorer  # noqa: E402
 
 NODE = shutil.which("node")
 
+# Run with node -e, so nothing is written into the checkout.
 HARNESS = r"""
-const C = require(process.argv[2]);
 const job = JSON.parse(require("fs").readFileSync(0, "utf8"));
+const C = require(job.core);
 const D = job.data;
 const out = {};
 out.crypt = job.crypt.map((c) => new C.Machine(D, c).crypt(c.text));
@@ -104,6 +105,7 @@ class VisualizerTest(unittest.TestCase):
                 board[pool[i]], board[pool[i + 1]] = pool[i + 1], pool[i]
             boards.append(board)
         job = {
+            "core": str(ROOT / "visualizer" / "enigma-core.js"),
             "data": data,
             "crypt": crypt_cases,
             "tables": table_cases,
@@ -111,19 +113,14 @@ class VisualizerTest(unittest.TestCase):
             "climb": {"rotors": demo["rotors"], "rings": demo["rings"], "positions": demo["message_key"], "body": body},
             "ngram_boards": boards,
         }
-        harness = ROOT / "visualizer" / ".harness.cjs"
-        harness.write_text(HARNESS, encoding="utf-8")
-        try:
-            completed = subprocess.run(
-                [NODE, str(harness), str(ROOT / "visualizer" / "enigma-core.js")],
-                input=json.dumps(job),
-                capture_output=True,
-                text=True,
-                check=True,
-                timeout=120,
-            )
-        finally:
-            harness.unlink()
+        completed = subprocess.run(
+            [NODE, "-e", HARNESS],
+            input=json.dumps(job),
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=120,
+        )
         result = json.loads(completed.stdout)
 
         self.assertEqual(result["crypt"][0], "BDZGO")
