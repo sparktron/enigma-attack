@@ -777,6 +777,7 @@ const ENIGMA_DATA = {"climb":{"max_pairs":10,"max_passes":30,"minimum_gain":1e-0
     return m.positions;
   }
   const sameKey = (a, b) => a === b || afterFirstPress(a) === afterFirstPress(b);
+  const plugCount = (n) => `${n} plug${n === 1 ? "" : "s"}`;
 
   function icOfText(text) {
     const counts = new Array(26).fill(0);
@@ -1433,15 +1434,16 @@ const ENIGMA_DATA = {"climb":{"max_pairs":10,"max_passes":30,"minimum_gain":1e-0
       ? ` ${equivalent.join(", ")} ${equivalent.length === 1 ? "scores" : "score"} exactly the same because ${equivalent.length === 1 ? "it is" : "they are"} the same key: the first key press brings ${equivalent.length === 1 ? "it" : "each"} to ${target}, as it does from ${key.msgKey}, so the whole message decrypts identically.`
       : "";
     const otherTies = tied.length ? ` It also ties with ${tied.length} unrelated start${tied.length === 1 ? "" : "s"} (${tied.slice(0, 3).join(", ")}${tied.length > 3 ? ", …" : ""}).` : "";
+    const plugs = plugCount(sweep.plugs);
     let read;
     if (rank === 1 && !tied.length) {
-      read = `With ${sweep.plugs} plug${sweep.plugs === 1 ? "" : "s"}, the sender's key stands alone at the top, z = ${zText}. Enough letters pass through unplugged that the decryption keeps plaintext's lopsided letter counts.${sameKeyNote}`;
+      read = `With ${plugs}, the sender's key stands alone at the top, z = ${zText}. Enough letters pass through unplugged that the decryption keeps plaintext's lopsided letter counts.${sameKeyNote}`;
     } else if (rank === 1) {
-      read = `With ${sweep.plugs} plug${sweep.plugs === 1 ? "" : "s"}, the sender's start ${key.msgKey} shares the top score (z = ${zText}).${sameKeyNote}${otherTies}`;
+      read = `With ${plugs}, the sender's start ${key.msgKey} shares the top score (z = ${zText}).${sameKeyNote}${otherTies}`;
     } else if (rank <= 200) {
-      read = `With ${sweep.plugs} plugs the sender's start ranks ${rank}. A sweep that keeps its top 200 would pass it to the climb, but it no longer stands out (z = ${zText}).${sameKeyNote}${otherTies}`;
+      read = `With ${plugs} the sender's start ranks ${rank}. A sweep that keeps its top 200 would pass it to the climb, but it no longer stands out (z = ${zText}).${sameKeyNote}${otherTies}`;
     } else {
-      read = `With ${sweep.plugs} plugs the sender's start ranks ${rank.toLocaleString("en-US")} of 17,576 (z = ${zText}).${sameKeyNote} With ${2 * sweep.plugs} of 26 letters plugged, only about ${Math.round(100 * ((26 - 2 * sweep.plugs) / 26) ** 2)}% of key presses pass the plugboard untouched both ways, so the unplugged decryption keeps almost none of the plaintext's letter counts. Over all 60 wheel orders it would be buried far deeper. This is the README's finding: at ten plugs the IC stage has almost no detection power.`;
+      read = `With ${plugs} the sender's start ranks ${rank.toLocaleString("en-US")} of 17,576 (z = ${zText}).${sameKeyNote} With ${2 * sweep.plugs} of 26 letters plugged, only about ${Math.round(100 * ((26 - 2 * sweep.plugs) / 26) ** 2)}% of key presses pass the plugboard untouched both ways, so the unplugged decryption keeps almost none of the plaintext's letter counts. Over all 60 wheel orders it would be buried far deeper. ${sweep.plugs === 10 ? "This is the README's finding: at ten plugs the IC stage has almost no detection power." : "The README measures the same loss at ten plugs, where the IC stage has almost no detection power."}`;
     }
     $("sweep-read").textContent = read;
   }
@@ -1700,9 +1702,9 @@ const ENIGMA_DATA = {"climb":{"max_pairs":10,"max_passes":30,"minimum_gain":1e-0
     let body;
     if (exact) {
       const start = climb.positions === key.msgKey ? climb.positions : `${climb.positions} (the same key as the sender's ${key.msgKey})`;
-      body = `<h3>Plaintext recovered exactly</h3><p>From the ciphertext alone, given wheel order ${key.rotors.join("-")}, rings ${key.rings} and start ${start}, the climb found ${correct} of the sender's ${truth.length} plugs and read all ${climb.plain.length} letters. ${atTrue ? "This is the positive control the repository runs: it certifies the climb, not the sweep that has to hand it the right setting." : ""}</p>`;
+      body = `<h3>Plaintext recovered exactly</h3><p>From the ciphertext alone, given wheel order ${key.rotors.join("-")}, rings ${key.rings} and start ${start}, the climb found ${correct} of the sender's ${plugCount(truth.length)} and read all ${climb.plain.length} letters. ${atTrue ? "This is the positive control the repository runs: it certifies the climb, not the sweep that has to hand it the right setting." : ""}</p>`;
     } else if (!atTrue) {
-      body = `<h3>The climb polished noise</h3><p>The sweep's top start ${climb.positions} is neither the sender's ${key.msgKey} nor the same key, so no plugboard can make the text readable. The climb still converged, on ${found.length} plugs of which ${correct} happen to be right, with ${climb.right} of ${climb.plain.length} letters matching by chance. This is why the attack fails at ten plugs: stage 1 does not hand stage 2 the right setting.</p>`;
+      body = `<h3>The climb polished noise</h3><p>The sweep's top start ${climb.positions} is neither the sender's ${key.msgKey} nor the same key, so no plugboard can make the text readable. The climb still converged, on ${found.length} plugs of which ${correct} happen to be right, with ${climb.right} of ${climb.plain.length} letters matching by chance. This is how the attack fails with ${plugCount(truth.length)}: stage 1 does not hand stage 2 the right setting.</p>`;
     } else if (truth.length > D.climb.max_pairs) {
       body = `<h3>Right setting, more plugs than the climb allows</h3><p>The sender used ${truth.length} pairs, but the climb places at most ${D.climb.max_pairs}, so it cannot reach the sender's plugboard from any start. At ${where} it found ${correct} of the ${truth.length} plugs and ${climb.right} of ${climb.plain.length} letters.</p>`;
     } else {
