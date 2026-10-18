@@ -408,7 +408,9 @@
       lightLamp(trace.output);
       return;
     }
-    const half = Math.max(120, Math.min(700, speed() * 0.4));
+    // Both halves and the lamp fit inside one key interval, so even at Fast the
+    // return path finishes and the lamp lights before the next press clears them.
+    const half = Math.min(700, speed() * 0.3);
     for (const [path, delay] of [[pf, 0], [pr, half]]) {
       const len = path.getTotalLength();
       path.style.strokeDasharray = `${len}`;
