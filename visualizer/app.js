@@ -27,9 +27,7 @@
   function icOfText(text) {
     const counts = new Array(26).fill(0);
     for (const c of text) counts[C.idx(c)]++;
-    let s = 0;
-    for (const n of counts) s += n * (n - 1);
-    return text.length < 2 ? 0 : s / (text.length * (text.length - 1));
+    return C.indexOfCoincidence(counts, text.length);
   }
 
   function el(tag, attrs, parent) {
@@ -88,7 +86,6 @@
     } catch (e) {
       throw new Error(`Plugboard: ${e.message}. Write pairs like AN BY CF.`);
     }
-    if (k.plugboard.split(" ").filter(Boolean).length > 13) throw new Error("A plugboard holds at most 13 pairs.");
     if (k.plaintext.length < 26) throw new Error("Give the plaintext at least 26 letters so the attack has something to measure.");
     return k;
   }

@@ -331,6 +331,7 @@
     Machine,
     positionTable,
     decryptWithTable,
+    indexOfCoincidence,
     coincidenceOfDecryption,
     sweepStarts,
     NgramScorer,
