@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Build visualizer/enigma-visualizer.html from its template and the repo's data.
 
-The page embeds the wheel wirings from :mod:`enigma`, the published 1941 Army
-n-gram counts and scorer weights Phase 7 uses, the stecker-climb settings and
-the constructed control key and plaintext of phase1-stecker-calibration-v1.
-Nothing is restated by hand, so the page cannot drift from the pipeline
-without ``tests/test_visualizer.py`` noticing.
+The page embeds the wheel wirings from :mod:`enigma` and, from
+phase1-stecker-calibration-v1, the stecker-climb settings, the scorer with its
+published 1941 Army n-gram counts, and the constructed control key and
+plaintext.  Nothing is restated by hand, so the page cannot drift from the
+pipeline without ``tests/test_visualizer.py`` noticing.
 
     python3 scripts/build_visualizer.py                # rewrite the committed page
     python3 scripts/build_visualizer.py --fragment X   # body-only copy, for hosts
@@ -28,7 +28,6 @@ import phase7  # noqa: E402
 VISUALIZER = ROOT / "visualizer"
 OUTPUT = VISUALIZER / "enigma-visualizer.html"
 CALIBRATION = ROOT / "experiments/phase1-stecker-calibration-v1/config.json"
-SCORER = ROOT / "experiments/phase7-qtxma-source-and-scorer-v1/config.json"
 DEMO_CONTROL = "constructed-army-style-plaintexts"
 DEMO_MESSAGE = "CTRL-B1"
 ARMY_WHEELS = ("I", "II", "III", "IV", "V")
@@ -46,10 +45,12 @@ STANDALONE_TAIL = "</body>\n</html>\n"
 
 def page_data() -> dict:
     calibration = json.loads(CALIBRATION.read_text(encoding="utf-8"))
-    scorer = json.loads(SCORER.read_text(encoding="utf-8"))["scorer"]
+    scorer = calibration["scorer"]
     control = next(c for c in calibration["positive_controls"] if c["id"] == DEMO_CONTROL)
     message = next(m for m in control["messages"] if m["designator"] == DEMO_MESSAGE)
     climb = calibration["climb"]
+    if "first_plug" in climb:
+        raise ValueError("visualizer/enigma-core.js does not restate climb.first_plug")
     return {
         "rotors": {name: list(enigma.ROTOR_WIRINGS[name]) for name in ARMY_WHEELS},
         "reflector": enigma.REFLECTOR_WIRINGS["B"],

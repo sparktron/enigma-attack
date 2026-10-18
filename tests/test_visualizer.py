@@ -152,7 +152,7 @@ class VisualizerTest(unittest.TestCase):
             table = enigma_fast.position_permutations(order, rings, positions, len(body))
             self.assertAlmostEqual(got, coincidence_of_decryption(table, body, identity), places=12)
 
-        scorer = FastNgramScorer(json.loads(build_visualizer.SCORER.read_text(encoding="utf-8"))["scorer"])
+        scorer = FastNgramScorer(json.loads(build_visualizer.CALIBRATION.read_text(encoding="utf-8"))["scorer"])
         table = enigma_fast.position_permutations(order, rings, [enigma.idx(c) for c in demo["message_key"]], len(body))
         for board, ngram, ic in zip(boards, result["ngram"], result["ic"]):
             self.assertAlmostEqual(ngram, scorer.score_decryption(table, body, board), places=7)
