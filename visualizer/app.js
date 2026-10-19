@@ -499,6 +499,20 @@
     ]
       .map(([l, v]) => `<div><span class="label">${esc(l)}</span><b>${esc(v)}</b></div>`)
       .join("") + `<div class="times"><span class="label">Distinct settings for one message</span><b>${sci(total)}</b></div>`;
+    $("keyspace-time").textContent =
+      `Checking a billion settings a second, trying every one for this message would take ${duration(Number(total) / 1e9)}. ` +
+      "So the attack splits the problem in two: find the wheel start while ignoring the plugboard, then work out the plugboard on its own.";
+  }
+
+  function duration(seconds) {
+    const round = (v) => v.toLocaleString("en-US", { maximumSignificantDigits: 2 });
+    const years = seconds / (365.25 * 86400);
+    if (years >= 1e6) return `about ${round(years / 1e6)} million years`;
+    if (years >= 1) return `about ${round(years)} years`;
+    for (const [unit, size] of [["day", 86400], ["hour", 3600], ["minute", 60], ["second", 1]]) {
+      if (seconds >= size) return `about ${round(seconds / size)} ${unit}${seconds / size >= 1.5 ? "s" : ""}`;
+    }
+    return "under a second";
   }
 
   // ------------------------------------------------------------------ stage 1

@@ -110,7 +110,8 @@ what this implies for the next experiment are in
 ### Phase 1 visualizer
 
 [`visualizer/enigma-visualizer.html`](visualizer/enigma-visualizer.html) is a
-self-contained page (open it in a browser; it needs no server) that shows the
+self-contained page (open it in a browser; it needs no server). It opens with a
+plain-language "Start here" guide to the machine and its settings, and it shows the
 machine and the attack step by step: the signal path through plugboard, wheels
 and reflector for each key press, the indicator procedure, encipherment and
 decipherment, then the index-of-coincidence sweep of all 17,576 starts of one
