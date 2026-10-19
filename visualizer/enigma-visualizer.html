@@ -217,6 +217,23 @@ tr.truth td { color: var(--fwd); font-weight: 600; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
 .facts div { border-top: 2px solid var(--ink); padding-top: 0.6rem; display: grid; gap: 0.3rem; }
 .facts b { font-family: var(--font-mono); font-size: 1.4rem; font-weight: 600; }
+/* Plain-language help: the Start here guide, field hints and fold-out asides. */
+.howto { background: var(--surface); }
+.howto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem 2rem; align-items: start; }
+.howto-grid > div { display: grid; gap: 0.6rem; min-width: 0; }
+.parts { display: grid; gap: 0.55rem; margin: 0; }
+.parts div { display: grid; gap: 0.1rem; border-left: 3px solid var(--rule); padding-left: 0.7rem; }
+.parts dt { font-weight: 600; }
+.parts dd { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.5rem; max-width: 68ch; }
+.steps li::marker { font-family: var(--font-display); color: var(--fwd); }
+.steps b { font-weight: 600; }
+.hint { font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
+details.aside { background: var(--sunk); border-left: 3px solid var(--ret); padding: 0.6rem 0.9rem; border-radius: 2px; }
+details.aside summary { cursor: pointer; font-weight: 600; color: var(--ret); }
+details.aside[open] summary { margin-bottom: 0.5rem; }
+details.aside > div { display: grid; gap: 0.6rem; }
+details.aside ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.3rem; max-width: 68ch; }
 footer { padding-block: 2rem 3rem; }
 footer p { color: var(--muted); font-size: var(--step--1); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -228,12 +245,46 @@ footer p { color: var(--muted); font-size: var(--step--1); }
     <h1>Enigma Attack Bench</h1>
     <p class="lede">Set a daily key and watch an Enigma I encipher and decipher a message one key press at a time. Then attack the ciphertext the way this repository does: sweep the wheel start positions by index of coincidence, then hill-climb the plugboard with 1941 Army n-gram counts.</p>
     <nav class="toc" aria-label="Sections">
-      <a href="#key">1 Key sheet</a><a href="#machine">2 Machine</a><a href="#sweep">3 Sweep</a><a href="#climb">4 Climb</a><a href="#verdict">5 Verdict</a>
+      <a href="#start">0 Start here</a><a href="#key">1 Key sheet</a><a href="#machine">2 Machine</a><a href="#sweep">3 Sweep</a><a href="#climb">4 Climb</a><a href="#verdict">5 Verdict</a>
     </nav>
   </div>
 </header>
 
 <main>
+  <section id="start" class="howto">
+    <div class="wrap">
+      <h2><span class="num">0</span>Start here</h2>
+      <p>Enigma was the German forces' cipher machine in the Second World War: a typewriter-sized box with a keyboard and 26 lamps. Press a key and a different letter lights up. The operator copied the lit letters down and sent them by radio. Anyone listening heard only gibberish, but a receiver with a machine set up the same way could type the gibberish in and read the original message off the lamps.</p>
+      <div class="howto-grid">
+        <div>
+          <h3>How the machine scrambles</h3>
+          <p>Each key sends electric current through a maze of wires: across a plugboard, through three wheels, into a reflector that turns it round, and back by a different route to a lamp. Before the current flows, the right-hand wheel turns one step, so the maze is different for every letter. Type A five times and a different lamp can light each time.</p>
+          <p>The reflector has two side effects. Typing the scrambled text back in, from the same start, gives the original. And a letter can never come out as itself, a weakness the codebreakers used.</p>
+        </div>
+        <div>
+          <h3>The settings on the key sheet</h3>
+          <dl class="parts">
+            <div><dt>Wheel order</dt><dd>Which three of the five wheels go in, and in what order. Each wheel is wired differently.</dd></div>
+            <div><dt>Ring setting</dt><dd>Turns each wheel's wiring against the letters printed on its rim, so the letter showing in the window doesn't give away where the wiring sits.</dd></div>
+            <div><dt>Plugboard</dt><dd>Short cables that swap pairs of letters on the way in and again on the way out. With ten cables, 20 of the 26 letters are swapped.</dd></div>
+            <div><dt>Message key</dt><dd>The three letters the wheels start at for this message. The operator picks a new one for every message.</dd></div>
+            <div><dt>Grundstellung</dt><dd>A second start the operator picks, used only to scramble the message key itself. It goes out unscrambled at the head of the message so the receiver can unlock the key.</dd></div>
+          </dl>
+          <p class="note">The first three came from a printed sheet issued to every operator on a network and changed each day. The last two the operator chose himself.</p>
+        </div>
+      </div>
+      <h3>What to do on this page</h3>
+      <ol class="steps">
+        <li><b>Key sheet.</b> Keep the demo settings or type your own, then press <i>Set the machine</i>. The box under the form shows exactly what would go out over the radio.</li>
+        <li><b>The machine.</b> Press <i>Press next key</i> to send one letter through, or <i>Play</i> to run the whole message. Orange is current going in, blue is current coming back. Switch to <i>Decipher</i> to watch the same settings turn the gibberish back into German. You can also type on your own keyboard.</li>
+        <li><b>Sweep.</b> Now you are the codebreaker, with nothing but the gibberish. The page tries all 17,576 starting positions of the wheels, ignoring the plugboard, and scores how much each result's letter counts look like a real language. Slide <i>Plugs the sender used</i> down to see how the plugboard hides the answer.</li>
+        <li><b>Climb.</b> From one wheel position, the page guesses the plugboard one cable at a time, keeping each change that makes the text read more like German. Press <i>Run the climb</i> and watch the green letters spread.</li>
+        <li><b>Verdict.</b> Compares what the attack found with the sender's real settings, and with what this repository measured over many trials.</li>
+      </ol>
+      <p class="note">Look for the blue <i>In plain words</i> notes in each section for more explanation. Everything, the attack included, runs inside your browser.</p>
+    </div>
+  </section>
+
   <section id="key">
     <div class="wrap">
       <h2><span class="num">1</span>Key sheet</h2>
@@ -246,11 +297,12 @@ footer p { color: var(--muted); font-size: var(--step--1); }
             <select id="key-m" aria-label="Middle wheel"></select>
             <select id="key-r" aria-label="Right wheel"></select>
           </div>
+          <span class="hint">Left, middle, right. The right wheel turns on every key press.</span>
         </div>
-        <label class="field"><span class="label">Ring setting <span class="de">Ringstellung</span></span><input type="text" id="key-rings" maxlength="3" autocomplete="off" spellcheck="false"></label>
-        <label class="field"><span class="label">Grundstellung</span><input type="text" id="key-grund" maxlength="3" autocomplete="off" spellcheck="false"></label>
-        <label class="field"><span class="label">Message key <span class="de">Spruchschlüssel</span></span><input type="text" id="key-msg" maxlength="3" autocomplete="off" spellcheck="false"></label>
-        <label class="field wide"><span class="label">Plugboard <span class="de">Steckerverbindungen</span></span><input type="text" id="key-plugs" autocomplete="off" spellcheck="false"></label>
+        <label class="field"><span class="label">Ring setting <span class="de">Ringstellung</span></span><input type="text" id="key-rings" maxlength="3" autocomplete="off" spellcheck="false"><span class="hint">One letter per wheel, left to right.</span></label>
+        <label class="field"><span class="label">Grundstellung</span><input type="text" id="key-grund" maxlength="3" autocomplete="off" spellcheck="false"><span class="hint">Start used only to scramble the message key. Sent in the clear.</span></label>
+        <label class="field"><span class="label">Message key <span class="de">Spruchschlüssel</span></span><input type="text" id="key-msg" maxlength="3" autocomplete="off" spellcheck="false"><span class="hint">Where the wheels start for the message itself. Kept secret.</span></label>
+        <label class="field wide"><span class="label">Plugboard <span class="de">Steckerverbindungen</span></span><input type="text" id="key-plugs" autocomplete="off" spellcheck="false"><span class="hint">Pairs of letters, each joined by a cable, e.g. AN BY CF. Up to 13 pairs; each letter in at most one. The Army used ten.</span></label>
         <label class="field wide"><span class="label">Plaintext <span class="de">Klartext</span> · letters only; Army text writes X for a stop and Q for CH</span><textarea id="key-plain" spellcheck="false"></textarea></label>
         <div class="field wide">
           <div class="actions">
@@ -265,6 +317,13 @@ footer p { color: var(--muted); font-size: var(--step--1); }
         <div class="groups" id="sent-text"></div>
         <span class="note" id="sent-note"></span>
       </div>
+      <details class="aside">
+        <summary>In plain words: how the receiver learns the message key</summary>
+        <div>
+          <p>Both ends already hold the day's key sheet, but the message key changes with every message, so the receiver has to be told it. Sending it openly would hand it to the enemy. Instead the operator sets the wheels to a Grundstellung of his own choosing, types the message key through the machine, and sends the Grundstellung openly followed by the three letters that lit. The receiver sets his wheels to that Grundstellung, types the three letters, and reads the message key off his lamps. Then both set the wheels to the message key for the message itself.</p>
+          <p>Choose <i>Indicator</i> in the machine below to watch this happen.</p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -297,6 +356,18 @@ footer p { color: var(--muted); font-size: var(--step--1); }
         <span><i style="background:var(--ret)"></i>Current back to the lamps</span>
         <span><i style="background:var(--wire)"></i>Wheel wiring at the current positions</span>
       </div>
+      <details class="aside">
+        <summary>In plain words: how to read the diagram</summary>
+        <div>
+          <ul>
+            <li>The diagram is laid out the way the current flows, not the way the box looks. The left column is the 26 keys and lamps, A at the top. Current enters the plugboard, then the right wheel, middle wheel, left wheel and the reflector (UKW-B), then comes back the same way on a different line.</li>
+            <li>Each grey line is one wire inside a wheel, joining a contact on one side to a contact on the other. When a wheel turns, its whole bundle of wires shifts by one row.</li>
+            <li>The big letter above each wheel is what the operator sees in the window. A window outlined in orange means that wheel just turned. The small letters down each wheel's left edge are its rim letters at each contact.</li>
+            <li>The strip of boxes under the diagram spells out the same path letter by letter: K→P means the current came in as K and left as P.</li>
+          </ul>
+          <p><b>Try this:</b> press <i>Reset</i>, click the A key on the keyboard below a few times and watch the lamp change from press to press. Keep pressing until the middle window turns as well: that is the notch on the right wheel kicking it on, like the digits of a car's odometer.</p>
+        </div>
+      </details>
       <p class="stepnote" id="step-note"></p>
       <div class="trace" id="trace" aria-live="polite"></div>
       <div class="boards">
@@ -318,6 +389,7 @@ footer p { color: var(--muted); font-size: var(--step--1); }
       <h2><span class="num">3</span>Stage 1 · Sweep the wheel starts</h2>
       <p>The interceptor has only the ciphertext. The plugboard multiplies the keyspace beyond any search, so the method this repository follows (Weierud and Sullivan, with Ostwald and Weierud's two-phase scoring) first ignores it: decrypt with no plugs at every wheel setting and keep the settings whose output has the highest index of coincidence, the chance that two letters drawn from it match. German plaintext scores about 0.07 and random letters 0.0385.</p>
       <div class="keyspace" id="keyspace"></div>
+      <p class="note" id="keyspace-time"></p>
       <p class="note">The rings and starts multiplied overcount by 26: no wheel sits to the left of the left wheel to use its notch, so only the difference between the left wheel's ring and its start changes the output. The start is the message key, chosen for each message; the key sheet fixes the wheel order, rings and plugboard for the day.</p>
       <p class="note">This page sweeps all 17,576 starts of the sender's wheel order with the sender's rings held, one sixtieth of the 1,054,560 settings a Phase 1 sweep ranks per indicator ordering.</p>
       <div class="controls">
@@ -342,6 +414,18 @@ footer p { color: var(--muted); font-size: var(--step--1); }
         </div>
       </div>
       <p id="sweep-read"></p>
+      <details class="aside">
+        <summary>In plain words: what the sweep is measuring</summary>
+        <div>
+          <p>Every language uses some letters much more than others: German is full of E, N, R and the Army's X for a full stop. Gibberish uses all 26 letters about equally. The index of coincidence measures that lopsidedness: pick two letters from the text at random, and it is the chance they are the same letter. Real German scores about 0.07; evenly spread gibberish about 0.0385.</p>
+          <p>At a wrong wheel start the decryption is gibberish. At the right start, letters the plugboard leaves alone come out correct, so the text is a little lumpier than chance and scores a little higher. That is all the sweep looks for.</p>
+          <ul>
+            <li>Each grey bar counts how many of the 17,576 starts scored in that range. The tall hump is the wrong starts.</li>
+            <li>The orange line marks the sender's real start, which the codebreaker would not know. The blue dashed lines mark pure gibberish and the real message's own score.</li>
+            <li>With few plugs, the orange line sits far to the right on its own. With ten plugs, it sinks into the hump: most letters get swapped on the way in or out, and the lumpiness is washed away.</li>
+          </ul>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -374,6 +458,18 @@ footer p { color: var(--muted); font-size: var(--step--1); }
         <div class="decrypt" id="decrypt"></div>
         <span class="note">Green letters match the sender's plaintext. The attacker cannot see this colouring; the scores above are all the climb has.</span>
       </div>
+      <details class="aside">
+        <summary>In plain words: how the climb guesses the cables</summary>
+        <div>
+          <p>Think of tuning an old radio: nudge the dial, and keep the nudge if the sound gets clearer. Here a nudge is one cable change. On each pass the page tries every possible single change, joining any two letters with a cable (unplugging whatever they were joined to) or pulling one cable out, decrypts the whole message each time, and keeps the one change that helps most. It stops when no single change helps any more.</p>
+          <p>It judges "clearer" in two ways, one after the other. First by the same letter-count lumpiness the sweep used, which gets the climb started. Then by how often the text's two- and three-letter runs, such as EIN or UNG, turn up in real 1941 German Army messages. That second score is much sharper at telling German from near-German.</p>
+          <ul>
+            <li>In the plugboard picture, green arcs are cables the climb got right, red ones are wrong, and the dashed arcs below are the sender's real cables.</li>
+            <li>Each step along the charts is one pass. The shaded part is the second scoring phase.</li>
+            <li>The climb can stall on a wrong answer that no single change improves, like a hiker stuck on a lower peak in fog. Climbing from <i>the sweep's top start</i> when it isn't the sender's shows what that looks like.</li>
+          </ul>
+        </div>
+      </details>
       <div class="panel">
         <span class="label">Pass log</span>
         <ol class="log" id="climb-log"></ol>
@@ -385,6 +481,12 @@ footer p { color: var(--muted); font-size: var(--step--1); }
     <div class="wrap">
       <h2><span class="num">5</span>Verdict</h2>
       <div class="verdict" id="verdict-box"><p>Run the climb to see what it recovers.</p></div>
+      <details class="aside">
+        <summary>In plain words: what these numbers mean</summary>
+        <div>
+          <p>This page cheats in one way: it sweeps only the sender's own wheel order and ring setting. A real attacker would have to repeat the sweep for every wheel order and ring setting and then climb from hundreds of candidates. The figures below are what happened when this repository did that over many test keys, and then on real messages from 1941 that no one has yet broken.</p>
+        </div>
+      </details>
       <h3>What the repository measured</h3>
       <div class="facts">
         <div><b>0%</b><p>Chance the true setting reaches the top 200 of an IC-ranked sweep at 167 letters with 10 plugs, over 32 key draws (<code>phase1-ic-rank-v1</code>). Stage 1 alone almost never finds it.</p></div>
@@ -1281,6 +1383,20 @@ const ENIGMA_DATA = {"climb":{"max_pairs":10,"max_passes":30,"minimum_gain":1e-0
     ]
       .map(([l, v]) => `<div><span class="label">${esc(l)}</span><b>${esc(v)}</b></div>`)
       .join("") + `<div class="times"><span class="label">Distinct settings for one message</span><b>${sci(total)}</b></div>`;
+    $("keyspace-time").textContent =
+      `Checking a billion settings a second, trying every one for this message would take ${duration(Number(total) / 1e9)}. ` +
+      "So the attack splits the problem in two: find the wheel start while ignoring the plugboard, then work out the plugboard on its own.";
+  }
+
+  function duration(seconds) {
+    const round = (v) => v.toLocaleString("en-US", { maximumSignificantDigits: 2 });
+    const years = seconds / (365.25 * 86400);
+    if (years >= 1e6) return `about ${round(years / 1e6)} million years`;
+    if (years >= 1) return `about ${round(years)} years`;
+    for (const [unit, size] of [["day", 86400], ["hour", 3600], ["minute", 60], ["second", 1]]) {
+      if (seconds >= size) return `about ${round(seconds / size)} ${unit}${seconds / size >= 1.5 ? "s" : ""}`;
+    }
+    return "under a second";
   }
 
   // ------------------------------------------------------------------ stage 1
