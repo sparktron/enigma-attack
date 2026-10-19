@@ -418,7 +418,7 @@ footer p { color: var(--muted); font-size: var(--step--1); }
         <summary>In plain words: what the sweep is measuring</summary>
         <div>
           <p>Every language uses some letters much more than others: German is full of E, N, R and the Army's X for a full stop. Gibberish uses all 26 letters about equally. The index of coincidence measures that lopsidedness: pick two letters from the text at random, and it is the chance they are the same letter. Real German scores about 0.07; evenly spread gibberish about 0.0385.</p>
-          <p>At a wrong wheel start the decryption is gibberish. At the right start, letters the plugboard leaves alone come out correct, so the text is a little lumpier than chance and scores a little higher. That is all the sweep looks for.</p>
+          <p>At a wrong wheel start the decryption is gibberish. At the right start the wheels are right but the cables are missing, and the current passes the plugboard twice, once on the way in and once on the way out. A letter still comes out correct when neither the ciphertext letter nor the plaintext letter has a cable. Those survivors make the text a little lumpier than chance, so it scores a little higher. That is all the sweep looks for.</p>
           <ul>
             <li>Each grey bar counts how many of the 17,576 starts scored in that range. The tall hump is the wrong starts.</li>
             <li>The orange line marks the sender's real start, which the codebreaker would not know. The blue dashed lines mark pure gibberish and the real message's own score.</li>
@@ -484,7 +484,7 @@ footer p { color: var(--muted); font-size: var(--step--1); }
       <details class="aside">
         <summary>In plain words: what these numbers mean</summary>
         <div>
-          <p>This page cheats in one way: it sweeps only the sender's own wheel order and ring setting. A real attacker would have to repeat the sweep for every wheel order and ring setting and then climb from hundreds of candidates. The figures below are what happened when this repository did that over many test keys, and then on real messages from 1941 that no one has yet broken.</p>
+          <p>This page cheats in one way: it sweeps only the sender's own wheel order and ring setting. A real attacker would have to repeat the sweep for every wheel order and ring setting and then climb from hundreds of candidates. The figures below test each stage on its own, then the whole search. The first is how often the sweep would keep the true setting among its top candidates. The second is how often the climb recovers the plugboard when it is handed the true wheel settings, as <i>The sender's start</i> option on this page is. The third is the complete search, run on real messages from 1941 that no one has yet broken.</p>
         </div>
       </details>
       <h3>What the repository measured</h3>
