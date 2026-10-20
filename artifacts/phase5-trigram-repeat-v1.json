@@ -3,20 +3,23 @@
   "experiment_id": "phase5-trigram-repeat-v1",
   "code": {
     "source": "git_checkout",
-    "commit": "d01c97d87a2d6afa18184ad6d3136caa0a1f6ecb",
+    "commit": "85fedb3bbda0ed4576acc185ed720d526a0fd4f4",
     "branch": "claude/historical-decipher-vectors",
     "dirty": false,
     "status": [],
     "files_sha256": {
       "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase5.py": "f882d966b581105ebf548ddff22c233328b4e781816d3d769d87d683ce7ead0a",
       "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
-      "scripts/trigram_repeat_v1.py": "0be48863e399db015cad4603f5524bf1dc44639bcdc63ebc5a596476a1bdfc53"
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "scripts/trigram_repeat_v1.py": "cd014ea1a4f9d299ff7ec9e44200449c3f64e21c162eafb8da5b4fa9b47c932c"
     }
   },
   "inputs": {
-    "config_sha256": "2fe83e754061f2717371bdb6e2f1ade1be22940eb50ece6d9b94675cf5e87e72",
+    "config_sha256": "d2dcd0eaaf6e7e408967a35bfec0a98df0d4c83d57726bed23a511d6dc313861",
     "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
-    "keyed_messages_sha256": "947be01b7e127c6cc94bdc5fee856c1ad47da015d3730f0fe8fe124074924765",
+    "keyed_messages_sha256": "0caf1111e33aa53bfde1e7bcbbf15f7bd51b6b599ef39e5591f4c0c46333ccd7",
     "plaintext_pool_letters": 858
   },
   "draws_per_null": 20000,
