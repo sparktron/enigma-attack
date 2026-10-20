@@ -34,6 +34,16 @@ identical candidates. This is operational validation, not a full target result.
 
 ## Current state
 
+Trigram-repeat test (2026-10-20, `phase5-trigram-repeat-v1`, preregistered):
+this tests Weierud's claim that the Batch C messages have trigram repeats no
+rotor machine would give. Only **QTXMA** is flagged: 5 repeats against an
+Enigma-null 97.5% point of 3 (p = 0.001), and an IC no simulated draw reached.
+BYQMZ, FKQLZ and SZAEJ have no repeated trigram and XFEDT has one, so they
+look like Enigma on this statistic. The null is calibrated on the 13 authentic
+ciphertexts. Exploratory and not preregistered: FKQLZ and XFEDT are flatter
+than Enigma (IC lower-tail p about 0.001 and 0.004) and contain no J. See the
+[Phase 5 addendum](phase5-research.md#addendum-2026-10-20--trigram-repeats-phase5-trigram-repeat-v1).
+
 Engine check against real traffic (2026-10-20): the 13 authentic 1941 Army
 messages from Ostwald and Weierud's companion page, with their recovered keys,
 are in [`data/historical/keyed-messages.json`](../data/historical/README.md).

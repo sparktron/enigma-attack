@@ -146,3 +146,101 @@ transposition over any other plaintext layer escapes it entirely.
 Reverse this if: archival evidence shows QTXMA's body is a superencipherment of
 code groups rather than of literal text, in which case the reference
 distribution is the wrong one and the exclusion does not apply.
+
+---
+
+# Addendum 2026-10-20 — trigram repeats (`phase5-trigram-repeat-v1`)
+
+## Cause
+
+Frode Weierud replied on 2026-10-11 to the maintainer's question about the
+2005 paper's "differently wired wheels" footnote. He now believes none of
+the five Batch C messages with Enigma-type indicators is Enigma, because
+their letter frequencies are very uneven and they "have trigram repeats where
+none would be expected". The repository had tested letter frequencies for
+QTXMA only (the conservation gate above) and had never counted trigram repeats.
+
+## Method
+
+Preregistered in `experiments/phase5-trigram-repeat-v1/config.json`
+(`490fb82`) before any statistic was computed on a target. The run was made
+from `d01c97d` on a clean tree. It took 99 s, and the result is in
+`artifacts/phase5-trigram-repeat-v1.json`.
+
+- **Statistic:** the number of extra occurrences of repeated trigrams,
+  summed over trigrams. Windows that contain BYQMZ's uncertain letter are
+  skipped.
+- **Null:** 20,000 simulated Enigma I ciphertexts per target, at the
+  target's own length and with the same masked position. Each enciphers a
+  random window of the 858 letters of authentic 1941 Army plaintext in
+  `data/historical/keyed-messages.json`, under a fresh random ten-pair key.
+- **Threshold:** one-sided p < 0.002, which is 0.01 Bonferroni-corrected
+  over five targets.
+- **Calibration:** the 13 authentic Enigma ciphertexts are scored against
+  their own length-matched nulls. All 13 had to pass for the null to count
+  as calibrated.
+
+## Fact
+
+The calibration held. The 13 real Enigma ciphertexts give trigram-repeat
+p-values from 0.046 to 1.0, and none is below 0.002.
+
+| Target | Letters | Repeats (null median / 97.5%) | p | Army plaintext windows, 2.5–97.5% | IC (null median) |
+|---|---|---|---|---|---|
+| QTXMA | 155 | **5** (0 / 3) | **0.0010** | 8–32 | **0.0577** (0.0383), p = 0.00005 |
+| SZAEJ | 51 | 0 (0 / 1) | 1.0 | 0–10 | 0.0525 (0.0376), p = 0.017 |
+| BYQMZ | 167 | 0 (1 / 3) | 1.0 | 9–34 | 0.0395 (0.0383), p = 0.26 |
+| FKQLZ | 107 | 0 (0 / 2) | 1.0 | 1–23 | 0.0326 (0.0383) |
+| XFEDT | 97 | 1 (0 / 2) | 0.22 | 0–19 | 0.0329 (0.0382) |
+
+Only QTXMA is flagged. Its repeats are OQXY at positions 16 and 124,
+OEMY at 38 and 44, and XYT at 67 and 126. Only 0.1% of the 20,000
+simulated Enigma texts had as many. Its IC was not reached by any draw.
+
+Weierud's prediction, as preregistered, was that at least one target would be
+flagged. It **held**, but only through QTXMA.
+
+## Inference
+
+- **QTXMA:** on both trigram repeats and IC, it is inconsistent with Enigma
+  or any similar rotor machine. That agrees with Weierud and with the
+  conservation gate. Its repeat count is also well below every Army-plaintext
+  window of its length (5 against a 2.5% point of 8), while its IC sits at
+  the low edge of plaintext. So it is neither rotor output nor a cipher that
+  keeps plaintext letter patterns, such as monoalphabetic substitution. The
+  gate's routing to `non_plaintext_alphabet_substitution` stands.
+- **BYQMZ, FKQLZ and SZAEJ:** they have no repeated trigram at all, and
+  XFEDT has one. On this statistic all four look exactly like Enigma
+  ciphertext. Weierud's trigram observation does not hold for them under this
+  definition. Its evidence for "not Enigma" therefore rests on QTXMA alone.
+- **SZAEJ:** its IC is high (p = 0.017) but not significant at the
+  threshold, and at 51 letters the test has little power.
+
+## Speculation (exploratory, not preregistered)
+
+FKQLZ and XFEDT are *flatter* than Enigma output. Only 14 and 76 of the
+20,000 draws had a lower IC, giving lower-tail p of about 0.001 and 0.004;
+ties are not separated. Neither message contains a J. With near-uniform
+letters, the chance of no J is 0.015 at 107 letters and 0.022 at 97, and
+about 0.0003 for both together. Weierud describes the Batch C messages
+*without* Enigma-type indicators as a 25-letter system without J and with a
+much flatter frequency distribution. These two messages may belong to that
+system despite their Enigma-type indicators. A low IC cannot come from
+removing J alone, because a uniform 25-letter alphabet gives 0.040. It
+points to a cipher that spreads letters more evenly than chance. This
+inference was made after looking at the data and has not been tested.
+
+## Unresolved
+
+- Olaf Ostwald's 2023 note (`Grey_Messages_230802.pdf`, in German, attached
+  to Weierud's reply) has not been read.
+- How Weierud defines "trigram repeats", and which messages he counted.
+- Whether the J-less, flat-IC pattern of FKQLZ and XFEDT matches the
+  25-letter messages in the wider Batch C. That needs their ciphertexts.
+
+## Recommendation
+
+Preregister a lower-tail IC and missing-J test for FKQLZ and XFEDT against
+the same Enigma null. Include the 25-letter Batch C messages as a positive
+control, using the ciphertexts from CryptoCellar's Batch C list. Read
+Ostwald's note before writing that configuration.
