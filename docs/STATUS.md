@@ -34,6 +34,13 @@ identical candidates. This is operational validation, not a full target result.
 
 ## Current state
 
+Engine check against real traffic (2026-10-20): the 13 authentic 1941 Army
+messages from Ostwald and Weierud's companion page, with their recovered keys,
+are in [`data/historical/keyed-messages.json`](../data/historical/README.md).
+`tests/test_historical_messages.py` deciphers all 13 with `enigma.EnigmaI` to the
+published raw plaintext. The page prints the wrong start position for No. 2 of
+1 October; `ZAQ` is the unique correct one and is recorded beside it.
+
 The nine confirmed findings in the [repository audit](code-review-2026-09-22.md)
 have engineering fixes on `master`. The [attack plan](ATTACK_PLAN.md) still
 describes the broader research program. Historical Phase 3–7 artifacts and v1
