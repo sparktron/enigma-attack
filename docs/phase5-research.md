@@ -230,17 +230,83 @@ removing J alone, because a uniform 25-letter alphabet gives 0.040. It
 points to a cipher that spreads letters more evenly than chance. This
 inference was made after looking at the data and has not been tested.
 
+## Ostwald's 2023 note
+
+Weierud attached Olaf Ostwald's working note "Grey Messages from 29 & 30
+Sep 1941" (2 August 2023, 9 pages, German, `Grey_Messages_230802.pdf`). It
+was received privately and is not in the repository; it was read on
+2026-10-20. It treats the five targets as 5 of 15 "grey" texts of Army
+Group North (HG Nord), sent on 29 and 30 September 1941. Its ciphertexts
+include the first group, so its lengths are 5 more than `corpus.json`'s.
+The points that bear on this addendum follow.
+
+**The J column.** Ostwald marks only Grey06 (QTXMA), Grey07 (SZAEJ) and
+Grey08 (BYQMZ) as "mit J". Every other grey text is "ohne J", **including
+Grey11 (FKQLZ) and Grey12 (XFEDT)** despite their Enigma-type indicators.
+He labels FKQLZ's IC (3.27%) "flat", as he labels two of the J-less texts
+without Enigma-type indicators. This is an independent reading of the same
+pattern the exploratory section above found. It still does not replace a
+preregistered test.
+
+**Shared frequencies and operators.** In his header table:
+- **Frequencies:** QTXMA and FKQLZ are both on 323 kHz, and SZAEJ and XFEDT
+  both on 716 kHz.
+- **Operators:** QTXMA, SZAEJ and BYQMZ were sent by an operator he reads as
+  "Stor."; `corpus.json` has "Otor. ?". FKQLZ and XFEDT were sent by
+  "Fuhrmann".
+- **Handwriting:** all five are in the hand he calls "Cäsar", which also
+  wrote Grey05 to Grey14a.
+- **A link to BYQMZ:** FKQLZ's operator remark "de ugn" names BYQMZ's
+  addressee.
+- **Addressee reading:** he reads FKQLZ's addressee as "912", where
+  `corpus.json` has "g19".
+
+The "with J" / "without J" split coincides with the operator change: the
+three "Stor." messages have J, and the two "Fuhrmann" messages do not.
+
+**The quadgram argument.** Ostwald argues that trigram repeats are expected
+by chance and only quadgram repeats are telling. His union-bound estimate
+puts a trigram repeat at 70.6% of random 160-letter texts; the Poisson value
+is about 51%. Quadgram repeats come out at about 2.7%. His experiment with
+one million random texts finds at least one quadgram repeat in 2,202 at
+length 50, 9,893 at length 100 and 25,381 at length 160, about 1 in 40.
+
+This agrees with the Enigma null above, whose median at 155–167 letters is
+0–1 trigram repeats. It also explains why only QTXMA stands out: it has two
+quadgram repeats, OQXY at positions 16 and 124 and OEMY at 38 and 44. The
+trigram statistic preregistered here did not separate quadgram repeats from
+trigram ones.
+
+**SZAEJ's ZAEJ repeat.** With the first group counted, as Ostwald counts it,
+the quadgram ZAEJ of the first group SZAEJ recurs in the body group ZAEJV.
+In 56 letters a random text has that chance at roughly 0.2% (his
+length-50 count). Under the Enigma convention the first group is a
+discriminant and is not enciphered, which is why `corpus.json` and the test
+above exclude it. Read as part of the ciphertext, it is SZAEJ's only notable
+repeat. This was observed after the fact.
+
+The note also substitutes QTXMA's letters by frequency rank, which gives no
+readable text. It shows that a Caesar shift plus a columnar transposition
+(keyword BERNHARD) is easy to undo, without saying whether that was tried on
+the grey texts.
+
 ## Unresolved
 
-- Olaf Ostwald's 2023 note (`Grey_Messages_230802.pdf`, in German, attached
-  to Weierud's reply) has not been read.
 - How Weierud defines "trigram repeats", and which messages he counted.
 - Whether the J-less, flat-IC pattern of FKQLZ and XFEDT matches the
-  25-letter messages in the wider Batch C. That needs their ciphertexts.
+  ten grey texts without Enigma-type indicators, as Ostwald's table
+  suggests. Testing that needs their ciphertexts from a public source;
+  Ostwald's note transcribes them but was received privately.
+- Whether the first group is enciphered in any of the five: that is, whether
+  SZAEJ's ZAEJ repeat is a property of the cipher or chance.
+- The two metadata readings where Ostwald and `corpus.json` differ (operator
+  "Stor." / "Otor. ?", FKQLZ addressee "912" / "g19"). Settling them needs the
+  form facsimiles.
 
 ## Recommendation
 
 Preregister a lower-tail IC and missing-J test for FKQLZ and XFEDT against
-the same Enigma null. Include the 25-letter Batch C messages as a positive
-control, using the ciphertexts from CryptoCellar's Batch C list. Read
-Ostwald's note before writing that configuration.
+the same Enigma null. Use the ten grey texts without Enigma-type indicators
+as a positive control, taking their ciphertexts from CryptoCellar's Batch C
+list. Add a quadgram-repeat count, with and without the first group, as a
+preregistered secondary statistic for all five targets.
