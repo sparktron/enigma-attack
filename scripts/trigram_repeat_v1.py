@@ -17,11 +17,11 @@ import pathlib
 import random
 import statistics
 import sys
-from collections import Counter
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from enigma import A, EnigmaI  # noqa: E402
+from phase5 import index_of_coincidence  # noqa: E402
 from provenance import code_version, sha256_file  # noqa: E402
 
 WHEELS = ("I", "II", "III", "IV", "V")
@@ -29,10 +29,14 @@ UNCERTAIN = "?"
 STATISTICS = ("trigram_repeats", "repeated_trigrams", "index_of_coincidence", "longest_repeat")
 
 
-def trigram_counts(text: str) -> Counter:
-    return Counter(
-        text[i:i + 3] for i in range(len(text) - 2) if UNCERTAIN not in text[i:i + 3]
-    )
+def trigram_positions(text: str) -> dict[str, list[int]]:
+    """Start positions of each trigram, skipping windows with an uncertain letter."""
+    positions: dict[str, list[int]] = {}
+    for i in range(len(text) - 2):
+        window = text[i:i + 3]
+        if UNCERTAIN not in window:
+            positions.setdefault(window, []).append(i)
+    return positions
 
 
 def longest_repeat(text: str) -> int:
@@ -55,31 +59,20 @@ def longest_repeat(text: str) -> int:
         length += 1
 
 
-def index_of_coincidence(text: str) -> float:
-    counts = Counter(c for c in text if c != UNCERTAIN)
-    n = sum(counts.values())
-    return sum(k * (k - 1) for k in counts.values()) / (n * (n - 1)) if n > 1 else 0.0
-
-
 def measure(text: str) -> dict:
-    counts = trigram_counts(text)
+    counts = [len(p) for p in trigram_positions(text).values()]
     return {
-        "trigram_repeats": sum(k - 1 for k in counts.values() if k >= 2),
-        "repeated_trigrams": sum(1 for k in counts.values() if k >= 2),
+        "trigram_repeats": sum(k - 1 for k in counts if k >= 2),
+        "repeated_trigrams": sum(1 for k in counts if k >= 2),
         "index_of_coincidence": index_of_coincidence(text),
         "longest_repeat": longest_repeat(text),
     }
 
 
 def repeats_listed(text: str) -> list[dict]:
-    positions: dict[str, list[int]] = {}
-    for i in range(len(text) - 2):
-        window = text[i:i + 3]
-        if UNCERTAIN not in window:
-            positions.setdefault(window, []).append(i)
     return [
         {"trigram": t, "positions": p}
-        for t, p in sorted(positions.items(), key=lambda item: (-len(item[1]), item[1][0]))
+        for t, p in sorted(trigram_positions(text).items(), key=lambda item: (-len(item[1]), item[1][0]))
         if len(p) >= 2
     ]
 
@@ -140,7 +133,9 @@ def main() -> int:
     config_path = ROOT / arguments.config
     config = json.loads(config_path.read_text(encoding="utf-8"))
     null_config = config["enigma_null"]
-    draws = arguments.draws or null_config["draws_per_target"]
+    if arguments.draws is not None and arguments.output is None:
+        parser.error("--draws changes the experiment; pass --output so the committed artifact is not replaced")
+    draws = null_config["draws_per_target"] if arguments.draws is None else arguments.draws
     threshold = config["decision"]["threshold"]
 
     keyed_path = ROOT / "data" / "historical" / "keyed-messages.json"
@@ -150,8 +145,7 @@ def main() -> int:
     corpus = {m["designator"]: m for m in json.loads(corpus_path.read_text(encoding="utf-8"))["messages"]}
 
     # Calibration first: a miscalibrated null decides nothing.
-    # The configuration states this seed in its control's description.
-    calibration_seed = 20261021
+    calibration_seed = config["controls"]["authentic_enigma_ciphertexts"]["seed"]
     rng = random.Random(calibration_seed)
     calibration = []
     for m in keyed:

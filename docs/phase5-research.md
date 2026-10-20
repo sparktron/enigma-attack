@@ -185,6 +185,15 @@ from `d01c97d` on a clean tree. It took 99 s, and the result is in
 The calibration held. The 13 real Enigma ciphertexts give trigram-repeat
 p-values from 0.046 to 1.0, and none is below 0.002.
 
+That control is weaker than its count suggests. Seven of the 13 score
+p = 1.0 because they have no repeated trigram. Messages of 18 to 48 letters
+almost never have one, so they cannot fail. Only the longest two, No. 25
+(214 letters) and No. 233 (177), sit at or above the targets' lengths of
+97 to 167 letters. The control would catch a null that grossly
+under-produces repeats at those lengths, but not a modest miscalibration.
+The null's own construction carries most of the weight: a real Enigma
+model, run on real plaintext. (Recorded after code review of PR #41.)
+
 | Target | Letters | Repeats (null median / 97.5%) | p | Army plaintext windows, 2.5–97.5% | IC (null median) |
 |---|---|---|---|---|---|
 | QTXMA | 155 | **5** (0 / 3) | **0.0010** | 8–32 | **0.0577** (0.0383), p = 0.00005 |
@@ -253,7 +262,8 @@ preregistered test.
   both on 716 kHz.
 - **Operators:** QTXMA, SZAEJ and BYQMZ were sent by an operator he reads as
   "Stor."; `corpus.json` has "Otor. ?". FKQLZ and XFEDT were sent by
-  "Fuhrmann".
+  "Fuhrmann". Stor. also sent Grey05, Grey09 and Grey09b, and Fuhrmann also
+  sent Grey10, Grey13 and Grey14a.
 - **Handwriting:** all five are in the hand he calls "Cäsar", which also
   wrote Grey05 to Grey14a.
 - **A link to BYQMZ:** FKQLZ's operator remark "de ugn" names BYQMZ's
@@ -261,8 +271,11 @@ preregistered test.
 - **Addressee reading:** he reads FKQLZ's addressee as "912", where
   `corpus.json` has "g19".
 
-The "with J" / "without J" split coincides with the operator change: the
-three "Stor." messages have J, and the two "Fuhrmann" messages do not.
+Among the five messages with Enigma-type indicators only, the "with J" /
+"without J" split follows the operator: Stor.'s three have J and
+Fuhrmann's two do not. It does not follow the operator in general. Stor.'s
+other three messages (Grey05, Grey09, Grey09b) have no J either, so having
+J is specific to QTXMA, SZAEJ and BYQMZ, not to Stor.
 
 **The quadgram argument.** Ostwald argues that trigram repeats are expected
 by chance and only quadgram repeats are telling. His union-bound estimate

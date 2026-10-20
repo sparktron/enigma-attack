@@ -17,15 +17,19 @@ Two of the records needed more than transcription:
   position `DEI` included, and that setting does not decipher the message.
   Under the published wheels, rings and plugs, `ZAQ` is the only one of the
   17,576 start positions that reproduces the published plaintext (24 of 24
-  letters); no other position agrees on 15 or more. The record keeps `DEI` as
+  letters); the next best agrees on 10. The record keeps `DEI` as
   `start_position_as_published`.
 - **No. 233 of 19 July 1941**: three ciphertext letters are illegible on the
   form. They are kept as `-`. The test steps the machine for each one and
   expects `-` in the plaintext, as the page prints it.
 
 The raw plaintexts are identical to the copies in
-`../phase2/held-out-plaintexts.json` and `../phase5/army-plaintext-controls.json`,
-and the test asserts this.
+`../phase2/held-out-plaintexts.json` and `../phase5/army-plaintext-controls.json`.
+The test asserts this for every message those files share with this one.
+
+`scripts/extract_keyed_messages.py PAGE --retrieved YYYY-MM-DD` rebuilds this
+file from a saved copy of the page, including the start-position search for
+No. 2. The page is not committed; its SHA-256 is recorded in `source`.
 
 Source attribution: Olaf Ostwald and Frode Weierud, CryptoCellar. The site
 license is CC BY-NC-SA 4.0 (see `../phase5/README.md`).

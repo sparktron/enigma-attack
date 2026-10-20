@@ -58,9 +58,14 @@ class HistoricalMessageTests(unittest.TestCase):
         ):
             for entry in json.loads(path.read_text(encoding="utf-8"))["plaintexts"]:
                 copies[entry["id"]] = entry["raw"]
-        self.assertEqual(
-            {m["id"]: m["raw_plaintext"] for m in self.messages}, copies
-        )
+        keyed = {m["id"]: m["raw_plaintext"] for m in self.messages}
+        shared = sorted(set(keyed) & set(copies))
+        # The other files may grow controls from other sources; only the
+        # messages they share with this one must agree.
+        self.assertTrue(shared)
+        for message_id in shared:
+            with self.subTest(message_id):
+                self.assertEqual(keyed[message_id], copies[message_id])
 
 
 if __name__ == "__main__":

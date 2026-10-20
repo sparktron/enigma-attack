@@ -28,6 +28,7 @@
   "controls": {
     "authentic_enigma_ciphertexts": {
       "description": "The 13 real ciphertexts in data/historical/keyed-messages.json ('-' treated as uncertain), each scored against its own length-matched Enigma null built exactly as above with seed 20261021 and 20000 draws. These were enciphered on a real Enigma, so the null is calibrated only if they look like its draws.",
+      "seed": 20261021,
       "calibration_requirement": "none of the 13 has a trigram_repeats p-value below the decision threshold 0.002"
     },
     "army_plaintext": {
@@ -42,6 +43,14 @@
     "prediction_under_weierud": "at least one of the five targets is flagged",
     "what_it_does_not_decide": "A flag rules out a standard rotor machine of Enigma's kind on this statistic; it does not identify the cipher. No flag does not show the messages are Enigma: short texts have little power, and SZAEJ (51 letters) has almost none."
   },
+  "amendments": [
+    {
+      "date": "2026-10-20",
+      "after_run": true,
+      "change": "controls.authentic_enigma_ciphertexts.seed added as a field so the runner reads it. Its value, 20261021, is the one the description already stated and the run used. No other field changed, and the regenerated artifact's results are identical.",
+      "reason": "Code review of PR #41: the runner hard-coded the seed, so the configuration could not drive it."
+    }
+  ],
   "runner": "scripts/trigram_repeat_v1.py",
   "artifact": "artifacts/phase5-trigram-repeat-v1.json"
 }

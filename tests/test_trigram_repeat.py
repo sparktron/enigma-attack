@@ -60,5 +60,16 @@ class TrigramRepeatTests(unittest.TestCase):
         self.assertEqual(len(a), 5)
 
 
+    def test_draws_override_refuses_to_replace_the_committed_artifact(self):
+        import subprocess
+
+        completed = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "trigram_repeat_v1.py"), "--draws", "5"],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("--output", completed.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()
