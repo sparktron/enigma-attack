@@ -3657,3 +3657,44 @@ Retention uses each completed sweep's observed top-100 cutoff (v6 for E, v7 for
 R-ngonly). This tests an observed-cutoff proxy, NOT complete-space retention rank
 for every planted text. Results cannot claim the latter. No message sweep starts
 from this experiment. Background and continuation: docs/runs/2026-10-20-low-ic-joint.md.
+
+### Result: phase1-low-ic-joint-v1 (2026-10-21)
+
+#### Observed
+
+Raw artifacts: `artifacts/phase1-low-ic-joint-v1.json` and
+`artifacts/phase1-low-ic-joint-v1-joint.json`. Power run: clean `19b220f`,
+2310.9 seconds, all preflight checks and positive controls passed. Analysis:
+`c324e4e`, 198.3 seconds; tracked code clean, dirty flag records only the newly
+created untracked raw power artifact. An arm-name adapter bug was found on
+synthetic data and fixed before any calibration outcomes were read; hypotheses,
+seeds, draws and thresholds were unchanged. Machine: RTX 3090 and shared CPU;
+eight power workers and eight analysis workers. All 34 GPU-enabled first-plug
+parity tests passed; CPU suites passed 47 tests, six GPU-dependent skips.
+Analysis adapter regression test passed. Logs: data/review/low-ic-joint-2026-10-21/.
+
+All 240 draws per cell and 12 fresh low-IC texts were retained, no smoke exclusions.
+Clean retained-and-confirmed success: E 165/240 (68.75%), R-ngonly 183/240
+(76.25%). Plaintext-cluster 95% intervals: E [61.25%,76.67%], R [70.42%,81.67%].
+One-indel success: E 95/240 (39.58%), R 125/240 (52.08%); cluster intervals
+[31.25%,47.92%] and [46.67%,57.50%]. Clean gain 7.5 percentage points, indel
+gain 12.5 points. **The preregistered clean gain >=8 points is refuted.**
+R confirmation given detection: clean 184/186 (98.92%), indel 128/132 (96.97%).
+R retention given detection: clean 185/186 (99.46%), indel 129/132 (97.73%).
+
+#### Interpretation (inference)
+
+R-ngonly improves the observed low-IC success rate in this sample, but the improvement
+falls short of the fixed clean-gain decision bar. Individual intervals are
+plaintext-cluster intervals, not evidence that the gain itself is significant.
+This does not establish a new optimum among all screened methods: more expensive
+capped-IC variants had higher screening recovery at higher cost. The already
+implemented R-ngonly method remains the cost-oriented comparison chosen in prior
+work; no duplicate implementation was needed.
+
+Retention is measured against each completed sweep's fixed observed top-100 cutoff.
+It is NOT a fresh full-space rank experiment on each planted message. Synthetic
+Markov texts from scorer counts, 12 text clusters, a planted neighbourhood and
+fault-free synthetic companions limit generalisation. No combined odds multiplier
+is inferred. Under the preregistered rule this result does not justify another
+message sweep. No new target sweep is launched or preregistered.
