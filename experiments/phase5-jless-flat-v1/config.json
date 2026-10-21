@@ -56,6 +56,8 @@
     "grey_positive": {
       "description": "The ten grey texts without Enigma-type indicators, data/phase5/grey-texts-ostwald-2023.json, scored on their full text (first group included; no discriminant convention for hand ciphers) against length-matched Enigma nulls (draws_controls, seed_controls, in file order).",
       "expectation": "J-absence is true of all ten by construction, so p_noj is not evidence for them. The control shows what the statistic does on the J-less system. Expected: the four at least 80 letters long with IC below 3.6% (CSBTR, BCSSF, AWMRI, YDFZS) have joint p below the threshold; the four 'rough' or higher-IC texts (FTBCO, AOKAX, XDPAK, SDPLM) do not. The three short ones (SSRAC 38, KHZMY 29, SDPLM 49) are reported without expectation, except SDPLM as above.",
+      "expected_flagged": ["CSBTR", "BCSSF", "AWMRI", "YDFZS"],
+      "expected_not_flagged": ["FTBCO", "AOKAX", "XDPAK", "SDPLM"],
       "expectation_failure_means": "A flat long grey text not flagged, or a rough one flagged, means the joint statistic does not separate the grey system's flat texts from Enigma as intended, and the target result is reported as uninterpretable."
     }
   },
