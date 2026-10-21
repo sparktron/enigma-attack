@@ -3641,3 +3641,19 @@ and labelled as inference.
 The configuration itself is left byte-identical: the finished artifact records its SHA-256
 (`99e0f801...`, which matches the committed file), and a preregistered configuration is not
 rewritten after its run. The amendment is this entry.
+
+## phase1-low-ic-joint-v1 (preregistered 2026-10-20)
+
+Fresh low-IC validation of the already implemented R-ngonly climb against E.
+Hypothesis: retained-and-companion-confirmed clean success improves by at least
+8 percentage points. Refuted by gain below 0.08. Exact configuration:
+`experiments/phase1-low-ic-joint-v1/config.json`; analysis:
+`scripts/low_ic_joint_v1.py`. Twelve new IC-selected texts (0.050–0.0575), 240
+keys per clean/indel cell, seeds 202610201/202610202/202610203 for text/keys/companions.
+No primary-draw smoke outcomes were inspected. Same companion pair for both arms.
+Uncertainty intervals cluster by plaintext (12 independent clusters).
+
+Retention uses each completed sweep's observed top-100 cutoff (v6 for E, v7 for
+R-ngonly). This tests an observed-cutoff proxy, NOT complete-space retention rank
+for every planted text. Results cannot claim the latter. No message sweep starts
+from this experiment. Background and continuation: docs/runs/2026-10-20-low-ic-joint.md.
