@@ -28,3 +28,18 @@ Clean gain 7.5 points REFUTES >=8 point rule; indel gain 12.5 points.
 No new sweep warranted by that rule. Raw artifacts and test/run logs are preserved;
 see experiment history for intervals and interpretation. Full-space retention rank
 on every planted text remains NOT RUN (fixed observed-cutoff proxy used instead).
+
+## Maintainer decision (2026-10-21)
+
+The maintainer accepts the measured 7.5-point clean gain as sufficient and asks to
+continue. This supersedes the no-new-sweep decision based on the >=8-point bar;
+it does not change the preregistration or its refuted result.
+
+Before launching, verified the prospective next sweep already completed: v7 used
+exactly first_plug={letters: ENR, start_phases: ngram_only}, BYQMZ, middle_complete,
+all right rings and all starts. Artifact status complete, 246,767,040 settings,
+completed 2026-10-16T22:48:44.714376+00:00, no companion-confirmed candidate.
+The new calibration changes confidence in that completed search, not its method
+or coverage. Repeating it with identical settings would add no search coverage.
+No duplicate sweep launched. A further run needs a different declared target,
+keyspace or method, with its own preregistration and applicable control.

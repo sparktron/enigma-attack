@@ -3698,3 +3698,13 @@ Markov texts from scorer counts, 12 text clusters, a planted neighbourhood and
 fault-free synthetic companions limit generalisation. No combined odds multiplier
 is inferred. Under the preregistered rule this result does not justify another
 message sweep. No new target sweep is launched or preregistered.
+
+#### Maintainer decision, 2026-10-21
+
+The maintainer accepts the measured 7.5-point gain as sufficient to proceed,
+overriding the operational >=8-point launch rule. The preregistered hypothesis
+remains refuted; its threshold and artifacts are unchanged. Before launching the
+next search, verified that v7 already ran this exact R-ngonly method over BYQMZ's
+complete declared space (246,767,040 settings, completed 2026-10-16, no confirmed
+candidate). This fresh calibration supplies evidence for the already completed
+v7; it does not create an unsearched slice. No duplicate run is launched.
