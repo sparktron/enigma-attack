@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Joint confirmation/observed-cutoff calibration of fresh low-IC power draws."""
+import argparse
 import concurrent.futures
 import datetime
 import json
@@ -35,7 +36,15 @@ def summarise(rows, names, cutoffs):
     return result
 
 
-def main():
+def parse_arguments(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    # check_artifacts.py regenerates into a temporary path with --output.
+    parser.add_argument('--output', type=pathlib.Path, default=OUTPUT)
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    output = parse_arguments(argv).output
     config = json.loads(CONFIG.read_text())
     power = json.loads(POWER.read_text())
     spec = config['joint_analysis']
@@ -49,6 +58,6 @@ def main():
     cells = summarise(rows,names,cutoffs)
     gains = {n: cells[n]['arms']['complete_w117_rngonly']['sweep_success']['rate']-cells[n]['arms']['complete_w117_estecker']['sweep_success']['rate'] for n in names}
     payload = {'experiment_id':'phase1-low-ic-joint-v1','started_at':started,'completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'code':version,'inputs':{'config':sha256_file(CONFIG),'power':sha256_file(POWER),**{a:sha256_file(ROOT/p) for a,p in spec['sweeps'].items()}},'retention_limitation':spec['retention'],'cells':cells,'paired_gain':gains,'hypothesis_passed':gains['clean']>=spec['hypothesis_gain'],'draws':rows}
-    OUTPUT.write_text(json.dumps(payload,indent=2)+'\n')
+    output.write_text(json.dumps(payload,indent=2)+'\n')
     print(json.dumps({'gains':gains,'passed':payload['hypothesis_passed']}))
 if __name__=='__main__':main()

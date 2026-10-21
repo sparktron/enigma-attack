@@ -16,3 +16,6 @@ class SummaryTests(unittest.TestCase):
         self.assertEqual(s['arms'][r]['sweep_success']['count'],2)
         self.assertEqual(s['arms'][r]['retained_given_detected']['rate'],1)
         self.assertEqual(s['draws'],3)
+    def test_output_defaults_to_the_artifact_and_honours_regeneration_path(self):
+        self.assertEqual(m.parse_arguments([]).output,m.OUTPUT)
+        self.assertEqual(m.parse_arguments(['--output','/tmp/x.json']).output,pathlib.Path('/tmp/x.json'))
