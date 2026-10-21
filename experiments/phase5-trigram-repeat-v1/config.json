@@ -1,0 +1,56 @@
+{
+  "schema": "enigma-attack.phase5-trigram-repeat-config/v1",
+  "experiment_id": "phase5-trigram-repeat-v1",
+  "preregistered": "2026-10-20, committed before any statistic below was computed on a Batch C message",
+  "question": "Frode Weierud (email of 2026-10-11) says the five Batch C messages with Enigma-type indicators have trigram repeats where none would be expected from a rotor machine, and very uneven letter frequencies. Do they, measured against simulated Enigma ciphertext of Army plaintext at each message's own length?",
+  "corpus": "corpus.json",
+  "targets": ["QTXMA", "SZAEJ", "BYQMZ", "FKQLZ", "XFEDT"],
+  "statistics": {
+    "primary": {
+      "name": "trigram_repeats",
+      "definition": "Over the overlapping trigrams of the ciphertext, the sum over distinct trigrams t of (n_t - 1) for every t with n_t >= 2. A trigram window containing an uncertain source character ('?') is not counted."
+    },
+    "secondary": [
+      {"name": "repeated_trigrams", "definition": "Number of distinct trigrams occurring at least twice, same windows."},
+      {"name": "index_of_coincidence", "definition": "sum n_i(n_i - 1) / (N(N - 1)) over the 26 letters, uncertain characters excluded."},
+      {"name": "longest_repeat", "definition": "Length of the longest substring of letters occurring at least twice (overlap allowed), not spanning an uncertain character."}
+    ]
+  },
+  "enigma_null": {
+    "description": "For each target, simulated Enigma I ciphertexts of exactly the target's length. Each draw takes a uniformly random window of that length from the plaintext pool and enciphers it under an independent uniformly random key. Positions the target marks uncertain are masked to '?' in each draw before the statistics are computed.",
+    "machine": "enigma.EnigmaI, reflector B",
+    "key_distribution": "wheel order uniform over the 60 ordered choices of three of I-V; rings uniform over 26^3; start uniform over 26^3; plugboard uniform over ten disjoint pairs",
+    "plaintext_pool": "data/historical/keyed-messages.json raw_plaintext of all 13 messages, '-' removed, concatenated in file order (858 letters). Windows may cross message boundaries.",
+    "draws_per_target": 20000,
+    "seed": 20261020,
+    "p_value": "one-sided upper tail, (1 + #draws with statistic >= observed) / (1 + draws); for index_of_coincidence also upper tail"
+  },
+  "controls": {
+    "authentic_enigma_ciphertexts": {
+      "description": "The 13 real ciphertexts in data/historical/keyed-messages.json ('-' treated as uncertain), each scored against its own length-matched Enigma null built exactly as above with seed 20261021 and 20000 draws. These were enciphered on a real Enigma, so the null is calibrated only if they look like its draws.",
+      "seed": 20261021,
+      "calibration_requirement": "none of the 13 has a trigram_repeats p-value below the decision threshold 0.002"
+    },
+    "army_plaintext": {
+      "description": "Every length-N window of the same 858-letter plaintext pool, for each target length N; reports the distribution of each statistic (median, 2.5% and 97.5% points). A cipher that keeps plaintext letter patterns (monoalphabetic substitution) would land here; a rotor machine would not."
+    }
+  },
+  "decision": {
+    "threshold": 0.002,
+    "threshold_rationale": "0.01 one-sided, Bonferroni-corrected over the five targets",
+    "rule": "A target is flagged 'trigram repeats inconsistent with Enigma' when its trigram_repeats p-value under the Enigma null is below the threshold. The result is valid only if the authentic-ciphertext calibration requirement holds; if it fails, no target is flagged and the null is recorded as miscalibrated.",
+    "secondary_reporting": "index_of_coincidence and the other secondary statistics are reported with their p-values at the same threshold but do not change the primary flag.",
+    "prediction_under_weierud": "at least one of the five targets is flagged",
+    "what_it_does_not_decide": "A flag rules out a standard rotor machine of Enigma's kind on this statistic; it does not identify the cipher. No flag does not show the messages are Enigma: short texts have little power, and SZAEJ (51 letters) has almost none."
+  },
+  "amendments": [
+    {
+      "date": "2026-10-20",
+      "after_run": true,
+      "change": "controls.authentic_enigma_ciphertexts.seed added as a field so the runner reads it. Its value, 20261021, is the one the description already stated and the run used. No other field changed, and the regenerated artifact's results are identical.",
+      "reason": "Code review of PR #41: the runner hard-coded the seed, so the configuration could not drive it."
+    }
+  ],
+  "runner": "scripts/trigram_repeat_v1.py",
+  "artifact": "artifacts/phase5-trigram-repeat-v1.json"
+}

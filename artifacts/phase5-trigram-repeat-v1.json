@@ -1,0 +1,1007 @@
+{
+  "schema": "enigma-attack.phase5-trigram-repeat-result/v1",
+  "experiment_id": "phase5-trigram-repeat-v1",
+  "code": {
+    "source": "git_checkout",
+    "commit": "85fedb3bbda0ed4576acc185ed720d526a0fd4f4",
+    "branch": "claude/historical-decipher-vectors",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase5.py": "f882d966b581105ebf548ddff22c233328b4e781816d3d769d87d683ce7ead0a",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "scripts/trigram_repeat_v1.py": "cd014ea1a4f9d299ff7ec9e44200449c3f64e21c162eafb8da5b4fa9b47c932c"
+    }
+  },
+  "inputs": {
+    "config_sha256": "d2dcd0eaaf6e7e408967a35bfec0a98df0d4c83d57726bed23a511d6dc313861",
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "keyed_messages_sha256": "0caf1111e33aa53bfde1e7bcbbf15f7bd51b6b599ef39e5591f4c0c46333ccd7",
+    "plaintext_pool_letters": 858
+  },
+  "draws_per_null": 20000,
+  "seeds": {
+    "calibration": 20261021,
+    "targets": 20261020
+  },
+  "smoke": false,
+  "calibration": {
+    "requirement": "none of the 13 has a trigram_repeats p-value below the decision threshold 0.002",
+    "passed": true,
+    "messages": [
+      {
+        "id": "1941-07-13-25",
+        "length": 214,
+        "observed": {
+          "trigram_repeats": 4,
+          "repeated_trigrams": 4,
+          "index_of_coincidence": 0.04063007327453819,
+          "longest_repeat": 3
+        },
+        "p_values": {
+          "trigram_repeats": 0.04614769261536923,
+          "repeated_trigrams": 0.04469776511174441,
+          "index_of_coincidence": 0.06274686265686716,
+          "longest_repeat": 0.7080145992700365
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 4,
+            "max": 7
+          },
+          "repeated_trigrams": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 4,
+            "max": 7
+          },
+          "index_of_coincidence": {
+            "median": 0.03839234785661007,
+            "p2_5": 0.03637400728357685,
+            "p97_5": 0.04137598174718091,
+            "max": 0.04602694045895309
+          },
+          "longest_repeat": {
+            "median": 3.0,
+            "p2_5": 2,
+            "p97_5": 4,
+            "max": 6
+          }
+        }
+      },
+      {
+        "id": "1941-08-26-65",
+        "length": 18,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.032679738562091505,
+          "longest_repeat": 1
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.695915204239788,
+          "longest_repeat": 0.999750012499375
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "index_of_coincidence": {
+            "median": 0.0392156862745098,
+            "p2_5": 0.013071895424836602,
+            "p97_5": 0.0718954248366013,
+            "max": 0.1568627450980392
+          },
+          "longest_repeat": {
+            "median": 1.0,
+            "p2_5": 1,
+            "p97_5": 2,
+            "max": 4
+          }
+        }
+      },
+      {
+        "id": "1941-10-01-1",
+        "length": 22,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.021645021645021644,
+          "longest_repeat": 1
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.9690515474226289,
+          "longest_repeat": 1.0
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "index_of_coincidence": {
+            "median": 0.03896103896103896,
+            "p2_5": 0.017316017316017316,
+            "p97_5": 0.06926406926406926,
+            "max": 0.11688311688311688
+          },
+          "longest_repeat": {
+            "median": 1.0,
+            "p2_5": 1,
+            "p97_5": 2,
+            "max": 4
+          }
+        }
+      },
+      {
+        "id": "1941-10-01-2",
+        "length": 24,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.050724637681159424,
+          "longest_repeat": 1
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.17319134043297835,
+          "longest_repeat": 1.0
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "index_of_coincidence": {
+            "median": 0.036231884057971016,
+            "p2_5": 0.018115942028985508,
+            "p97_5": 0.06521739130434782,
+            "max": 0.10507246376811594
+          },
+          "longest_repeat": {
+            "median": 1.0,
+            "p2_5": 1,
+            "p97_5": 2,
+            "max": 4
+          }
+        }
+      },
+      {
+        "id": "1941-07-08-128",
+        "length": 27,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.02564102564102564,
+          "longest_repeat": 1
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.9488025598720063,
+          "longest_repeat": 1.0
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "index_of_coincidence": {
+            "median": 0.037037037037037035,
+            "p2_5": 0.022792022792022793,
+            "p97_5": 0.06267806267806268,
+            "max": 0.17094017094017094
+          },
+          "longest_repeat": {
+            "median": 1.0,
+            "p2_5": 1,
+            "p97_5": 2,
+            "max": 4
+          }
+        }
+      },
+      {
+        "id": "1941-08-27-71",
+        "length": 32,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.034274193548387094,
+          "longest_repeat": 1
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.7075146242687865,
+          "longest_repeat": 1.0
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 3
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 3
+          },
+          "index_of_coincidence": {
+            "median": 0.038306451612903226,
+            "p2_5": 0.024193548387096774,
+            "p97_5": 0.05846774193548387,
+            "max": 0.0907258064516129
+          },
+          "longest_repeat": {
+            "median": 1.0,
+            "p2_5": 1,
+            "p97_5": 2,
+            "max": 4
+          }
+        }
+      },
+      {
+        "id": "1941-09-02-15",
+        "length": 36,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.03333333333333333,
+          "longest_repeat": 1
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.7767611619419029,
+          "longest_repeat": 1.0
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 3
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 2
+          },
+          "index_of_coincidence": {
+            "median": 0.0380952380952381,
+            "p2_5": 0.025396825396825397,
+            "p97_5": 0.05555555555555555,
+            "max": 0.08571428571428572
+          },
+          "longest_repeat": {
+            "median": 2.0,
+            "p2_5": 1,
+            "p97_5": 3,
+            "max": 5
+          }
+        }
+      },
+      {
+        "id": "1941-08-22-30",
+        "length": 46,
+        "observed": {
+          "trigram_repeats": 1,
+          "repeated_trigrams": 1,
+          "index_of_coincidence": 0.033816425120772944,
+          "longest_repeat": 3
+        },
+        "p_values": {
+          "trigram_repeats": 0.05249737513124344,
+          "repeated_trigrams": 0.05249737513124344,
+          "index_of_coincidence": 0.8025098745062746,
+          "longest_repeat": 0.05249737513124344
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 3
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 3
+          },
+          "index_of_coincidence": {
+            "median": 0.03768115942028986,
+            "p2_5": 0.028985507246376812,
+            "p97_5": 0.05217391304347826,
+            "max": 0.08019323671497584
+          },
+          "longest_repeat": {
+            "median": 2.0,
+            "p2_5": 1,
+            "p97_5": 3,
+            "max": 5
+          }
+        }
+      },
+      {
+        "id": "1941-09-06-36",
+        "length": 48,
+        "observed": {
+          "trigram_repeats": 0,
+          "repeated_trigrams": 0,
+          "index_of_coincidence": 0.03723404255319149,
+          "longest_repeat": 2
+        },
+        "p_values": {
+          "trigram_repeats": 1.0,
+          "repeated_trigrams": 1.0,
+          "index_of_coincidence": 0.5771711414429278,
+          "longest_repeat": 0.7957602119894005
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 4
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 3
+          },
+          "index_of_coincidence": {
+            "median": 0.038120567375886524,
+            "p2_5": 0.02925531914893617,
+            "p97_5": 0.051418439716312055,
+            "max": 0.0797872340425532
+          },
+          "longest_repeat": {
+            "median": 2.0,
+            "p2_5": 1,
+            "p97_5": 3,
+            "max": 5
+          }
+        }
+      },
+      {
+        "id": "1941-09-14-46",
+        "length": 69,
+        "observed": {
+          "trigram_repeats": 1,
+          "repeated_trigrams": 1,
+          "index_of_coincidence": 0.04049445865302643,
+          "longest_repeat": 3
+        },
+        "p_values": {
+          "trigram_repeats": 0.11559422028898556,
+          "repeated_trigrams": 0.11559422028898556,
+          "index_of_coincidence": 0.29398530073496326,
+          "longest_repeat": 0.11559422028898556
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 4
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 4
+          },
+          "index_of_coincidence": {
+            "median": 0.03793691389599318,
+            "p2_5": 0.0319693094629156,
+            "p97_5": 0.04731457800511509,
+            "max": 0.058823529411764705
+          },
+          "longest_repeat": {
+            "median": 2.0,
+            "p2_5": 1,
+            "p97_5": 3,
+            "max": 6
+          }
+        }
+      },
+      {
+        "id": "1941-09-24-94",
+        "length": 76,
+        "observed": {
+          "trigram_repeats": 1,
+          "repeated_trigrams": 1,
+          "index_of_coincidence": 0.0343859649122807,
+          "longest_repeat": 3
+        },
+        "p_values": {
+          "trigram_repeats": 0.13879306034698266,
+          "repeated_trigrams": 0.13879306034698266,
+          "index_of_coincidence": 0.9022548872556372,
+          "longest_repeat": 0.13879306034698266
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 5
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 5
+          },
+          "index_of_coincidence": {
+            "median": 0.03824561403508772,
+            "p2_5": 0.03263157894736842,
+            "p97_5": 0.04666666666666667,
+            "max": 0.059298245614035086
+          },
+          "longest_repeat": {
+            "median": 2.0,
+            "p2_5": 2,
+            "p97_5": 3,
+            "max": 5
+          }
+        }
+      },
+      {
+        "id": "1941-07-14-203",
+        "length": 72,
+        "observed": {
+          "trigram_repeats": 1,
+          "repeated_trigrams": 1,
+          "index_of_coincidence": 0.04225352112676056,
+          "longest_repeat": 3
+        },
+        "p_values": {
+          "trigram_repeats": 0.12459377031148443,
+          "repeated_trigrams": 0.12459377031148443,
+          "index_of_coincidence": 0.16904154792260387,
+          "longest_repeat": 0.12459377031148443
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 5
+          },
+          "repeated_trigrams": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 5
+          },
+          "index_of_coincidence": {
+            "median": 0.037949921752738654,
+            "p2_5": 0.032081377151799685,
+            "p97_5": 0.047339593114241005,
+            "max": 0.061815336463223784
+          },
+          "longest_repeat": {
+            "median": 2.0,
+            "p2_5": 1,
+            "p97_5": 3,
+            "max": 5
+          }
+        }
+      },
+      {
+        "id": "1941-07-19-233",
+        "length": 177,
+        "observed": {
+          "trigram_repeats": 1,
+          "repeated_trigrams": 1,
+          "index_of_coincidence": 0.04285429539565477,
+          "longest_repeat": 3
+        },
+        "p_values": {
+          "trigram_repeats": 0.5455727213639318,
+          "repeated_trigrams": 0.5455727213639318,
+          "index_of_coincidence": 0.012099395030248488,
+          "longest_repeat": 0.5455727213639318
+        },
+        "enigma_null": {
+          "trigram_repeats": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 3,
+            "max": 7
+          },
+          "repeated_trigrams": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 3,
+            "max": 7
+          },
+          "index_of_coincidence": {
+            "median": 0.03833632316789582,
+            "p2_5": 0.03587801474985051,
+            "p97_5": 0.04205700617899143,
+            "max": 0.04816955684007707
+          },
+          "longest_repeat": {
+            "median": 3.0,
+            "p2_5": 2,
+            "p97_5": 4,
+            "max": 5
+          }
+        }
+      }
+    ]
+  },
+  "targets": [
+    {
+      "designator": "QTXMA",
+      "length": 155,
+      "uncertain_positions": [],
+      "observed": {
+        "trigram_repeats": 5,
+        "repeated_trigrams": 5,
+        "index_of_coincidence": 0.05772936740678676,
+        "longest_repeat": 4
+      },
+      "p_values": {
+        "trigram_repeats": 0.000999950002499875,
+        "repeated_trigrams": 0.0008499575021248938,
+        "index_of_coincidence": 4.999750012499375e-05,
+        "longest_repeat": 0.02279886005699715
+      },
+      "enigma_null": {
+        "trigram_repeats": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 3,
+          "max": 6
+        },
+        "repeated_trigrams": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 3,
+          "max": 6
+        },
+        "index_of_coincidence": {
+          "median": 0.03829074151654797,
+          "p2_5": 0.03552576455802262,
+          "p97_5": 0.0423963133640553,
+          "max": 0.04859656472559699
+        },
+        "longest_repeat": {
+          "median": 2.0,
+          "p2_5": 2,
+          "p97_5": 3,
+          "max": 6
+        }
+      },
+      "repeats": [
+        {
+          "trigram": "OQX",
+          "positions": [
+            16,
+            124
+          ]
+        },
+        {
+          "trigram": "QXY",
+          "positions": [
+            17,
+            125
+          ]
+        },
+        {
+          "trigram": "OEM",
+          "positions": [
+            38,
+            44
+          ]
+        },
+        {
+          "trigram": "EMY",
+          "positions": [
+            39,
+            45
+          ]
+        },
+        {
+          "trigram": "XYT",
+          "positions": [
+            67,
+            126
+          ]
+        }
+      ],
+      "army_plaintext_windows": {
+        "windows": 704,
+        "trigram_repeats": {
+          "median": 20.0,
+          "p2_5": 8,
+          "p97_5": 32,
+          "max": 33
+        },
+        "repeated_trigrams": {
+          "median": 15.0,
+          "p2_5": 6,
+          "p97_5": 23,
+          "max": 26
+        },
+        "index_of_coincidence": {
+          "median": 0.06254713028906578,
+          "p2_5": 0.052031839128613325,
+          "p97_5": 0.07188940092165899,
+          "max": 0.07373271889400922
+        },
+        "longest_repeat": {
+          "median": 7.0,
+          "p2_5": 5,
+          "p97_5": 12,
+          "max": 13
+        }
+      },
+      "flagged": true,
+      "secondary_below_threshold": [
+        "repeated_trigrams",
+        "index_of_coincidence"
+      ]
+    },
+    {
+      "designator": "SZAEJ",
+      "length": 51,
+      "uncertain_positions": [],
+      "observed": {
+        "trigram_repeats": 0,
+        "repeated_trigrams": 0,
+        "index_of_coincidence": 0.05254901960784314,
+        "longest_repeat": 2
+      },
+      "p_values": {
+        "trigram_repeats": 1.0,
+        "repeated_trigrams": 1.0,
+        "index_of_coincidence": 0.01694915254237288,
+        "longest_repeat": 0.8353082345882706
+      },
+      "enigma_null": {
+        "trigram_repeats": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 1,
+          "max": 3
+        },
+        "repeated_trigrams": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 1,
+          "max": 3
+        },
+        "index_of_coincidence": {
+          "median": 0.03764705882352941,
+          "p2_5": 0.02980392156862745,
+          "p97_5": 0.050980392156862744,
+          "max": 0.07529411764705882
+        },
+        "longest_repeat": {
+          "median": 2.0,
+          "p2_5": 1,
+          "p97_5": 3,
+          "max": 5
+        }
+      },
+      "repeats": [],
+      "army_plaintext_windows": {
+        "windows": 808,
+        "trigram_repeats": {
+          "median": 3.0,
+          "p2_5": 0,
+          "p97_5": 10,
+          "max": 13
+        },
+        "repeated_trigrams": {
+          "median": 3.0,
+          "p2_5": 0,
+          "p97_5": 9,
+          "max": 11
+        },
+        "index_of_coincidence": {
+          "median": 0.06274509803921569,
+          "p2_5": 0.042352941176470586,
+          "p97_5": 0.08470588235294117,
+          "max": 0.09568627450980392
+        },
+        "longest_repeat": {
+          "median": 4.0,
+          "p2_5": 2,
+          "p97_5": 10,
+          "max": 10
+        }
+      },
+      "flagged": false,
+      "secondary_below_threshold": []
+    },
+    {
+      "designator": "BYQMZ",
+      "length": 167,
+      "uncertain_positions": [
+        28
+      ],
+      "observed": {
+        "trigram_repeats": 0,
+        "repeated_trigrams": 0,
+        "index_of_coincidence": 0.03950346841913107,
+        "longest_repeat": 2
+      },
+      "p_values": {
+        "trigram_repeats": 1.0,
+        "repeated_trigrams": 1.0,
+        "index_of_coincidence": 0.26208689565521726,
+        "longest_repeat": 1.0
+      },
+      "enigma_null": {
+        "trigram_repeats": {
+          "median": 1.0,
+          "p2_5": 0,
+          "p97_5": 3,
+          "max": 6
+        },
+        "repeated_trigrams": {
+          "median": 1.0,
+          "p2_5": 0,
+          "p97_5": 3,
+          "max": 6
+        },
+        "index_of_coincidence": {
+          "median": 0.038335158817086525,
+          "p2_5": 0.03570646221248631,
+          "p97_5": 0.042205184373859075,
+          "max": 0.04760861628331508
+        },
+        "longest_repeat": {
+          "median": 3.0,
+          "p2_5": 2,
+          "p97_5": 4,
+          "max": 7
+        }
+      },
+      "repeats": [],
+      "army_plaintext_windows": {
+        "windows": 692,
+        "trigram_repeats": {
+          "median": 23.0,
+          "p2_5": 9,
+          "p97_5": 34,
+          "max": 34
+        },
+        "repeated_trigrams": {
+          "median": 18.0,
+          "p2_5": 7,
+          "p97_5": 26,
+          "max": 29
+        },
+        "index_of_coincidence": {
+          "median": 0.06262174446288146,
+          "p2_5": 0.05302647716614963,
+          "p97_5": 0.07070196955486617,
+          "max": 0.07236130149339874
+        },
+        "longest_repeat": {
+          "median": 8.0,
+          "p2_5": 5,
+          "p97_5": 13,
+          "max": 13
+        }
+      },
+      "flagged": false,
+      "secondary_below_threshold": []
+    },
+    {
+      "designator": "FKQLZ",
+      "length": 107,
+      "uncertain_positions": [],
+      "observed": {
+        "trigram_repeats": 0,
+        "repeated_trigrams": 0,
+        "index_of_coincidence": 0.0326221125022042,
+        "longest_repeat": 2
+      },
+      "p_values": {
+        "trigram_repeats": 1.0,
+        "repeated_trigrams": 1.0,
+        "index_of_coincidence": 0.99930003499825,
+        "longest_repeat": 0.9998000099995
+      },
+      "enigma_null": {
+        "trigram_repeats": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 2,
+          "max": 5
+        },
+        "repeated_trigrams": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 2,
+          "max": 5
+        },
+        "index_of_coincidence": {
+          "median": 0.03826485628636925,
+          "p2_5": 0.034209134191500616,
+          "p97_5": 0.044260271557044616,
+          "max": 0.053253394463057664
+        },
+        "longest_repeat": {
+          "median": 2.0,
+          "p2_5": 2,
+          "p97_5": 3,
+          "max": 5
+        }
+      },
+      "repeats": [],
+      "army_plaintext_windows": {
+        "windows": 752,
+        "trigram_repeats": {
+          "median": 11.0,
+          "p2_5": 1,
+          "p97_5": 23,
+          "max": 24
+        },
+        "repeated_trigrams": {
+          "median": 9.0,
+          "p2_5": 1,
+          "p97_5": 19,
+          "max": 20
+        },
+        "index_of_coincidence": {
+          "median": 0.06295186034209134,
+          "p2_5": 0.04866866513842356,
+          "p97_5": 0.0744136836536766,
+          "max": 0.07582436959971786
+        },
+        "longest_repeat": {
+          "median": 6.0,
+          "p2_5": 3,
+          "p97_5": 10,
+          "max": 10
+        }
+      },
+      "flagged": false,
+      "secondary_below_threshold": []
+    },
+    {
+      "designator": "XFEDT",
+      "length": 97,
+      "uncertain_positions": [],
+      "observed": {
+        "trigram_repeats": 1,
+        "repeated_trigrams": 1,
+        "index_of_coincidence": 0.03286082474226804,
+        "longest_repeat": 3
+      },
+      "p_values": {
+        "trigram_repeats": 0.21558922053897306,
+        "repeated_trigrams": 0.21558922053897306,
+        "index_of_coincidence": 0.9962001899905005,
+        "longest_repeat": 0.21558922053897306
+      },
+      "enigma_null": {
+        "trigram_repeats": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 2,
+          "max": 5
+        },
+        "repeated_trigrams": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 2,
+          "max": 5
+        },
+        "index_of_coincidence": {
+          "median": 0.03823024054982818,
+          "p2_5": 0.033934707903780066,
+          "p97_5": 0.044673539518900345,
+          "max": 0.05605670103092784
+        },
+        "longest_repeat": {
+          "median": 2.0,
+          "p2_5": 2,
+          "p97_5": 3,
+          "max": 5
+        }
+      },
+      "repeats": [
+        {
+          "trigram": "LRX",
+          "positions": [
+            21,
+            71
+          ]
+        }
+      ],
+      "army_plaintext_windows": {
+        "windows": 762,
+        "trigram_repeats": {
+          "median": 9.0,
+          "p2_5": 0,
+          "p97_5": 19,
+          "max": 23
+        },
+        "repeated_trigrams": {
+          "median": 7.0,
+          "p2_5": 0,
+          "p97_5": 18,
+          "max": 19
+        },
+        "index_of_coincidence": {
+          "median": 0.06303694158075601,
+          "p2_5": 0.04768041237113402,
+          "p97_5": 0.07495704467353952,
+          "max": 0.07689003436426117
+        },
+        "longest_repeat": {
+          "median": 6.0,
+          "p2_5": 2,
+          "p97_5": 10,
+          "max": 10
+        }
+      },
+      "flagged": false,
+      "secondary_below_threshold": []
+    }
+  ],
+  "decision": {
+    "threshold": 0.002,
+    "flagged": [
+      "QTXMA"
+    ],
+    "prediction_under_weierud": "at least one of the five targets is flagged",
+    "prediction_held": true
+  }
+}

@@ -146,3 +146,180 @@ transposition over any other plaintext layer escapes it entirely.
 Reverse this if: archival evidence shows QTXMA's body is a superencipherment of
 code groups rather than of literal text, in which case the reference
 distribution is the wrong one and the exclusion does not apply.
+
+---
+
+# Addendum 2026-10-20 — trigram repeats (`phase5-trigram-repeat-v1`)
+
+## Cause
+
+Frode Weierud replied on 2026-10-11 to the maintainer's question about the
+2005 paper's "differently wired wheels" footnote. He now believes none of
+the five Batch C messages with Enigma-type indicators is Enigma, because
+their letter frequencies are very uneven and they "have trigram repeats where
+none would be expected". The repository had tested letter frequencies for
+QTXMA only (the conservation gate above) and had never counted trigram repeats.
+
+## Method
+
+Preregistered in `experiments/phase5-trigram-repeat-v1/config.json`
+(`490fb82`) before any statistic was computed on a target. The run was made
+from `d01c97d` on a clean tree. It took 99 s, and the result is in
+`artifacts/phase5-trigram-repeat-v1.json`.
+
+- **Statistic:** the number of extra occurrences of repeated trigrams,
+  summed over trigrams. Windows that contain BYQMZ's uncertain letter are
+  skipped.
+- **Null:** 20,000 simulated Enigma I ciphertexts per target, at the
+  target's own length and with the same masked position. Each enciphers a
+  random window of the 858 letters of authentic 1941 Army plaintext in
+  `data/historical/keyed-messages.json`, under a fresh random ten-pair key.
+- **Threshold:** one-sided p < 0.002, which is 0.01 Bonferroni-corrected
+  over five targets.
+- **Calibration:** the 13 authentic Enigma ciphertexts are scored against
+  their own length-matched nulls. All 13 had to pass for the null to count
+  as calibrated.
+
+## Fact
+
+The calibration held. The 13 real Enigma ciphertexts give trigram-repeat
+p-values from 0.046 to 1.0, and none is below 0.002.
+
+That control is weaker than its count suggests. Seven of the 13 score
+p = 1.0 because they have no repeated trigram. Messages of 18 to 48 letters
+almost never have one, so they cannot fail. Only the longest two, No. 25
+(214 letters) and No. 233 (177), sit at or above the targets' lengths of
+97 to 167 letters. The control would catch a null that grossly
+under-produces repeats at those lengths, but not a modest miscalibration.
+The null's own construction carries most of the weight: a real Enigma
+model, run on real plaintext. (Recorded after code review of PR #41.)
+
+| Target | Letters | Repeats (null median / 97.5%) | p | Army plaintext windows, 2.5–97.5% | IC (null median) |
+|---|---|---|---|---|---|
+| QTXMA | 155 | **5** (0 / 3) | **0.0010** | 8–32 | **0.0577** (0.0383), p = 0.00005 |
+| SZAEJ | 51 | 0 (0 / 1) | 1.0 | 0–10 | 0.0525 (0.0376), p = 0.017 |
+| BYQMZ | 167 | 0 (1 / 3) | 1.0 | 9–34 | 0.0395 (0.0383), p = 0.26 |
+| FKQLZ | 107 | 0 (0 / 2) | 1.0 | 1–23 | 0.0326 (0.0383) |
+| XFEDT | 97 | 1 (0 / 2) | 0.22 | 0–19 | 0.0329 (0.0382) |
+
+Only QTXMA is flagged. Its repeats are OQXY at positions 16 and 124,
+OEMY at 38 and 44, and XYT at 67 and 126. Only 0.1% of the 20,000
+simulated Enigma texts had as many. Its IC was not reached by any draw.
+
+Weierud's prediction, as preregistered, was that at least one target would be
+flagged. It **held**, but only through QTXMA.
+
+## Inference
+
+- **QTXMA:** on both trigram repeats and IC, it is inconsistent with Enigma
+  or any similar rotor machine. That agrees with Weierud and with the
+  conservation gate. Its repeat count is also well below every Army-plaintext
+  window of its length (5 against a 2.5% point of 8), while its IC sits at
+  the low edge of plaintext. So it is neither rotor output nor a cipher that
+  keeps plaintext letter patterns, such as monoalphabetic substitution. The
+  gate's routing to `non_plaintext_alphabet_substitution` stands.
+- **BYQMZ, FKQLZ and SZAEJ:** they have no repeated trigram at all, and
+  XFEDT has one. On this statistic all four look exactly like Enigma
+  ciphertext. Weierud's trigram observation does not hold for them under this
+  definition. Its evidence for "not Enigma" therefore rests on QTXMA alone.
+- **SZAEJ:** its IC is high (p = 0.017) but not significant at the
+  threshold, and at 51 letters the test has little power.
+
+## Speculation (exploratory, not preregistered)
+
+FKQLZ and XFEDT are *flatter* than Enigma output. Only 14 and 76 of the
+20,000 draws had a lower IC, giving lower-tail p of about 0.001 and 0.004;
+ties are not separated. Neither message contains a J. With near-uniform
+letters, the chance of no J is 0.015 at 107 letters and 0.022 at 97, and
+about 0.0003 for both together. Weierud describes the Batch C messages
+*without* Enigma-type indicators as a 25-letter system without J and with a
+much flatter frequency distribution. These two messages may belong to that
+system despite their Enigma-type indicators. A low IC cannot come from
+removing J alone, because a uniform 25-letter alphabet gives 0.040. It
+points to a cipher that spreads letters more evenly than chance. This
+inference was made after looking at the data and has not been tested.
+
+## Ostwald's 2023 note
+
+Weierud attached Olaf Ostwald's working note "Grey Messages from 29 & 30
+Sep 1941" (2 August 2023, 9 pages, German, `Grey_Messages_230802.pdf`). It
+was received privately and is not in the repository; it was read on
+2026-10-20. It treats the five targets as 5 of 15 "grey" texts of Army
+Group North (HG Nord), sent on 29 and 30 September 1941. Its ciphertexts
+include the first group, so its lengths are 5 more than `corpus.json`'s.
+The points that bear on this addendum follow.
+
+**The J column.** Ostwald marks only Grey06 (QTXMA), Grey07 (SZAEJ) and
+Grey08 (BYQMZ) as "mit J". Every other grey text is "ohne J", **including
+Grey11 (FKQLZ) and Grey12 (XFEDT)** despite their Enigma-type indicators.
+He labels FKQLZ's IC (3.27%) "flat", as he labels two of the J-less texts
+without Enigma-type indicators. This is an independent reading of the same
+pattern the exploratory section above found. It still does not replace a
+preregistered test.
+
+**Shared frequencies and operators.** In his header table:
+- **Frequencies:** QTXMA and FKQLZ are both on 323 kHz, and SZAEJ and XFEDT
+  both on 716 kHz.
+- **Operators:** QTXMA, SZAEJ and BYQMZ were sent by an operator he reads as
+  "Stor."; `corpus.json` has "Otor. ?". FKQLZ and XFEDT were sent by
+  "Fuhrmann". Stor. also sent Grey05, Grey09 and Grey09b, and Fuhrmann also
+  sent Grey10, Grey13 and Grey14a.
+- **Handwriting:** all five are in the hand he calls "Cäsar", which also
+  wrote Grey05 to Grey14a.
+- **A link to BYQMZ:** FKQLZ's operator remark "de ugn" names BYQMZ's
+  addressee.
+- **Addressee reading:** he reads FKQLZ's addressee as "912", where
+  `corpus.json` has "g19".
+
+Among the five messages with Enigma-type indicators only, the "with J" /
+"without J" split follows the operator: Stor.'s three have J and
+Fuhrmann's two do not. It does not follow the operator in general. Stor.'s
+other three messages (Grey05, Grey09, Grey09b) have no J either, so having
+J is specific to QTXMA, SZAEJ and BYQMZ, not to Stor.
+
+**The quadgram argument.** Ostwald argues that trigram repeats are expected
+by chance and only quadgram repeats are telling. His union-bound estimate
+puts a trigram repeat at 70.6% of random 160-letter texts; the Poisson value
+is about 51%. Quadgram repeats come out at about 2.7%. His experiment with
+one million random texts finds at least one quadgram repeat in 2,202 at
+length 50, 9,893 at length 100 and 25,381 at length 160, about 1 in 40.
+
+This agrees with the Enigma null above, whose median at 155–167 letters is
+0–1 trigram repeats. It also explains why only QTXMA stands out: it has two
+quadgram repeats, OQXY at positions 16 and 124 and OEMY at 38 and 44. The
+trigram statistic preregistered here did not separate quadgram repeats from
+trigram ones.
+
+**SZAEJ's ZAEJ repeat.** With the first group counted, as Ostwald counts it,
+the quadgram ZAEJ of the first group SZAEJ recurs in the body group ZAEJV.
+In 56 letters a random text has that chance at roughly 0.2% (his
+length-50 count). Under the Enigma convention the first group is a
+discriminant and is not enciphered, which is why `corpus.json` and the test
+above exclude it. Read as part of the ciphertext, it is SZAEJ's only notable
+repeat. This was observed after the fact.
+
+The note also substitutes QTXMA's letters by frequency rank, which gives no
+readable text. It shows that a Caesar shift plus a columnar transposition
+(keyword BERNHARD) is easy to undo, without saying whether that was tried on
+the grey texts.
+
+## Unresolved
+
+- How Weierud defines "trigram repeats", and which messages he counted.
+- Whether the J-less, flat-IC pattern of FKQLZ and XFEDT matches the
+  ten grey texts without Enigma-type indicators, as Ostwald's table
+  suggests. Testing that needs their ciphertexts from a public source;
+  Ostwald's note transcribes them but was received privately.
+- Whether the first group is enciphered in any of the five: that is, whether
+  SZAEJ's ZAEJ repeat is a property of the cipher or chance.
+- The two metadata readings where Ostwald and `corpus.json` differ (operator
+  "Stor." / "Otor. ?", FKQLZ addressee "912" / "g19"). Settling them needs the
+  form facsimiles.
+
+## Recommendation
+
+Preregister a lower-tail IC and missing-J test for FKQLZ and XFEDT against
+the same Enigma null. Use the ten grey texts without Enigma-type indicators
+as a positive control, taking their ciphertexts from CryptoCellar's Batch C
+list. Add a quadgram-repeat count, with and without the first group, as a
+preregistered secondary statistic for all five targets.
