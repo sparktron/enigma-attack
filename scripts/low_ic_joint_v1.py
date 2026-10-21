@@ -18,6 +18,23 @@ def initialize(config):
     joint.init(config)
     joint.COMPANION_SEED = config['joint_analysis']['companion_seed']
 
+def summarise(rows, names, cutoffs):
+    result = {}
+    for index, name in enumerate(names):
+        mine = [r for r in rows if r['cell'] == index]
+        arms = {}
+        for arm, cutoff in cutoffs.items():
+            record = {'retention_cutoff': cutoff}
+            for metric in ('detected', 'retained', 'confirmed', 'sweep_success'):
+                record[metric] = joint.rate(mine, arm, lambda a, metric=metric: a[metric])
+            for metric in ('confirmed', 'retained', 'sweep_success'):
+                record[metric + '_given_detected'] = joint.conditional(
+                    mine, arm, lambda a: a['detected'], lambda a, metric=metric: a[metric])
+            arms[arm] = record
+        result[name] = {'draws': len(mine), 'arms': arms}
+    return result
+
+
 def main():
     config = json.loads(CONFIG.read_text())
     power = json.loads(POWER.read_text())
@@ -29,7 +46,7 @@ def main():
     with concurrent.futures.ProcessPoolExecutor(max_workers=8, initializer=initialize, initargs=(config,)) as pool:
         rows = list(pool.map(joint.one_draw,[(d,thresholds,cutoffs) for d in power['result']['draws']]))
     names = ['clean' if c['perturbation']=='none' else c['perturbation'] for c in power['result']['cells']]
-    cells = joint.summarise(rows,names,cutoffs,0)
+    cells = summarise(rows,names,cutoffs)
     gains = {n: cells[n]['arms']['complete_w117_rngonly']['sweep_success']['rate']-cells[n]['arms']['complete_w117_estecker']['sweep_success']['rate'] for n in names}
     payload = {'experiment_id':'phase1-low-ic-joint-v1','started_at':started,'completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'code':version,'inputs':{'config':sha256_file(CONFIG),'power':sha256_file(POWER),**{a:sha256_file(ROOT/p) for a,p in spec['sweeps'].items()}},'retention_limitation':spec['retention'],'cells':cells,'paired_gain':gains,'hypothesis_passed':gains['clean']>=spec['hypothesis_gain'],'draws':rows}
     OUTPUT.write_text(json.dumps(payload,indent=2)+'\n')
