@@ -323,3 +323,138 @@ the same Enigma null. Use the ten grey texts without Enigma-type indicators
 as a positive control, taking their ciphertexts from CryptoCellar's Batch C
 list. Add a quadgram-repeat count, with and without the first group, as a
 preregistered secondary statistic for all five targets.
+
+---
+
+# Addendum 2026-10-21 — J-less, flat signature (`phase5-jless-flat-v1`)
+
+## Cause
+
+The exploratory section of the 2026-10-20 addendum found FKQLZ and XFEDT
+flatter than Enigma output and without J. Ostwald's note then marked both
+J-less, like the grey texts without Enigma-type indicators. The
+recommendation was to measure that signature under a fixed statistic.
+
+## Method
+
+The configuration is `experiments/phase5-jless-flat-v1/config.json`. It was
+preregistered at `951342f`, and its control expectations were stated as
+lists at `8df46ee`, before any run. The run was made from `46cf831` on a
+clean tree and took 16 min of wall time on one core. The result is in
+`artifacts/phase5-jless-flat-v1.json`.
+
+**Framing: disclosed post-hoc.** The hypothesis came from these two messages.
+The configuration lists every value already seen. This experiment measures
+how strong the observation is; it is not an independent confirmation.
+
+- **Primary statistic:** a joint tail. It is the fraction of simulated texts
+  that have no more J than the target *and* an IC no higher. The null is
+  Enigma I ciphertext of Army plaintext, as in v1, at each target's length:
+  200,000 draws per target.
+- **Threshold:** p < 0.001, which is 0.01 Bonferroni-corrected over the ten
+  looks that found the lead (five messages times two IC tails).
+- **Secondary statistics:**
+  - quadgram repeats, with and without the first group;
+  - lower-tail IC against uniformly random text over the 25 letters other
+    than J (200,000 draws).
+- **Negative calibration:** the 13 authentic Enigma ciphertexts. None may
+  fall below the threshold.
+- **Positive control:** the ten grey texts without Enigma-type indicators, in
+  `data/phase5/grey-texts-ostwald-2023.json`. They were transcribed from
+  Ostwald's note and committed with attribution on the maintainer's decision.
+  Each text's length and IC equal the note's printed values. The preregistered
+  expectation was that the four long, flat texts (CSBTR, BCSSF, AWMRI, YDFZS)
+  fall below the threshold and the four rough or higher-IC texts (FTBCO,
+  AOKAX, XDPAK, SDPLM) do not.
+
+## Observed
+
+**Calibration held.** The 13 authentic Enigma ciphertexts give joint p from
+0.081 to 0.93.
+
+**Positive control met its expectation exactly.** Joint p against
+length-matched Enigma nulls of 20,000 draws:
+
+| Grey text | Letters | IC | Joint p | Below 0.001 |
+|---|---|---|---|---|
+| CSBTR | 111 | 0.0333 | 0.00005 | yes (expected) |
+| BCSSF | 93 | 0.0339 | 0.0002 | yes (expected) |
+| AWMRI | 83 | 0.0335 | 0.0003 | yes (expected) |
+| YDFZS | 81 | 0.0293 | 0.00005 | yes (expected) |
+| FTBCO | 105 | 0.0379 | 0.0027 | no (expected) |
+| AOKAX | 102 | 0.0485 | 0.015 | no (expected) |
+| XDPAK | 103 | 0.0478 | 0.016 | no (expected) |
+| SDPLM | 49 | 0.0493 | 0.13 | no (expected) |
+| SSRAC | 38 | 0.0213 | 0.00015 | yes (no expectation) |
+| KHZMY | 29 | 0.0320 | 0.074 | no (no expectation) |
+
+**Targets** (Enigma null: 200,000 draws each):
+
+| Target | Letters | J | IC | Joint p | p, no J | p, IC lower | p, IC lower vs uniform 25 letters |
+|---|---|---|---|---|---|---|---|
+| **FKQLZ** | 107 | 0 | 0.0326 | **0.000005** (no draw) | 0.013 | 0.0012 | 0.000005 (no draw) |
+| **XFEDT** | 97 | 0 | 0.0329 | **0.000015** (2 draws) | 0.019 | 0.0072 | 0.0003 |
+
+Both targets are flagged, so the preregistered prediction **held**.
+
+**The quadgram secondary statistic carries no information here.** Neither
+target, nor any of the ten grey texts, has a repeated quadgram, with or
+without the first group, so every quadgram p-value is 1.0.
+
+## Inference
+
+- **Signature:** FKQLZ and XFEDT carry the J-less, flat signature of the grey
+  system's flat texts. Their ICs, 3.26% and 3.29%, sit inside the range of
+  the four flat long grey texts (2.93–3.39%). Enigma output of Army plaintext
+  essentially never shows this signature at their lengths. The test is
+  post-hoc, so this is the strength of an observation already made, not an
+  independent confirmation.
+- **Flatter than random:** both are flatter than uniformly random 25-letter
+  text (p ≈ 0.000005 and 0.0003). Removing J cannot explain that, because a
+  uniform 25-letter alphabet gives IC about 0.040. Something in the system
+  spreads letters more evenly than chance.
+- **The grey texts are not one homogeneous population on this statistic.**
+  Four long texts are flat, while AOKAX, XDPAK and SDPLM are rough. The
+  signature marks the flat subgroup, not every J-less text.
+- **Consequence for Phase 1:** every BYQMZ sweep accepted a candidate only if
+  *both* companions, FKQLZ and XFEDT, confirmed it at z ≥ 6 under the shared
+  daily key. If those two are not Enigma, a true BYQMZ key could never have
+  been companion-confirmed, and the decision step of those sweeps had zero
+  power whatever the planted-key controls measured. The planted controls gave
+  every draw Enigma companions.
+  - What survives is detection, not confirmation. In every sweep the top
+    BYQMZ score sat at the expected noise maximum, so no candidate stood out
+    on BYQMZ's own letters.
+  - The odds multipliers stated for the BYQMZ nulls rest on confirmed power
+    and must be restated as detection-only. Detection was measured
+    separately: 88.8% clean and about 40% with one indel on the easy
+    plaintext, lower on typical plaintext.
+
+## Speculation
+
+A system with no J and flatter-than-random letters is what a homophonic
+substitution, or a code or bigram system that balances letter use, would
+produce. Ostwald's note also tests a Caesar shift with a columnar
+transposition, but that would keep the plaintext's unevenness, so it does not
+fit these two. None of this has been tested.
+
+## Unresolved
+
+- Whether BYQMZ (it has J, an Enigma-like IC of 0.0395 and no repeats)
+  belongs with QTXMA and SZAEJ, which are with-J and rough, or is the one
+  genuine Enigma message.
+- Whether the six-letter Enigma-type indicators of FKQLZ and XFEDT are
+  genuine.
+- The flat-system texts' own structure: period, digraphs, and contact
+  analysis across the four flat grey texts and the two targets.
+
+## Recommendation
+
+1. Restate the Phase 1 BYQMZ conclusions on detection alone. Recompute, from
+   the existing artifacts, whether any retained candidate exceeds the noise
+   maximum on BYQMZ by itself, which needs no new sweep. Withdraw the
+   confirmation-based odds multipliers.
+2. Stop treating FKQLZ and XFEDT as Enigma companions in any new Enigma work.
+3. Preregister a structural study of the flat J-less group, the four flat
+   grey texts plus FKQLZ and XFEDT: periodicity, digraph and contact
+   statistics, against homophonic and bigram-system nulls.
