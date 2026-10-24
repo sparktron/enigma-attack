@@ -3641,3 +3641,136 @@ and labelled as inference.
 The configuration itself is left byte-identical: the finished artifact records its SHA-256
 (`99e0f801...`, which matches the committed file), and a preregistered configuration is not
 rewritten after its run. The amendment is this entry.
+
+## phase1-low-ic-joint-v1 (preregistered 2026-10-20)
+
+Fresh low-IC validation of the already implemented R-ngonly climb against E.
+Hypothesis: retained-and-companion-confirmed clean success improves by at least
+8 percentage points. Refuted by gain below 0.08. Exact configuration:
+`experiments/phase1-low-ic-joint-v1/config.json`; analysis:
+`scripts/low_ic_joint_v1.py`. Twelve new IC-selected texts (0.050–0.0575), 240
+keys per clean/indel cell, seeds 202610201/202610202/202610203 for text/keys/companions.
+No primary-draw smoke outcomes were inspected. Same companion pair for both arms.
+Uncertainty intervals cluster by plaintext (12 independent clusters).
+
+Retention uses each completed sweep's observed top-100 cutoff (v6 for E, v7 for
+R-ngonly). This tests an observed-cutoff proxy, NOT complete-space retention rank
+for every planted text. Results cannot claim the latter. No message sweep starts
+from this experiment. Background and continuation: docs/runs/2026-10-20-low-ic-joint.md.
+
+### Result: phase1-low-ic-joint-v1 (2026-10-21)
+
+#### Observed
+
+Raw artifacts: `artifacts/phase1-low-ic-joint-v1.json` and
+`artifacts/phase1-low-ic-joint-v1-joint.json`. Power run: clean `19b220f`,
+2310.9 seconds, all preflight checks and positive controls passed. Analysis:
+`c324e4e`, 198.3 seconds; tracked code clean, dirty flag records only the newly
+created untracked raw power artifact. An arm-name adapter bug was found on
+synthetic data and fixed before any calibration outcomes were read; hypotheses,
+seeds, draws and thresholds were unchanged. Machine: RTX 3090 and shared CPU;
+eight power workers and eight analysis workers. All 34 GPU-enabled first-plug
+parity tests passed; CPU suites passed 47 tests, six GPU-dependent skips.
+Analysis adapter regression test passed. Logs: data/review/low-ic-joint-2026-10-21/.
+
+All 240 draws per cell and 12 fresh low-IC texts were retained, no smoke exclusions.
+Clean retained-and-confirmed success: E 165/240 (68.75%), R-ngonly 183/240
+(76.25%). Plaintext-cluster 95% intervals: E [61.25%,76.67%], R [70.42%,81.67%].
+One-indel success: E 95/240 (39.58%), R 125/240 (52.08%); cluster intervals
+[31.25%,47.92%] and [46.67%,57.50%]. Clean gain 7.5 percentage points, indel
+gain 12.5 points. **The preregistered clean gain >=8 points is refuted.**
+R confirmation given detection: clean 184/186 (98.92%), indel 128/132 (96.97%).
+R retention given detection: clean 185/186 (99.46%), indel 129/132 (97.73%).
+
+#### Interpretation (inference)
+
+R-ngonly improves the observed low-IC success rate in this sample, but the improvement
+falls short of the fixed clean-gain decision bar. Individual intervals are
+plaintext-cluster intervals, not evidence that the gain itself is significant.
+This does not establish a new optimum among all screened methods: more expensive
+capped-IC variants had higher screening recovery at higher cost. The already
+implemented R-ngonly method remains the cost-oriented comparison chosen in prior
+work; no duplicate implementation was needed.
+
+Retention is measured against each completed sweep's fixed observed top-100 cutoff.
+It is NOT a fresh full-space rank experiment on each planted message. Synthetic
+Markov texts from scorer counts, 12 text clusters, a planted neighbourhood and
+fault-free synthetic companions limit generalisation. No combined odds multiplier
+is inferred. Under the preregistered rule this result does not justify another
+message sweep. No new target sweep is launched or preregistered.
+
+#### Maintainer decision, 2026-10-21
+
+The maintainer accepts the measured 7.5-point gain as sufficient to proceed,
+overriding the operational >=8-point launch rule. The preregistered hypothesis
+remains refuted; its threshold and artifacts are unchanged. Before launching the
+next search, verified that v7 already ran this exact R-ngonly method over BYQMZ's
+complete declared space (246,767,040 settings, completed 2026-10-16, no confirmed
+candidate). This fresh calibration supplies evidence for the already completed
+v7; it does not create an unsearched slice. No duplicate run is launched.
+
+#### Companion-free reading (2026-10-23, post-hoc analysis)
+
+**Why.** The preregistered success measure, `sweep_success`, needs the planted
+BYQMZ key to be retained *and* confirmed by the FKQLZ and XFEDT companions at
+z ≥ 6. The planted companions are Enigma ciphertexts by construction.
+`phase5-jless-flat-v1` (branch `claude/phase5-jless-flat-v1`, a disclosed
+post-hoc test) finds the real FKQLZ and XFEDT J-less and flatter than Enigma
+output, at joint p 0.000005 and 0.000015. If they are not Enigma, no real key
+could ever be companion-confirmed. The question is whether this calibration,
+and v7's null, still hold without the companions.
+
+**Method.** `scripts/low_ic_joint_companion_free.py` reads the committed
+joint artifact and the v7 artifact and reruns nothing. The result is
+`artifacts/phase1-low-ic-joint-v1-companion-free.json`, generated from clean
+`886c8c7`. It reports two companion-free measures per draw and arm:
+
+- **`companion_free_success`:** detected and retained. This is the
+  preregistered measure with the confirmation step removed.
+- **`stands_out`:** the exact plugboard is recovered and the key's score lies
+  above the ceiling of v7's preregistered noise band, z 9.5 over v7's score
+  distribution (prediction `null-top-in-band`, about −7.435 per letter). This
+  is the criterion that also applies to the real sweep, where the plugboard
+  cannot be checked. The planted texts are scored against v7's BYQMZ
+  distribution, which is an approximation: same length, different
+  ciphertexts.
+
+The detection threshold used on planted draws (about −7.76 per letter) comes
+from a local null at the true setting. Every one of v7's 100 retained noise
+candidates clears it, so it cannot serve as a companion-free decision rule
+for the real sweep. That is why the band ceiling is used.
+
+**Observed** (240 draws per cell; plain binomial Wilson 95% intervals, which
+are narrower than the plaintext-cluster intervals above):
+
+| Cell | Arm | Preregistered (with companions) | Companion-free: detected and retained | Companion-free: stands out above band |
+|---|---|---|---|---|
+| Clean | E | 165 (68.8%) | 166 (69.2%, 63.1–74.7) | 166 (69.2%) |
+| Clean | R-ngonly | 183 (76.3%) | 185 (77.1%, 71.4–82.0) | 185 (77.1%) |
+| One indel | E | 95 (39.6%) | 96 (40.0%, 34.0–46.3) | 93 (38.8%) |
+| One indel | R-ngonly | 125 (52.1%) | 129 (53.8%, 47.4–60.0) | 128 (53.3%) |
+
+- **Companion-free paired gain:** 7.9 points clean (47 draws R-ngonly only, 28
+  E only) and 13.8 points with one indel (61 against 28). The clean gain
+  remains below the preregistered 8-point bar, so the refutation and the
+  maintainer's decision are unchanged.
+- **How far a recovered key stands out:** a key with its exact plugboard
+  recovered scores a median z of about 22 against v7's BYQMZ distribution,
+  far above the band ceiling of 9.5.
+- **v7 without companions:** its top retained candidate has z 8.85, inside
+  the band, and **none of its 100 retained candidates lies above the
+  ceiling**.
+
+**Inference.**
+- Companion confirmation removed only 1 to 4 of 240 draws per arm. These
+  power figures are therefore limited by detection, not by the companions, so
+  they stand whether or not FKQLZ and XFEDT are Enigma.
+- v7's null also stands without the companions. A recovered true key would
+  have stood out on BYQMZ's own letters, at about z 22 against a band ceiling
+  of 9.5, in about 77% of clean and 53% of one-indel low-IC draws. Nothing in
+  v7 did.
+- What the companions' possible non-Enigma status removes is the *acceptance*
+  step. A future hit could not be confirmed through FKQLZ or XFEDT, and would
+  need another check, such as the indicator or a crib.
+- The approximation, scoring planted texts against v7's distribution, is the
+  main limitation of this reading.

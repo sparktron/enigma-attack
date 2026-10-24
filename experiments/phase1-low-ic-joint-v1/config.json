@@ -1,0 +1,296 @@
+{
+  "schema": "enigma-attack.phase1-stecker-config/v1",
+  "corpus": "corpus.json",
+  "machine": {
+    "reflector": "B",
+    "wheel_set": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "rotor_orders": "all_permutations",
+    "ring_settings": "all"
+  },
+  "indicator_orderings": [
+    "grundstellung_first",
+    "message_key_first"
+  ],
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "rationale": "Index of coincidence first, then the published n-gram counts, which is the ordering Ostwald and Weierud describe. Measured at 167 letters with ten pairs: n-grams alone from the identity plugboard recover the exact plugboard on 3 of 8 key draws; seeding with an index-of-coincidence climb recovers 8 of 8 for 1.6x the work.",
+    "engine": "cuda"
+  },
+  "kernel_parity": {
+    "seed": 20260923,
+    "samples": 60
+  },
+  "scorer_parity": {
+    "seed": 20260924,
+    "samples": 120,
+    "relative_tolerance": 1e-09
+  },
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "scorer_validation": {
+    "source_url": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+    "shuffle_seeds": [
+      17,
+      29,
+      43,
+      71,
+      101,
+      137,
+      173,
+      211,
+      257,
+      307,
+      359,
+      401,
+      463,
+      509,
+      563,
+      617
+    ],
+    "minimum_messages_above_all_shuffles": 4,
+    "plaintexts": [
+      {
+        "id": "1941-09-02-15",
+        "raw": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-08-22-30",
+        "raw": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA"
+      },
+      {
+        "id": "1941-09-06-36",
+        "raw": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE"
+      },
+      {
+        "id": "1941-09-14-46",
+        "raw": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTS CUKINOXHARTJENSTEIN"
+      },
+      {
+        "id": "1941-09-24-94",
+        "raw": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
+      }
+    ]
+  },
+  "positive_controls": [
+    {
+      "id": "authentic-solved-1941-army-plaintexts",
+      "source": "https://cryptocellar.org/enigma/enigma-modern-breaking.html",
+      "rationale": "The five independently solved 1941 Army plaintexts Phase 7 already uses, each kept as its own message with its own indicator and enciphered by enigma.EnigmaI under one shared ten-pair daily key. That is the real Army situation: several short messages under one key. An earlier version of this control concatenated the five into two messages at the target lengths and failed, because the junctions between unrelated messages are n-grams no Army text contains; the concatenated form was not a legitimate control and was replaced rather than reinterpreted.",
+      "key": {
+        "rotor_order": [
+          "II",
+          "V",
+          "III"
+        ],
+        "rings": "KQL",
+        "plugboard": "AV BS CG DL FU HZ IN KM OW RX"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-A1",
+          "grundstellung": "QWE",
+          "message_key": "BNM",
+          "plaintext": "ABENDMELDUNGENENTFALLENXHARTJENSTEIN",
+          "solved_message_id": "1941-09-02-15"
+        },
+        {
+          "designator": "CTRL-A2",
+          "grundstellung": "LDR",
+          "message_key": "KPT",
+          "plaintext": "WOGEFEQTSSTANDQUARTIERMEISTERABTXROEMEINSBERTA",
+          "solved_message_id": "1941-08-22-30"
+        },
+        {
+          "designator": "CTRL-A3",
+          "grundstellung": "ZUI",
+          "message_key": "VCX",
+          "plaintext": "DIVXNAQRXYUEHRERNIQTANWWSENDXSTEINECKEXSTEINECKE",
+          "solved_message_id": "1941-09-06-36"
+        },
+        {
+          "designator": "CTRL-A4",
+          "grundstellung": "PMF",
+          "message_key": "HGD",
+          "plaintext": "NACHSCHUBDIENSTEXNULLAQTVIERNULFXOMYTSCIKINOXOMYTSCUKINOXHARTJENSTEIN",
+          "solved_message_id": "1941-09-14-46"
+        },
+        {
+          "designator": "CTRL-A5",
+          "grundstellung": "TRQ",
+          "message_key": "YBN",
+          "plaintext": "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX",
+          "solved_message_id": "1941-09-24-94"
+        }
+      ]
+    },
+    {
+      "id": "constructed-army-style-plaintexts",
+      "source": "constructed for this experiment",
+      "rationale": "Three messages at exactly the target lengths 167, 107 and 97, from constructed Army-style text that cannot overlap the published n-gram counts. Trades authenticity for a guarantee of no training overlap, so the two controls fail in different ways if either weakness matters.",
+      "key": {
+        "rotor_order": [
+          "IV",
+          "I",
+          "V"
+        ],
+        "rings": "BUL",
+        "plugboard": "AN BY CF DR GJ HS IL KM PV QZ"
+      },
+      "indicator_ordering": "grundstellung_first",
+      "messages": [
+        {
+          "designator": "CTRL-B1",
+          "grundstellung": "XYZ",
+          "message_key": "TRE",
+          "length": 167,
+          "plaintext": "FUNKSTELLEMELDETXFEINDLICHEAUFKLAERERUEBERDEMABSCHNITTNORDXEIGENEVERLUSTEGERINGXMUNITIONFUERZWEITAGEVORHANDENXNEUEBEFEHLEERBETENXENDEABTEILUNGMELDETXANGRIFFAUFHOEHEZWO"
+        },
+        {
+          "designator": "CTRL-B2",
+          "grundstellung": "MNB",
+          "message_key": "OIU",
+          "length": 107,
+          "plaintext": "ACHTSECHSUMNULLFUENFDREISSIGUHRBEGONNENXEIGENEVERLUSTEDREITOTEACHTVERWUNDETEXFEINDWEICHTNACHOSTENZURUECKXNA"
+        },
+        {
+          "designator": "CTRL-B3",
+          "grundstellung": "GHJ",
+          "message_key": "WSX",
+          "length": 97,
+          "plaintext": "CHSCHUBANMUNITIONUNDVERPFLEGUNGDRINGENDERFORDERLICHXGEFECHTSSTANDVERLEGTNACHWALDRANDSUEDWESTLICHV"
+        }
+      ]
+    }
+  ],
+  "batched_climb_parity": {
+    "seed": 20261124,
+    "samples": 24
+  },
+  "experiment_id": "phase1-low-ic-joint-v1",
+  "status": "preregistered 2026-10-20; not run",
+  "mode": "end_to_end_power",
+  "output": "artifacts/phase1-low-ic-joint-v1.json",
+  "hypothesis": "On fresh low-IC plaintexts (0.050 to 0.0575), R-ngonly improves retained-and-companion-confirmed success over E by at least 8 percentage points on clean draws.",
+  "refuted_by": "Clean paired gain below 0.08; report indel gain separately. No target sweep authorized by this experiment.",
+  "end_to_end_power": {
+    "rationale": "Fresh low-IC joint calibration of the already implemented R-ngonly method against E.",
+    "seed": 202610202,
+    "draws": 240,
+    "stecker_pairs": 10,
+    "cells": [
+      {
+        "length": 167,
+        "perturbation": "none"
+      },
+      {
+        "length": 167,
+        "perturbation": "indel"
+      }
+    ],
+    "left_neighbours": 1,
+    "middle_neighbours": 2,
+    "right_neighbours": 1,
+    "null_trials": 8,
+    "detection_z": 6.0,
+    "target_length": 167,
+    "headline_arm": "complete_w117_rngonly",
+    "arms": [
+      {
+        "id": "complete_w117_estecker",
+        "ring_rule": "middle_complete",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        },
+        "first_plug": {
+          "letters": "E"
+        }
+      },
+      {
+        "id": "complete_w117_rngonly",
+        "ring_rule": "middle_complete",
+        "right_ring": "planted",
+        "window": {
+          "kind": "head_tail",
+          "letters": 117
+        },
+        "first_plug": {
+          "letters": "ENR",
+          "start_phases": "ngram_only"
+        }
+      }
+    ],
+    "predictions": [],
+    "arm_rationale": "complete_w117 is v4's climb, complete_w117_estecker is v6's (E first-plug starts, two-phase), and complete_w117_rngonly is the candidate for a v7 sweep: the E, N and R first-plug starts (73 boards) with the extra starts climbed by n-gram score alone and the empty board two-phase. Same keys, same plaintext per draw, same slice, each against its own null.",
+    "plaintexts": [
+      "SISEQSDETRIQTXENKZURAUKOMMUNGUNDBECHOWALIQTANFXVIERMUNDXDREIXBEQSXEINSNULLXFUETEIQXBEZXNEUNDZUMTRXZWODREIMBESAVARXOPWESTUNDIEDTOPANTLAZUMNOTOPWETZTRINSGANNEVERKRASTERA",
+      "IERLAMZWOAQTXAQTIGANTSCHEINNECSKLAKINIERWEINFUENCMXCABWEGENULLEGYHARMAPEEBEZTBAHNSDREITHPJXXFUEBERBITTONSDEINEUGERENDSIESPYXLAGENFSDREINDAINSUENDINSXWSGWIRSOKOMPYXDIVI",
+      "FUQVONXISHEDLAMERNEUTOPKLAGEHXBHFXVERVIEDOKXBORTANGVONNWEGXLFXAQTXNENZWOXROZWOXELXSIERZIMXERSKANGEINXEINAXROWAXGAZAUPTMORPSECHOEMELLDEMAXMORCHAUFFELXLUHRSTAFUEBNIESECX",
+      "ONNTERBEQZIMRAQTVERXAUQDERVIEFXWEGFROKXHOCEXGENFXNEXGAZAXSTANZEINJNOWAXZWOLNEINAEQFUERSINMAETSQGENBEFEHELXAQTAUQVERGTDURFEKOMPYXDRXHPTMUERUFSEQUNNITEXYFUEDTRIQTDUNGMAZ",
+      "TROZEIXBAFXDINIKOMPAMTNIXVERKULLSTENDERSZELXSZENDZENXDETHENSUNDXNULLXKOMXEIQTERSOSCHEIZYXLFHXPOLZZUGZUSSTWXKDODREEABWEINSQLEINXSTXSZWOLGESSAMPXGEDNORDIEGFRGENOSCHNEBSE",
+      "TEBETRAUMDINGDENXNAQTEVERPFLEGEHLFLUHRASOMPYYXRIMTXLFXVOMMUNDEUGARINSKEHXNOVIEREIXLNKXEINGVOMPYYAUSGANZEHEERPFLEINIEBETCHEINSNULLSEQTXFUEXKOMBORWXKOLOQEIGUWFLIKEHLAMER",
+      "CHSXSCHOGUNGIESQUAXCABGEDARMXOSEQSTOKXSTOPNAANNSSEISTXVIESEQSQKEINODNAQUARMXUSGEFFEINHOWXNULLXUHRYYVOMMEINAQTXGENFEHAUSGABWETTARZBENFXHALIQTMITEKOMXIMARTNALTEINSNULLER",
+      "PQTXETTANIEVERNULLESTONTRXKONXLUFFZXARZWGENDXLNULLUSABISKISSUNDPLANGSLAMXERXNULLEIGEHLAMTXZURSTANDERBAKXNODNAUFDEVERLILONNURSASSPRUQXBORPFZXKOMXISTENPFUENFUENKNGXHAREI",
+      "IXDINROSIGENOWXPANGENXEINEZUGNULKWKINXVIEBISKLAMTENXVIEDAROSIQPELGROEMVORDZEINSXWSGRAQTXSTUNGZWOXAUENROTCHTSIEBEILONSQXSTANDIEXGAXZWXFUEHLXARMKOJEDIERXNULLXZTZTBERPSQE",
+      "NFYYKNULLITZTDERXJUBROSTRIERTIONULKWXBERXHAUFLXMONXSZLITAGESTENFDLAMDRABSTORSTOPGERTHEWESPXUHRYYSIEBEIXUHRZBETZAHLAOBENFXELFXMORYYAUFSELDERTJENXVONORDEREQTXNRUNKNAUFKR",
+      "ENDERRERPSEINLIQPGABEIXAQXNULLUNXLICHEWEIKXEINXPAKANGSAVDWIRKAXIMBORVERDNATZWOFORGTYYVORDENNAQMOROSZWOROSZOGERBEINLOWANXTRIFMOTHINSXSUNDSIEBENNAXINAXMORTXDERXSEILLNULL",
+      "SPYXKORPXHALDREXLKWXHVANGEFERUENZWAHMELDERXEIYYZWOZWODREINAQTERPFLENFZXDRXEIGELLXAQOSSEQTIFFZGROEMFUENEINXAUFTRABEAQTBERPSENXQUENFKLAZOPKLAKXLFRIEGFRPSTONENULLXSTRXCES"
+    ],
+    "plaintexts_provenance": {
+      "seed": 202610201,
+      "generator": "Rejection sample markov_text from published counts until 12 texts have IC in [0.050,0.0575]",
+      "selection": "IC only; no solver outcomes used"
+    },
+    "pre_run_facts": {
+      "screen": "Exploratory 360-draw screen: R-ngonly 174/360 at cost x35.6 vs E 132/360 at x25.9. Existing rngonly power and v7 already run; this calibration uses new text/key/companion seeds. No outcome on these fresh draws inspected."
+    }
+  },
+  "run_command": "python3 phase1_stecker.py --config experiments/phase1-low-ic-joint-v1/config.json --jobs 8; python3 scripts/low_ic_joint_v1.py",
+  "run_constraint": "Commit preregistration and runner before computing any primary draws; no primary-draw smoke test.",
+  "limitations": [
+    "Synthetic Markov text from scorer counts, not authentic held-out traffic.",
+    "12 plaintext clusters, 20 keys each per fault cell.",
+    "Retention uses fixed observed cutoff, not measured full-space top-100 rank on every planted message.",
+    "Top candidate only; other true-key neighbours may rescue a miss.",
+    "No combined odds multiplier after earlier nulls is calibrated."
+  ],
+  "joint_analysis": {
+    "companion_seed": 202610203,
+    "companion_lengths": [
+      107,
+      97
+    ],
+    "threshold_z": 6,
+    "hypothesis_gain": 0.08,
+    "sweeps": {
+      "complete_w117_estecker": "artifacts/phase1-body-direct-sweep-v6.json",
+      "complete_w117_rngonly": "artifacts/phase1-body-direct-sweep-v7.json"
+    },
+    "retention": "Compare top candidate to its arm sweep actual 100th retained score. This is a fixed observed BYQMZ cutoff proxy, NOT an exhaustive full-space retention simulation on each planted text.",
+    "companions": "Fresh Markov plaintexts generated per draw; no IC rejection for companions; same pair for both arms.",
+    "intervals": "Use existing plaintext-cluster intervals; only 12 independent text clusters.",
+    "decision": "Report measured clean/indel success and gain; consider a future sweep only if clean gain >=0.08. No sweep starts automatically."
+  }
+}
