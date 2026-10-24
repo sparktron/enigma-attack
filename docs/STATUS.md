@@ -645,3 +645,10 @@ The clean gain (7.5 points) narrowly refutes the preregistered >=8 point bar.
 No new sweep is justified by that rule or launched. Retention is an observed-cutoff
 proxy, not exhaustive planted-message full-space rank. Raw artifacts:
 phase1-low-ic-joint-v1.json and phase1-low-ic-joint-v1-joint.json.
+Companion-free reading (2026-10-23, post-hoc): without FKQLZ/XFEDT
+confirmation, which phase5-jless-flat-v1 calls into question, success is
+almost unchanged (clean E 69.2%, R 77.1%; one indel 40.0%, 53.8%). v7's null
+holds on BYQMZ's own score: no retained candidate exceeds its preregistered
+noise-band ceiling (z 9.5; top 8.85), while recovered planted keys score a
+median z of about 22. A future hit would need a non-companion check for
+acceptance. Artifact: phase1-low-ic-joint-v1-companion-free.json.

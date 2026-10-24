@@ -43,3 +43,16 @@ The new calibration changes confidence in that completed search, not its method
 or coverage. Repeating it with identical settings would add no search coverage.
 No duplicate sweep launched. A further run needs a different declared target,
 keyspace or method, with its own preregistration and applicable control.
+
+## Companion-free reading (2026-10-23)
+
+`scripts/low_ic_joint_companion_free.py`, generated from clean 886c8c7, with
+the result in `artifacts/phase1-low-ic-joint-v1-companion-free.json`. Without
+FKQLZ/XFEDT confirmation, clean success is E 166/240 and R-ngonly 185/240,
+and one-indel success is 96 and 129. Confirmation removed only 1 to 4 draws
+per arm, so the result does not depend on the companions being Enigma. The
+companion-free gain is 7.9 points clean, still below the 8-point bar. v7:
+none of its 100 retained candidates exceeds the preregistered noise-band
+ceiling (z 9.5; its top is 8.85), whereas recovered planted keys score a
+median z of about 22. So v7's null holds on BYQMZ's own score. This is a
+post-hoc analysis; the preregistration is unchanged.

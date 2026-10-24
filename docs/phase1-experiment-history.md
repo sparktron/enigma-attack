@@ -3708,3 +3708,69 @@ next search, verified that v7 already ran this exact R-ngonly method over BYQMZ'
 complete declared space (246,767,040 settings, completed 2026-10-16, no confirmed
 candidate). This fresh calibration supplies evidence for the already completed
 v7; it does not create an unsearched slice. No duplicate run is launched.
+
+#### Companion-free reading (2026-10-23, post-hoc analysis)
+
+**Why.** The preregistered success measure, `sweep_success`, needs the planted
+BYQMZ key to be retained *and* confirmed by the FKQLZ and XFEDT companions at
+z ≥ 6. The planted companions are Enigma ciphertexts by construction.
+`phase5-jless-flat-v1` (branch `claude/phase5-jless-flat-v1`, a disclosed
+post-hoc test) finds the real FKQLZ and XFEDT J-less and flatter than Enigma
+output, at joint p 0.000005 and 0.000015. If they are not Enigma, no real key
+could ever be companion-confirmed. The question is whether this calibration,
+and v7's null, still hold without the companions.
+
+**Method.** `scripts/low_ic_joint_companion_free.py` reads the committed
+joint artifact and the v7 artifact and reruns nothing. The result is
+`artifacts/phase1-low-ic-joint-v1-companion-free.json`, generated from clean
+`886c8c7`. It reports two companion-free measures per draw and arm:
+
+- **`companion_free_success`:** detected and retained. This is the
+  preregistered measure with the confirmation step removed.
+- **`stands_out`:** the exact plugboard is recovered and the key's score lies
+  above the ceiling of v7's preregistered noise band, z 9.5 over v7's score
+  distribution (prediction `null-top-in-band`, about −7.435 per letter). This
+  is the criterion that also applies to the real sweep, where the plugboard
+  cannot be checked. The planted texts are scored against v7's BYQMZ
+  distribution, which is an approximation: same length, different
+  ciphertexts.
+
+The detection threshold used on planted draws (about −7.76 per letter) comes
+from a local null at the true setting. Every one of v7's 100 retained noise
+candidates clears it, so it cannot serve as a companion-free decision rule
+for the real sweep. That is why the band ceiling is used.
+
+**Observed** (240 draws per cell; plain binomial Wilson 95% intervals, which
+are narrower than the plaintext-cluster intervals above):
+
+| Cell | Arm | Preregistered (with companions) | Companion-free: detected and retained | Companion-free: stands out above band |
+|---|---|---|---|---|
+| Clean | E | 165 (68.8%) | 166 (69.2%, 63.1–74.7) | 166 (69.2%) |
+| Clean | R-ngonly | 183 (76.3%) | 185 (77.1%, 71.4–82.0) | 185 (77.1%) |
+| One indel | E | 95 (39.6%) | 96 (40.0%, 34.0–46.3) | 93 (38.8%) |
+| One indel | R-ngonly | 125 (52.1%) | 129 (53.8%, 47.4–60.0) | 128 (53.3%) |
+
+- **Companion-free paired gain:** 7.9 points clean (47 draws R-ngonly only, 28
+  E only) and 13.8 points with one indel (61 against 28). The clean gain
+  remains below the preregistered 8-point bar, so the refutation and the
+  maintainer's decision are unchanged.
+- **How far a recovered key stands out:** a key with its exact plugboard
+  recovered scores a median z of about 22 against v7's BYQMZ distribution,
+  far above the band ceiling of 9.5.
+- **v7 without companions:** its top retained candidate has z 8.85, inside
+  the band, and **none of its 100 retained candidates lies above the
+  ceiling**.
+
+**Inference.**
+- Companion confirmation removed only 1 to 4 of 240 draws per arm. These
+  power figures are therefore limited by detection, not by the companions, so
+  they stand whether or not FKQLZ and XFEDT are Enigma.
+- v7's null also stands without the companions. A recovered true key would
+  have stood out on BYQMZ's own letters, at about z 22 against a band ceiling
+  of 9.5, in about 77% of clean and 53% of one-indel low-IC draws. Nothing in
+  v7 did.
+- What the companions' possible non-Enigma status removes is the *acceptance*
+  step. A future hit could not be confirmed through FKQLZ or XFEDT, and would
+  need another check, such as the indicator or a crib.
+- The approximation, scoring planted texts against v7's distribution, is the
+  main limitation of this reading.
