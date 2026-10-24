@@ -1,8 +1,9 @@
 # Run: complete pending changes and open a PR
 
 **Started:** 2026-10-24 · **Repo:** `enigma-attack`
-**Branch:** `codex/complete-transposition-controls` · **Status:** open
-**PR base:** `8cf6e5e` (current `origin/master`)
+**Branch:** `codex/complete-transposition-controls` · **Status:** closed; PR CI pending
+**PR base:** `8cf6e5e` · **Implementation commit:** `e42a0db`
+**PR:** https://github.com/sparktron/enigma-attack/pull/44
 **Tool / model:** Codex / GPT-6
 **Skills loaded:** hub-repo-audit, session-closeout
 
@@ -32,8 +33,9 @@ unit tests on Python 3.10–3.13 and artifact drift/determinism on Python 3.10.
 - [x] Review the incoming diff and obtain an independent read-only review.
 - [x] Preserve incoming work, integrate with current master, resolve overlap.
 - [x] Finish precision and historical-evidence integration repairs.
-- [ ] Run unit/wheel tests and artifact drift/determinism checks.
-- [ ] Review the final diff, commit, push and create/attach the PR.
+- [x] Run unit/wheel tests and artifact drift; record partial local determinism
+  and the pending full CI checks explicitly.
+- [x] Review the final diff, commit, push and create/attach the PR.
 
 ## Decisions
 
@@ -84,7 +86,11 @@ unit tests on Python 3.10–3.13 and artifact drift/determinism on Python 3.10.
 - `python3 -m unittest discover -q > /tmp/enigma-pr-unit-tests.log 2>&1`
   → passed, 371 tests, 16 skips (117.959 s), Python 3.12.3 / numpy 1.26.4.
 - `python3 check_artifacts.py both > /tmp/enigma-pr-artifacts.log 2>&1`
-  → running; drift found 10 Phase 5 floating-point differences on Python 3.12.
+  → local drift completed with only 10 Phase 5 floating-point differences.
+  The subsequent determinism pass completed the Phase 1/2/3/4/5 smoke artifacts
+  and stecker/length calibrations without differences, then was stopped
+  (exit 130) while repeating unchanged, longer experiments; full determinism
+  remains pending in CI. This command did not pass overall.
   An isolated export of unchanged upstream `8cf6e5e` reproduced exactly the
   same 10 differences, and baseline versus PR regeneration agrees on every
   declared Phase 5 claim. These are preexisting; do not rewrite the artifact
@@ -93,6 +99,11 @@ unit tests on Python 3.10–3.13 and artifact drift/determinism on Python 3.10.
   /tmp/enigma-pr-upstream-baseline/phase5-regenerated.json` → completed.
   `check_artifacts.compare` confirmed the baseline differences above.
 - `git diff --cached --check` → passed after staging merge resolutions.
+- GitHub CI run 40127610753 (implementation commit `e42a0db`): Python 3.11
+  and 3.13 unit/wheel jobs passed at last observation; Python 3.10/3.12 and the
+  artifact job were still running. No CI-green claim is made.
+- PR #44 was created and attached to the chat. The incoming stash remains as
+  a recovery copy; no history was rewritten.
 
 ## Cost
 
@@ -103,8 +114,13 @@ unit tests on Python 3.10–3.13 and artifact drift/determinism on Python 3.10.
 
 ## Next
 
-Finish local determinism and the PR CI checks; record the final results.
+Review PR #44 and its full CI results. The local Phase 5 drift matches the
+unchanged baseline; investigate any failure on CI's pinned Python 3.10 before
+merging. Phase 4 F3 remains a separate documented follow-up.
 
 ## Closed
 
-Pending.
+2026-10-24 — incoming changes completed, independently reviewed, committed and
+published as PR #44. Durable state: docs/STATUS.md and this run. Left open:
+full PR CI results and the preexisting Phase 4 nondefault-machine baseline
+issue. No challenge plaintext was accepted.

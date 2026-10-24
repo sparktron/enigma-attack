@@ -293,8 +293,14 @@ p = 0.80 and remains superseded by conservation. See the
 ## Validation
 
 Completion review 2026-10-24: see [run record](runs/2026-10-24-complete-pending-changes.md)
-for commands and results. Raw scores now govern Phase 6 search calibration and
-Phase 7 scorer validation; rounding is reserved for output. Recovery thresholds,
+for commands and results; implementation commit `e42a0db`, [PR #44](https://github.com/sparktron/enigma-attack/pull/44).
+The local unit/wheel suite ran 371 tests with 16 skips and no failures, Python 3.12.3. Local artifact
+drift completed with only the ten Phase 5 floating-point differences also
+reproduced on unchanged upstream `8cf6e5e`; partial local determinism passed
+before longer repeats were stopped. Full CI, including the pinned Python 3.10
+artifact gate, was still pending at closeout.
+
+Raw scores now govern Phase 6 search calibration and Phase 7 scorer validation; rounding is reserved for output. Recovery thresholds,
 search counts and scorer parameters are validated before searching. The
 October 1 review
 [runs/2026-10-01-code-review.md](runs/2026-10-01-code-review.md) is historical:
