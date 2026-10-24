@@ -32,9 +32,9 @@ from resources import output_path, resolve_output, resource_root
 
 ROOT = resource_root()
 DEFAULT_CONFIG = (
-    ROOT / "experiments" / "phase6-qtxma-double-transposition-smoke-v2" / "config.json"
+    ROOT / "experiments" / "phase6-qtxma-double-transposition-smoke-v3" / "config.json"
 )
-DEFAULT_OUTPUT = output_path("phase6-qtxma-double-transposition-smoke.v2.json")
+DEFAULT_OUTPUT = output_path("phase6-qtxma-double-transposition-smoke.v3.json")
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
@@ -145,6 +145,8 @@ def _train_end(length: int, training_fraction: float) -> int:
 
 def _score_per_letter(scorer: TextScorer, text: str) -> float:
     raw, known = scorer.score(text)
+    if not math.isfinite(raw):
+        raise ValueError("scorer returned a nonfinite raw score")
     return raw / known if known else float("-inf")
 
 
@@ -483,24 +485,48 @@ def _calibrate_search(
     }
 
 
-def degenerate_rotation_offsets(
-    length: int, width_pairs: Sequence[Sequence[int]]
-) -> tuple[list[int], list[int]]:
-    """Return the stage widths that divide ``length`` and the shifts they allow.
+def _column_order_exists(text: str, target: str, width: int) -> bool:
+    """Return whether some width-``width`` column order transposes ``text`` to ``target``."""
 
-    A whole-row rotation is only reachable by an alternative key when a stage
-    width divides the message length exactly; the reachable shifts are then the
-    multiples of that width.  When no width divides the length, the only
-    admissible offset is zero, so the comparison reduces to exact agreement.
+    columns = [text[column::width] for column in range(width)]
+    used = [False] * width
+
+    def extend(cursor: int) -> bool:
+        if cursor == len(target):
+            return True
+        for column, content in enumerate(columns):
+            if not used[column] and target.startswith(content, cursor):
+                used[column] = True
+                if extend(cursor + len(content)):
+                    return True
+                used[column] = False
+        return False
+
+    return len(text) == len(target) and extend(0)
+
+
+def reachable_rotation_offsets(
+    plaintext: str, ciphertext: str, width_pairs: Sequence[Sequence[int]]
+) -> list[int]:
+    """Return the rotations of ``plaintext`` some searched key maps to ``ciphertext``.
+
+    Offset ``k`` denotes ``plaintext[k:] + plaintext[:k]``.  A rotation listed
+    here is indistinguishable from the known plaintext on the ciphertext alone:
+    an alternative key in the searched widths enciphers it to the identical
+    ciphertext.  Divisibility of the length by a stage width is not the test;
+    a one-letter ragged final row, for example, also admits such a key.
     """
 
-    widths = sorted(
-        {width for pair in width_pairs for width in pair if width > 0 and length % width == 0}
-    )
-    offsets = {0}
-    for width in widths:
-        offsets.update(range(width, length, width))
-    return widths, sorted(offsets)
+    offsets = [0]
+    for offset in range(1, len(plaintext)):
+        rotated = plaintext[offset:] + plaintext[:offset]
+        if any(
+            _column_order_exists(columnar_transpose(rotated, first), ciphertext, second_width)
+            for first_width, second_width in width_pairs
+            for first in itertools.permutations(range(first_width))
+        ):
+            offsets.append(offset)
+    return offsets
 
 
 def plaintext_agreement(
@@ -510,14 +536,14 @@ def plaintext_agreement(
 ) -> dict[str, Any]:
     """Compare a recovered plaintext with a known one over admissible shifts.
 
-    Double columnar transposition has near-degenerate keys.  When the message
-    length is an exact multiple of a stage width, a different column order can
-    read out the same text rotated by whole rows, so strict positional
-    agreement reports an essentially correct recovery as a total failure.
+    Double columnar transposition has equivalent keys: a different column
+    order can encipher a rotation of the plaintext to the identical
+    ciphertext, so strict positional agreement reports a recovery the
+    ciphertext cannot distinguish from the truth as a total failure.
 
-    Credit is given only for shifts the stage geometry can actually produce,
-    passed in ``allowed_offsets``; a control whose length divides no stage
-    width admits offset zero alone and is therefore held to exact recovery.
+    Credit is given only for the shifts passed in ``allowed_offsets``, which
+    :func:`reachable_rotation_offsets` computes exactly for a known key; a
+    control with no equivalent rotation is held to exact recovery.
     The best agreement over *every* shift is also reported, but only as a
     diagnostic, so that an unexplained near-match stays visible without being
     able to pass the control.  Omitting ``allowed_offsets`` permits every
@@ -553,17 +579,22 @@ def recovery_verdict(
     control: Mapping[str, Any],
     candidate: SearchCandidate,
     acceptance: Mapping[str, Any],
+    scorer: TextScorer,
 ) -> dict[str, Any]:
-    """Judge a known-key recovery, crediting only reachable whole-row shifts.
+    """Judge a known-key recovery, crediting only ciphertext-equivalent rotations.
 
     Exact plaintext and exact key recovery are recorded separately, so that a
     control passed on a rotation stays distinguishable from one that landed on
-    the known key itself.
+    the known key itself.  Both scores are recorded because a rotated recovery
+    can outscore or underscore the known plaintext.
     """
 
     plaintext = control["plaintext"]
     width_pairs = [list(pair) for pair in control["width_pairs"]]
-    widths, allowed_offsets = degenerate_rotation_offsets(len(plaintext), width_pairs)
+    ciphertext = double_columnar_transpose(
+        plaintext, control["first_order"], control["second_order"]
+    )
+    allowed_offsets = reachable_rotation_offsets(plaintext, ciphertext, width_pairs)
     agreement = plaintext_agreement(candidate.plaintext, plaintext, allowed_offsets)
     minimum = acceptance.get("minimum_positive_plaintext_accuracy", 1.0)
     verdict = {
@@ -576,7 +607,9 @@ def recovery_verdict(
         "searched_width_pairs": width_pairs,
         "plaintext_agreement": agreement,
         "plaintext_accuracy": agreement["best_over_allowed_rotations"],
-        "rotation_degeneracy_possible": widths,
+        "reachable_rotation_offsets": allowed_offsets,
+        "selected_score_per_letter": round(candidate.score_per_letter, 9),
+        "known_plaintext_score_per_letter": round(_score_per_letter(scorer, plaintext), 9),
         "exact_plaintext": candidate.plaintext == plaintext,
         "exact_key": (
             candidate.first_order == tuple(control["first_order"])
@@ -606,7 +639,7 @@ def evaluate_positive_control(
         ciphertext, control["width_pairs"], scorer=scorer, seed=seed, **options
     )
     result = evaluate_search(ciphertext, candidate, training_fraction, scorer)
-    result.update(recovery_verdict(control, candidate, acceptance))
+    result.update(recovery_verdict(control, candidate, acceptance, scorer))
     return result, ciphertext, candidate
 
 
@@ -651,7 +684,7 @@ def _normalize_positive_controls(payload: Mapping[str, Any]) -> list[dict[str, A
         second_order = _validate_order(entry["second_order"])
         width_pairs = entry.get("width_pairs") or default_pairs
         for pair in width_pairs:
-            if len(pair) != 2 or min(pair) < 2:
+            if len(pair) != 2 or any(type(width) is not int or width < 2 for width in pair):
                 raise ValueError(f"invalid width pair for control {identifier}: {pair}")
         if [len(first_order), len(second_order)] not in [list(pair) for pair in width_pairs]:
             raise ValueError(
@@ -692,26 +725,35 @@ def validate_config(payload: dict[str, Any]) -> dict[str, Any]:
     if "legacy_prefix_fraction" in payload and not 0 < payload["legacy_prefix_fraction"] < 1:
         raise ValueError("legacy_prefix_fraction must be in (0, 1)")
     search = payload["search"]
-    if not search["seeds"] or search["restarts"] < 1 or search["iterations"] < 1:
-        raise ValueError("search needs seeds, positive restarts, and iterations")
+    if not search["seeds"] or any(type(seed) is not int for seed in search["seeds"]):
+        raise ValueError("seeds must be a nonempty list of integers")
+    for name in ("restarts", "iterations", "max_exhaustive_states"):
+        if type(search[name]) is not int or search[name] < 1:
+            raise ValueError(f"{name} must be a positive integer")
     if not 0 < search["temperature_end"] <= search["temperature_start"] or not all(
         math.isfinite(search[name]) for name in ("temperature_start", "temperature_end")
     ):
         raise ValueError("invalid annealing temperatures")
-    if search.get("null_replicates", 0) < 0:
-        raise ValueError("null_replicates cannot be negative")
+    null_replicates = search.get("null_replicates", 0)
+    if type(null_replicates) is not int or null_replicates < 0:
+        raise ValueError("null_replicates must be a nonnegative integer")
     for name in ("target_width_pairs", "control_width_pairs"):
         if not search[name]:
             raise ValueError(f"{name} cannot be empty")
         for pair in search[name]:
-            if len(pair) != 2 or min(pair) < 2:
+            if len(pair) != 2 or any(type(width) is not int or width < 2 for width in pair):
                 raise ValueError(f"invalid width pair in {name}: {pair}")
     _normalize_positive_controls(payload)
     _substitute("A", payload["substitution_control"]["cipher_alphabet"])
     acceptance = payload["acceptance"]
-    if acceptance.get("minimum_passing_seeds", 0) > len(search["seeds"]):
-        raise ValueError("minimum_passing_seeds exceeds configured seeds")
-    if not 0 < acceptance.get("maximum_empirical_p_value", 0.05) <= 1:
+    minimum_seeds = acceptance.get("minimum_passing_seeds", 0)
+    if type(minimum_seeds) is not int or not 0 <= minimum_seeds <= len(search["seeds"]):
+        raise ValueError("minimum_passing_seeds must be within configured seeds")
+    minimum_accuracy = acceptance.get("minimum_positive_plaintext_accuracy", 1.0)
+    if not isinstance(minimum_accuracy, (int, float)) or not math.isfinite(minimum_accuracy) or not 0 < minimum_accuracy <= 1:
+        raise ValueError("minimum_positive_plaintext_accuracy must be in (0, 1]")
+    maximum_p = acceptance.get("maximum_empirical_p_value", 0.05)
+    if not isinstance(maximum_p, (int, float)) or not math.isfinite(maximum_p) or not 0 < maximum_p <= 1:
         raise ValueError("maximum_empirical_p_value must be in (0, 1]")
     return payload
 
@@ -770,6 +812,7 @@ def run_experiment(
     arguments: Sequence[str],
     scorer: TextScorer | None = None,
 ) -> dict[str, Any]:
+    validate_config(dict(config))
     # Before any work: the record describes the code the run started from.
     version = code_version()
     corpus_path = _resolve_path(config["corpus"])
@@ -818,25 +861,24 @@ def run_experiment(
     # that evidence is only available if the run does not stop at the first
     # failure.
     additional_controls = []
-    if positive_passed:
-        for control in controls[1:]:
-            control_ciphertext = double_columnar_transpose(
-                control["plaintext"], control["first_order"], control["second_order"]
-            )
-            selected = search_double_transposition(
-                control_ciphertext, control["width_pairs"], scorer=scorer,
-                seed=search["seeds"][0], **options,
-            )
-            verdict = recovery_verdict(control, selected, acceptance)
-            additional_controls.append({
-                **verdict,
-                "method": selected.method,
-                "evaluations": selected.evaluations,
-                "selected_key": {"first_order": list(selected.first_order),
-                                 "second_order": list(selected.second_order)},
-            })
-            if not verdict["passed"]:
-                positive_passed = False
+    for control in controls[1:]:
+        control_ciphertext = double_columnar_transpose(
+            control["plaintext"], control["first_order"], control["second_order"]
+        )
+        selected = search_double_transposition(
+            control_ciphertext, control["width_pairs"], scorer=scorer,
+            seed=search["seeds"][0], **options,
+        )
+        verdict = recovery_verdict(control, selected, acceptance, scorer)
+        additional_controls.append({
+            **verdict,
+            "method": selected.method,
+            "evaluations": selected.evaluations,
+            "selected_key": {"first_order": list(selected.first_order),
+                             "second_order": list(selected.second_order)},
+        })
+        if not verdict["passed"]:
+            positive_passed = False
     positive_result["all_known_key_controls_passed"] = positive_passed
     positive_result["additional_known_key_controls"] = additional_controls
 
@@ -857,6 +899,7 @@ def run_experiment(
             substitution_ciphertext, substitution_candidate, training_fraction, scorer
         )
         substitution_score = substitution_candidate.score_per_letter
+        selected_scores = []
         for seed in search["seeds"]:
             candidate = search_double_transposition(
                 target.ciphertext, search["target_width_pairs"],
@@ -870,7 +913,8 @@ def run_experiment(
                 ) == target.ciphertext
             )
             target_results.append(result)
-        observed_score = max(result["candidate"]["full"]["per_letter"] for result in target_results)
+            selected_scores.append(candidate.score_per_letter)
+        observed_score = max(selected_scores)
         calibration = _calibrate_search(target.ciphertext, observed_score, config, scorer, options)
 
     calibrated = bool(calibration and calibration["empirical_p_value"] <= acceptance.get("maximum_empirical_p_value", 0.05))
@@ -941,7 +985,8 @@ def run_experiment(
             "positive_passed": positive_passed,
             "positive_accuracy_rule": (
                 "Recovery accuracy is the best positional agreement over the "
-                "whole-row rotations the stage geometry can actually produce; "
+                "rotations of the known plaintext that some searched key "
+                "enciphers to the identical control ciphertext; "
                 "the exact-offset agreement and exact key recovery are "
                 "recorded alongside it."
             ),

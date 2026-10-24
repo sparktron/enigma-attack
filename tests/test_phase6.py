@@ -12,11 +12,18 @@ from phase6 import (
     columnar_untranspose,
     double_columnar_transpose,
     double_columnar_untranspose,
-    degenerate_rotation_offsets,
+    SearchCandidate,
     load_config,
     plaintext_agreement,
+    reachable_rotation_offsets,
+    recovery_verdict,
     run_experiment,
     search_double_transposition,
+    validate_config,
+)
+
+SOLVED_1941_09_24_94 = (
+    "UMZUGGEPAEQTROSSUNDRESTKOMMANDOSTOPFENXSQRIFTLIQERBEFEHLUNTERWEGSXSCHNEIDDRX"
 )
 
 
@@ -59,6 +66,17 @@ class Phase6TranspositionTests(unittest.TestCase):
         self.assertTrue(scorer.lengths)
         self.assertEqual(set(scorer.lengths), {len(text)})
 
+    def test_search_rejects_nonfinite_scorer_output(self) -> None:
+        class NonfiniteScorer:
+            def score(self, text):
+                return float("nan"), len(text)
+
+        with self.assertRaisesRegex(ValueError, "nonfinite raw score"):
+            search_double_transposition(
+                "ABCDEFGH", [(2, 2)], training_fraction=1.0,
+                scorer=NonfiniteScorer(),
+            )
+
     def test_exhaustive_control_considers_the_known_solution(self) -> None:
         plaintext = "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXENDE"
         ciphertext = double_columnar_transpose(
@@ -87,6 +105,32 @@ class Phase6ArtifactTests(unittest.TestCase):
         self.assertEqual(config["target_designator"], "QTXMA")
         self.assertEqual(config["split"]["training_fraction"], 1.0)
         self.assertIn([5, 7], config["search"]["target_width_pairs"])
+
+    def test_invalid_acceptance_and_search_numbers_fail_validation(self) -> None:
+        cases = (
+            ("acceptance", "minimum_positive_plaintext_accuracy", -1),
+            ("acceptance", "minimum_positive_plaintext_accuracy", float("nan")),
+            ("acceptance", "maximum_empirical_p_value", float("inf")),
+            ("acceptance", "minimum_passing_seeds", -1),
+            ("search", "null_replicates", 1.5),
+            ("search", "max_exhaustive_states", 0),
+            ("search", "restarts", True),
+            ("search", "target_width_pairs", [[2.5, 2]]),
+        )
+        for section, field, value in cases:
+            with self.subTest(section=section, field=field, value=value):
+                config = copy.deepcopy(load_config(DEFAULT_CONFIG))
+                config[section][field] = value
+                with self.assertRaisesRegex(ValueError, field):
+                    validate_config(config)
+
+    def test_invalid_recovery_gate_stops_before_search(self) -> None:
+        config = self._smoke_config()
+        config["acceptance"]["minimum_positive_plaintext_accuracy"] = -1
+        with mock.patch("phase6.search_double_transposition") as search:
+            with self.assertRaisesRegex(ValueError, "minimum_positive_plaintext_accuracy"):
+                run_experiment(config, pathlib.Path("unused.json"), [])
+        search.assert_not_called()
 
     @staticmethod
     def _smoke_config() -> dict:
@@ -184,7 +228,35 @@ class Phase6ArtifactTests(unittest.TestCase):
         self.assertEqual(result["status"], "invalid_positive_control_failure")
         self.assertEqual(result["target"]["seed_results"], [])
         self.assertEqual(result["target"]["skipped_reason"], "positive_control_failed")
-        self.assertEqual(search.call_count, 1)
+        self.assertEqual(search.call_count, 1 + len(config["additional_positive_controls"]))
+        self.assertEqual(
+            [control["id"] for control in result["controls"]["additional_known_key"]],
+            [control["id"] for control in config["additional_positive_controls"]],
+        )
+
+    def test_tied_raw_scores_do_not_become_a_signal_when_rounded(self) -> None:
+        config = self._smoke_config()
+        config["search"].update(
+            target_width_pairs=[[2, 2]], control_width_pairs=[[2, 2]],
+            seeds=[1], null_replicates=19,
+        )
+        config["positive_control"] = {
+            "plaintext": "AAAAAAAA", "first_order": [0, 1], "second_order": [0, 1],
+        }
+        for per_letter in (1.0000000006, 1.0000000004, -1.0000000006):
+            class FlatScorer:
+                def score(self, text):
+                    return len(text) * per_letter, len(text)
+            with self.subTest(per_letter=per_letter):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = pathlib.Path(directory)
+                    config["phase5_artifact"] = str(self._ungated_phase5(root))
+                    path = root / "config.json"
+                    path.write_text(json.dumps(config), encoding="utf-8")
+                    result = run_experiment(config, path, [], FlatScorer())
+                calibration = result["observed"]["search_calibration"]
+                self.assertEqual(calibration["empirical_p_value"], 1.0)
+                self.assertFalse(result["hypothesis_supported"])
 
     def test_stale_phase5_corpus_evidence_is_rejected(self) -> None:
         config = copy.deepcopy(load_config(DEFAULT_CONFIG))
@@ -222,21 +294,49 @@ class PlaintextAgreementTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             plaintext_agreement("ANGRIFF", "ANGRIFFX")
 
-    def test_rotation_credit_needs_a_width_that_divides_the_length(self) -> None:
-        # 20 is a multiple of 4, so one whole row of shift is reachable.
-        widths, offsets = degenerate_rotation_offsets(20, [[4, 5]])
-        self.assertEqual(widths, [4, 5])
-        self.assertIn(4, offsets)
-        # 133 divides neither width, so nothing but exact recovery is allowed.
-        widths, offsets = degenerate_rotation_offsets(133, [[4, 5]])
-        self.assertEqual(widths, [])
-        self.assertEqual(offsets, [0])
+    def test_one_letter_ragged_row_admits_an_equivalent_rotation(self) -> None:
+        # 76 = 15 * 5 + 1: the lone final-row letter lets a different first
+        # stage key encipher the plaintext rotated by one to the same text.
+        plaintext = SOLVED_1941_09_24_94
+        first, second = [3, 0, 4, 1, 2], [6, 1, 4, 0, 5, 2, 3]
+        ciphertext = double_columnar_transpose(plaintext, first, second)
+        offsets = reachable_rotation_offsets(plaintext, ciphertext, [[5, 7]])
+        self.assertEqual(offsets, [0, 75])
+        rotated = plaintext[75:] + plaintext[:75]
+        self.assertEqual(
+            double_columnar_transpose(rotated, [4, 1, 0, 2, 3], second), ciphertext
+        )
+
+    def test_divisibility_neither_implies_nor_excludes_rotation(self) -> None:
+        text = "DIEKOMMANDOSTELLEMELDETANGRIFFVONNORDOSTXENDE"
+        def offsets(length: int) -> list[int]:
+            plaintext = text[:length]
+            ciphertext = double_columnar_transpose(plaintext, [2, 0, 3, 1], [4, 1, 3, 0, 2])
+            return reachable_rotation_offsets(plaintext, ciphertext, [[4, 5]])
+        self.assertEqual(offsets(20), [0, 4, 8, 12, 16])
+        # 24 and 40 are multiples of 4, yet no alternative key reproduces
+        # either ciphertext from a rotated plaintext.
+        self.assertEqual(offsets(24), [0])
+        self.assertEqual(offsets(40), [0])
+
+    def test_equivalent_rotation_passes_and_stays_distinguishable(self) -> None:
+        plaintext = SOLVED_1941_09_24_94
+        control = {"id": "c", "plaintext": plaintext, "first_order": [3, 0, 4, 1, 2],
+                   "second_order": [6, 1, 4, 0, 5, 2, 3], "width_pairs": [[5, 7]]}
+        rotated = plaintext[75:] + plaintext[:75]
+        candidate = SearchCandidate(rotated, (4, 1, 0, 2, 3), (6, 1, 4, 0, 5, 2, 3),
+                                    -1.0, "test", 1)
+        verdict = recovery_verdict(control, candidate, {}, AdjacencyScorer())
+        self.assertTrue(verdict["passed"])
+        self.assertFalse(verdict["exact_plaintext"])
+        self.assertFalse(verdict["exact_key"])
+        self.assertEqual(verdict["plaintext_agreement"]["rotation_offset"], 75)
+        self.assertEqual(verdict["reachable_rotation_offsets"], [0, 75])
 
     def test_inadmissible_shift_gets_no_credit(self) -> None:
         expected = "DIEKOMMANDOSTELLEMELDETXENDE"
         rotated = expected[4:] + expected[:4]
-        _, offsets = degenerate_rotation_offsets(len(expected), [[4, 5]])
-        credited = plaintext_agreement(rotated, expected, offsets)
+        credited = plaintext_agreement(rotated, expected, [0, 4])
         self.assertEqual(credited["best_over_allowed_rotations"], 1.0)
 
         # The same recovery against a control whose geometry admits no shift

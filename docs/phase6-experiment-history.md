@@ -87,3 +87,20 @@ Next decision: do not enlarge this search solely because its training score
 rose. First recover the original form grouping/typography or introduce a
 versioned, independently validated Army-traffic n-gram model; then preregister
 any wider width or procedure search.
+
+## phase6-qtxma-double-transposition-smoke-v3
+
+Status: completed 2026-09-26. Rotation rule revised as in
+the [historical Phase 7 rotation-control v3](phase7-experiment-history.md#historical-rotation-control-v3-recovered-2026-10-24): a rotated recovery is credited only when
+some searched key enciphers it to the identical control ciphertext.
+
+Observed with the Phase 1 bootstrap scorer: the primary control passes exactly;
+the 5×7 control still fails. Its reachable offsets are `[0, 75]`, but the
+selected plaintext agrees at 0.052632 at the best of them and at most 0.210526
+at any rotation. The selected key scores 0.116447 per letter against 0.156579
+for the known plaintext. This is a genuine optimizer miss under that scorer, not
+a metric artifact, so no QTXMA search calls were made.
+
+Recovered from the incoming working tree on 2026-10-24. The raw artifact and
+configuration are unchanged; the current runner refuses QTXMA at the Phase 5
+conservation gate, so this historical experiment was not rerun.

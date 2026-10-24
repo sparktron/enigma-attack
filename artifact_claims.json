@@ -254,6 +254,31 @@
       ],
       "superseded": "Phase 5 excludes frequency-preserving ciphers for QTXMA by letter conservation, so phase6.py and phase7.py now refuse this target and the artifact cannot be regenerated. It is retained as the record of the search that was run before the gate existed."
     },
+    "artifacts/phase6-qtxma-double-transposition-smoke.v3.json": {
+      "runner": ["phase6.py", "--config", "experiments/phase6-qtxma-double-transposition-smoke-v3/config.json"],
+      "claim_paths": [
+        "schema", "status", "hypothesis_supported", "accepted_break",
+        "configuration.sha256", "inputs.corpus_sha256", "inputs.phase5_evidence.sha256",
+        "controls.positive_passed", "controls.positive_double_transposition.passed",
+        "controls.positive_double_transposition.all_known_key_controls_passed",
+        "controls.additional_known_key[].id", "controls.additional_known_key[].passed",
+        "target.designator", "target.seed_results", "target.skipped_reason", "observed.*"
+      ],
+      "superseded": "Recorded before the Phase 5 letter-conservation gate; the current runner refuses QTXMA. Retained as historical evidence."
+    },
+    "artifacts/phase7-qtxma-source-and-scorer.v3.json": {
+      "runner": ["phase7.py", "--config", "experiments/phase7-qtxma-source-and-scorer-rotation-v3/config.json"],
+      "claim_paths": [
+        "schema", "status", "hypothesis_supported", "accepted_break",
+        "configuration.sha256", "source_audit.passed", "scorer_validation.passed",
+        "positive_control_preflight.all_known_key_controls_passed",
+        "positive_control_preflight.additional_known_key_controls[].id",
+        "positive_control_preflight.additional_known_key_controls[].passed",
+        "search.status", "search.hypothesis_supported", "search.accepted_break",
+        "search.controls.positive_passed", "search.target.seed_results", "search.observed.*"
+      ],
+      "superseded": "Recorded before the Phase 5 letter-conservation gate; the current runner refuses QTXMA. Retained as historical evidence."
+    },
     "artifacts/phase1-stecker-calibration-v1.json": {
       "runner": [
         "phase1_stecker.py",

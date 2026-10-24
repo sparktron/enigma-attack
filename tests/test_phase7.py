@@ -31,6 +31,36 @@ class Phase7Tests(unittest.TestCase):
         self.assertEqual(known, 4)
         self.assertAlmostEqual(score, scorer.score("AB")[0] + scorer.score("CD")[0])
 
+    def test_nonfinite_scorer_parameters_are_rejected(self) -> None:
+        for field in ("additive_smoothing", "bigram_weight", "trigram_weight"):
+            for value in (float("nan"), float("inf"), float("-inf")):
+                with self.subTest(field=field, value=value):
+                    config = {**self.config["scorer"], field: value}
+                    with self.assertRaisesRegex(ValueError, field):
+                        phase7.PublishedNgramScorer(config)
+
+    def test_scorer_validation_compares_unrounded_scores(self) -> None:
+        config = copy.deepcopy(self.config)
+        text = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF"
+        config["validation"]["plaintexts"] = [{"id": "precision", "raw": text}]
+        config["validation"]["minimum_messages_above_all_shuffles"] = 1
+        for authentic, shuffled, passed in (
+            (1.0000000004, 1.0000000004, False),
+            (1.0000000006, 1.0000000006, False),
+            (-1.0000000006, -1.0000000006, False),
+            (1.0000000004, 1.0000000003, True),
+            (1.0000000003, 1.0000000004, False),
+        ):
+            class PrecisionScorer:
+                def score(self, candidate):
+                    per_letter = authentic if candidate == text else shuffled
+                    return len(candidate) * per_letter, len(candidate)
+
+            with self.subTest(authentic=authentic, shuffled=shuffled):
+                result = phase7.validate_scorer(config, PrecisionScorer())
+                self.assertEqual(result["messages"][0]["passed"], passed)
+                self.assertEqual(result["passed"], passed)
+
     def test_full_objective_fixes_control_boundary_displacement(self) -> None:
         phase6_config = phase7.phase6.load_config(
             phase7.resolve_path(self.config["phase6_config"])
@@ -65,13 +95,15 @@ class Phase7Tests(unittest.TestCase):
         self.assertIn("independent-solved-army-text-1941-09-24-94", identifiers)
         self.assertIn("ragged-both-stages", identifiers)
 
-        # The ragged control is 133 letters over 4- and 5-wide stages, so no
-        # whole-row rotation is reachable and only exact recovery can pass it.
+        # No alternative key reproduces the ragged control's ciphertext from a
+        # rotated plaintext, so only exact recovery can pass it.
         ragged = next(c for c in forwarded if c["id"] == "ragged-both-stages")
-        widths, offsets = phase7.phase6.degenerate_rotation_offsets(
-            len(ragged["plaintext"]), ragged["width_pairs"]
+        ciphertext = phase7.phase6.double_columnar_transpose(
+            ragged["plaintext"], ragged["first_order"], ragged["second_order"]
         )
-        self.assertEqual(widths, [])
+        offsets = phase7.phase6.reachable_rotation_offsets(
+            ragged["plaintext"], ciphertext, ragged["width_pairs"]
+        )
         self.assertEqual(offsets, [0])
 
     def test_duplicate_control_identifier_is_rejected(self) -> None:
