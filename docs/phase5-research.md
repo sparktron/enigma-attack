@@ -448,6 +448,18 @@ fit these two. None of this has been tested.
 - The flat-system texts' own structure: period, digraphs, and contact
   analysis across the four flat grey texts and the two targets.
 
+## Follow-up (2026-10-23)
+
+The companion question has been answered in PR #42 (`phase1-low-ic-joint-v1`,
+companion-free reading). Without FKQLZ/XFEDT confirmation, planted-key
+success is almost unchanged: confirmation removed only 1 to 4 of 240 draws
+per arm. Recovered keys score a median z of about 22 on BYQMZ's own letters.
+None of v7's 100 retained candidates exceeds its preregistered noise-band
+ceiling (z 9.5; top 8.85). So the BYQMZ null stands on detection alone, at
+essentially the stated power. What the flag removes is the companion
+*acceptance* step for any future hit. Recommendation 1 below is therefore
+done for v7.
+
 ## Recommendation
 
 1. Restate the Phase 1 BYQMZ conclusions on detection alone. Recompute, from

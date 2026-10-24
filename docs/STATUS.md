@@ -41,8 +41,9 @@ Both are also flatter than random 25-letter text. The 13 authentic Enigma
 ciphertexts pass calibration, and the grey-text positive control met its
 preregistered expectation exactly. **Consequence:** every BYQMZ sweep
 required both FKQLZ and XFEDT to confirm a candidate. If they are not Enigma,
-that confirmation step had no power, so the BYQMZ nulls must be restated on
-detection alone. See the
+that confirmation step could never succeed. A companion-free reading (PR #42)
+shows that v7's null still holds on BYQMZ's own score at essentially the
+stated power; only the acceptance step for a future hit is lost. See the
 [Phase 5 addendum](phase5-research.md#addendum-2026-10-21--j-less-flat-signature-phase5-jless-flat-v1).
 
 Trigram-repeat test (2026-10-20, `phase5-trigram-repeat-v1`, preregistered):
