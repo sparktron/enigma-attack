@@ -470,3 +470,139 @@ done for v7.
 3. Preregister a structural study of the flat J-less group, the four flat
    grey texts plus FKQLZ and XFEDT: periodicity, digraph and contact
    statistics, against homophonic and bigram-system nulls.
+
+---
+
+# Addendum 2026-10-26 — structure of the flat J-less group (`phase5-flat-structure-v1`)
+
+## Method
+
+The configuration is `experiments/phase5-flat-structure-v1/config.json`,
+preregistered at `fb8165c`. The run was made from `7a909bd` on a clean tree,
+in 5 min 29 s on one core. The result is in
+`artifacts/phase5-flat-structure-v1.json`.
+
+**The group:** CSBTR, BCSSF, AWMRI, YDFZS, FKQLZ and XFEDT. The primary
+form includes each text's first group; the sensitivity form removes it.
+
+**Five 25-letter models,** 20,000 simulated groups each:
+- uniform random letters;
+- homophonic substitution of Army plaintext, with homophones chosen at
+  random;
+- the same, with homophones chosen cyclically;
+- Playfair;
+- a double two-square cipher, which is an *approximation* of the
+  Doppelkasten, not a verified reconstruction.
+
+**Four primary statistics:**
+- doubled letters;
+- the smaller of the even- and odd-aligned doubled-letter counts;
+- repeated digraphs at that alignment;
+- the peak periodic IC over periods 2–12.
+
+**Decision:** a model is inconsistent if any primary statistic gives
+p < 0.0025, which is 0.05 corrected for 4 statistics × 5 models. The IC was
+seen before, so it is reported but does not count in the decision.
+
+**Power check:** the result counts only if a simulated uniform-random group
+is rejected as double two-square, and the reverse, at least half the time.
+
+**Preregistered hypothesis:** the group is digraphic. The double two-square
+model is consistent, and at least one of the three monographic models is not.
+
+## Observed
+
+The power check is informative: double two-square is rejected on 89.8% of
+uniform-random groups, and uniform random on 97.5% of double two-square
+groups.
+
+**Flat group, primary form** (lengths 111, 93, 83, 81, 112, 102). Each null
+cell gives the 2.5% / median / 97.5% points.
+
+| Statistic | Observed | Uniform 25 | Homophonic, random | Homophonic, cyclic | Playfair | Double two-square |
+|---|---|---|---|---|---|---|
+| Doubles | **9** | 14 / 23 / 33 (p 0.0008) | 9 / 13 / 18 (p 0.12) | 7 / 12 / 16 (p 0.37) | 5 / 11 / 18 (p 0.67) | 13 / 22 / 33 (p 0.003) |
+| Min aligned doubles | **3** | 3 / 7 / 12 (p 0.11) | 1 / 3 / 6 (p 1.0) | 0 / 2 / 5 (p 0.93) | 0 / 0 / 0 (**p 0.0001**) | 2 / 6 / 12 (p 0.19) |
+| Aligned digraph repeats | **10** | 5 / 11 / 17 (p 1.0) | 14 / 24 / 33 (p 0.004) | 14 / 23 / 33 (p 0.005) | 33 / 48 / 63 (**p 0.0001**) | 22 / 38 / 54 (**p 0.0002**) |
+| Periodic IC peak | **0.0406** | 0.0403 / 0.0446 / 0.0507 (p 0.96) | p 1.0 | p 1.0 | p 1.0 | p 1.0 |
+| IC (already seen; not in the decision) | **0.0329** | 0.0379 / 0.0400 / 0.0425 (p 0.0001) | 0.0393 / 0.0422 / 0.0452 (p 0.0001) | 0.0367 / 0.0393 / 0.0422 (p 0.0001) | median 0.0499 (p 0.0001) | median 0.0440 (p 0.0001) |
+
+- **Verdicts:**
+  - **Consistent:** homophonic random and homophonic cyclic.
+  - **Inconsistent:** uniform random (too few doubles), Playfair (aligned
+    doubles and digraph repeats) and double two-square (digraph repeats).
+- **Hypothesis:** refuted. Double two-square is inconsistent, because the
+  group has far fewer repeated digraphs than any digraphic model of Army
+  plaintext produces.
+- **Sensitivity form** (first group removed): the same verdicts for all five
+  models.
+- **Periodicity:** the pooled periodic IC never rises above the uniform
+  model's median at any period from 2 to 12. The highest value, 0.0417 in the
+  sensitivity form, is at p = 12.
+- **IC:** the group's IC, 0.0329, lies below the 2.5% point of every model,
+  including both homophonic ones.
+- **Rough comparison group** (FTBCO, AOKAX, XDPAK, SDPLM), reported but not
+  part of the decision: uniform random and Playfair are inconsistent; both
+  homophonic models and double two-square are consistent.
+
+**Power matrix** (rate at which the tested model is declared inconsistent, by
+true model): homophonic and double two-square separate poorly when the truth
+is homophonic (0.07 random, 0.16 cyclic), but well the other way (0.80,
+0.93). Playfair is told apart from every other model at a rate of 0.89 or
+more in both directions.
+
+## Inference
+
+- **Not Playfair:** the flat group is not Playfair output in this form. It
+  has doubled letters at both alignments (3 at the better one), which
+  Playfair never produces.
+- **Not digraphic:** it is also not output of the double two-square model,
+  nor of any digraphic encipherment of Army plaintext tested here. Its 10
+  aligned digraph repeats match uniform random (median 11), against medians
+  of 38 and 48 for the digraphic models. Plaintext digraph structure does not
+  show through.
+- **What the homophonic models' consistency means:** they pass the four
+  primary statistics, but their aligned digraph repeats sit close to the
+  threshold (p 0.004 and 0.005). Neither reproduces the group's IC; its
+  0.0329 lies below every simulated value's 2.5% point. No model tested
+  matches the group on everything observed.
+- **The combined signature:** an IC below random, fewer doubled letters than
+  random, digraph repeats at the random level, and no period. Together that
+  is a sequence **more even than chance at the single-letter level and
+  random at the digraph level**.
+
+## Speculation
+
+Two mechanisms produce exactly that signature, and neither was modelled:
+
+- **Human-made "random" letters.** People avoid doubles and repeated letters
+  when inventing text, which flattens frequencies below chance. This fits
+  the suggestion Weierud reports, that the messages were made-up texts for
+  operator practice.
+- **Letters drawn without replacement from a balanced stock,** such as a
+  shuffled set of tiles or a one-time-pad table built from permutations.
+
+The rough grey texts behave differently: their IC is 0.045 and they are
+consistent with homophonic and digraphic models. The grey texts are
+therefore at least two populations.
+
+## Unresolved
+
+- Whether a without-replacement or human-random model reproduces the flat
+  group's IC, doubles and digraph repeats together.
+- The real Doppelkasten rules. This model is an approximation.
+
+## Recommendation
+
+1. Preregister a follow-up with two new models:
+   - a without-replacement model: letters drawn from a shuffled multiset of
+     the 25 letters, for several stock sizes;
+   - a human-random proxy: a published model of human letter generation, or
+     uniform letters with repeats suppressed, at a fitted suppression rate
+     preregistered with its own control.
+
+   Use the same statistics and add the IC, which would then be a
+   preregistered target rather than an already-seen one.
+2. Treat the flat group as **not** a digraphic encipherment of Army plaintext
+   of the kinds tested here, and stop spending effort on Playfair-type
+   attacks against it.
