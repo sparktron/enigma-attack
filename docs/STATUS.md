@@ -180,7 +180,12 @@ of its 76 positions. It was first read as a row-filling disagreement. It is not
 the convention is exact, the known key ranks first of all 604,800 key pairs, and
 the annealing search, which makes 12,008 evaluations (2% of the exhaustive count;
 it revisits states, so the distinct pairs visited are fewer), stopped on the runner-up. The
-control passes when searched exhaustively.
+control passes when searched exhaustively. The recovered historical rotation-control
+v3 artifact also credits the annealed recovery: its one-character rotation
+enciphers to the identical ciphertext under another searched key. All three
+controls pass under that rule; its historical QTXMA search has empirical
+p = 0.80 and remains superseded by conservation. See the
+[recovered record](phase7-experiment-history.md#historical-rotation-control-v3-recovered-2026-10-24).
 
 ## Correctness and evidence repairs
 
@@ -237,14 +242,14 @@ control passes when searched exhaustively.
   exhaustive control, and treats the candidate suffix as descriptive. The
   target acceptance rule uses matched complete-search shuffle nulls when the
   controls pass. A failed mandatory control makes zero target-search calls.
-- Known-key control recovery is credited only over the whole-row rotations a
-  stage width that divides the message length can produce. The exact-offset
-  agreement, the exact key match, and the best agreement over every rotation
-  are all recorded, so a near-match that the geometry cannot explain stays
-  visible without being able to pass a control.
+- Known-key control recovery is credited only over rotations some searched key
+  enciphers to the identical control ciphertext. Exact-offset agreement, exact
+  key recovery, both plaintext scores, and the best agreement over every
+  rotation remain visible. Divisibility by a stage width is insufficient.
 - Every configured known-key control is evaluated even after one fails, because
   a control whose geometry admits no rotation is what separates a genuine
-  search failure from a metric artifact.
+  search failure from a metric artifact. This now includes failures of the
+  primary control; any failure still blocks substitution, target, and null work.
 - The Phase 1 body-direct confirmation recovers the ring setting instead of
   reusing the one the sweep held. The sweep absorbs the left and middle rings
   into the start position it searches, and the indicator's fixed clear
@@ -298,6 +303,22 @@ control passes when searched exhaustively.
   for these messages; a wiring no catalogue records remains untestable.
 
 ## Validation
+
+Completion review 2026-10-24: see [run record](runs/2026-10-24-complete-pending-changes.md)
+for commands and results; implementation commit `e42a0db`, [PR #44](https://github.com/sparktron/enigma-attack/pull/44).
+The local unit/wheel suite ran 371 tests with 16 skips and no failures, Python 3.12.3. Local artifact
+drift completed with only the ten Phase 5 floating-point differences also
+reproduced on unchanged upstream `8cf6e5e`; partial local determinism passed
+before longer repeats were stopped. Full CI, including the pinned Python 3.10
+artifact gate, was still pending at closeout.
+
+Raw scores now govern Phase 6 search calibration and Phase 7 scorer validation; rounding is reserved for output. Recovery thresholds,
+search counts and scorer parameters are validated before searching. The
+October 1 review
+[runs/2026-10-01-code-review.md](runs/2026-10-01-code-review.md) is historical:
+F1/F4/F5/F6 are repaired here; F2 was already repaired upstream by shared
+provenance. F3 (Phase 4 baseline selection for nondefault machine settings)
+remains open. No target search or new cipher experiment was run in this review.
 
 - `python3 -m unittest discover -q`: **305 tests passed with GPU access and
   no skips on 2026-10-12 after the readiness code fixes** (229.665 s).
@@ -648,6 +669,10 @@ configuration to rerun it through the experiment path
 never run: the runner refuses QTXMA by design, before any control, because of the
 conservation gate, so no experiment-path rerun is possible
 ([diagnosis](phase7-experiment-history.md#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)).
+
+The recovered September rotation-control v3 result and the withdrawn October
+exhaustive v3 configuration reused the same identifier. Both are retained at
+distinct paths, with their provenance unchanged; see the Phase 7 history.
 
 Low-IC calibration, 2026-10-21: the requested cheaper-start implementation already
 existed in reference, numpy and CUDA (R-ngonly; v7 had already run). Reverified all

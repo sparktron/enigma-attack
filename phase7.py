@@ -21,7 +21,7 @@ from provenance import code_version, sha256_file as sha256
 from resources import resolve_output, resource_root
 
 ROOT = resource_root()
-DEFAULT_CONFIG = ROOT / "experiments/phase7-qtxma-source-and-scorer-v2/config.json"
+DEFAULT_CONFIG = ROOT / "experiments/phase7-qtxma-source-and-scorer-rotation-v3/config.json"
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
@@ -53,10 +53,15 @@ class PublishedNgramScorer:
 
     def __init__(self, config: Mapping[str, Any]) -> None:
         alpha = float(config["additive_smoothing"])
-        if alpha <= 0:
-            raise ValueError("additive_smoothing must be positive")
-        weights = {2: float(config["bigram_weight"]), 3: float(config["trigram_weight"])}
-        if any(weight < 0 for weight in weights.values()) or sum(weights.values()) <= 0:
+        if not math.isfinite(alpha) or alpha <= 0:
+            raise ValueError("additive_smoothing must be finite and positive")
+        weights = {}
+        for width, key in ((2, "bigram_weight"), (3, "trigram_weight")):
+            weight = float(config[key])
+            if not math.isfinite(weight) or weight < 0:
+                raise ValueError(f"{key} must be finite and nonnegative")
+            weights[width] = weight
+        if not math.isfinite(sum(weights.values())) or sum(weights.values()) <= 0:
             raise ValueError("n-gram weights must be nonnegative and nonzero")
         self.tables: dict[int, dict[str, float]] = {}
         self.floors: dict[int, float] = {}
@@ -129,12 +134,12 @@ def validate_scorer(config: Mapping[str, Any], scorer: PublishedNgramScorer) -> 
             letters = list(text)
             random.Random(seed).shuffle(letters)
             shuffled = "".join(letters)
-            shuffles.append(round(scorer.score(shuffled)[0] / len(text), 9))
+            shuffles.append(scorer.score(shuffled)[0] / len(text))
         results.append({
             "id": item["id"],
             "length": len(text),
             "authentic_score_per_letter": round(authentic, 9),
-            "shuffled_scores_per_letter": shuffles,
+            "shuffled_scores_per_letter": [round(score, 9) for score in shuffles],
             "margin_over_best_shuffle": round(authentic - max(shuffles), 9),
             "passed": authentic > max(shuffles),
         })

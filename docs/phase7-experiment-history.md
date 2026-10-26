@@ -321,3 +321,103 @@ What this changes:
 - If the machinery is reused on a target the gate admits, its configuration
   should set `max_exhaustive_states` to at least 604,800 for the 5×7 and 7×5
   pairs, which needs the override this removes to be restored with that config.
+
+## Historical rotation-control v3 (recovered 2026-10-24)
+
+This is the earlier rotation-control experiment, recorded in the incoming
+working tree. It shares an identifier with the later, withdrawn exhaustive
+experiment above; they are distinct configurations. Its unchanged configuration
+is archived at [phase7-qtxma-source-and-scorer-rotation-v3](../experiments/phase7-qtxma-source-and-scorer-rotation-v3/config.json),
+and its raw result is [phase7-qtxma-source-and-scorer.v3.json](../artifacts/phase7-qtxma-source-and-scorer.v3.json).
+The withdrawn configuration above remains unchanged and still has no result.
+This historical result is superseded by the conservation gate and was not
+rerun during the 2026-10-24 completion review.
+
+Status: completed 2026-09-26; all three known-key controls passed and the QTXMA
+target search ran for the first time under the full-text objective. The target
+did not clear its matched complete-search null. Supersedes the v2 control
+verdict; the source audit and scorer validation are unchanged.
+
+Revision cause: v2 recorded the 5×7 control's one-character rotation as a
+possible row-filling disagreement between the control's construction and the
+search's untransposition. That inference is withdrawn. Construction and
+untransposition agree; the rotation is an exact key equivalence.
+
+The 76-letter control leaves a one-letter final row at width 5. The known
+first-stage order `[3,0,4,1,2]` and the selected order `[4,1,0,2,3]` (every
+label plus one, mod 5) produce the identical first-stage intermediate: the
+first reads the plaintext, the second reads the plaintext rotated right by one,
+and the lone final-row letter is carried from the end of column 0 to the head of
+the next column read. The second-stage key was already exact, so both keys give
+the same ciphertext and the ciphertext cannot tell the two plaintexts apart.
+
+The defect was the v2 admissibility rule, which credited a rotation only when a
+stage width divides the message length. Divisibility is neither necessary (76
+over 5×7) nor sufficient: over 4×5 with the same keys, a 20-letter text admits
+rotations by 4, 8, 12 and 16, while 24- and 40-letter texts admit none.
+
+Changes from v2:
+
+- `reachable_rotation_offsets` replaces `degenerate_rotation_offsets`. For each
+  control it enciphers the known plaintext with the known key, then for every
+  rotation checks exactly whether some key in the control's searched widths
+  enciphers that rotation to the identical ciphertext (enumerating first-stage
+  orders and matching second-stage columns by backtracking). Only those offsets
+  earn credit. The artifact field `rotation_degeneracy_possible` (widths) is
+  replaced by `reachable_rotation_offsets` (offsets).
+- Each control verdict records `selected_score_per_letter` and
+  `known_plaintext_score_per_letter`, so a rotated pass that scored below the
+  known plaintext stays visible.
+- The acceptance threshold, widths, seeds, budgets, scorer, and controls are
+  unchanged. Only the rotation rule, the added fields, and the identifiers
+  changed.
+
+The new rule is stricter where the old one over-admitted. The 148-letter
+primary control admitted 37 offsets under divisibility and admits offset zero
+alone under the exact test. Its v1 four-character reading agreed at 97.3%, so it
+was a near-equivalent key, not an exact one. v2 and v3 recover that control
+exactly, so its verdict does not change.
+
+Preregistration boundary: the rule change was made after seeing the v2 control
+failure, and its cause was diagnosed before v3 ran. Nothing about the target
+entered the decision. The rule was fixed before the target search first ran.
+
+Command: `python3 phase7.py` (default v3 config). Python 3.10.12, serial,
+about 145 s.
+
+Observed:
+
+- Source audit and scorer validation reproduced v2 exactly.
+- Primary 4×5 control, 148 letters: exact plaintext and both keys. Reachable
+  offsets `[0]`. Passed.
+- Ragged 4×5 control, 133 letters: exact plaintext and both keys. Reachable
+  offsets `[0]`. Passed.
+- Independent solved-message 5×7 control, 76 letters: the same selection as v2,
+  first order `[4,1,0,2,3]` and second order exact. Reachable offsets `[0, 75]`;
+  agreement 1.000000 at offset 75, 0.052632 exact. Passed as a rotation, with
+  `exact_plaintext` and `exact_key` both false. The selected rotation scores
+  -6.714537 per letter against -6.701798 for the known plaintext, so the
+  annealer settled in the lower-scoring member of an equivalent pair.
+- QTXMA, widths 4×5, 5×4, 5×5, 5×7, 7×5 and 7×7, three seeds: best full-text
+  score -9.188882 per letter. The seeds chose different keys and widths, and
+  every candidate plaintext is incoherent. All three round-trip to the
+  ciphertext, as any key does.
+- Matched complete-search null, 19 shuffled-ciphertext replicates: replicate
+  maxima -9.207343 to -9.096577. Empirical p = 0.80; minimum resolvable
+  p = 0.05. The substitution control scored -9.082109.
+- Status `not_supported_under_search_calibrated_null`.
+
+Interpretation (inference): the search and published scorer recover every
+known-key control up to ciphertext equivalence, at 76, 133 and 148 letters,
+including both ragged cases. Under that validated machinery the QTXMA maximum
+over the preregistered widths is typical of shuffled ciphertext. This is
+evidence against plain double columnar transposition with ragged final rows at
+these widths. It does not exclude other widths, other filling or reading
+conventions, nulls, or other transposition families.
+
+Next decision: do not widen the width search on the strength of this run. The
+5×7 control shows that annealing can stop at an equivalent rotation that scores
+below the truth; a column-relabelling move would let it cross between such keys,
+but it would change the target search and needs its own preregistered run.
+Validate on further independent known-key messages at QTXMA's 155-letter length
+before any wider or different transposition model.

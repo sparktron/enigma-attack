@@ -63,7 +63,7 @@ py-modules = [
 
 [tool.setuptools.data-files]
 "share/enigma-attack" = ["corpus.json", "cribs.json", "variants.json", "cipher-families.json"]
-"share/enigma-attack/artifacts" = ["artifacts/phase3-variant-smoke.json", "artifacts/phase3-variant-smoke-v2.json", "artifacts/phase4-joint-machine-smoke.v2.json", "artifacts/phase5-model-triage.json", "artifacts/phase6-qtxma-double-transposition-smoke.json", "artifacts/phase6-qtxma-double-transposition-smoke.v2.json", "artifacts/phase7-qtxma-source-and-scorer.v2.json"]
+"share/enigma-attack/artifacts" = ["artifacts/phase3-variant-smoke.json", "artifacts/phase3-variant-smoke-v2.json", "artifacts/phase4-joint-machine-smoke.v2.json", "artifacts/phase5-model-triage.json", "artifacts/phase6-qtxma-double-transposition-smoke.json", "artifacts/phase6-qtxma-double-transposition-smoke.v2.json", "artifacts/phase7-qtxma-source-and-scorer.v2.json", "artifacts/phase6-qtxma-double-transposition-smoke.v3.json", "artifacts/phase7-qtxma-source-and-scorer.v3.json"]
 "share/enigma-attack/experiments/phase1-stecker-calibration-v1" = ["experiments/phase1-stecker-calibration-v1/config.json"]
 "share/enigma-attack/experiments/phase1-indicator-sweep-v1" = ["experiments/phase1-indicator-sweep-v1/config.json"]
 "share/enigma-attack/experiments/phase1-body-direct-sweep-v1" = ["experiments/phase1-body-direct-sweep-v1/config.json"]
@@ -77,4 +77,7 @@ py-modules = [
 "share/enigma-attack/experiments/phase7-qtxma-source-and-scorer-v1" = ["experiments/phase7-qtxma-source-and-scorer-v1/config.json"]
 "share/enigma-attack/experiments/phase7-qtxma-source-and-scorer-v2" = ["experiments/phase7-qtxma-source-and-scorer-v2/config.json"]
 "share/enigma-attack/data/phase5" = ["data/phase5/army-plaintext-controls.json"]
+"share/enigma-attack/experiments/phase6-qtxma-double-transposition-smoke-v3" = ["experiments/phase6-qtxma-double-transposition-smoke-v3/config.json"]
+"share/enigma-attack/experiments/phase7-qtxma-source-and-scorer-v3" = ["experiments/phase7-qtxma-source-and-scorer-v3/config.json"]
+"share/enigma-attack/experiments/phase7-qtxma-source-and-scorer-rotation-v3" = ["experiments/phase7-qtxma-source-and-scorer-rotation-v3/config.json"]
 "share/enigma-attack/data/phase7" = ["data/phase7/BigramFrequency1941.txt", "data/phase7/TrigramFrequency1941.txt"]
