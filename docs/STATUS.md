@@ -34,6 +34,19 @@ identical candidates. This is operational validation, not a full target result.
 
 ## Current state
 
+Flat-group models (2026-10-26, `phase5-flat-models-v2`, preregistered;
+parameters fitted on the four grey flat texts, tested on held-out FKQLZ +
+XFEDT): a **without-replacement** stream, with letters drawn from shuffled
+stocks of about **three copies of each letter (k = 3)**, is consistent with
+the held-out pair on all five statistics, IC included. Post-hoc, it is also
+the only model consistent with the full six on everything. The human-random
+proxy (repeat avoidance) is inconsistent: matching the IC needs a setting
+that forbids the occasional doubled letter the texts contain. The
+preregistered hypothesis that both new models fit is therefore **refuted**.
+Inference: the flat texts look like generated, balanced letter streams, not
+encipherments of language. See the
+[Phase 5 addendum](phase5-research.md#addendum-2026-10-26--without-replacement-and-human-random-models-phase5-flat-models-v2).
+
 Structure of the flat J-less group (2026-10-26, `phase5-flat-structure-v1`,
 preregistered): the hypothesis that the group (CSBTR, BCSSF, AWMRI, YDFZS,
 FKQLZ, XFEDT) is digraphic is **refuted**. Playfair and the double two-square
