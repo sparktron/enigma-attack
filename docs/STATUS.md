@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-12
+Updated: 2026-10-26
 
 Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
@@ -33,6 +33,18 @@ checkpoint resumed through the direct sweep API with zero settings run and
 identical candidates. This is operational validation, not a full target result.
 
 ## Current state
+
+J-less, flat signature (2026-10-21, `phase5-jless-flat-v1`, preregistered as a
+**disclosed post-hoc** test): **FKQLZ and XFEDT are flagged.** Joint no-J,
+low-IC p against the Enigma null is 0.000005 and 0.000015 (threshold 0.001).
+Both are also flatter than random 25-letter text. The 13 authentic Enigma
+ciphertexts pass calibration, and the grey-text positive control met its
+preregistered expectation exactly. **Consequence:** every BYQMZ sweep
+required both FKQLZ and XFEDT to confirm a candidate. If they are not Enigma,
+that confirmation step could never succeed. A companion-free reading (PR #42)
+shows that v7's null still holds on BYQMZ's own score at essentially the
+stated power; only the acceptance step for a future hit is lost. See the
+[Phase 5 addendum](phase5-research.md#addendum-2026-10-21--j-less-flat-signature-phase5-jless-flat-v1).
 
 Trigram-repeat test (2026-10-20, `phase5-trigram-repeat-v1`, preregistered):
 this tests Weierud's claim that the Batch C messages have trigram repeats no

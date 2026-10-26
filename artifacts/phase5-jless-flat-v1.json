@@ -1,0 +1,1034 @@
+{
+  "schema": "enigma-attack.phase5-jless-flat-result/v1",
+  "experiment_id": "phase5-jless-flat-v1",
+  "framing": "disclosed_post_hoc",
+  "code": {
+    "source": "git_checkout",
+    "commit": "46cf83175e5f1a774b3c7cc4f9cabddcb00492d7",
+    "branch": "claude/phase5-jless-flat-v1",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase5.py": "f882d966b581105ebf548ddff22c233328b4e781816d3d769d87d683ce7ead0a",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "scripts/jless_flat_v1.py": "20420ecb67a4232f9e775b379374181e381694f6f33936948cf3faf73d8dd883"
+    }
+  },
+  "inputs": {
+    "config_sha256": "3811074f04972bedc0062831181aa99c8940d59a133bd6a96e5c795ef277b103",
+    "corpus_sha256": "02d402bc681419e369c1ab01f14c19321273cbb7c9c63172d9c86f521778b670",
+    "keyed_messages_sha256": "0caf1111e33aa53bfde1e7bcbbf15f7bd51b6b599ef39e5591f4c0c46333ccd7",
+    "grey_texts_sha256": "dad1c02441833e5083d862d0f58c64180565837d083145dfad2744cd92e52dbe",
+    "plaintext_pool_letters": 858
+  },
+  "smoke": false,
+  "seeds": {
+    "calibration": 20261026,
+    "controls": 20261024,
+    "targets": 20261022,
+    "uniform25": 20261023,
+    "first_group_variant": 20261025
+  },
+  "calibration": {
+    "requirement": "none of the 13 has joint_noj_lowic below the threshold",
+    "passed": true,
+    "messages": [
+      {
+        "id": "1941-07-13-25",
+        "length": 214,
+        "observed": {
+          "j_count": 15,
+          "index_of_coincidence": 0.04063007327453819,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.9293535323233838,
+          "p_noj": 0.9877506124693766,
+          "p_ic_lower": 0.9387530623468826,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 8.0,
+            "p2_5": 3,
+            "p97_5": 15,
+            "max": 24
+          },
+          "index_of_coincidence": {
+            "median": 0.03834847088763108,
+            "p2_5": 0.03633013031459787,
+            "p97_5": 0.04137598174718091,
+            "max": 0.04506164714141547
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 3
+          },
+          "fraction_without_j": 0.00015
+        }
+      },
+      {
+        "id": "1941-08-26-65",
+        "length": 18,
+        "observed": {
+          "j_count": 1,
+          "index_of_coincidence": 0.032679738562091505,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.41797910104494773,
+          "p_noj": 0.8366081695915204,
+          "p_ic_lower": 0.4905754712264387,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 3,
+            "max": 5
+          },
+          "index_of_coincidence": {
+            "median": 0.0392156862745098,
+            "p2_5": 0.013071895424836602,
+            "p97_5": 0.0718954248366013,
+            "max": 0.1568627450980392
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 1
+          },
+          "fraction_without_j": 0.4733
+        }
+      },
+      {
+        "id": "1941-10-01-1",
+        "length": 22,
+        "observed": {
+          "j_count": 1,
+          "index_of_coincidence": 0.021645021645021644,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.08199590020498974,
+          "p_noj": 0.7818109094545272,
+          "p_ic_lower": 0.09974501274936254,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 3,
+            "max": 6
+          },
+          "index_of_coincidence": {
+            "median": 0.03463203463203463,
+            "p2_5": 0.017316017316017316,
+            "p97_5": 0.06926406926406926,
+            "max": 0.11255411255411256
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 1
+          },
+          "fraction_without_j": 0.4032
+        }
+      },
+      {
+        "id": "1941-10-01-2",
+        "length": 24,
+        "observed": {
+          "j_count": 4,
+          "index_of_coincidence": 0.050724637681159424,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.888255587220639,
+          "p_noj": 0.9975501224938753,
+          "p_ic_lower": 0.8887555622218889,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 3,
+            "max": 6
+          },
+          "index_of_coincidence": {
+            "median": 0.036231884057971016,
+            "p2_5": 0.021739130434782608,
+            "p97_5": 0.06521739130434782,
+            "max": 0.11594202898550725
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.37455
+        }
+      },
+      {
+        "id": "1941-07-08-128",
+        "length": 27,
+        "observed": {
+          "j_count": 1,
+          "index_of_coincidence": 0.02564102564102564,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.08124593770311485,
+          "p_noj": 0.7046647667616619,
+          "p_ic_lower": 0.11324433778311084,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 3,
+            "max": 7
+          },
+          "index_of_coincidence": {
+            "median": 0.037037037037037035,
+            "p2_5": 0.022792022792022793,
+            "p97_5": 0.06267806267806268,
+            "max": 0.10256410256410256
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 1
+          },
+          "fraction_without_j": 0.3372
+        }
+      },
+      {
+        "id": "1941-08-27-71",
+        "length": 32,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.034274193548387094,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.08584570771461426,
+          "p_noj": 0.2751862406879656,
+          "p_ic_lower": 0.38353082345882705,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 4,
+            "max": 7
+          },
+          "index_of_coincidence": {
+            "median": 0.038306451612903226,
+            "p2_5": 0.024193548387096774,
+            "p97_5": 0.05846774193548387,
+            "max": 0.0907258064516129
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.27515
+        }
+      },
+      {
+        "id": "1941-09-02-15",
+        "length": 36,
+        "observed": {
+          "j_count": 2,
+          "index_of_coincidence": 0.03333333333333333,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.2628368581570921,
+          "p_noj": 0.8218089095545222,
+          "p_ic_lower": 0.3061346932653367,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 4,
+            "max": 7
+          },
+          "index_of_coincidence": {
+            "median": 0.0380952380952381,
+            "p2_5": 0.025396825396825397,
+            "p97_5": 0.05555555555555555,
+            "max": 0.08253968253968254
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.2261
+        }
+      },
+      {
+        "id": "1941-08-22-30",
+        "length": 46,
+        "observed": {
+          "j_count": 4,
+          "index_of_coincidence": 0.033816425120772944,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.2582370881455927,
+          "p_noj": 0.9646017699115044,
+          "p_ic_lower": 0.2599870006499675,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 2.0,
+            "p2_5": 0,
+            "p97_5": 5,
+            "max": 8
+          },
+          "index_of_coincidence": {
+            "median": 0.03768115942028986,
+            "p2_5": 0.028985507246376812,
+            "p97_5": 0.05217391304347826,
+            "max": 0.07149758454106281
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 1
+          },
+          "fraction_without_j": 0.14985
+        }
+      },
+      {
+        "id": "1941-09-06-36",
+        "length": 48,
+        "observed": {
+          "j_count": 1,
+          "index_of_coincidence": 0.03723404255319149,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.1911904404779761,
+          "p_noj": 0.4207789610519474,
+          "p_ic_lower": 0.4811759412029398,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 2.0,
+            "p2_5": 0,
+            "p97_5": 5,
+            "max": 9
+          },
+          "index_of_coincidence": {
+            "median": 0.038120567375886524,
+            "p2_5": 0.02925531914893617,
+            "p97_5": 0.051418439716312055,
+            "max": 0.06648936170212766
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.141
+        }
+      },
+      {
+        "id": "1941-09-14-46",
+        "length": 69,
+        "observed": {
+          "j_count": 1,
+          "index_of_coincidence": 0.04049445865302643,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.16279186040697965,
+          "p_noj": 0.23733813309334534,
+          "p_ic_lower": 0.7387130643467826,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 3.0,
+            "p2_5": 0,
+            "p97_5": 6,
+            "max": 12
+          },
+          "index_of_coincidence": {
+            "median": 0.03793691389599318,
+            "p2_5": 0.0319693094629156,
+            "p97_5": 0.04731457800511509,
+            "max": 0.06777493606138107
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.0591
+        }
+      },
+      {
+        "id": "1941-09-24-94",
+        "length": 76,
+        "observed": {
+          "j_count": 3,
+          "index_of_coincidence": 0.0343859649122807,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.08269586520673966,
+          "p_noj": 0.6424178791060446,
+          "p_ic_lower": 0.12574371281435928,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 3.0,
+            "p2_5": 0,
+            "p97_5": 7,
+            "max": 12
+          },
+          "index_of_coincidence": {
+            "median": 0.03824561403508772,
+            "p2_5": 0.03263157894736842,
+            "p97_5": 0.04666666666666667,
+            "max": 0.05719298245614035
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.04655
+        }
+      },
+      {
+        "id": "1941-07-14-203",
+        "length": 72,
+        "observed": {
+          "j_count": 3,
+          "index_of_coincidence": 0.04225352112676056,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.5771211439428029,
+          "p_noj": 0.671916404179791,
+          "p_ic_lower": 0.8580570971451428,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 3.0,
+            "p2_5": 0,
+            "p97_5": 6,
+            "max": 13
+          },
+          "index_of_coincidence": {
+            "median": 0.037949921752738654,
+            "p2_5": 0.032081377151799685,
+            "p97_5": 0.046948356807511735,
+            "max": 0.06298904538341157
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.05245
+        }
+      },
+      {
+        "id": "1941-07-19-233",
+        "length": 177,
+        "observed": {
+          "j_count": 8,
+          "index_of_coincidence": 0.04285429539565477,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.7311134443277836,
+          "p_noj": 0.7372631368431578,
+          "p_ic_lower": 0.9905004749762512,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 7.0,
+            "p2_5": 2,
+            "p97_5": 12,
+            "max": 19
+          },
+          "index_of_coincidence": {
+            "median": 0.03833632316789582,
+            "p2_5": 0.03587801474985051,
+            "p97_5": 0.041990565410936154,
+            "max": 0.047505149159524286
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 1,
+            "max": 3
+          },
+          "fraction_without_j": 0.0006
+        }
+      }
+    ]
+  },
+  "grey_positive": {
+    "expectation_met": true,
+    "misses": [],
+    "texts": [
+      {
+        "id": "Grey01",
+        "first_group": "CSBTR",
+        "length": 111,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.03325143325143325,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 4.999750012499375e-05,
+          "p_noj": 0.009949502524873756,
+          "p_ic_lower": 0.004199790010499475,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 4.0,
+            "p2_5": 1,
+            "p97_5": 9,
+            "max": 16
+          },
+          "index_of_coincidence": {
+            "median": 0.03832923832923833,
+            "p2_5": 0.0343980343980344,
+            "p97_5": 0.044062244062244064,
+            "max": 0.05257985257985258
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 3
+          },
+          "fraction_without_j": 0.0099
+        },
+        "below_threshold": true
+      },
+      {
+        "id": "Grey02",
+        "first_group": "FTBCO",
+        "length": 105,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.03791208791208791,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.0026498675066246686,
+          "p_noj": 0.014149292535373231,
+          "p_ic_lower": 0.4607769611519424,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 4.0,
+            "p2_5": 1,
+            "p97_5": 8,
+            "max": 15
+          },
+          "index_of_coincidence": {
+            "median": 0.03827838827838828,
+            "p2_5": 0.03406593406593406,
+            "p97_5": 0.044322344322344324,
+            "max": 0.05311355311355311
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 3
+          },
+          "fraction_without_j": 0.0141
+        },
+        "below_threshold": false
+      },
+      {
+        "id": "Grey03",
+        "first_group": "SSRAC",
+        "length": 38,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.021337126600284494,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.00014999250037498125,
+          "p_noj": 0.21333933303334834,
+          "p_ic_lower": 0.0011499425028748563,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 4,
+            "max": 9
+          },
+          "index_of_coincidence": {
+            "median": 0.03698435277382646,
+            "p2_5": 0.02702702702702703,
+            "p97_5": 0.05405405405405406,
+            "max": 0.08250355618776671
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.2133
+        },
+        "below_threshold": true
+      },
+      {
+        "id": "Grey04",
+        "first_group": "BCSSF",
+        "length": 93,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.03394383394383394,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.000199990000499975,
+          "p_noj": 0.0247987600619969,
+          "p_ic_lower": 0.049147542622868856,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 3.0,
+            "p2_5": 1,
+            "p97_5": 8,
+            "max": 12
+          },
+          "index_of_coincidence": {
+            "median": 0.0380952380952381,
+            "p2_5": 0.033455433455433455,
+            "p97_5": 0.045177045177045176,
+            "max": 0.05641025641025641
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 3
+          },
+          "fraction_without_j": 0.02475
+        },
+        "below_threshold": true
+      },
+      {
+        "id": "Grey05",
+        "first_group": "AOKAX",
+        "length": 102,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.04853426519122501,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.014899255037248137,
+          "p_noj": 0.01504924753762312,
+          "p_ic_lower": 0.9979001049947502,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 4.0,
+            "p2_5": 1,
+            "p97_5": 8,
+            "max": 13
+          },
+          "index_of_coincidence": {
+            "median": 0.038245000970685304,
+            "p2_5": 0.033973985633857506,
+            "p97_5": 0.04445738691516211,
+            "max": 0.052805280528052806
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.015
+        },
+        "below_threshold": false
+      },
+      {
+        "id": "Grey09",
+        "first_group": "XDPAK",
+        "length": 103,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.0477822196839901,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.015949202539873007,
+          "p_noj": 0.016049197540122993,
+          "p_ic_lower": 0.9970001499925004,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 4.0,
+            "p2_5": 1,
+            "p97_5": 8,
+            "max": 13
+          },
+          "index_of_coincidence": {
+            "median": 0.03826384922901199,
+            "p2_5": 0.03407576622882163,
+            "p97_5": 0.044355606320197985,
+            "max": 0.05387397677517609
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.016
+        },
+        "below_threshold": false
+      },
+      {
+        "id": "Grey09b",
+        "first_group": "KHZMY",
+        "length": 29,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.03201970443349754,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.07424628768561573,
+          "p_noj": 0.3010849457527124,
+          "p_ic_lower": 0.31183440827958603,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 1.0,
+            "p2_5": 0,
+            "p97_5": 4,
+            "max": 7
+          },
+          "index_of_coincidence": {
+            "median": 0.03694581280788178,
+            "p2_5": 0.022167487684729065,
+            "p97_5": 0.059113300492610835,
+            "max": 0.09113300492610837
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.30105
+        },
+        "below_threshold": false
+      },
+      {
+        "id": "Grey10",
+        "first_group": "AWMRI",
+        "length": 83,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.03349985307081987,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.0002999850007499625,
+          "p_noj": 0.034098295085245735,
+          "p_ic_lower": 0.048597570121493926,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 3.0,
+            "p2_5": 0,
+            "p97_5": 7,
+            "max": 13
+          },
+          "index_of_coincidence": {
+            "median": 0.03820158683514546,
+            "p2_5": 0.03291213635027917,
+            "p97_5": 0.0461357625624449,
+            "max": 0.05730238025271819
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 3
+          },
+          "fraction_without_j": 0.03405
+        },
+        "below_threshold": true
+      },
+      {
+        "id": "Grey14a",
+        "first_group": "YDFZS",
+        "length": 81,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.029320987654320986,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 4.999750012499375e-05,
+          "p_noj": 0.03714814259287036,
+          "p_ic_lower": 4.999750012499375e-05,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 3.0,
+            "p2_5": 0,
+            "p97_5": 7,
+            "max": 11
+          },
+          "index_of_coincidence": {
+            "median": 0.03827160493827161,
+            "p2_5": 0.03302469135802469,
+            "p97_5": 0.045987654320987656,
+            "max": 0.06450617283950617
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 2
+          },
+          "fraction_without_j": 0.0371
+        },
+        "below_threshold": true
+      },
+      {
+        "id": "Grey14b",
+        "first_group": "SDPLM",
+        "length": 49,
+        "observed": {
+          "j_count": 0,
+          "index_of_coincidence": 0.04931972789115646,
+          "quadgram_repeats": 0
+        },
+        "p_values": {
+          "joint_noj_lowic": 0.1303934803259837,
+          "p_noj": 0.13784310784460777,
+          "p_ic_lower": 0.9648517574121294,
+          "quadgram_repeats": 1.0
+        },
+        "null": {
+          "draws": 20000,
+          "j_count": {
+            "median": 2.0,
+            "p2_5": 0,
+            "p97_5": 5,
+            "max": 9
+          },
+          "index_of_coincidence": {
+            "median": 0.03826530612244898,
+            "p2_5": 0.02891156462585034,
+            "p97_5": 0.05102040816326531,
+            "max": 0.07908163265306123
+          },
+          "quadgram_repeats": {
+            "median": 0.0,
+            "p2_5": 0,
+            "p97_5": 0,
+            "max": 1
+          },
+          "fraction_without_j": 0.1378
+        },
+        "below_threshold": false
+      }
+    ]
+  },
+  "targets": [
+    {
+      "designator": "FKQLZ",
+      "length": 107,
+      "observed": {
+        "j_count": 0,
+        "index_of_coincidence": 0.0326221125022042,
+        "quadgram_repeats": 0
+      },
+      "p_values": {
+        "joint_noj_lowic": 4.9999750001249995e-06,
+        "p_noj": 0.012949935250323749,
+        "p_ic_lower": 0.0012199939000305,
+        "quadgram_repeats": 1.0
+      },
+      "null": {
+        "draws": 200000,
+        "j_count": {
+          "median": 4.0,
+          "p2_5": 1,
+          "p97_5": 9,
+          "max": 16
+        },
+        "index_of_coincidence": {
+          "median": 0.03826485628636925,
+          "p2_5": 0.034209134191500616,
+          "p97_5": 0.044260271557044616,
+          "max": 0.05678010932816082
+        },
+        "quadgram_repeats": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 0,
+          "max": 3
+        },
+        "fraction_without_j": 0.012945
+      },
+      "uniform25": {
+        "p_ic_lower": 4.9999750001249995e-06,
+        "index_of_coincidence": {
+          "median": 0.03967554223241051,
+          "p2_5": 0.03561982013754188,
+          "p97_5": 0.045847293246341035,
+          "max": 0.0631281960853465
+        }
+      },
+      "with_first_group": {
+        "quadgram_repeats": 0,
+        "p_quadgram_repeats": 1.0
+      },
+      "below_threshold": true,
+      "flagged": true
+    },
+    {
+      "designator": "XFEDT",
+      "length": 97,
+      "observed": {
+        "j_count": 0,
+        "index_of_coincidence": 0.03286082474226804,
+        "quadgram_repeats": 0
+      },
+      "p_values": {
+        "joint_noj_lowic": 1.4999925000374999e-05,
+        "p_noj": 0.019149904250478748,
+        "p_ic_lower": 0.007244963775181124,
+        "quadgram_repeats": 1.0
+      },
+      "null": {
+        "draws": 200000,
+        "j_count": {
+          "median": 4.0,
+          "p2_5": 1,
+          "p97_5": 8,
+          "max": 16
+        },
+        "index_of_coincidence": {
+          "median": 0.03823024054982818,
+          "p2_5": 0.03371993127147766,
+          "p97_5": 0.04488831615120275,
+          "max": 0.05970790378006873
+        },
+        "quadgram_repeats": {
+          "median": 0.0,
+          "p2_5": 0,
+          "p97_5": 0,
+          "max": 3
+        },
+        "fraction_without_j": 0.019145
+      },
+      "uniform25": {
+        "p_ic_lower": 0.00029999850000749997,
+        "index_of_coincidence": {
+          "median": 0.039733676975945015,
+          "p2_5": 0.0352233676975945,
+          "p97_5": 0.04639175257731959,
+          "max": 0.06421821305841924
+        }
+      },
+      "with_first_group": {
+        "quadgram_repeats": 0,
+        "p_quadgram_repeats": 1.0
+      },
+      "below_threshold": true,
+      "flagged": true
+    }
+  ],
+  "decision": {
+    "threshold": 0.001,
+    "flagged": [
+      "FKQLZ",
+      "XFEDT"
+    ],
+    "prediction": "Both FKQLZ and XFEDT are flagged (expected from the already-seen values; disclosed).",
+    "prediction_held": true,
+    "valid": true
+  }
+}

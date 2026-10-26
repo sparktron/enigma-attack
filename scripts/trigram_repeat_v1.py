@@ -29,14 +29,23 @@ UNCERTAIN = "?"
 STATISTICS = ("trigram_repeats", "repeated_trigrams", "index_of_coincidence", "longest_repeat")
 
 
-def trigram_positions(text: str) -> dict[str, list[int]]:
-    """Start positions of each trigram, skipping windows with an uncertain letter."""
+def ngram_positions(text: str, n: int) -> dict[str, list[int]]:
+    """Start positions of each n-gram, skipping windows with an uncertain letter."""
     positions: dict[str, list[int]] = {}
-    for i in range(len(text) - 2):
-        window = text[i:i + 3]
+    for i in range(len(text) - n + 1):
+        window = text[i:i + n]
         if UNCERTAIN not in window:
             positions.setdefault(window, []).append(i)
     return positions
+
+
+def ngram_repeats(text: str, n: int) -> int:
+    """Extra occurrences of repeated n-grams: the sum of (count - 1) over n-grams seen twice or more."""
+    return sum(len(p) - 1 for p in ngram_positions(text, n).values() if len(p) >= 2)
+
+
+def trigram_positions(text: str) -> dict[str, list[int]]:
+    return ngram_positions(text, 3)
 
 
 def longest_repeat(text: str) -> int:
