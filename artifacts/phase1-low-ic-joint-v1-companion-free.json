@@ -1,0 +1,189 @@
+{
+  "schema": "enigma-attack.phase1-low-ic-joint-companion-free/v1",
+  "experiment_id": "phase1-low-ic-joint-v1",
+  "analysis": "post_hoc_companion_free",
+  "definition": "detected AND retained, per draw and arm; companion confirmation not required",
+  "code": {
+    "source": "git_checkout",
+    "commit": "886c8c73b204c7b5d424ef9df6014183a42e73f0",
+    "branch": "codex/low-ic-joint-calibration",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase6.py": "7332428fec9fd12566b8070e5d9ad62768eeaa100f80f6513d1b09ff40a0c216",
+      "phase7.py": "1c26ad8b1800c49ad8d8b31a3869dbb6af460803b6f5f59901a274fc751cdf11",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "28b1ff81eaf0118bf6a11c0132b07760cc4891017b55a43a6987ba01df89dbc5",
+      "stecker_climb.py": "caabb04a11da2b33d0a9d7b23b7485e95580d59ee3e5a03f85da7e24fedfc434",
+      "stecker_cuda.py": "902b0b27a4377ab72cac110be6eeeb362620f2c16281f7f2ab07406fe1e38b0b",
+      "stecker_power.py": "82d2e09d76f7e670a7211e71e1c3d621a0cf3b18dcf15dd144012bd3ddcc27f8",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_split.py": "3da1f2be811d805715fbc69165c6d8431ad13376a29f6f7d88b5b7ea4506ea40",
+      "stecker_sweeps.py": "9a34195827ecff11ad98ca3e908d45d4985b241cc04104ce9e8a82ec7ac27132",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53",
+      "scripts/low_ic_joint_companion_free.py": "6dd1a3d960c4d329c7e666d4d04ce811905152d478394f63babaf048297dffbb"
+    }
+  },
+  "inputs": {
+    "joint_artifact_sha256": "330518e2c2dcabf06a437029c11f9c1ab0bf4957c5b1e0e84fba9874d721a3d4",
+    "v7_artifact_sha256": "9b95bd716393a29369190314b991978a9d0eaa7dfb2f3589ace75884ee68fe1f"
+  },
+  "cells": {
+    "clean": {
+      "draws": 240,
+      "arms": {
+        "complete_w117_estecker": {
+          "companion_free_success": {
+            "count": 166,
+            "draws": 240,
+            "rate": 0.6916666666666667,
+            "interval_95": [
+              0.6306,
+              0.7467
+            ]
+          },
+          "stands_out": {
+            "count": 166,
+            "draws": 240,
+            "rate": 0.6916666666666667,
+            "interval_95": [
+              0.6306,
+              0.7467
+            ]
+          },
+          "sweep_success_preregistered": {
+            "count": 165,
+            "draws": 240,
+            "rate": 0.6875,
+            "interval_95": [
+              0.6263,
+              0.7428
+            ]
+          }
+        },
+        "complete_w117_rngonly": {
+          "companion_free_success": {
+            "count": 185,
+            "draws": 240,
+            "rate": 0.7708333333333334,
+            "interval_95": [
+              0.7136,
+              0.8195
+            ]
+          },
+          "stands_out": {
+            "count": 185,
+            "draws": 240,
+            "rate": 0.7708333333333334,
+            "interval_95": [
+              0.7136,
+              0.8195
+            ]
+          },
+          "sweep_success_preregistered": {
+            "count": 183,
+            "draws": 240,
+            "rate": 0.7625,
+            "interval_95": [
+              0.7048,
+              0.8119
+            ]
+          }
+        }
+      },
+      "companion_free_gain": 0.07916666666666672,
+      "discordant": {
+        "rngonly_only": 47,
+        "estecker_only": 28
+      }
+    },
+    "indel": {
+      "draws": 240,
+      "arms": {
+        "complete_w117_estecker": {
+          "companion_free_success": {
+            "count": 96,
+            "draws": 240,
+            "rate": 0.4,
+            "interval_95": [
+              0.3401,
+              0.4631
+            ]
+          },
+          "stands_out": {
+            "count": 93,
+            "draws": 240,
+            "rate": 0.3875,
+            "interval_95": [
+              0.3281,
+              0.4504
+            ]
+          },
+          "sweep_success_preregistered": {
+            "count": 95,
+            "draws": 240,
+            "rate": 0.3958333333333333,
+            "interval_95": [
+              0.3361,
+              0.4589
+            ]
+          }
+        },
+        "complete_w117_rngonly": {
+          "companion_free_success": {
+            "count": 129,
+            "draws": 240,
+            "rate": 0.5375,
+            "interval_95": [
+              0.4743,
+              0.5995
+            ]
+          },
+          "stands_out": {
+            "count": 128,
+            "draws": 240,
+            "rate": 0.5333333333333333,
+            "interval_95": [
+              0.4702,
+              0.5954
+            ]
+          },
+          "sweep_success_preregistered": {
+            "count": 125,
+            "draws": 240,
+            "rate": 0.5208333333333334,
+            "interval_95": [
+              0.4578,
+              0.5832
+            ]
+          }
+        }
+      },
+      "companion_free_gain": 0.13749999999999996,
+      "discordant": {
+        "rngonly_only": 61,
+        "estecker_only": 28
+      }
+    }
+  },
+  "v7_companion_free": {
+    "band_ceiling_z": 9.5,
+    "band_ceiling_score_per_letter": -7.435093726,
+    "top_z": 8.852363,
+    "retained_above_ceiling": 0,
+    "companion_confirmed": [],
+    "null_holds_companion_free": true
+  },
+  "preregistered_decision_unchanged": {
+    "hypothesis_passed": false,
+    "paired_gain": {
+      "clean": 0.07499999999999996,
+      "indel": 0.125
+    }
+  }
+}
