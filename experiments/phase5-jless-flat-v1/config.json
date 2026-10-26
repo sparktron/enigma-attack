@@ -1,0 +1,74 @@
+{
+  "schema": "enigma-attack.phase5-jless-flat-config/v1",
+  "experiment_id": "phase5-jless-flat-v1",
+  "preregistered": "2026-10-20, committed before the runner exists and before any statistic below that is not listed under already_seen was computed",
+  "framing": "DISCLOSED POST-HOC. The hypothesis came from looking at these two messages (phase5-trigram-repeat-v1, exploratory section) and every statistic listed under already_seen is known. This experiment measures how strong that observation is under a fixed statistic, null and multiplicity correction. It is not an independent confirmation, and no result here should be described as one.",
+  "already_seen": {
+    "FKQLZ": "107 letters (first group excluded); no J; IC 0.0326; 14 of 20,000 Enigma-null draws had a lower IC (phase5-trigram-repeat-v1); no repeated quadgram with or without the first group.",
+    "XFEDT": "97 letters; no J; IC 0.0329; 76 of 20,000 draws lower; no repeated quadgram.",
+    "grey_texts": "Ostwald's printed lengths, IC values and J column for all ten controls; they have no J by his classification. Their IC ranges from 2.13% to 4.93%: CSBTR 3.33, FTBCO 3.79, SSRAC 2.13, BCSSF 3.39, AOKAX 4.85, XDPAK 4.78, KHZMY 3.20, AWMRI 3.35, YDFZS 2.93, SDPLM 4.93 (first group included).",
+    "not_seen": "The joint statistic's value for any text, any quadgram count for the grey texts, and every p-value against the uniform 25-letter null."
+  },
+  "hypothesis": "FKQLZ and XFEDT carry the letter signature of the J-less grey system (no J and a letter distribution flatter than Enigma output) to a degree Enigma I output of Army plaintext produces with probability below 0.001 per message.",
+  "refuted_by": "Either target's joint p-value at or above 0.001 under the Enigma null, with the calibration holding.",
+  "corpus": "corpus.json",
+  "targets": ["FKQLZ", "XFEDT"],
+  "target_text": "corpus.json ciphertext, first group excluded (the Enigma discriminant convention the earlier tests use).",
+  "statistics": {
+    "primary": {
+      "name": "joint_noj_lowic",
+      "definition": "Upper-bound-style tail probability under a null: (1 + #draws with J-count <= observed J-count AND index_of_coincidence <= observed) / (1 + draws). Uncertain characters ('?') are excluded from both counts. index_of_coincidence is phase5.index_of_coincidence."
+    },
+    "components": [
+      {"name": "p_noj", "definition": "(1 + #draws with J-count <= observed) / (1 + draws)"},
+      {"name": "p_ic_lower", "definition": "(1 + #draws with IC <= observed) / (1 + draws)"}
+    ],
+    "secondary": [
+      {"name": "quadgram_repeats", "definition": "Sum over distinct quadgrams of (n - 1) for n >= 2, windows containing '?' skipped; upper tail (1 + #draws >= observed) / (1 + draws)."},
+      {"name": "quadgram_repeats_with_first_group", "definition": "The same on the text with its first group prepended, against a null of length + 5. Reported for the targets only."},
+      {"name": "p_ic_lower_uniform25", "definition": "Lower-tail IC p against uniformly random text over the 25 letters without J, same length and masked positions: is the text flatter than random, not only flatter than Enigma?"}
+    ]
+  },
+  "nulls": {
+    "enigma": {
+      "description": "As phase5-trigram-repeat-v1: a uniformly random window of the 858-letter pool of data/historical/keyed-messages.json raw plaintexts ('-' removed) enciphered by enigma.EnigmaI (reflector B) under an independent uniformly random key (wheel order from I-V, rings, start, ten plugs). Positions uncertain in the scored text are masked to '?'.",
+      "draws_targets": 200000,
+      "draws_controls": 20000,
+      "draws_first_group_variant": 20000,
+      "seed_targets": 20261022,
+      "seed_controls": 20261024,
+      "seed_first_group_variant": 20261025
+    },
+    "uniform25": {
+      "description": "Each letter independently uniform over A-Z without J; same length and masked positions.",
+      "draws": 200000,
+      "seed": 20261023
+    }
+  },
+  "controls": {
+    "enigma_calibration": {
+      "description": "The 13 authentic Enigma ciphertexts of data/historical/keyed-messages.json ('-' as uncertain), each against its own length-matched Enigma null, 20000 draws, seed 20261026.",
+      "seed": 20261026,
+      "draws": 20000,
+      "requirement": "none of the 13 has joint_noj_lowic below the threshold",
+      "known_weakness": "Most are short, and several contain J, which makes their joint p large by construction. This calibration can only catch a grossly miscalibrated null."
+    },
+    "grey_positive": {
+      "description": "The ten grey texts without Enigma-type indicators, data/phase5/grey-texts-ostwald-2023.json, scored on their full text (first group included; no discriminant convention for hand ciphers) against length-matched Enigma nulls (draws_controls, seed_controls, in file order).",
+      "expectation": "J-absence is true of all ten by construction, so p_noj is not evidence for them. The control shows what the statistic does on the J-less system. Expected: the four at least 80 letters long with IC below 3.6% (CSBTR, BCSSF, AWMRI, YDFZS) have joint p below the threshold; the four 'rough' or higher-IC texts (FTBCO, AOKAX, XDPAK, SDPLM) do not. The three short ones (SSRAC 38, KHZMY 29, SDPLM 49) are reported without expectation, except SDPLM as above.",
+      "expected_flagged": ["CSBTR", "BCSSF", "AWMRI", "YDFZS"],
+      "expected_not_flagged": ["FTBCO", "AOKAX", "XDPAK", "SDPLM"],
+      "expectation_failure_means": "A flat long grey text not flagged, or a rough one flagged, means the joint statistic does not separate the grey system's flat texts from Enigma as intended, and the target result is reported as uninterpretable."
+    }
+  },
+  "decision": {
+    "threshold": 0.001,
+    "threshold_rationale": "0.01 Bonferroni-corrected over the ten looks that found this lead: five Batch C messages times two IC tails. Stricter than v1's 0.002 because the targets were chosen after looking.",
+    "rule": "A target is flagged 'J-less and flatter than Enigma' when joint_noj_lowic < threshold, provided the Enigma calibration holds and the grey positive control meets its expectation. Otherwise no target is flagged and the reason is recorded.",
+    "prediction": "Both FKQLZ and XFEDT are flagged (expected from the already-seen values; disclosed).",
+    "what_it_does_not_decide": "It does not identify the cipher, does not show the targets belong to the same system as the grey texts (only that they share its J-less, flat signature), and is not independent of the data that suggested it.",
+    "implication_to_record": "If either target is flagged: phase 1 sweeps used FKQLZ and XFEDT as companion messages to confirm BYQMZ candidates under a shared daily key. A non-Enigma companion would reject a true BYQMZ key, so the companion-confirmation step of those sweeps must be re-examined (their top-score-versus-noise-maximum checks do not depend on companions)."
+  },
+  "runner": "scripts/jless_flat_v1.py",
+  "artifact": "artifacts/phase5-jless-flat-v1.json"
+}

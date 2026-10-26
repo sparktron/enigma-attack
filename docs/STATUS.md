@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-24 · PR base: `8cf6e5e`
+Updated: 2026-10-26
 
 Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
@@ -33,6 +33,18 @@ checkpoint resumed through the direct sweep API with zero settings run and
 identical candidates. This is operational validation, not a full target result.
 
 ## Current state
+
+J-less, flat signature (2026-10-21, `phase5-jless-flat-v1`, preregistered as a
+**disclosed post-hoc** test): **FKQLZ and XFEDT are flagged.** Joint no-J,
+low-IC p against the Enigma null is 0.000005 and 0.000015 (threshold 0.001).
+Both are also flatter than random 25-letter text. The 13 authentic Enigma
+ciphertexts pass calibration, and the grey-text positive control met its
+preregistered expectation exactly. **Consequence:** every BYQMZ sweep
+required both FKQLZ and XFEDT to confirm a candidate. If they are not Enigma,
+that confirmation step could never succeed. A companion-free reading (PR #42)
+shows that v7's null still holds on BYQMZ's own score at essentially the
+stated power; only the acceptance step for a future hit is lost. See the
+[Phase 5 addendum](phase5-research.md#addendum-2026-10-21--j-less-flat-signature-phase5-jless-flat-v1).
 
 Trigram-repeat test (2026-10-20, `phase5-trigram-repeat-v1`, preregistered):
 this tests Weierud's claim that the Batch C messages have trigram repeats no
@@ -661,3 +673,19 @@ conservation gate, so no experiment-path rerun is possible
 The recovered September rotation-control v3 result and the withdrawn October
 exhaustive v3 configuration reused the same identifier. Both are retained at
 distinct paths, with their provenance unchanged; see the Phase 7 history.
+
+Low-IC calibration, 2026-10-21: the requested cheaper-start implementation already
+existed in reference, numpy and CUDA (R-ngonly; v7 had already run). Reverified all
+34 GPU first-plug tests. Fresh 12-text, 240-key-per-cell joint calibration measured
+clean retained-and-confirmed success E 68.75% vs R 76.25%, indel 39.58% vs 52.08%.
+The clean gain (7.5 points) narrowly refutes the preregistered >=8 point bar.
+No new sweep is justified by that rule or launched. Retention is an observed-cutoff
+proxy, not exhaustive planted-message full-space rank. Raw artifacts:
+phase1-low-ic-joint-v1.json and phase1-low-ic-joint-v1-joint.json.
+Companion-free reading (2026-10-23, post-hoc): without FKQLZ/XFEDT
+confirmation, which phase5-jless-flat-v1 calls into question, success is
+almost unchanged (clean E 69.2%, R 77.1%; one indel 40.0%, 53.8%). v7's null
+holds on BYQMZ's own score: no retained candidate exceeds its preregistered
+noise-band ceiling (z 9.5; top 8.85), while recovered planted keys score a
+median z of about 22. A future hit would need a non-companion check for
+acceptance. Artifact: phase1-low-ic-joint-v1-companion-free.json.
