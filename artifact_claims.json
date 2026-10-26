@@ -1510,6 +1510,50 @@
         "decision.*"
       ]
     },
+    "artifacts/phase1-low-ic-joint-v1.json": {
+      "runner": [
+        "phase1_stecker.py",
+        "--config",
+        "experiments/phase1-low-ic-joint-v1/config.json",
+        "--jobs",
+        "8"
+      ],
+      "claim_paths": [
+        "status",
+        "preflight.passed",
+        "positive_controls.passed",
+        "result.cells[].arms[].detected",
+        "result.cells[].arms[].draws"
+      ],
+      "long_running": "Fresh low-IC CUDA calibration: 480 draws across clean and indel, 2311 seconds on shared RTX 3090; raw evidence preserved."
+    },
+    "artifacts/phase1-low-ic-joint-v1-joint.json": {
+      "runner": [
+        "scripts/low_ic_joint_v1.py"
+      ],
+      "claim_paths": [
+        "inputs.*",
+        "cells.*.arms.*.sweep_success.count",
+        "paired_gain.*",
+        "hypothesis_passed"
+      ],
+      "long_running": "480 paired companion scans; 198 seconds on shared CPU, eight workers; observed v6/v7 cutoff proxy, not exhaustive retention rank."
+    },
+    "artifacts/phase1-low-ic-joint-v1-companion-free.json": {
+      "runner": [
+        "scripts/low_ic_joint_companion_free.py"
+      ],
+      "claim_paths": [
+        "schema",
+        "analysis",
+        "inputs.*",
+        "cells.*.arms.*.*.count",
+        "cells.*.companion_free_gain",
+        "cells.*.discordant.*",
+        "v7_companion_free.*",
+        "preregistered_decision_unchanged.*"
+      ]
+    },
     "artifacts/phase5-jless-flat-v1.json": {
       "runner": [
         "scripts/jless_flat_v1.py"

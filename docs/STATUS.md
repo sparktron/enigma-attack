@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-12
+Updated: 2026-10-26
 
 Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
@@ -648,3 +648,19 @@ configuration to rerun it through the experiment path
 never run: the runner refuses QTXMA by design, before any control, because of the
 conservation gate, so no experiment-path rerun is possible
 ([diagnosis](phase7-experiment-history.md#correction-the-5x7-controls-failure-was-the-searchs-not-the-convention-2026-10-11)).
+
+Low-IC calibration, 2026-10-21: the requested cheaper-start implementation already
+existed in reference, numpy and CUDA (R-ngonly; v7 had already run). Reverified all
+34 GPU first-plug tests. Fresh 12-text, 240-key-per-cell joint calibration measured
+clean retained-and-confirmed success E 68.75% vs R 76.25%, indel 39.58% vs 52.08%.
+The clean gain (7.5 points) narrowly refutes the preregistered >=8 point bar.
+No new sweep is justified by that rule or launched. Retention is an observed-cutoff
+proxy, not exhaustive planted-message full-space rank. Raw artifacts:
+phase1-low-ic-joint-v1.json and phase1-low-ic-joint-v1-joint.json.
+Companion-free reading (2026-10-23, post-hoc): without FKQLZ/XFEDT
+confirmation, which phase5-jless-flat-v1 calls into question, success is
+almost unchanged (clean E 69.2%, R 77.1%; one indel 40.0%, 53.8%). v7's null
+holds on BYQMZ's own score: no retained candidate exceeds its preregistered
+noise-band ceiling (z 9.5; top 8.85), while recovered planted keys score a
+median z of about 22. A future hit would need a non-companion check for
+acceptance. Artifact: phase1-low-ic-joint-v1-companion-free.json.
