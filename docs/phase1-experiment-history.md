@@ -2642,6 +2642,12 @@ the v4 sweep to be rerun with the E-Stecker start set (2026-10-11).
   with IC. The v5 split-point climb detected 97%, 57%, 20% and 3% at IC 0.0792,
   0.0625, 0.0578 and 0.0514. The failure is a trapped climb, so a failed key
   scores like a wrong setting and no second stage on the top slice can recover it.
+- Known stale citation: `experiments/phase1-estecker-power-v1/config.json` (its
+  hypothesis and its review note) and the artifact that embeds it still quote the
+  withdrawn v5 curve of 0.03, 0.20 and 0.57 at IC 0.0514, 0.0578 and 0.0625. That
+  curve used the pooled null threshold. The config is the preregistered record of
+  what was believed when the experiment was set up, so it is left as written; the
+  corrected figures are in `data/review/plaintext-power-2026-10-12/summary.json`.
 - Partial exhaustion of the first plug (the E-Stecker method of the same paper)
   lifted the true-setting climb from 5/24 to 19/24 at IC 0.0578 and from 3/36 to
   14/36 (E) and 27/36 (R, 73 starts) at IC 0.0514. A unigram first-phase
