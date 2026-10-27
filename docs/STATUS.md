@@ -34,6 +34,19 @@ identical candidates. This is operational validation, not a full target result.
 
 ## Current state
 
+Structure of the flat J-less group (2026-10-26, `phase5-flat-structure-v1`,
+preregistered): the hypothesis that the group (CSBTR, BCSSF, AWMRI, YDFZS,
+FKQLZ, XFEDT) is digraphic is **refuted**. Playfair and the double two-square
+approximation of the Doppelkasten are inconsistent: the group has far fewer
+repeated digraphs (10, against model medians of 38 and 48), and doubled
+letters at both alignments. Uniform random is inconsistent too, because the
+group has too few doubles. Only the two homophonic models pass the four
+primary statistics, and no model reproduces the group's IC of 0.0329. The
+signature is letters more even than chance with digraphs at random level,
+which is consistent with human-made or without-replacement letter sequences;
+that has not been tested. The power check was informative. See the
+[Phase 5 addendum](phase5-research.md#addendum-2026-10-26--structure-of-the-flat-j-less-group-phase5-flat-structure-v1).
+
 J-less, flat signature (2026-10-21, `phase5-jless-flat-v1`, preregistered as a
 **disclosed post-hoc** test): **FKQLZ and XFEDT are flagged.** Joint no-J,
 low-IC p against the Enigma null is 0.000005 and 0.000015 (threshold 0.001).

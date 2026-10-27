@@ -1,0 +1,67 @@
+{
+  "schema": "enigma-attack.phase5-flat-structure-config/v1",
+  "experiment_id": "phase5-flat-structure-v1",
+  "preregistered": "2026-10-26, committed before the runner exists and before any statistic under statistics.primary was computed on the group",
+  "question": "Which simple models of a 25-letter hand cipher are consistent with the structure of the flat J-less group: monographic (uniform random, homophonic with random or cyclic homophone choice) or digraphic (Playfair, double two-square)?",
+  "group": {
+    "flat": ["CSBTR", "BCSSF", "AWMRI", "YDFZS", "FKQLZ", "XFEDT"],
+    "rough_comparison": ["FTBCO", "AOKAX", "XDPAK", "SDPLM"],
+    "sources": "Grey texts: data/phase5/grey-texts-ostwald-2023.json (text field). FKQLZ, XFEDT: corpus.json, with the designator prepended as first group.",
+    "text_form_primary": "full text including the first group, for all texts (no discriminant convention is assumed for a hand cipher)",
+    "text_form_sensitivity": "first group removed from every text",
+    "uncertain": "'?' (BCSSF has two) is skipped by every statistic, and the same positions are masked in every null draw"
+  },
+  "already_seen": [
+    "IC of every text (Ostwald's table and phase5-jless-flat-v1): the flat group's ICs are 2.93-3.39%.",
+    "No J in any text; lengths of every text.",
+    "Quadgram repeats: none in any text. Trigram repeats: FKQLZ 0, XFEDT 1 (first group excluded).",
+    "BCSSF's full text was printed during transcription and visibly contains doubled letters (SS, CC, KK, WW, HH, YY); no count or alignment was taken. The other texts' raw groups were seen in Ostwald's note but not examined for doubles.",
+    "Not seen: any count of doubled letters, aligned doubles, aligned digraph repeats or periodic IC for any text."
+  ],
+  "statistics": {
+    "primary": [
+      {"name": "doubles", "definition": "Sum over texts of the number of adjacent equal letters t[i] == t[i+1], pairs containing '?' skipped.", "tail": "two-sided"},
+      {"name": "min_aligned_doubles", "definition": "Sum over texts of min(doubles starting at even i, doubles starting at odd i). A Playfair-type system never doubles a letter within an enciphered digraph, so one alignment has none.", "tail": "two-sided"},
+      {"name": "aligned_digraph_repeats", "definition": "Sum over texts of the repeats (sum of count - 1) among non-overlapping digraphs at the alignment with fewer doubles (ties: even), digraphs containing '?' skipped.", "tail": "two-sided"},
+      {"name": "periodic_ic_peak", "definition": "For each period p = 2..12, the column IC pooled over columns and texts (sum of n(n-1) over sum of m(m-1)); the statistic is the maximum over p. Each p's value is also reported.", "tail": "upper"}
+    ],
+    "reported_already_seen": [
+      {"name": "ic", "definition": "Pooled IC over the group (sum of n(n-1) over sum of m(m-1) per text). Reported with p-values, but excluded from the decision because it was seen."}
+    ]
+  },
+  "plaintext": {
+    "pool": "The 858-letter raw plaintext pool of data/historical/keyed-messages.json ('-' removed), J replaced by I. Each null text takes an independent uniformly random window of the needed length.",
+    "frequencies_for_homophone_allocation": "Monogram frequencies from data/phase7/BigramFrequency1941.txt (sum of counts over each bigram's first letter), J merged into I."
+  },
+  "nulls": {
+    "uniform25": {"description": "Each letter independently uniform over the 25 letters without J."},
+    "homophonic_random": {"description": "Monographic homophonic substitution onto the 25 letters. Allocation, deterministic from the 1941 frequencies: start from 25 plaintext classes (J merged into I); give each class max(1, round(25 f)) symbols; while the total exceeds 25, merge the two rarest classes and recompute; hand out any symbols left to the class with the largest f per symbol. Each draw permutes which cipher letters serve as symbols. Each plaintext occurrence uses a uniformly random symbol of its class."},
+    "homophonic_cyclic": {"description": "As homophonic_random, but each class cycles through its symbols in a fixed random order (an operator rotating homophones)."},
+    "playfair": {"description": "Playfair with a uniformly random 5x5 square over the 25 letters. Plaintext digraphs are formed after inserting X between equal letters of a digraph (Q if the letter is X), and padding an odd end with X (Q after X). Standard rules: same row, take the letter to the right; same column, take the letter below; otherwise the rectangle corners in the same rows. The output is truncated to the text's length."},
+    "two_square_double": {"description": "An approximation of the German Army Doppelkasten, not a verified reconstruction. Two independent random 5x5 squares, L and R. A plaintext digraph (a, b) has a at (r1, c1) in L and b at (r2, c2) in R. If r1 != r2, the output is (R[r1][c2], L[r2][c1]). If r1 == r2 = r, the output is (R[r][(c2+1) mod 5], L[r][(c1+1) mod 5]). The whole text is enciphered twice with the same squares; an odd end is padded with X. The output is truncated to the text's length."},
+    "draws": 20000,
+    "draws_rough_comparison": 5000,
+    "draws_sensitivity": 20000,
+    "seeds": {"uniform25": 20261101, "homophonic_random": 20261102, "homophonic_cyclic": 20261103, "playfair": 20261104, "two_square_double": 20261105},
+    "seed_offsets": {"rough_comparison": 1000, "sensitivity": 2000},
+    "keys": "independent per text and per draw"
+  },
+  "power": {
+    "description": "For each true model T and tested model F, 1,000 group draws from T (seed 20261110 + index of T) are judged against F's 20,000-draw null with the decision rule. Reports the rate at which F is declared inconsistent.",
+    "draws": 1000,
+    "seed_base": 20261110,
+    "informative_if": "rate(F=two_square_double declared inconsistent | T=uniform25) >= 0.5 AND rate(F=uniform25 declared inconsistent | T=two_square_double) >= 0.5. Otherwise the primary statistics cannot separate a digraphic from a monographic model at these lengths, and the result is recorded as uninformative."
+  },
+  "decision": {
+    "alpha": 0.0025,
+    "alpha_rationale": "0.05 Bonferroni-corrected over 4 primary statistics x 5 models.",
+    "p_values": "lower = (1 + #draws <= observed) / (1 + draws); upper = (1 + #draws >= observed) / (1 + draws); two-sided = min(1, 2 min(lower, upper)).",
+    "rule": "A model is inconsistent with the flat group if any primary statistic's p-value, two-sided or upper as stated, is below alpha in the primary text form. Otherwise it is consistent. The sensitivity form and the rough comparison group are reported, but do not change the rule.",
+    "hypothesis": "The flat group's structure is digraphic: two_square_double is consistent on all four primary statistics, and at least one of the monographic models (uniform25, homophonic_random, homophonic_cyclic) is inconsistent.",
+    "refuted_by": "two_square_double inconsistent, or all three monographic models consistent (provided the power check is informative).",
+    "predictions_other": "playfair is inconsistent (expected because of the doubles visible in BCSSF; disclosed above).",
+    "what_it_does_not_decide": "These are five simple models, not the historical systems. A model being consistent does not identify the cipher, and one being inconsistent rules out only that model as specified. The Doppelkasten approximation's rules are not verified against a source."
+  },
+  "runner": "scripts/flat_structure_v1.py",
+  "artifact": "artifacts/phase5-flat-structure-v1.json"
+}
