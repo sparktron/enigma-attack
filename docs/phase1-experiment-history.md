@@ -2639,8 +2639,13 @@ the v4 sweep to be rerun with the E-Stecker start set (2026-10-11).
   identical keys: detection falls steeply with plaintext IC. Over 16 plaintexts
   drawn from the published trigram counts (IC 0.0514 to 0.0625) the whole-message
   climb detected 35.8% of draws given an exact equivalent in the slice, r = 0.87
-  with IC. The v5 split-point climb detected 97%, 57%, 20% and 3% at IC 0.0792,
-  0.0625, 0.0578 and 0.0514. The failure is a trapped climb, so a failed key
+  with IC. The corrected v5 split-point rerun (2026-10-12, the arm's own null
+  threshold, 40 draws per text; an earlier table of 97%, 57%, 20% and 3% used the
+  pooled threshold and is withdrawn) detected 39/40 (97.5%) at IC 0.0792 and
+  8/40, 22/40, 15/40 and 22/40 at IC 0.0578, 0.0574, 0.0600 and 0.0625, pooled
+  67/160 (41.9%) over the four Markov texts, with r = 0.39 across them
+  ([data/review/plaintext-power-2026-10-12/](../data/review/plaintext-power-2026-10-12/)).
+  The failure is a trapped climb, so a failed key
   scores like a wrong setting and no second stage on the top slice can recover it.
 - Partial exhaustion of the first plug (the E-Stecker method of the same paper)
   lifted the true-setting climb from 5/24 to 19/24 at IC 0.0578 and from 3/36 to
