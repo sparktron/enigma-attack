@@ -1663,6 +1663,32 @@
         "rough_comparison.models.*.inconsistent_on",
         "rough_comparison.models.*.consistent"
       ]
+    },
+    "artifacts/phase5-flat-models-v2.json": {
+      "runner": [
+        "scripts/flat_models_v2.py"
+      ],
+      "claim_paths": [
+        "schema",
+        "experiment_id",
+        "inputs.*",
+        "smoke",
+        "fit.observed_ic_fit_texts",
+        "fit.*.chosen",
+        "fit.*.grid",
+        "power.*",
+        "decision.*",
+        "held_out_pair.observed.*",
+        "held_out_pair.lengths",
+        "held_out_pair.models.*.p_values.*",
+        "held_out_pair.models.*.inconsistent_on",
+        "held_out_pair.models.*.consistent",
+        "descriptive_six_post_hoc.observed.*",
+        "descriptive_six_post_hoc.lengths",
+        "descriptive_six_post_hoc.models.*.p_values.*",
+        "descriptive_six_post_hoc.models.*.inconsistent_on",
+        "descriptive_six_post_hoc.models.*.consistent"
+      ]
     }
   },
   "provenance_note": "Source-file hashes and git provenance are deliberately not claim paths. They change whenever the code changes, including for edits with no effect on the result, so gating on them would make the check fire on every commit and train reviewers to ignore it. Input-data hashes are claim paths, because a changed input means a different experiment."
