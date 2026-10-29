@@ -1,0 +1,389 @@
+{
+  "schema": "remaining-1941-inventory/v1",
+  "verified_date": "2026-10-29",
+  "scope": "Nine non-excluded entries on the supplied stale unbroken list; not all unresolved cipher systems in the entire archive.",
+  "excluded": [
+    "BYQMZ",
+    "FKQLZ",
+    "XFEDT"
+  ],
+  "list_source": "https://www.cryptocellar.org/bgac/1941-msg-list-unbroken.html",
+  "source_manifest_sha256": "74efa34d97a6590a40b423280ea0a2e111d48896f66674f265b15301a51f14d1",
+  "unresolved": [
+    "EHSTQ",
+    "RXPSB",
+    "KLJBO",
+    "LXACA"
+  ],
+  "messages": [
+    {
+      "id": "EHSTQ",
+      "number": 3,
+      "date": "1941-06-22",
+      "reception_time": "1731",
+      "preparation_time": "1725",
+      "callsign": "j3e",
+      "indicator": [
+        "EFT",
+        "BEU"
+      ],
+      "header": "Aufgenommen am: 22.06.1941      Uhr: 1731       Durch: \n\nFunkspruch Nr.: 45      Von: j3e\n                        An : j3e\nVermerke: mitgehort\n\nAbsendende Stelle:              An: \n-------------------------------------------------------------\n\n           (1725) - 57 - EFT BEU",
+      "grouped_including_kenngruppe": "EHSTQ JJAPY GERSY FZJSI\nABYQE KGZMG RNLZC LRDEE\nFTCUN FGVQY NKIYP IP",
+      "declared_total_in_header": 57,
+      "ciphertext": "JJAPYGERSYFZJSIABYQEKGZMGRNLZCLRDEEFTCUNFGVQYNKIYPIP",
+      "total_positions": 57,
+      "body_positions": 52,
+      "legible_letters": 52,
+      "erasure_positions_1based": [],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/22061941-003-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "HTML header says Funkspruch Nr.45; original red serial and heading say 3.",
+        "No positional erasure in published text; faint handwriting is not proof of error-free interception.",
+        "No 22 June key in either published key list; no demonstrated key-sharing companion."
+      ],
+      "status": "unresolved",
+      "overview_rows": [
+        "22.06.1941    3             EHSTQ    57 /  52              Spruch"
+      ],
+      "solved_key_list_rows": []
+    },
+    {
+      "id": "RXPSB",
+      "number": 53,
+      "date": "1941-06-28",
+      "reception_time": "1126",
+      "preparation_time": "1020",
+      "callsign": "5l8",
+      "indicator": [
+        "ZDN",
+        "QMF"
+      ],
+      "header": "Aufgenommen am: 28.06.1941      Uhr: 1126       Durch: \n\nFunkspruch Nr.: 53      Von: 5l8\n                        An : 5l8\nVermerke: \n\nAbsendende Stelle: A.K.         An: Ib\n-------------------------------------------------------------\n\n           (1020)  - 114 - ZDN QMF -",
+      "grouped_including_kenngruppe": "RXPSB RDHLU ZNUQX TFYJJ\nGX-WE OUBHL KSCGY MUTUP\nIGYGQ GANNM PMQGA SEQGT\nMLGHT UAFAM SNRDD XHXRQ\nOQAZL GWTUH JGPDD FJLUC\nMXXYM UNU-T ED",
+      "declared_total_in_header": 114,
+      "ciphertext": "RDHLUZNUQXTFYJJGX?WEOUBHLKSCGYMUTUPIGYGQGANNMPMQGASEQGTMLGHTUAFAMSNRDDXHXRQOQAZLGWTUHJGPDDFJLUCMXXYMUNU?TED",
+      "total_positions": 112,
+      "body_positions": 107,
+      "legible_letters": 105,
+      "erasure_positions_1based": [
+        18,
+        104
+      ],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/28061941-053-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Unbroken list says 104/99; original header says114, but counting published groups gives112 total/107 body positions, including two erasures (105 readable body letters). Do not manufacture two extra characters to match the header.",
+        "GX-WE and UNU-T contain positional erasures; retain both, do not delete them.",
+        "Original inspected: six lines ending ED, 22 complete five-letter groups plus ED including Kenngruppe. Header discrepancy of two positions is unresolved; no basis for removing letters.",
+        "PLDRV shares reception date/callsign 5l8 and AK to Ib, but publisher dates its encryption/key to 27 June. RXPSB has 1020 and reception1126 on28 June; previous-day key is a test hypothesis, not a constraint."
+      ],
+      "status": "unresolved",
+      "overview_rows": [
+        "28.06.1941   53             RXPSB   114 / 109              Spruch"
+      ],
+      "solved_key_list_rows": []
+    },
+    {
+      "id": "KLJBO",
+      "number": 87,
+      "date": "1941-07-03",
+      "reception_time": "2211",
+      "preparation_time": "2150",
+      "callsign": "57q",
+      "indicator": [
+        "RGN",
+        "KUI"
+      ],
+      "header": "Aufgenommen am: 03.07.1941      Uhr: 2211       Durch: \n\nFunkspruch Nr.: 87      Von: 57q\n                        An : 57q\n\nVermerke: \n\nAbsendende Stelle: AK           An: Ib\n-------------------------------------------------------------\n\n\t    2150 - 55 - RGN KUI -",
+      "grouped_including_kenngruppe": "KLJBO YNGZO WCIRE SGVEV\nKFGCN XDTLI KINLB OYL-N\nTNYBD -NWK- A-UVV",
+      "declared_total_in_header": 2150,
+      "ciphertext": "YNGZOWCIRESGVEVKFGCNXDTLIKINLBOYL?NTNYBD?NWK?A?UVV",
+      "total_positions": 55,
+      "body_positions": 50,
+      "legible_letters": 46,
+      "erasure_positions_1based": [
+        34,
+        41,
+        45,
+        47
+      ],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/03071941-087-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Published OYL-N, -NWK-, A-UVV give four positional erasures.",
+        "Scan has trailing writing after the last published group, possibly an operator mark; not promoted to ciphertext. Published 55 total positions match header. Boundary remains an archival uncertainty.",
+        "Other 3 July messages are marked TS (manual cipher); solved does not imply an Enigma daily key."
+      ],
+      "status": "unresolved",
+      "overview_rows": [
+        "03.07.1941   87             KLJBO    55 /  50              Spruch"
+      ],
+      "solved_key_list_rows": []
+    },
+    {
+      "id": "LXACA",
+      "number": 100,
+      "date": "1941-07-05",
+      "reception_time": "0445",
+      "preparation_time": "2340",
+      "callsign": "ful",
+      "indicator": [
+        "OGD",
+        "PKN"
+      ],
+      "header": "Aufgenommen am: 05.07.1941      Uhr: 0445       Durch: \n\nFunkspruch Nr.: 100     Von: ful\n                        An : ful\n\nVermerke: \n\nAbsendende Stelle: AK           An: Ib\n-------------------------------------------------------------\n\n\t    2340 - 25 - OGD PKN -",
+      "grouped_including_kenngruppe": "LXACA ZIXAG NQRKO HBPNK\nXRLFU",
+      "declared_total_in_header": 2340,
+      "ciphertext": "ZIXAGNQRKOHBPNKXRLFU",
+      "total_positions": 25,
+      "body_positions": 20,
+      "legible_letters": 20,
+      "erasure_positions_1based": [],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/05071941-100-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Received 5 July0445, prepared2340: publisher suggests 4 July key, and says 5 July key fails.",
+        "No 4 July Enigma key appears in these key lists; same-date TS solutions impose no Enigma key constraint.",
+        "20 body letters; coherent-looking text alone would be weak evidence."
+      ],
+      "status": "unresolved",
+      "overview_rows": [
+        "05.07.1941  100             LXACA    25 /  20       Fails  Spruch"
+      ],
+      "solved_key_list_rows": [
+        "100             LXACA           OGD PKN\t        1)"
+      ]
+    },
+    {
+      "id": "WEUWY",
+      "number": 138,
+      "date": "1941-07-09",
+      "reception_time": "0723",
+      "preparation_time": "0515",
+      "callsign": "2ny",
+      "indicator": [
+        "NUG",
+        "YKI"
+      ],
+      "header": "Aufgenommen am: 09.07.1941      Uhr: 0723       Durch: \n\nFunkspruch Nr.: 138     Von: 2ny\n                        An : 2ny\n\nVermerke: \n\nAbsendende Stelle:              An: \n-------------------------------------------------------------\n\n\t    0515 - 53 - NUG YKI -",
+      "grouped_including_kenngruppe": "WEUWY WCZIE DSYTC DXOI-\nCDSXO XASIM EIORS RKRIS\nSPCCO UIMDZ YDM",
+      "declared_total_in_header": 515,
+      "ciphertext": "WCZIEDSYTCDXOI?CDSXOXASIMEIORSRKRISSPCCOUIMDZYDM",
+      "total_positions": 53,
+      "body_positions": 48,
+      "legible_letters": 47,
+      "erasure_positions_1based": [
+        15
+      ],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/09071941-138-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Overview credits the Nr138 puzzle solved26 September2026; keep out of new cracking queue.",
+        "Key-list note that it fails is stale relative to overview. Overview footnote44 corrects indicator to NUG YKS, deriving SPE under B315/NAV/AC BN FM GI JL KO PU QX RZ TV.",
+        "Nr138 is not independently established as ordinary Enigma: puzzle resolution and shared plaintext with Nr140 do not supply a new Nr138 key. Preserve this distinction.",
+        "DXOI- contains one erasure; Nr140 has a different body. Original scans of both inspected."
+      ],
+      "status": "published_solved_puzzle",
+      "overview_rows": [
+        "09.07.1941  138 *44         WEUWY    53 /  48       Broken Spruch (Puzzle solved by Cécile Sakellis",
+        "09.07.1941  140             WEUWY    53 /  48       Broken Spruch (by Michael Craig on 17.07.2007)"
+      ],
+      "solved_key_list_rows": [
+        "138             WEUWY           NUG YKI         2)",
+        "140             WEUWY           NIG IKS         SPE     TSA",
+        "2) Nr. 138 and 140, both with Kenngruppe WEUWY, does not seem"
+      ]
+    },
+    {
+      "id": "AWTZK",
+      "number": 187,
+      "date": "1941-07-11",
+      "reception_time": "1827",
+      "preparation_time": "1800",
+      "callsign": "uyo",
+      "indicator": [
+        "DUJ",
+        "GEH"
+      ],
+      "header": "Aufgenommen am: 11.07.1941      Uhr: 1827       Durch: \n\nFunkspruch Nr.: 187     Von: uyo\n                        An : uyo\n\nVermerke:\n\nAbsendende Stelle:              An: \n-------------------------------------------------------------\n\n   \t    1800 - 54 - DUJ GEH -",
+      "grouped_including_kenngruppe": "AWTZK TBXVA KXKLZ IPPCZ\nIPUCC RXHRK QUTDE GMGIK\nGCWEK LQNUM CWSS",
+      "declared_total_in_header": 1800,
+      "ciphertext": "TBXVAKXKLZIPPCZIPUCCRXHRKQUTDEGMGIKGCWEKLQNUMCWSS",
+      "total_positions": 54,
+      "body_positions": 49,
+      "legible_letters": 49,
+      "erasure_positions_1based": [],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/11071941-187-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Published-key recovery; author reports9 garbles in49 body letters. Do not silently repair to grammatical text."
+      ],
+      "status": "published_key",
+      "overview_rows": [
+        "11.07.1941  187             AWTZK    54 /  49       Broken Spruch (by John Woodhouse (AI) on 26.09.2026)"
+      ],
+      "solved_key_list_rows": [
+        "187             AWTZK           DUJ GEH         ERT     ETQ"
+      ],
+      "published_key": {
+        "rotors": [
+          "I",
+          "IV",
+          "III"
+        ],
+        "rings": "EXS",
+        "plugboard": "AO BF CQ DH EW GJ KX NU PY RT",
+        "start": "ERT",
+        "reflector": "B",
+        "source": "https://www.cryptocellar.org/bgac/e-keys-july-1941.html"
+      }
+    },
+    {
+      "id": "ZNLZT",
+      "number": 189,
+      "date": "1941-07-11",
+      "reception_time": "2025",
+      "preparation_time": "1910",
+      "callsign": "uyo",
+      "indicator": [
+        "ZZD",
+        "LRD"
+      ],
+      "header": "Aufgenommen am: 11.07.1941      Uhr: 2025       Durch: \n\nFunkspruch Nr.: 189     Von: uyo\n                        An : uyo\n\nVermerke:\n\nAbsendende Stelle:              An: \n-------------------------------------------------------------\n\n   \t    1910 - 74 - ZZD LRD -",
+      "grouped_including_kenngruppe": "ZNLZT KCBDB JDLAV PWLLU\nTSSHB WEYOW SQNB- NORNK\nDTZJH PQFYA XCQQY FLSSK\nDZCGL SWYMB QBMF",
+      "declared_total_in_header": 1910,
+      "ciphertext": "KCBDBJDLAVPWLLUTSSHBWEYOWSQNB?NORNKDTZJHPQFYAXCQQYFLSSKDZCGLSWYMBQBMF",
+      "total_positions": 74,
+      "body_positions": 69,
+      "legible_letters": 68,
+      "erasure_positions_1based": [
+        30
+      ],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/11071941-189-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Already solved26 September2026; author reports11 garbles in69 body letters. SQNB- includes one unreadable position.",
+        "AWTZK same date, callsign uyo, and explicitly the same published daily key: sharing is evidenced for this pair only."
+      ],
+      "status": "published_key",
+      "overview_rows": [
+        "11.07.1941  189             ZNLZT    74 /  69       Broken Spruch (by John Woodhouse (AI) on 26.09.2026)"
+      ],
+      "solved_key_list_rows": [
+        "189             ZNLZT           ZZD LRD         NML     NPC"
+      ],
+      "published_key": {
+        "rotors": [
+          "I",
+          "IV",
+          "III"
+        ],
+        "rings": "EXS",
+        "plugboard": "AO BF CQ DH EW GJ KX NU PY RT",
+        "start": "NML",
+        "reflector": "B",
+        "source": "https://www.cryptocellar.org/bgac/e-keys-july-1941.html"
+      }
+    },
+    {
+      "id": "JBIYH",
+      "number": 242,
+      "date": "1941-07-20",
+      "reception_time": "2337",
+      "preparation_time": "2245",
+      "callsign": "39p",
+      "indicator": [
+        "BSB",
+        "NTK"
+      ],
+      "header": "Aufgenommen am: 20.07.1941      Uhr: 2337       Durch: \n\nFunkspruch Nr.: 242     Von: 39p\n                        An : 39p\n\nVermerke: \n\nAbsendende Stelle: A.K.         An: Ib\n-------------------------------------------------------------\n\n   \t    2245 - 60 - BSB NTK -",
+      "grouped_including_kenngruppe": "JBIYH NVYMI VLOGG KTDKK\nOYXWR DLBHR RZYPI LVVXO\nGBEFX AXCWB NGILR WARXO",
+      "declared_total_in_header": 2245,
+      "ciphertext": "NVYMIVLOGGKTDKKOYXWRDLBHRRZYPILVVXOGBEFXAXCWBNGILRWARXO",
+      "total_positions": 60,
+      "body_positions": 55,
+      "legible_letters": 55,
+      "erasure_positions_1based": [],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/20071941-242-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Already solved8 October2026; published start TZU."
+      ],
+      "status": "published_key",
+      "overview_rows": [
+        "20.07.1941  242             JBIYH    60 /  55       Broken Spruch (by Muhammed Nazeem (AI) on 08.10.2026)"
+      ],
+      "solved_key_list_rows": [
+        "242             JBIYH           BSB NTK         TZU     TBX"
+      ],
+      "published_key": {
+        "rotors": [
+          "V",
+          "IV",
+          "I"
+        ],
+        "rings": "EXT",
+        "plugboard": "AU BI CY ET FL HK MP NR OX QV",
+        "start": "TZU",
+        "reflector": "B",
+        "source": "https://www.cryptocellar.org/bgac/e-keys-july-1941.html"
+      }
+    },
+    {
+      "id": "FMNGI",
+      "number": 285,
+      "date": "1941-07-31",
+      "reception_time": "2040",
+      "preparation_time": "2035",
+      "callsign": "tto",
+      "indicator": [
+        "AFL",
+        "BSA"
+      ],
+      "header": "Aufgenommen am: 31.07.1941      Uhr: 2040       Durch: \n\nFunkspruch Nr.: 285     Von: tto\n                        An : tto\n\nVermerke: \n\nAbsendende Stelle:              An: \n-------------------------------------------------------------\n\n   \t    2035 - 63 - AFL BSA -",
+      "grouped_including_kenngruppe": "FMNGI FGROV FDIVQ MNMNI\nLIFZB QVNQW LGBLJ VRLEB\nXIQEX CSAQP EKFHE KFBIK\nMCF",
+      "declared_total_in_header": 2035,
+      "ciphertext": "FGROVFDIVQMNMNILIFZBQVNQWLGBLJVRLEBXIQEXCSAQPEKFHEKFBIKMCF",
+      "total_positions": 63,
+      "body_positions": 58,
+      "legible_letters": 58,
+      "erasure_positions_1based": [],
+      "transcription_source": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+      "original_source": "https://www.cryptocellar.org/bgac/spruch/31071941-285-in.pdf",
+      "original_visually_inspected": true,
+      "ambiguities_and_constraints": [
+        "Already solved20 September2026; Nr285 received transcription has errors. Publisher prefers outgoing Nr205NF, also transcribed on the page.",
+        "Store Nr285 as received; do not replace it silently with Nr205NF."
+      ],
+      "status": "published_key",
+      "overview_rows": [
+        "31.07.1941  205 NF          FMNGI    63 /  58       Broken Spruch (by Jack Willis (AI) on 20.09.2026)",
+        "31.07.1941  285             FMNGI    63 /  58       Broken Spruch (by Jack Willis (AI) on 20.09.2026)"
+      ],
+      "solved_key_list_rows": [
+        "285 /           FMNGI           AFL BSA         TOG     TQM"
+      ],
+      "published_key": {
+        "rotors": [
+          "II",
+          "IV",
+          "III"
+        ],
+        "rings": "UHP",
+        "plugboard": "AH DJ EM FO GI KP LU NS QW TX",
+        "start": "TOG",
+        "reflector": "B",
+        "source": "https://www.cryptocellar.org/bgac/e-keys-july-1941.html"
+      }
+    }
+  ]
+}
