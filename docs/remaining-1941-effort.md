@@ -176,3 +176,95 @@ and Phase1 history, with observations separate from inference.
 
 Not run at preparation commit. Configuration and raw evidence paths are fixed;
 the completed run will be appended without changing this preregistration.
+
+### Observed (completed29 October2026)
+
+One launch from clean `61028594c42f627c4fd8c450707053d35b148d49`, Python3.10.12,
+numpy2.2.6, Intel i9-10900K, one worker with OMP/OpenBLAS/MKL thread caps1.
+Command: `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 remaining1941_pilot.py`.
+Elapsed **77.659 seconds**, within the1200-second cap. Local unit tests and
+legacy artifact checks ran concurrently on the20-logical-CPU host; this is
+descriptive elapsed time, not an idle-host throughput benchmark.
+Raw outputs are committed
+under `data/remaining-1941/pilot-v1/`. `prerun.json` was written before checks;
+it records a clean tree, code/input hashes, seeds and environment. The nested
+independent verifier is pinned by that Git revision, although the shared
+`code_version()` hash list covers root modules only. No configuration changed
+after outcomes existed.
+
+- Kernel parity32 samples passed; independent erasure/stepping parity16
+  samples passed; both full E climbs matched the reference board/evaluation count.
+- Fixed-daily-key all-start controls recovered **4/4**, true start rank1 of17576
+  in each case. All four complete score vectors are saved.
+- Identity-start baseline exact plugboard+readable-plaintext recovery:
+  **5/24 clean**, **3/24 masked**. E restarts: **14/24 clean (58.3%)**,
+  **15/24 masked (62.5%)**. Correct recoveries also passed independently
+  recomputed complete-readable re-encryption and indicator checks.
+- E masked recovery by plaintext window was4/6,5/6,4/6,2/6. These are overlapping
+  windows from two messages; neither24 independent texts nor a general recovery
+  probability is claimed. Masking happened to change one additional climb's
+  basin; these data do not establish that erasures help recovery.
+- The preregistered **18/24 hypothesis is refuted**; the4/24 feasibility gate
+  passed, as did the independent checks and four fixed-key controls.
+- Published AWTZK, ZNLZT, JBIYH, FMNGI indicators derived the listed starts.
+  Their raw decrypts reproduced independently and re-encrypted every readable
+  source character. They retain garbles. No repaired plaintext is asserted.
+- RXPSB with the27 June key: all**17576** starts scored; header indicator
+  ZDN QMF derives **RQI**. Its complete readable decrypt is incoherent; the
+  highest-scoring startVIQ is also incoherent (score−8.45243/readable letter).
+  No solution accepted for this key-transfer hypothesis.
+- General pilot completed **240/240** distinct absolute mechanical points,
+  four per each of60 orders, with **37,262,314 plugboard evaluations** (includes
+  repeated boards). None of the240 resulting keys satisfies the recorded
+  indicator. Best score−7.69108/readable letter; its fragmentary n-gram-rich
+  output is not coherent military German. No plaintext accepted.
+- Raw mechanical-point fraction: **1.2948513×10⁻⁸** of60×26⁶ absolute points,
+  including equivalent key representations. This is not daily-key/plugboard
+  coverage or a success probability. The fixed-key arm is a separate restricted
+  hypothesis, not an additional general-space percentage.
+- Total control+pilot evaluations:44,853,391; all-start decryptions87,880
+  (four controls plus one historical arm). Every score vector and every climb
+  result is preserved. Post-run rechecking reproduced all240 independent
+  verification records and all prerecord input hashes still match.
+
+Descriptive analysis is reproducible with
+`python3 scripts/analyze_remaining1941_pilot.py`; it does not rerun or tune the
+search. RawJSONL SHA-256 is
+`cdcb035e76d7ed7c90b2105df869f904352d80d6187773ded5ccaafe027f5620`.
+
+### Interpretation (inference)
+
+E restarts are substantially better than the identity-start baseline on these
+fixed texts/keys, but miss the stated75% conditional target. Full mechanical
+discovery probability is unmeasured and the pilot samples a negligible part of
+the raw space. The null cannot exclude standard Enigma, the previous-day key
+under additional unmodelled garbles, or any ciphertext's decryptability.
+Exact re-encryption under wrong keys is automatic reciprocity; the indicator
+failures and lack of coherent full text are why candidates are not accepted.
+No target-specific p-value or odds multiplier is calculated.
+
+The preregistered rule does **not justify a larger blind search**. The most
+useful next work is (1) a source-supported RXPSB crib or28 June daily key,
+preferably from a matching originating copy or explicitly keyed network
+message, and (2) an end-to-end recovery/cost benchmark using the actual proposed
+mechanical parameterization,107-position texts, two erasures and separately
+budgeted substitution/indel faults. The114-vs112 discrepancy needs an explicit
+source-error model before searching insertions. The current scans alone do not
+locate two missing characters. No expert contact or paid compute is authorized.
+
+### Validation
+
+New inventory, preserved-position masking, independent re-encryption, and
+failed-control gating: four tests passed. Existing simulator/fast/historical
+tests plus these:22 passed. Full unit suite: **397 tests passed,16 skipped**,
+277.097s. Final new-path check:4/4 passed; inventory and analysis regeneration
+are byte-identical. `git diff --check` passed.
+
+Additional full legacy artifact checks were capped at approximately20 minutes
+overall and deliberately stopped (exit143): drift had17 matching artifacts,
+no reported mismatch, historical code-provenance warnings and declared skips;
+determinism had no reported verdict (buffered output). **Neither full legacy
+check is claimed passed.** They regenerate unchanged older experiments; no
+reused implementation or old artifact was edited. Raw partial logs and explicit
+states: `data/remaining-1941/pilot-v1/validation.json`. No remote CI was run.
+No old target search was repeated by this pilot.

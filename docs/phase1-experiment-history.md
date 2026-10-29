@@ -3785,3 +3785,66 @@ are narrower than the plaintext-cluster intervals above):
   need another check, such as the indicator or a crib.
 - The approximation, scoring planted texts against v7's distribution, is the
   main limitation of this reading.
+
+
+## remaining-1941-pilot-v1 (preregistered 29 October 2026)
+
+A separate effort excludes BYQMZ, FKQLZ and XFEDT and preserves all conclusions
+above. Source audit, preregistration and full observations:
+[remaining 1941 effort](remaining-1941-effort.md). Clean run revision `6102859`;
+configuration `experiments/remaining-1941-pilot-v1/config.json`; raw outputs
+`data/remaining-1941/pilot-v1/`. Entry point `remaining1941_pilot.py` reuses
+EnigmaI, the fast kernel, published scorer, reference/batched climbs and the
+independent verifier. Source snapshots pin both key lists and nine originals.
+
+### Observed
+
+The stale unbroken list's nine non-excluded entries reduce to four unresolved:
+EHSTQ, RXPSB, KLJBO, LXACA. ZNLZT is already solved. Exact RXPSB transcription
+is 112 total/107 body positions, 105 readable, erasures at 18 and 104, versus header 114
+and list 104/99. No invented padding or deletion reconciles the disagreement.
+
+One launch, 77.659 s, one CPU worker, budget 1200 s. Kernel 32-sample and independent
+16-sample parity passed; two E climbs matched the reference. Four known-daily-key
+controls ranked the true body start first of 17,576. On 24 ten-pair random keys,
+four overlapping windows from two authentic raw Army messages: baseline exact
+recovery5/24 clean,3/24 masked; E14/24 clean,15/24 masked. True mechanics supplied;
+recovered keys independently re-encrypt all readable plaintext and satisfy the
+planted indicators. The ≥18/24 masked-recovery hypothesis is **refuted**.
+
+The preregistered 4/24 feasibility gate passed. Four published-key decrypts and
+indicators reproduce, preserving garbles. RXPSB's previous-day27 June key
+hypothesis was searched at all17576 starts; indicator derives RQI, plaintext
+incoherent. General pilot completed 240 distinct absolute mechanical points,
+four per each of 60 I–V orders, with 37,262,314 heuristic plugboard evaluations.
+None of 240 satisfies RXPSB's indicator; no coherent full plaintext accepted.
+Raw mechanical fraction1.2948513e-8 of 60*26^6 includes equivalent keys and is not
+exhaustive daily-key coverage. Every score vector and climb result is saved;
+post-run analysis reproduces all 240 verification records and checks input hashes.
+
+### Interpretation (inference)
+
+E improves this small conditional control, but not to its preregistered 75%
+bar. Overlapping texts, supplied mechanics, real garbles and unmeasured
+mechanical discovery prevent a general recovery-probability or odds claim.
+The null is a bounded unsuccessful search, not evidence of undecryptability.
+PLDRV's reception date/callsign do not transfer its previous-day key to RXPSB.
+No companion assumption or old target's noise threshold was imported.
+
+### Next decision
+
+No larger blind search under the fixed rule. Prioritize a sourced RXPSB crib,
+originating copy or explicitly keyed 28 June network traffic, and measure an
+actual full-pipeline recovery/cost control before expansion. Model the unresolved
+header discrepancy and extra garbles separately. No paid compute or external
+communication was performed. Existing September conclusions are unchanged.
+
+
+Validation closeout: full local unit suite397 tests,16 skips,277.097s, passed;
+final new-path tests4/4 passed. Offline inventory and descriptive analysis
+rebuild identically. Additional legacy artifact drift/determinism checks were
+stopped after an approximately20-minute cap (exit143); drift reported17 matches
+and no mismatch, with historical provenance warnings/declared skips. Determinism
+reported no verdict. Those full gates are **incomplete, not passed**. Logs and
+exact statuses are in `data/remaining-1941/pilot-v1/validation.json`. No remote
+CI or GPU validation is claimed for this effort.
