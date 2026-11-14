@@ -1,0 +1,252 @@
+{
+  "experiment_id": "remaining-1941-pilot-v1",
+  "controls": {
+    "baseline_clean": 5,
+    "baseline_masked": 3,
+    "E_clean": 14,
+    "E_masked": 15
+  },
+  "fixed_key_controls_recovered": 4,
+  "historical_gate": true,
+  "settings_completed": 240,
+  "settings_planned": 240,
+  "complete_space_mechanical_recovery_probability": "unmeasured",
+  "raw_parameter_space_mechanical_points": 18534946560,
+  "raw_parameter_fraction": 1.294851318956271e-08,
+  "sampled_plugboard_search": "heuristic; at most ten pairs; not exhaustive",
+  "top": [
+    {
+      "key": {
+        "rotors": [
+          "II",
+          "IV",
+          "V"
+        ],
+        "rings": "USR",
+        "start": "TKM",
+        "plugboard": "AG BJ CW ES FL IN MQ PU RT VY"
+      },
+      "plugboard": "AG BJ CW ES FL IN MQ PU RT VY",
+      "plaintext": "PNKEIEGTTSXEEQKUN?HRVXTRUNDESTENZWOREQXEDLYAKYSTANBASSRNUUVOSENEWJWFRUMTNKSXEREUXEOHERBITSQEEDJUQDXIOUS?OMZ",
+      "score": -7.691079391516521,
+      "evaluations": 140810,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "YRO",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "III",
+          "V",
+          "II"
+        ],
+        "rings": "DDK",
+        "start": "SUO",
+        "plugboard": "AU ER FG HS IQ MN TW VY"
+      },
+      "plugboard": "AU ER FG HS IQ MN TW VY",
+      "plaintext": "EONMBEPXRREKAONSC?HXSZRIEANGXNIZXYXKVIEXBRIWLSOSSPRGEQDEAQXKLJXKEOENEPPKIHXRXMESIBUHEWONEESBEIXBAEOXKOM?ETR",
+      "score": -7.6923117086941355,
+      "evaluations": 160937,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "MRL",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "I",
+          "V",
+          "II"
+        ],
+        "rings": "VWX",
+        "start": "OWQ",
+        "plugboard": "BJ CO DZ EY FH GL IU QR VW"
+      },
+      "plugboard": "BJ CO DZ EY FH GL IU QR VW",
+      "plaintext": "TKIBIDBTEREINMECF?UURIMUXUJRCHRAEMXDBPPENEHSSQKUSBABHSDEPTLIYBEINRPULXFLETELNNFNINUNNTZUTGABTXAUELINALO?FHW",
+      "score": -7.694459301485906,
+      "evaluations": 161367,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "RWX",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "II",
+          "IV",
+          "V"
+        ],
+        "rings": "XNN",
+        "start": "XNX",
+        "plugboard": "BH DV EQ FM GP IL JX KN SU WZ"
+      },
+      "plugboard": "BH DV EQ FM GP IL JX KN SU WZ",
+      "plaintext": "BUFDPMIFLENNNEABJ?KIANUBUSLOHALAKLLEKXKXBSUMESENTEMSIOWXENZYBROONRXTJETURXKABEWASONSASEAWUIHESIXGNDHORR?XPN",
+      "score": -7.6972543392382855,
+      "evaluations": 159184,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "KGY",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "III",
+          "V",
+          "I"
+        ],
+        "rings": "QVS",
+        "start": "MFS",
+        "plugboard": "AB CV DG EX JK LS MY NZ OP RW"
+      },
+      "plugboard": "AB CV DG EX JK LS MY NZ OP RW",
+      "plaintext": "WLLKETPSEILINNXEM?LLERTXETRUESBAXSIMSEWDDBRLLEXRNHBVOUOLILXSOMZINMFZSZVRIENYSTIHEXABEINOXERNXRVIPACPSMX?EZO",
+      "score": -7.702168556827804,
+      "evaluations": 149172,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "ROQ",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "IV",
+          "III",
+          "II"
+        ],
+        "rings": "EML",
+        "start": "SHZ",
+        "plugboard": "CJ DK EO FV GN IP LZ MY QX SW"
+      },
+      "plugboard": "CJ DK EO FV GN IP LZ MY QX SW",
+      "plaintext": "IZZEMAFKRINRIHINZ?KNVIEXNEDUERKNDETTWXNSOZBCHUNESOQRLNALRXABAXUNANZUMUBSENNGLUAUSTXYURBOFARQFEEXERUIRVD?QBH",
+      "score": -7.720508407213449,
+      "evaluations": 160019,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "SXE",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "III",
+          "II",
+          "V"
+        ],
+        "rings": "QJK",
+        "start": "TWL",
+        "plugboard": "AN BK CY DH GU JM LQ OT PS RZ"
+      },
+      "plugboard": "AN BK CY DH GU JM LQ OT PS RZ",
+      "plaintext": "ISPHZGZRRFLAUMLEB?RDRFMVZTYIXERENGIOSZXINUAOZXLDEROTXESSOSQLAEMXZAMERRPXHOCAFREEEEBEAZSOTAGERSTSOEDXHSZ?JLK",
+      "score": -7.721361204659906,
+      "evaluations": 153525,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "GPU",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "IV",
+          "V",
+          "II"
+        ],
+        "rings": "XYI",
+        "start": "MIE",
+        "plugboard": "BQ CX DO EL FY GI KP RZ SV TU"
+      },
+      "plugboard": "BQ CX DO EL FY GI KP RZ SV TU",
+      "plaintext": "UORTPFYFSBSXSOTEJ?PYFESTAEOATLAMHRUEBISONUEQTFARTEINIXOEHLSMXVEFSMSZTTANLTHTBDYZNREERREISTRZABNTSRFGESE?KSY",
+      "score": -7.72776247833165,
+      "evaluations": 160854,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "SVJ",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "III",
+          "IV",
+          "V"
+        ],
+        "rings": "CQR",
+        "start": "IPZ",
+        "plugboard": "AZ CW DL EF GV HP IS"
+      },
+      "plugboard": "AZ CW DL EF GV HP IS",
+      "plaintext": "BUARXUIVDTZTEZENI?AWADRZDHRODRIIDEMTERPFXNRULTDANROTAYBWANGOSXHFXMFXHLRENUJRUESATOLOANOTSQLNRTEFANECTAL?AFX",
+      "score": -7.728307721075808,
+      "evaluations": 159876,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "LBA",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    },
+    {
+      "key": {
+        "rotors": [
+          "III",
+          "I",
+          "IV"
+        ],
+        "rings": "JOV",
+        "start": "QZO",
+        "plugboard": "AU BH CE DM GO JK NT PW QV RS"
+      },
+      "plugboard": "AU BH CE DM GO JK NT PW QV RS",
+      "plaintext": "PNORDETNJKXZIGESD?ONKTGDBZRRXKXPCHLLLGFSIQSFZLLNKYXDIVANZVEQRINGSZANYELFMBTXAMAFEIFNSTERXVHOMINSFNNSSON?NNA",
+      "score": -7.732063223510996,
+      "evaluations": 162099,
+      "verification": {
+        "independent_plaintext_matches": true,
+        "complete_observed_ciphertext_matches": true,
+        "indicator_start": "YII",
+        "indicator_matches": false,
+        "unknown_positions_not_verified": 2
+      }
+    }
+  ],
+  "elapsed_seconds": 77.65879273597966,
+  "accepted_new_plaintexts": [],
+  "status": "bounded_pilot_complete"
+}

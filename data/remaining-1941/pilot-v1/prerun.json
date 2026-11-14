@@ -1,0 +1,149 @@
+{
+  "code": {
+    "source": "git_checkout",
+    "commit": "61028594c42f627c4fd8c450707053d35b148d49",
+    "branch": "codex/remaining-1941-pilot",
+    "dirty": false,
+    "status": [],
+    "files_sha256": {
+      "enigma.py": "484257218231a6d946789e248fa7fe15deceb1e0992cf353b44fae65eb4bd9d2",
+      "enigma_fast.py": "a3f323161b274214e3c4873e837eeeeaab20a1143b60501be19ea5fd06c38110",
+      "phase1.py": "73b4d615bbf07d83a6dd275f001bd3580b2717d1e6cb60ef4d45fb7885290af9",
+      "phase6.py": "0cee413d6f25461d791e62d0a92f8415e1d7df828f5bc08ff7e9d5a4733b4c00",
+      "phase7.py": "542f4bd59dc09c84e4bef48346270ef89ceb451d187886a3db66a5c5b97f7924",
+      "provenance.py": "7fa246f83172107bbbabd9eb93e03194b44701c46078c12d7922a97182cc3c7a",
+      "remaining1941_inventory.py": "ee2380ff37daf614a924af6037417cb0750be4349d697ea653427ba857028668",
+      "remaining1941_pilot.py": "05b8fd3cd693e69e685ac93bc74add2056f4d279930c827cc342477443b0a56d",
+      "resources.py": "f875c6c77c6f70ecdb0941c0532bf60403223fbb116e13d8e574ee31556f6662",
+      "stecker_batch.py": "28b1ff81eaf0118bf6a11c0132b07760cc4891017b55a43a6987ba01df89dbc5",
+      "stecker_climb.py": "caabb04a11da2b33d0a9d7b23b7485e95580d59ee3e5a03f85da7e24fedfc434",
+      "stecker_scoring.py": "be2b32983f2e65c741f60531f7451fb2f3c6e0ce4869c822cdea7cf47c2d8468",
+      "stecker_space.py": "528d9c8adc5278712aeb289c7ba3748a352dffd45feccd39ee5fd34121fb4114",
+      "stecker_traffic.py": "20b704dcbec3c792c6e5f93886fdf7321f794a8bd572a0d53d591118df469e53"
+    }
+  },
+  "config": {
+    "experiment_id": "remaining-1941-pilot-v1",
+    "target": "RXPSB",
+    "output": "data/remaining-1941/pilot-v1",
+    "hypothesis": "At least18/24 random ten-pair keys recover both exact plugboard and all readable plaintext at supplied true mechanics on107-position Army texts with RXPSB positional erasures using E starts.",
+    "refuted_by": "E_masked exact recoveries fewer than18/24; no full-space sensitivity implied.",
+    "wall_budget_seconds": 1200,
+    "workers": 1,
+    "settings_per_order": 4,
+    "parity_seed": 2026102901,
+    "parity_samples": 32,
+    "independent_parity_samples": 16,
+    "batch_reference_samples": 2,
+    "plant_seed": 2026102902,
+    "pilot_seed": 2026102903,
+    "plant_draws": 24,
+    "fixed_key_controls": 4,
+    "minimum_masked_recoveries_for_pilot": 4,
+    "plaintext_source": "data/historical/keyed-messages.json",
+    "plaintext_windows": [
+      {
+        "id": "1941-07-13-25",
+        "offset": 0
+      },
+      {
+        "id": "1941-07-13-25",
+        "offset": 70
+      },
+      {
+        "id": "1941-07-19-233",
+        "offset": 0
+      },
+      {
+        "id": "1941-07-19-233",
+        "offset": 8
+      }
+    ],
+    "scorer": {
+      "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+      "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+      "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+      "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+      "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+      "additive_smoothing": 0.1,
+      "bigram_weight": 0.5,
+      "trigram_weight": 0.5
+    },
+    "baseline_climb": {
+      "phases": [
+        "index_of_coincidence",
+        "ngram"
+      ],
+      "max_pairs": 10,
+      "max_passes": 30,
+      "minimum_gain": 1e-09
+    },
+    "climb": {
+      "phases": [
+        "index_of_coincidence",
+        "ngram"
+      ],
+      "max_pairs": 10,
+      "max_passes": 30,
+      "minimum_gain": 1e-09,
+      "first_plug": {
+        "letters": "E"
+      }
+    },
+    "fixed_key_hypothesis": {
+      "key": {
+        "rotors": [
+          "III",
+          "V",
+          "II"
+        ],
+        "rings": "RGP",
+        "plugboard": "AV BG CH EN FU KO MS PX RY TW"
+      },
+      "source": "https://www.cryptocellar.org/bgac/e-keys-jun-oct-1941.html",
+      "status": "previous-day transfer hypothesis only; no known28June key"
+    },
+    "stopping_rules": [
+      "Abort all historical search if parity fails, known-key all-start controls not4/4 or E masked recovery below4/24.",
+      "Stop after240 sampled mechanical settings or1200s wall, whichever first. No adaptive retries or paid compute.",
+      "Do not enlarge search unless >=18/24 masked plants succeed AND independent evidence narrows daily key or a measured full-pipeline recovery/cost study justifies it."
+    ],
+    "acceptance": [
+      "No statistical score alone accepts a key.",
+      "Independently re-encrypt complete raw plaintext to every legible source character, preserve erasures and record all source edits.",
+      "Indicator must derive recovered body start or discrepancy needs source evidence.",
+      "Coherent military German across substantial body; manual review required.",
+      "Companions never required without demonstrated key sharing."
+    ],
+    "limitations": [
+      "Four overlapping windows from two authentic messages, including real operator errors; not4 independent plaintexts.",
+      "Scorer corpus overlap is unknown.",
+      "All-start control assumes daily key known; plugboard control supplies true mechanics. Neither estimates chance of hitting unknown historical mechanics.",
+      "Pilot samples absolute rings/starts uniformly; raw point coverage includes equivalent keys and cannot be interpreted as recovery probability.",
+      "No indels or extra hidden garbles covered by the two-erasure model."
+    ]
+  },
+  "inputs": {
+    "experiments/remaining-1941-pilot-v1/config.json": "834352b3068372e7c5b194770eb317f36f76cecbbc61e170c43f706dbc6e126b",
+    "data/remaining-1941/inventory.json": "ee81b91df22b3b6db9fb301a635cde0624d938667c14b3dc52ebaedd51247370",
+    "data/remaining-1941/sources/manifest.json": "74efa34d97a6590a40b423280ea0a2e111d48896f66674f265b15301a51f14d1",
+    "data/historical/keyed-messages.json": "0caf1111e33aa53bfde1e7bcbbf15f7bd51b6b599ef39e5591f4c0c46333ccd7",
+    "data/phase7/BigramFrequency1941.txt": "d8ba3a633bb7ebccd643d7b8bdfd7b07293340ed6d1e6fdc385547ebd5a2006f",
+    "data/phase7/TrigramFrequency1941.txt": "d641d1d9894f56970536cc63e1189ce0c80e02a3e0dcac74da2db114ccd83455"
+  },
+  "environment": {
+    "python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "logical_cpus": 20,
+    "workers": 1,
+    "numpy": "2.2.6",
+    "cpu": "x86_64",
+    "cpu_model": "Intel(R) Core(TM) i9-10900K CPU @ 3.70GHz",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "started_utc": "2026-10-29T18:00:22.707879+00:00"
+}

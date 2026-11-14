@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-26
+Updated: 2026-10-29
 
 Open items after the standard-reading closure, ranked: [open-items-2026-10-11.md](open-items-2026-10-11.md).
 
@@ -34,6 +34,29 @@ identical candidates. This is operational validation, not a full target result.
 
 ## Current state
 
+New independent effort, 29 October 2026: [verified remaining 1941 inventory and
+RXPSB pilot](remaining-1941-effort.md). The supplied unbroken list is stale:
+after excluding BYQMZ, FKQLZ, XFEDT, only **EHSTQ, RXPSB, KLJBO, LXACA** remain
+unresolved in its nine-entry audited subset. ZNLZT/AWTZK, JBIYH and FMNGI have
+published keys; the overview credits the WEUWY Nr138 puzzle solved (not a newly
+verified ordinary Enigma break). All nine original scans and both solved-key
+lists were cross-checked and preserved with hashes. RXPSB is **112 total/107
+body positions, 105 readable**, with erasures at 18 and 104; header 114 and stale-list
+104/99 disagree. The true transmitted length remains uncertain.
+
+`remaining-1941-pilot-v1` ran once from clean `6102859`, one CPU worker,
+77.659 s (cap 1200 s). Conditional exact plugboard+readable-plaintext recovery
+with supplied true mechanics: baseline 5/24 clean, 3/24 masked; E 14/24 clean,
+15/24 masked. The 18/24 hypothesis is **refuted**. Four fixed-key all-start
+controls and all parity checks passed, permitting the bounded feasibility run.
+The 27 June published-key transfer to RXPSB yielded no coherent result across
+17576 starts. General pilot completed 240 mechanical points, four per each of
+60 orders,37.26 million plugboard evaluations; none satisfies the indicator.
+**No new plaintext accepted; no larger blind search justified.** General-space
+recovery probability is unmeasured, and a failed sparse heuristic search is no
+exclusion. Raw results/coverage/provenance are in `data/remaining-1941/pilot-v1/`.
+The previous September messages and their conclusions are unchanged.
+
 Flat-group models (2026-10-26, `phase5-flat-models-v2`, preregistered;
 parameters fitted on the four grey flat texts, tested on held-out FKQLZ +
 XFEDT): a **without-replacement** stream, with letters drawn from shuffled
@@ -57,7 +80,7 @@ group has too few doubles. Only the two homophonic models pass the four
 primary statistics, and no model reproduces the group's IC of 0.0329. The
 signature is letters more even than chance with digraphs at random level,
 which is consistent with human-made or without-replacement letter sequences;
-that has not been tested. The power check was informative. See the
+the subsequent model test is summarized above. The power check was informative. See the
 [Phase 5 addendum](phase5-research.md#addendum-2026-10-26--structure-of-the-flat-j-less-group-phase5-flat-structure-v1).
 
 J-less, flat signature (2026-10-21, `phase5-jless-flat-v1`, preregistered as a
@@ -330,6 +353,24 @@ p = 0.80 and remains superseded by conservation. See the
 
 ## Validation
 
+Remaining1941 effort, 2026-10-29, experiment revision `6102859`:
+`OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m unittest discover -q`
+passed **397 tests with 16 skips** in 277.097 s. New tests and existing
+simulator/fast/historical tests passed 22/22; final new-path check passed 4/4.
+The offline inventory and descriptive pilot analysis regenerate byte-for-byte;
+all pilot input hashes and 240 independent verification records recheck.
+Raw unit log: `data/remaining-1941/pilot-v1/unit-tests.log`.
+Additional legacy `check_artifacts.py drift` and `determinism` were intentionally
+terminated (exit143) after an approximately20-minute validation cap. Drift
+reported17 matched artifacts and no mismatch before termination, with historical
+provenance warnings and registered long-running/superseded skips. Determinism
+reported no verdict before interruption. **Full legacy gates are incomplete,
+not passed.** These checks regenerate unchanged older experiments; no reused
+engine, scorer or old artifact was modified. Logs and explicit validation
+states are in `data/remaining-1941/pilot-v1/validation.json`.
+No remote CI or GPU validation is claimed for this new effort.
+
+
 Completion review 2026-10-24: see [run record](runs/2026-10-24-complete-pending-changes.md)
 for commands and results; implementation commit `e42a0db`, [PR #44](https://github.com/sparktron/enigma-attack/pull/44).
 The local unit/wheel suite ran 371 tests with 16 skips and no failures, Python 3.12.3. Local artifact
@@ -469,6 +510,17 @@ remains open. No target search or new cipher experiment was run in this review.
    [Phase 2 history](phase2-experiment-history.md).
 
 ## Next
+
+For the new remaining 1941 effort: preserve the four unresolved entries and the
+112/114 RXPSB discrepancy. Seek a sourced crib/originating copy or an explicitly
+keyed 28 June network message; same-date reception alone is insufficient.
+Before larger computation, preregister full-pipeline recovery/cost at 107
+positions with two erasures and separate garble models. Do not repeat the
+240-point pilot unchanged, assume PLDRV's 27 June key is a 28 June constraint,
+or require unsupported companions. Ask before paid compute or communications.
+The older September continuation notes below are preserved history, outside
+this effort's authorized targets.
+
 
 First: run the amended `phase1-body-direct-sweep-v6` on an available RTX 3090
 from a clean checkout, preserving its checkpoint and recording all launches.

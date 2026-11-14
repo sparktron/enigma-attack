@@ -1,0 +1,101 @@
+{
+  "experiment_id": "remaining-1941-pilot-v1",
+  "target": "RXPSB",
+  "output": "data/remaining-1941/pilot-v1",
+  "hypothesis": "At least18/24 random ten-pair keys recover both exact plugboard and all readable plaintext at supplied true mechanics on107-position Army texts with RXPSB positional erasures using E starts.",
+  "refuted_by": "E_masked exact recoveries fewer than18/24; no full-space sensitivity implied.",
+  "wall_budget_seconds": 1200,
+  "workers": 1,
+  "settings_per_order": 4,
+  "parity_seed": 2026102901,
+  "parity_samples": 32,
+  "independent_parity_samples": 16,
+  "batch_reference_samples": 2,
+  "plant_seed": 2026102902,
+  "pilot_seed": 2026102903,
+  "plant_draws": 24,
+  "fixed_key_controls": 4,
+  "minimum_masked_recoveries_for_pilot": 4,
+  "plaintext_source": "data/historical/keyed-messages.json",
+  "plaintext_windows": [
+    {
+      "id": "1941-07-13-25",
+      "offset": 0
+    },
+    {
+      "id": "1941-07-13-25",
+      "offset": 70
+    },
+    {
+      "id": "1941-07-19-233",
+      "offset": 0
+    },
+    {
+      "id": "1941-07-19-233",
+      "offset": 8
+    }
+  ],
+  "scorer": {
+    "source_url": "https://cryptocellar.org/bgac/key-of-e.html",
+    "archive_url": "https://cryptocellar.org/bgac/1941freq.zip",
+    "archive_sha256": "0f6fd7617c4cdd2e9dea64812702bfda63cbe7d80ab1bd0b7b21a1460fbcbbe2",
+    "bigram_counts": "data/phase7/BigramFrequency1941.txt",
+    "trigram_counts": "data/phase7/TrigramFrequency1941.txt",
+    "additive_smoothing": 0.1,
+    "bigram_weight": 0.5,
+    "trigram_weight": 0.5
+  },
+  "baseline_climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09
+  },
+  "climb": {
+    "phases": [
+      "index_of_coincidence",
+      "ngram"
+    ],
+    "max_pairs": 10,
+    "max_passes": 30,
+    "minimum_gain": 1e-09,
+    "first_plug": {
+      "letters": "E"
+    }
+  },
+  "fixed_key_hypothesis": {
+    "key": {
+      "rotors": [
+        "III",
+        "V",
+        "II"
+      ],
+      "rings": "RGP",
+      "plugboard": "AV BG CH EN FU KO MS PX RY TW"
+    },
+    "source": "https://www.cryptocellar.org/bgac/e-keys-jun-oct-1941.html",
+    "status": "previous-day transfer hypothesis only; no known28June key"
+  },
+  "stopping_rules": [
+    "Abort all historical search if parity fails, known-key all-start controls not4/4 or E masked recovery below4/24.",
+    "Stop after240 sampled mechanical settings or1200s wall, whichever first. No adaptive retries or paid compute.",
+    "Do not enlarge search unless >=18/24 masked plants succeed AND independent evidence narrows daily key or a measured full-pipeline recovery/cost study justifies it."
+  ],
+  "acceptance": [
+    "No statistical score alone accepts a key.",
+    "Independently re-encrypt complete raw plaintext to every legible source character, preserve erasures and record all source edits.",
+    "Indicator must derive recovered body start or discrepancy needs source evidence.",
+    "Coherent military German across substantial body; manual review required.",
+    "Companions never required without demonstrated key sharing."
+  ],
+  "limitations": [
+    "Four overlapping windows from two authentic messages, including real operator errors; not4 independent plaintexts.",
+    "Scorer corpus overlap is unknown.",
+    "All-start control assumes daily key known; plugboard control supplies true mechanics. Neither estimates chance of hitting unknown historical mechanics.",
+    "Pilot samples absolute rings/starts uniformly; raw point coverage includes equivalent keys and cannot be interpreted as recovery probability.",
+    "No indels or extra hidden garbles covered by the two-erasure model."
+  ]
+}

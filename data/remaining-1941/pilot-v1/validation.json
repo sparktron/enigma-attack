@@ -1,0 +1,58 @@
+{
+  "recorded_utc": "2026-10-29T18:22:55.778051+00:00",
+  "unit_suite": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -m unittest discover -q",
+    "exit_code": 0,
+    "tests": 397,
+    "skips": 16,
+    "seconds": 277.097,
+    "log": "unit-tests.log"
+  },
+  "new_path_final": {
+    "command": "python3 -m unittest tests.test_remaining1941 -q",
+    "tests": 4,
+    "exit_code": 0
+  },
+  "inventory_and_analysis_rebuild": "byte-identical on repeated offline regeneration",
+  "artifact_drift": {
+    "command": "python3 check_artifacts.py drift",
+    "status": "incomplete_intentionally_terminated",
+    "exit_code": 143,
+    "last_sample_elapsed_seconds": 1237,
+    "matched": [
+      "artifacts/phase1-smoke-certificate.json",
+      "artifacts/phase2-network-cribs.json",
+      "artifacts/phase3-variant-smoke-v2.json",
+      "artifacts/phase4-joint-machine-smoke.v2.json",
+      "artifacts/phase5-model-triage.json",
+      "artifacts/phase1-stecker-calibration-v1.json",
+      "artifacts/phase1-fkqlz-length-calibration-v1.json",
+      "artifacts/phase1-ic-rank-v1.json",
+      "artifacts/phase1-body-direct-sweep-v1-reconfirmation.json",
+      "artifacts/phase1-companion-calibration-v1.json",
+      "artifacts/phase1-joint-power-v1.json",
+      "artifacts/phase1-middle-complete-power-v1-conditional.json",
+      "artifacts/phase1-split-point-power-v1-split.json",
+      "artifacts/phase1-split-point-power-v2-analysis.json",
+      "artifacts/phase1-fault-power-v1-analysis.json",
+      "artifacts/phase1-joint-power-v2-middle-past-notch.json",
+      "artifacts/phase1-joint-power-v2-head-tail-117.json"
+    ],
+    "mismatches_observed": 0,
+    "warnings": "historical recorded-code provenance differs; declared long-running/superseded artifacts skipped",
+    "log": "artifact-drift-partial.log"
+  },
+  "artifact_determinism": {
+    "command": "python3 check_artifacts.py determinism",
+    "status": "incomplete_intentionally_terminated",
+    "exit_code": 143,
+    "last_sample_elapsed_seconds": 1086,
+    "reported_comparisons": 0,
+    "log": "artifact-determinism-partial.log",
+    "note": "Buffered output was empty; no pass verdict inferred."
+  },
+  "stop_reason": "Additional legacy validation capped at about20 minutes overall after the complete new pilot and full unit suite passed. No reused engine, scorer or existing artifact was modified.",
+  "remote_ci": "not run",
+  "paid_compute": false,
+  "external_communications": false
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "url": "https://www.cryptocellar.org/bgac/1941-msg-list-unbroken.html",
+    "path": "data/remaining-1941/sources/1941-msg-list-unbroken.html",
+    "sha256": "088625d910bcc4279767b176ef098c5ce32e7ca104d885cde4c4bfb8f9ec4e0c",
+    "bytes": 4200,
+    "retrieved_utc": "2026-10-29T17:52:00.362636+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/1941-msg-list.html",
+    "path": "data/remaining-1941/sources/1941-msg-list.html",
+    "sha256": "ef2261e179fb55780b2d48feadff94908d7e2d2f7297b579dffbc17ac2d149bc",
+    "bytes": 102835,
+    "retrieved_utc": "2026-10-29T17:52:00.895011+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/g-army-messages.html",
+    "path": "data/remaining-1941/sources/g-army-messages.html",
+    "sha256": "0889dbb44b246f7ba7e5587715cd400ee09ac35d6e1513b2f39fddeeae8e31f8",
+    "bytes": 28242,
+    "retrieved_utc": "2026-10-29T17:52:01.446772+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/g-army-july-1941.html",
+    "path": "data/remaining-1941/sources/g-army-july-1941.html",
+    "sha256": "23b460791f999e5a5f4668aec7e46eaa34168fe07d21232d4396df4e135634fc",
+    "bytes": 42515,
+    "retrieved_utc": "2026-10-29T17:52:02.056327+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/e-keys-jun-oct-1941.html",
+    "path": "data/remaining-1941/sources/e-keys-jun-oct-1941.html",
+    "sha256": "6bddc8250dd995b12b459afdf8aeb76275538ecfee8cfd099daf4d555b36fc41",
+    "bytes": 10743,
+    "retrieved_utc": "2026-10-29T17:52:02.471673+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/e-keys-july-1941.html",
+    "path": "data/remaining-1941/sources/e-keys-july-1941.html",
+    "sha256": "9d3c387d9ee3bc525498d78b2363e09b9502e292e25eb24eae3c17b8dc4e0020",
+    "bytes": 16345,
+    "retrieved_utc": "2026-10-29T17:52:02.997912+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/the-awtzk-znlzt-breaks.html",
+    "path": "data/remaining-1941/sources/the-awtzk-znlzt-breaks.html",
+    "sha256": "269d290e314a1c8f6f3fc6cb1b195d3cd6ce4532a459d6394de27b900b275d74",
+    "bytes": 156772,
+    "retrieved_utc": "2026-10-29T17:52:03.769094+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/the-fmngi-break.html",
+    "path": "data/remaining-1941/sources/the-fmngi-break.html",
+    "sha256": "0eec05f3073e9f923af9ed9df96f7aac04b6048e4d82db0bc4c61a7e54e94a87",
+    "bytes": 161156,
+    "retrieved_utc": "2026-10-29T17:52:04.671274+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/22061941-003-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_22061941-003-in.pdf",
+    "sha256": "7cfad022d586c8bfcdb97b9a0e998ccf4356d9f5b84290fb20f42bb28e5ea198",
+    "bytes": 821470,
+    "retrieved_utc": "2026-10-29T17:52:05.702421+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/28061941-053-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_28061941-053-in.pdf",
+    "sha256": "b5580c5b10d269ba3a85d16439c86e7f0078f46d5d58e55e4bf2ba5a2c529c9c",
+    "bytes": 846915,
+    "retrieved_utc": "2026-10-29T17:52:08.346065+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/03071941-087-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_03071941-087-in.pdf",
+    "sha256": "e61641c35220125df30dc0b615c6f9d98e3dbe79d961f27c171ebf45609f78cd",
+    "bytes": 823602,
+    "retrieved_utc": "2026-10-29T17:52:09.375097+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/05071941-100-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_05071941-100-in.pdf",
+    "sha256": "3863a24758f7c1e113e3e5aa8e6b9f2366b02b9361315b0048b79b3bffb05608",
+    "bytes": 820160,
+    "retrieved_utc": "2026-10-29T17:52:12.120229+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/09071941-138-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_09071941-138-in.pdf",
+    "sha256": "7bad334a7a3ddcea61c628b9733986496ab45001ce9e17fabfd96cc842903617",
+    "bytes": 748736,
+    "retrieved_utc": "2026-10-29T17:52:14.094823+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/09071941-140-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_09071941-140-in.pdf",
+    "sha256": "60d2605805ba42fa06b26165f9cbbbb90d618e0547ea6674bb5f3b3135892398",
+    "bytes": 762716,
+    "retrieved_utc": "2026-10-29T17:52:16.260235+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/11071941-187-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_11071941-187-in.pdf",
+    "sha256": "ef64d11ab393e62617999ab1a18a982592626126529fcb2574b5c494a30f3f12",
+    "bytes": 770263,
+    "retrieved_utc": "2026-10-29T17:52:18.006074+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/11071941-189-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_11071941-189-in.pdf",
+    "sha256": "7dee261e28b4734e09b95b13eec8663f4c4d4d2dd8dd37214a180a919bfc1c4f",
+    "bytes": 783666,
+    "retrieved_utc": "2026-10-29T17:52:19.832153+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/20071941-242-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_20071941-242-in.pdf",
+    "sha256": "97ed34ac0fa197a6893f947b1c6994ce5f01da81ba2f9a1cdee3eafe1dc236ac",
+    "bytes": 770179,
+    "retrieved_utc": "2026-10-29T17:52:21.681859+00:00"
+  },
+  {
+    "url": "https://www.cryptocellar.org/bgac/spruch/31071941-285-in.pdf",
+    "path": "data/remaining-1941/sources/spruch_31071941-285-in.pdf",
+    "sha256": "d4b31d0de0799fa6644325872f48309de89220d406f84c799f4fbd9a62e340e6",
+    "bytes": 768825,
+    "retrieved_utc": "2026-10-29T17:52:22.789908+00:00"
+  }
+]
