@@ -606,3 +606,132 @@ therefore at least two populations.
 2. Treat the flat group as **not** a digraphic encipherment of Army plaintext
    of the kinds tested here, and stop spending effort on Playfair-type
    attacks against it.
+
+---
+
+# Addendum 2026-10-26 — without-replacement and human-random models (`phase5-flat-models-v2`)
+
+## Method
+
+The configuration is `experiments/phase5-flat-models-v2/config.json`,
+preregistered at `03cb63e`. The run was made from `a5c4f9a` on a clean tree,
+in 5 min 30 s on one core. The result is in
+`artifacts/phase5-flat-models-v2.json`.
+
+**Split.** `phase5-flat-structure-v1` had already shown every statistic of
+the six flat texts, and both new models have a free parameter. Each
+parameter was therefore fitted on the four grey flat texts' pooled IC alone,
+using a grid with 2,000 draws per point. The fitted models were then tested
+on the **held-out pair**, FKQLZ and XFEDT, on all five v1 statistics. IC was
+now a preregistered test statistic (two-sided). The pair's pooled statistics
+had been seen, so the test is out-of-sample for the parameter, not for the
+eye. The six together are reported only as a post-hoc description.
+
+**Models:**
+- **Without replacement:** a uniformly random window of a stream of shuffled
+  stocks, each holding k copies of the 25 letters (k from 1 to 32).
+- **Human-random proxy:** uniform letters, except that any letter among the
+  previous w letters gets weight s (w 1–12, s 0–0.75). This is a generic
+  stand-in, not a published model.
+- **Baselines:** uniform and homophonic-cyclic, from v1.
+
+**Decision and power:** the threshold is p < 0.005 (0.05 corrected for
+5 statistics × 2 models), with a power check against uniform for each new
+model.
+
+## Observed
+
+**Fit** (target pooled IC of the four grey flat texts 0.0327):
+
+| Model | Chosen parameter | Median simulated IC |
+|---|---|---|
+| Without replacement | **k = 3** | 0.0325 |
+| Human-random proxy | **w = 12, s = 0** | 0.0327 |
+
+The human-random proxy's chosen point is at the edge of its grid: it reached
+the target IC only by forbidding any repeat of the previous 12 letters. Every
+softer setting stayed above 0.0346.
+
+**Held-out pair, FKQLZ + XFEDT** (lengths 112, 102). Observed: doubles 1,
+min aligned doubles 0, aligned digraph repeats 2, periodic IC peak 0.0411,
+IC 0.0331. Each null cell gives the 2.5% / median / 97.5% points.
+
+| Model | Doubles | Min aligned | Digraph repeats | Periodic peak | IC | Verdict |
+|---|---|---|---|---|---|---|
+| Without replacement, k = 3 | 2 / 6 / 11 (p 0.039) | p 0.34 | p 0.78 | p 0.42 | 0.0323 / 0.0331 / 0.0341 (p 1.0) | **consistent** |
+| Human-random, w = 12, s = 0 | always 0 (**p 0.0001**) | p 1.0 | p 0.40 | p 0.58 | p 0.40 | inconsistent |
+| Uniform | 3 / 8 / 14 (**p 0.003**) | p 0.09 | p 0.36 | p 0.96 | median 0.0399 (**p 0.0001**) | inconsistent |
+| Homophonic cyclic | p 0.055 | p 0.52 | p 0.015 | p 0.99 | median 0.0395 (**p 0.0001**) | inconsistent |
+
+**Power:** informative for both new models. Each was rejected on 99.9–100%
+of uniform pairs, and uniform was rejected on 100% of pairs from either
+model.
+
+**The full six** (post-hoc; seen data): **only the without-replacement model
+(k = 3) is consistent on all five statistics**:
+
+| Statistic | p |
+|---|---|
+| Doubles | 0.10 |
+| Min aligned doubles | 0.77 |
+| Digraph repeats | 0.47 |
+| Periodic peak | 0.11 |
+| IC | 0.79 |
+
+On the full six, the human-random proxy fails on doubles, uniform fails on
+doubles and IC, and homophonic-cyclic fails on digraph repeats and IC.
+
+**Hypothesis** (both fitted new models consistent with the pair, uniform not):
+**refuted**. The human-random proxy is inconsistent, because the fitted
+setting forbids doubled letters and the pair has one.
+
+## Inference
+
+- **Without replacement fits:** a stream of letters drawn without replacement
+  from shuffled stocks of about three copies of each of the 25 letters
+  reproduces the flat group on every statistic measured. That covers IC,
+  doubles, aligned doubles, digraph repeats and no period. The fit was made
+  on four texts and holds on the held-out two. This is the first model in
+  the three Phase 5 studies that matches the group on everything.
+- **Repeat avoidance alone does not fit, as modelled.** Reaching the flat
+  group's IC needs total avoidance over 12 letters, which then forbids the
+  occasional doubled letter the texts contain. A balanced stock produces
+  both the flatness and the occasional double. This rejects only the proxy
+  as specified. A different human model, for example with larger windows and
+  soft weights beyond the grid, was not tested.
+- **What the fit shows and doesn't:** it does not identify a mechanism, but
+  it constrains one. Whatever produced these texts made their letters about
+  as balanced as drawing from a three-copy stock. Encipherment of German
+  plaintext by any of the systems tested so far does not do that.
+
+## Speculation
+
+Ways a balanced stream like this arises, none of them tested:
+
+- letters drawn from a bag or deck of tiles holding about three of each
+  letter;
+- an operator working through a balanced practice or keying table;
+- a "random" letter table constructed from permutations.
+
+Each would make the flat texts *generated* text, not encipherments of
+language. That fits the "made-up texts for operator practice" reading
+Weierud reports, and it would explain why every attempt to break them failed.
+
+## Unresolved
+
+- Whether softer or longer repeat avoidance, outside this grid, also fits.
+- Whether the rough grey texts, or QTXMA and SZAEJ, show any comparable
+  balance.
+- What historical practice-text or key-table procedure, if any, used
+  balanced letter stocks. Archival rather than statistical.
+
+## Recommendation
+
+1. Report the result to Weierud and Ostwald. It gives a concrete, testable
+   description of the flat texts that their note does not have.
+2. If fresh J-less flat texts can be obtained (other dates, networks, or
+   Ostwald's wider material), run a **confirmatory** test of the
+   without-replacement model with k fixed at 3 in advance. No data used
+   here could serve as that test.
+3. Stop treating the flat group as a cipher-breaking target. A balanced,
+   generated letter stream has no plaintext to recover.

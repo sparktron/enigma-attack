@@ -57,6 +57,18 @@ recovery probability is unmeasured, and a failed sparse heuristic search is no
 exclusion. Raw results/coverage/provenance are in `data/remaining-1941/pilot-v1/`.
 The previous September messages and their conclusions are unchanged.
 
+Flat-group models (2026-10-26, `phase5-flat-models-v2`, preregistered;
+parameters fitted on the four grey flat texts, tested on held-out FKQLZ +
+XFEDT): a **without-replacement** stream, with letters drawn from shuffled
+stocks of about **three copies of each letter (k = 3)**, is consistent with
+the held-out pair on all five statistics, IC included. Post-hoc, it is also
+the only model consistent with the full six on everything. The human-random
+proxy (repeat avoidance) is inconsistent: matching the IC needs a setting
+that forbids the occasional doubled letter the texts contain. The
+preregistered hypothesis that both new models fit is therefore **refuted**.
+Inference: the flat texts look like generated, balanced letter streams, not
+encipherments of language. See the
+[Phase 5 addendum](phase5-research.md#addendum-2026-10-26--without-replacement-and-human-random-models-phase5-flat-models-v2).
 
 Structure of the flat J-less group (2026-10-26, `phase5-flat-structure-v1`,
 preregistered): the hypothesis that the group (CSBTR, BCSSF, AWMRI, YDFZS,
@@ -68,7 +80,7 @@ group has too few doubles. Only the two homophonic models pass the four
 primary statistics, and no model reproduces the group's IC of 0.0329. The
 signature is letters more even than chance with digraphs at random level,
 which is consistent with human-made or without-replacement letter sequences;
-that has not been tested. The power check was informative. See the
+the subsequent model test is summarized above. The power check was informative. See the
 [Phase 5 addendum](phase5-research.md#addendum-2026-10-26--structure-of-the-flat-j-less-group-phase5-flat-structure-v1).
 
 J-less, flat signature (2026-10-21, `phase5-jless-flat-v1`, preregistered as a

@@ -1,0 +1,55 @@
+{
+  "schema": "enigma-attack.phase5-flat-models-config/v1",
+  "experiment_id": "phase5-flat-models-v2",
+  "preregistered": "2026-10-26, committed before the runner exists and before any statistic of the two new models was computed",
+  "follows": "phase5-flat-structure-v1 (PR #45)",
+  "question": "Does a sequence model that is more even than chance — letters drawn without replacement from a balanced stock, or uniform letters with repeat avoidance (a human-random proxy) — reproduce the flat J-less group's IC together with its doubles, digraph repeats and lack of period?",
+  "design_constraint": "Every statistic of the six flat texts was seen in phase5-flat-structure-v1, and both new models have a free parameter. To make IC a preregistered target without fitting and testing on the same letters, each model's parameter is FITTED on the four grey flat texts (CSBTR, BCSSF, AWMRI, YDFZS) by pooled IC alone, then TESTED on the held-out pair FKQLZ and XFEDT on all five statistics. The pair's pooled statistics were also seen, so the test is out-of-sample for the parameter, not for the eye. The full six are reported descriptively and labelled post-hoc.",
+  "already_seen": "All v1 observed values for the flat group (pooled over six): doubles 9, min aligned doubles 3, aligned digraph repeats 10, periodic IC peak 0.0406, IC 0.0329; each text's IC; no J; lengths. Not seen: any statistic of the pair alone except its two ICs (3.26%, 3.29%, first group excluded) and the grey four's pooled IC as such (not computed).",
+  "texts": {
+    "fit": ["CSBTR", "BCSSF", "AWMRI", "YDFZS"],
+    "test": ["FKQLZ", "XFEDT"],
+    "descriptive": ["CSBTR", "BCSSF", "AWMRI", "YDFZS", "FKQLZ", "XFEDT"],
+    "form": "full text including the first group, as v1's primary form; '?' masked as in v1"
+  },
+  "statistics": "As phase5-flat-structure-v1 (scripts/flat_structure_v1.py group_statistics): doubles, min_aligned_doubles, aligned_digraph_repeats, periodic_ic_peak, plus ic, which is now a preregistered test statistic with a two-sided tail.",
+  "models": {
+    "without_replacement": {
+      "description": "A stream of letters made by concatenating independently shuffled stocks, each holding k copies of each of the 25 letters (no J); every text is a uniformly random window of such a stream. k = 1 makes each block of 25 a permutation; large k approaches uniform.",
+      "parameter_grid": {"k": [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 24, 32]}
+    },
+    "human_random_proxy": {
+      "description": "Each letter is uniform over the 25 letters, except that a letter among the previous w letters gets weight s instead of 1 (repeat avoidance). This is a generic proxy, not a published model of human letter generation.",
+      "parameter_grid": {"w": [1, 2, 3, 4, 6, 8, 12], "s": [0.0, 0.25, 0.5, 0.75]}
+    },
+    "baselines": ["uniform25", "homophonic_cyclic"],
+    "baselines_note": "From phase5-flat-structure-v1, unchanged, as reference rows."
+  },
+  "fit": {
+    "criterion": "For each grid point, 2,000 simulated groups of the four fit texts' lengths and masks; choose the point whose median pooled IC is closest to the four fit texts' observed pooled IC. Ties: the point closest to uniform (larger k; smaller w; larger s).",
+    "draws_per_grid_point": 2000,
+    "seed": 20261201
+  },
+  "test": {
+    "draws": 20000,
+    "seeds": {"without_replacement": 20261202, "human_random_proxy": 20261203, "uniform25": 20261204, "homophonic_cyclic": 20261205},
+    "descriptive_seed_offset": 1000,
+    "alpha": 0.005,
+    "alpha_rationale": "0.05 Bonferroni-corrected over 5 statistics x 2 new models.",
+    "rule": "A fitted model is consistent with the held-out pair if no statistic's p-value (two-sided, except periodic_ic_peak, which is upper) is below alpha."
+  },
+  "power": {
+    "description": "1,000 simulated pairs from uniform25 judged against each fitted new model's pair null, and 1,000 from each fitted new model judged against uniform25's pair null (seed 20261210 + index).",
+    "draws": 1000,
+    "seed_base": 20261210,
+    "informative_if": "For each new model M: rate(M rejected | truth uniform25) >= 0.5 OR rate(uniform25 rejected | truth M) >= 0.5. A model failing this is reported as not distinguishable from uniform at the pair's length, and its verdict is not interpreted."
+  },
+  "decision": {
+    "hypothesis": "Both new models, with parameters fitted only on the four grey flat texts' IC, are consistent with the held-out pair FKQLZ + XFEDT on all five statistics, and uniform25 is not.",
+    "refuted_by": "Either informative new model inconsistent with the pair, or uniform25 consistent with it.",
+    "secondary": "On the descriptive full six (post-hoc, seen data), report which models are consistent on all five statistics at the same alpha.",
+    "what_it_does_not_decide": "Consistency does not identify the mechanism: a without-replacement stream and human repeat avoidance can look alike. The human-random proxy is generic. The pair's pooled statistics were seen in v1."
+  },
+  "runner": "scripts/flat_models_v2.py",
+  "artifact": "artifacts/phase5-flat-models-v2.json"
+}
